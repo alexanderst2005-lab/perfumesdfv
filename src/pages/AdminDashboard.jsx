@@ -21,8 +21,6 @@ const AdminDashboard = () => {
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'campaigns', label: 'Campañas', icon: LayoutTemplate },
     { id: 'media', label: 'Biblioteca', icon: ImageIcon },
-    { id: 'stores', label: 'Tiendas', icon: Store },
-    { id: 'faq', label: 'FAQ', icon: HelpCircle },
     { id: 'settings', label: 'Configuración', icon: Settings },
   ];
 
@@ -98,11 +96,9 @@ const AdminDashboard = () => {
         {activeTab === 'orders' && <OrdersModule />}
         {activeTab === 'customers' && <CustomersModule />}
         {activeTab === 'campaigns' && <CampaignsModule />}
-        {activeTab === 'faq' && <FaqModule />}
-        {activeTab === 'stores' && <StoresModule />}
         {activeTab === 'settings' && <SettingsModule />}
 
-        {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'customers' && activeTab !== 'campaigns' && activeTab !== 'faq' && activeTab !== 'stores' && activeTab !== 'settings' && (
+        {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'customers' && activeTab !== 'campaigns' && activeTab !== 'settings' && (
           <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem' }}>Módulo en Construcción (Fase 3)</h2>
             <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>

@@ -7,6 +7,7 @@ export default async function handler(req, res) {
     // Create new product
     try {
       const p = req.body;
+      p.id = p.id || `p-${Date.now()}`;
       const result = await sql`
         INSERT INTO products (
           id, name, brand, category, family, price, old_price, discount, sizes,

@@ -88,14 +88,30 @@ const InventoryModule = () => {
     // We'll handle this in the save logic
   };
 
+  const compressImage = (dataUrl, maxSize = 1600, quality = 0.85) => new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+
   const uploadToCloudinary = async (base64) => {
+    const compressed = await compressImage(base64);
     const res = await fetch('/api/admin/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64 })
+      body: JSON.stringify({ image: compressed })
     });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
+    let data = {};
+    try { data = await res.json(); } catch (e) { /* non-JSON response */ }
+    if (!data.success) throw new Error(data.details || data.error || `Error ${res.status}`);
     return data.url;
   };
 
@@ -277,7 +293,6 @@ const InventoryModule = () => {
                 </div>
               </div>
 
-              <input type="text" placeholder="ID único (ej. p-15)" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%' }} disabled={!!editingProduct} />
               <input type="text" placeholder="Nombre del perfume" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%' }} />
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <input type="text" placeholder="Marca" value={formData.brand} onChange={e => setFormData({...formData, brand: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
