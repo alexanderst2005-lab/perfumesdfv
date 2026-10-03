@@ -1,77 +1,101 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Image as ImageIcon, Settings, Store, HelpCircle, LayoutTemplate } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { products } = useShop();
-  return (
-    <div style={{ minHeight: '80vh', backgroundColor: '#f5f5f5', padding: '2rem 0' }}>
-      <div className="container">
-        <h1 style={{ fontFamily: 'var(--font-serif)', marginBottom: '2rem' }}>Panel Administrativo</h1>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <h3 style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>VENTAS TOTALES</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>$4,520</p>
-          </div>
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <h3 style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>PEDIDOS</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>24</p>
-          </div>
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <h3 style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>PRODUCTOS</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{products.length}</p>
-          </div>
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <h3 style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>CLIENTES</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>18</p>
-          </div>
-        </div>
+  const { products, isLoadingProducts } = useShop();
+  const [activeTab, setActiveTab] = useState('dashboard');
 
-        <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)' }}>Gestión de la Tienda</h2>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn-secondary" style={{ padding: '0.8rem 1.5rem' }}>GESTIONAR SEDES</button>
-              <button className="btn-primary" style={{ padding: '0.8rem 1.5rem' }}>+ NUEVO PRODUCTO</button>
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'inventory', label: 'Inventario', icon: Package },
+    { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
+    { id: 'customers', label: 'Clientes', icon: Users },
+    { id: 'categories', label: 'Categorías', icon: Tags },
+    { id: 'campaigns', label: 'Campañas', icon: LayoutTemplate },
+    { id: 'media', label: 'Biblioteca', icon: ImageIcon },
+    { id: 'stores', label: 'Tiendas', icon: Store },
+    { id: 'faq', label: 'FAQ', icon: HelpCircle },
+    { id: 'settings', label: 'Configuración', icon: Settings },
+  ];
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* SIDEBAR */}
+      <aside style={{ width: '260px', backgroundColor: '#111827', color: 'white', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '2rem 1.5rem', borderBottom: '1px solid #374151' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', letterSpacing: '1px' }}>DFV ADMIN</h2>
+          <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>Panel de Control CMS</p>
+        </div>
+        
+        <nav style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {menuItems.map(item => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%',
+                  padding: '0.75rem 1rem', borderRadius: '8px', border: 'none',
+                  backgroundColor: isActive ? '#374151' : 'transparent',
+                  color: isActive ? 'white' : '#9ca3af',
+                  fontSize: '0.9rem', fontWeight: '500', cursor: 'pointer',
+                  transition: 'all 0.2s', textAlign: 'left'
+                }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#1f2937'; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <Icon size={18} />
+                {item.label}
+              </button>
+            )
+          })}
+        </nav>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main style={{ flex: 1, padding: '3rem 4rem', overflowY: 'auto', backgroundColor: '#f3f4f6' }}>
+        {activeTab === 'dashboard' && (
+          <div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '2rem', color: '#111827' }}>Resumen de Actividad</h1>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+              
+              <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                <p style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.5rem' }}>TOTAL PRODUCTOS</p>
+                <h3 style={{ fontSize: '2rem', fontWeight: '600' }}>{isLoadingProducts ? '...' : products.length}</h3>
+              </div>
+              
+              <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                <p style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.5rem' }}>PEDIDOS NUEVOS</p>
+                <h3 style={{ fontSize: '2rem', fontWeight: '600' }}>0</h3>
+              </div>
+
+              <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                <p style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.5rem' }}>VENTAS DEL MES</p>
+                <h3 style={{ fontSize: '2rem', fontWeight: '600' }}>$0</h3>
+              </div>
+
+            </div>
+
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Pedidos Recientes</h2>
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '3rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+              <ShoppingCart size={40} color="#d1d5db" style={{ margin: '0 auto 1rem' }} />
+              <p style={{ color: '#6b7280' }}>No hay pedidos recientes.</p>
             </div>
           </div>
-          
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid var(--color-gray-light)', textAlign: 'left' }}>
-                <th style={{ padding: '1rem', color: 'var(--color-gray)' }}>Producto</th>
-                <th style={{ padding: '1rem', color: 'var(--color-gray)' }}>Marca</th>
-                <th style={{ padding: '1rem', color: 'var(--color-gray)' }}>Categoría</th>
-                <th style={{ padding: '1rem', color: 'var(--color-gray)' }}>Precio</th>
-                <th style={{ padding: '1rem', color: 'var(--color-gray)' }}>Stock</th>
-                <th style={{ padding: '1rem', color: 'var(--color-gray)' }}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(p => (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--color-gray-light)' }}>
-                  <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src={p.image} alt={p.name} style={{ width: '40px', height: '50px', objectFit: 'cover' }} />
-                    {p.name}
-                  </td>
-                  <td style={{ padding: '1rem' }}>{p.brand}</td>
-                  <td style={{ padding: '1rem' }}>{p.category}</td>
-                  <td style={{ padding: '1rem' }}>${p.price}</td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{ color: p.inStock ? 'green' : 'red', fontWeight: '500' }}>
-                      {p.inStock ? 'Disponible' : 'Agotado'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <button style={{ color: 'blue', marginRight: '1rem' }}>Editar</button>
-                    <button style={{ color: 'red' }}>Eliminar</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        )}
+
+        {activeTab !== 'dashboard' && (
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem' }}>Módulo en Construcción (Fase 2)</h2>
+            <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>
+              Este módulo será conectado a la base de datos de Neon en la siguiente fase de desarrollo.
+            </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 };
