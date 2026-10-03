@@ -33,22 +33,22 @@ const ProductDetail = () => {
   const formatD = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
 
   return (
-    <div style={{ paddingTop: '80px' }}>
+    <div className="product-page-wrapper" style={{ paddingTop: '1.2rem' }}>
 
       {/* Back */}
-      <div className="container" style={{ paddingTop: '0', paddingBottom: '0' }}>
+      <div className="container" style={{ paddingBottom: '0.5rem' }}>
         <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', letterSpacing: '1px', color: 'var(--color-gray)', textTransform: 'uppercase' }}>
           <ArrowLeft size={14} /> Volver a Perfumes
         </Link>
       </div>
 
       {/* Main Grid */}
-      <div className="container product-detail-container" style={{ paddingTop: '0.8rem', paddingBottom: '4rem' }}>
+      <div className="container product-detail-container" style={{ paddingBottom: '4rem' }}>
         <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '3rem', alignItems: 'start' }}>
 
           {/* Gallery */}
           <div className="gallery-section">
-            <div style={{ position: 'relative', backgroundColor: 'var(--color-cream)', overflow: 'hidden', aspectRatio: '1/1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="gallery-main-image" style={{ position: 'relative', backgroundColor: 'var(--color-cream)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <img
                 src={images[imgIdx]}
                 alt={product.name}
@@ -238,11 +238,17 @@ const ProductDetail = () => {
       )}
 
       <style>{`
+        .gallery-main-image {
+          aspect-ratio: 1/1;
+        }
         @media (max-width: 768px) {
           .detail-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
           .product-detail-container { padding: 0 !important; }
-          .gallery-section { width: 100vw; margin-left: -1rem; margin-right: -1rem; }
-          .info-section { padding: 1.5rem 1rem !important; }
+          .gallery-section { width: 100vw; margin-left: -1rem; margin-right: -1rem; margin-bottom: 0.5rem; }
+          .gallery-main-image {
+            aspect-ratio: 4/3; /* En móvil es un poco más ancha que alta para no ocupar toda la altura del viewport */
+          }
+          .info-section { padding: 1rem 1rem !important; gap: 1rem !important; }
           .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
         }
       `}</style>
