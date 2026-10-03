@@ -21,26 +21,126 @@ const Home = () => {
         minHeight: '600px',
         position: 'relative',
         display: 'flex',
-        alignItems: 'flex-end',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginTop: `-${TOTAL_HEADER}px`,
-        backgroundImage: 'url(https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1600&auto=format&fit=crop)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        overflow: 'hidden',
+        textAlign: 'center',
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%)' }} />
-        <div className="container" style={{ position: 'relative', zIndex: 1, color: '#fff', paddingBottom: '5rem', maxWidth: '700px' }}>
-          <p className="eyebrow" style={{ color: 'var(--color-gold)', marginBottom: '1rem' }}>DFV PERFUMES</p>
-          <h1 className="title-xl" style={{ marginBottom: '1.5rem', fontWeight: '400' }}>
-            Tu esencia,<br />tu identidad.
+        {/* Animated Background Image */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/hero.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          animation: 'kenBurns 18s ease-in-out infinite alternate',
+          transformOrigin: 'center center',
+        }} />
+
+        {/* Gradient overlay — dark at bottom, semi-dark at top */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.65) 100%)',
+        }} />
+
+        {/* Content — centered */}
+        <div style={{ position: 'relative', zIndex: 1, color: '#fff', padding: '0 1.5rem', width: '100%', maxWidth: '600px' }}>
+
+          {/* Logo centered — mix-blend-mode removes black bg on dark background */}
+          <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
+            <img
+              src="/logo.png"
+              alt="DFV Perfumes"
+              style={{
+                height: '120px',
+                width: 'auto',
+                objectFit: 'contain',
+                mixBlendMode: 'screen',
+                filter: 'brightness(1.1)',
+              }}
+            />
+          </div>
+
+          <p style={{ fontSize: '0.75rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.7, marginBottom: '1.25rem', fontWeight: '400' }}>
+            FRAGANCIAS DE LUJO
+          </p>
+
+          <h1 style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'clamp(2rem, 6vw, 4rem)',
+            fontWeight: '400',
+            lineHeight: '1.2',
+            marginBottom: '1.5rem',
+            textShadow: '0 2px 20px rgba(0,0,0,0.4)',
+          }}>
+            Tu esencia,<br/>tu identidad.
           </h1>
-          <p style={{ fontSize: '1.1rem', opacity: 0.85, marginBottom: '2.5rem', fontWeight: '300' }}>
+
+          <p style={{ fontSize: '1rem', opacity: 0.75, marginBottom: '2.5rem', fontWeight: '300', letterSpacing: '0.5px' }}>
             Fragancias que cuentan tu historia.
           </p>
-          <Link to="/tienda" className="btn-primary" style={{ backgroundColor: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(4px)' }}>
+
+          <Link
+            to="/tienda"
+            style={{
+              display: 'inline-block',
+              padding: '1rem 3rem',
+              border: '1px solid rgba(255,255,255,0.7)',
+              color: '#fff',
+              fontSize: '0.8rem',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              backdropFilter: 'blur(4px)',
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={e => { e.target.style.backgroundColor = 'rgba(255,255,255,0.2)'; }}
+            onMouseLeave={e => { e.target.style.backgroundColor = 'rgba(255,255,255,0.08)'; }}
+          >
             DESCUBRIR COLECCIÓN
           </Link>
         </div>
+
+        {/* SCROLL indicator */}
+        <div style={{
+          position: 'absolute',
+          bottom: '2.5rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1,
+          color: 'rgba(255,255,255,0.6)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.5rem',
+        }}>
+          <span style={{ fontSize: '0.6rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
+          <div style={{
+            width: '1px',
+            height: '40px',
+            backgroundColor: 'rgba(255,255,255,0.4)',
+            animation: 'scrollLine 2s ease-in-out infinite',
+            transformOrigin: 'top',
+          }} />
+        </div>
+
+        <style>{`
+          @keyframes kenBurns {
+            0%   { transform: scale(1)    translate(0, 0); }
+            50%  { transform: scale(1.08) translate(-1%, 1%); }
+            100% { transform: scale(1.05) translate(1%, -1%); }
+          }
+          @keyframes scrollLine {
+            0%   { transform: scaleY(0); opacity: 0; }
+            50%  { transform: scaleY(1); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 0; }
+          }
+        `}</style>
       </section>
+
 
       {/* ════ 2. CATEGORÍAS ════ */}
       <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
