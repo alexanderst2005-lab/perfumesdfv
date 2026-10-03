@@ -93,24 +93,35 @@ const Header = () => {
               </nav>
             </div>
 
-            {/* CENTER — Logo */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img
-                src="/logo.png"
-                alt="DFV Perfumes"
-                style={{
-                  height: '48px',
-                  width: 'auto',
-                  objectFit: 'contain',
-                  display: 'block',
-                  maxWidth: '200px',
-                  // On dark hero: invert(1) turns black letters white, then screen removes the white bg
-                  // On white header: multiply removes white bg showing black letters
-                  filter: solid ? 'none' : 'invert(1) brightness(1.5)',
-                  mixBlendMode: solid ? 'multiply' : 'screen',
-                  transition: 'filter 0.3s ease',
-                }}
-              />
+            {/* CENTER — Logo SVG sin fondo */}
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+              <svg
+                viewBox="0 0 220 60"
+                height="42"
+                aria-label="DFV Perfumes"
+                style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
+              >
+                {/* Letras DFV */}
+                <text
+                  x="0" y="44"
+                  fontFamily="Georgia, 'Times New Roman', serif"
+                  fontSize="52"
+                  fontWeight="400"
+                  letterSpacing="-1"
+                  fill={solid ? '#111111' : '#ffffff'}
+                >DFV</text>
+                {/* Acento rojo encima de la V */}
+                <path d="M178 4 Q188 1 200 8" stroke="#c0392b" strokeWidth="3" fill="none" strokeLinecap="round"/>
+                {/* PERFUMES debajo */}
+                <text
+                  x="2" y="60"
+                  fontFamily="'Helvetica Neue', Arial, sans-serif"
+                  fontSize="12"
+                  fontWeight="400"
+                  letterSpacing="6"
+                  fill={solid ? '#111111' : '#ffffff'}
+                >PERFUMES</text>
+              </svg>
             </Link>
 
             {/* RIGHT — Icons */}

@@ -16,9 +16,15 @@ const Home = () => {
     <div>
 
       {/* ════ 1. HERO ════ */}
+      {/*
+        LÓGICA DE ALTURA:
+        - marginTop: -106px sube la hero para que quede detrás del header fijo
+        - Para que el borde inferior = 100svh (borde visible), la altura debe ser 100svh + 106px
+        - 100svh en móvil excluye la UI del browser (barra URL), a diferencia de 100vh
+      */}
       <section style={{
-        height: '100vh',
-        minHeight: '600px',
+        height: `calc(100svh + ${TOTAL_HEADER}px)`,
+        minHeight: `calc(600px + ${TOTAL_HEADER}px)`,
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
@@ -28,33 +34,33 @@ const Home = () => {
         overflow: 'hidden',
         textAlign: 'center',
       }}>
-        {/* Animated Background — covers absolute full screen */}
+        {/* Animated Background — cubre absolutamente todo */}
         <div style={{
           position: 'absolute',
           top: 0, left: 0, right: 0, bottom: 0,
           backgroundImage: 'url(/hero.jpg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center top',
+          backgroundPosition: 'center center',
           animation: 'kenBurns 18s ease-in-out infinite alternate',
           transformOrigin: 'center center',
           zIndex: 0,
         }} />
 
-        {/* Gradient — heavier at bottom for text readability */}
+        {/* Gradiente — más oscuro abajo para leer el texto */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.85) 100%)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.85) 100%)',
           zIndex: 1,
         }} />
 
-        {/* Content — pushed to bottom */}
+        {/* Contenido — pegado al fondo con paddingBottom para que el SCROLL no lo tape */}
         <div style={{
           position: 'relative',
           zIndex: 2,
           color: '#fff',
           padding: '0 1.5rem',
-          paddingBottom: '5rem',
+          paddingBottom: '5.5rem',
           width: '100%',
           maxWidth: '600px',
         }}>
@@ -64,7 +70,7 @@ const Home = () => {
 
           <h1 style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(2.2rem, 7vw, 4.5rem)',
+            fontSize: 'clamp(2rem, 7vw, 4.5rem)',
             fontWeight: '400',
             lineHeight: '1.15',
             marginBottom: '1rem',
@@ -73,7 +79,7 @@ const Home = () => {
             Tu esencia,<br/>tu identidad.
           </h1>
 
-          <p style={{ fontSize: '0.95rem', opacity: 0.7, marginBottom: '2.5rem', fontWeight: '300', letterSpacing: '0.5px' }}>
+          <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '2rem', fontWeight: '300', letterSpacing: '0.5px' }}>
             Fragancias que cuentan tu historia.
           </p>
 
@@ -81,14 +87,14 @@ const Home = () => {
             to="/tienda"
             style={{
               display: 'inline-block',
-              padding: '0.9rem 2.8rem',
+              padding: '0.85rem 2.5rem',
               border: '1px solid rgba(255,255,255,0.65)',
               color: '#fff',
               fontSize: '0.75rem',
               letterSpacing: '2px',
               textTransform: 'uppercase',
               backdropFilter: 'blur(6px)',
-              backgroundColor: 'rgba(255,255,255,0.07)',
+              backgroundColor: 'rgba(255,255,255,0.08)',
               transition: 'all 0.3s ease',
             }}
           >
@@ -96,10 +102,10 @@ const Home = () => {
           </Link>
         </div>
 
-        {/* SCROLL — absolute bottom */}
+        {/* SCROLL — absolutamente al fondo de la hero */}
         <div style={{
           position: 'absolute',
-          bottom: '1.25rem',
+          bottom: '1rem',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 3,
@@ -107,18 +113,17 @@ const Home = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.4rem',
+          gap: '0.35rem',
         }}>
           <span style={{ fontSize: '0.55rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
           <div style={{
             width: '1px',
-            height: '35px',
+            height: '32px',
             backgroundColor: 'rgba(255,255,255,0.35)',
             animation: 'scrollLine 2s ease-in-out infinite',
             transformOrigin: 'top',
           }} />
         </div>
-
 
         <style>{`
           @keyframes kenBurns {
@@ -130,6 +135,10 @@ const Home = () => {
             0%   { transform: scaleY(0); opacity: 0; }
             50%  { transform: scaleY(1); opacity: 1; }
             100% { transform: scaleY(1); opacity: 0; }
+          }
+          /* Fallback para browsers sin soporte de svh */
+          @supports not (height: 1svh) {
+            .hero-section { height: calc(100vh + ${TOTAL_HEADER}px) !important; }
           }
         `}</style>
       </section>
