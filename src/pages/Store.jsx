@@ -28,7 +28,7 @@ const Store = () => {
   });
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: '115px', paddingBottom: '4rem' }}>
+    <div style={{ minHeight: '100vh', paddingTop: '106px', paddingBottom: '4rem' }}>
       <div className="container">
 
         {/* Header */}

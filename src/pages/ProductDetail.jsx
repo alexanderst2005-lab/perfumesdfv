@@ -26,7 +26,7 @@ const ProductDetail = () => {
   const related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
 
   return (
-    <div style={{ paddingTop: '55px' }}>
+    <div style={{ paddingTop: '106px' }}>
 
       {/* Back */}
       <div className="container" style={{ paddingTop: '0', paddingBottom: '0' }}>
