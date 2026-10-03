@@ -82,33 +82,17 @@ const Header = () => {
               transform: 'translateX(-50%)',
               zIndex: 10,
             }}>
-              <svg
-                viewBox="0 0 160 50"
-                height="38"
-                aria-label="DFV Perfumes"
-                style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
-              >
-                {/* Letras DFV centradas */}
-                <text
-                  x="50%" y="36"
-                  textAnchor="middle"
-                  fontFamily="Georgia, 'Times New Roman', serif"
-                  fontSize="46"
-                  fontWeight="400"
-                  letterSpacing="-1"
-                  fill={solid ? '#111111' : '#ffffff'}
-                >DFV</text>
-                {/* PERFUMES debajo centrado */}
-                <text
-                  x="50%" y="50"
-                  textAnchor="middle"
-                  fontFamily="'Helvetica Neue', Arial, sans-serif"
-                  fontSize="10"
-                  fontWeight="400"
-                  letterSpacing="6"
-                  fill={solid ? '#111111' : '#ffffff'}
-                >PERFUMES</text>
-              </svg>
+              <img 
+                src="/logo.png" 
+                alt="DFV Perfumes" 
+                style={{ 
+                  height: '54px', 
+                  width: '54px',
+                  objectFit: 'cover',
+                  borderRadius: '50%',
+                  display: 'block'
+                }} 
+              />
             </Link>
 
             {/* RIGHT — Icons */}
@@ -159,10 +143,7 @@ const Header = () => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <svg viewBox="0 0 160 50" height="30" aria-label="DFV Perfumes" style={{ display: 'block' }}>
-                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="#050505">DFV</text>
-                  <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="#050505">PERFUMES</text>
-                </svg>
+                <img src="/logo.png" alt="DFV Perfumes" style={{ height: '40px', objectFit: 'contain' }} />
                 <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>
               </div>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
