@@ -55,9 +55,23 @@ const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
   const { addToCart, toggleFavorite, isFavorite } = useShop();
+const Home = () => {
+  const { addToCart, toggleFavorite, isFavorite } = useShop();
+  const [activeCategory, setActiveCategory] = useState('TODOS');
+  
   const featured = products.slice(0, 4);
   const newArrivals = products.slice(0, 4);
   const bestSellers = products.filter(p => p.isBestSeller);
+
+  let displayProducts = products;
+  if (activeCategory !== 'TODOS') {
+    if (activeCategory === 'OFERTAS') {
+      displayProducts = products.filter(p => p.discount);
+    } else {
+      displayProducts = products.filter(p => p.category?.toUpperCase() === activeCategory);
+    }
+  }
+  displayProducts = displayProducts.slice(0, 8);
 
   // --- HERO LOGIC ---
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -234,43 +248,66 @@ const Home = () => {
         </div>
 
         <style>{`
-          .hero-section { height: 100svh; min-height: 100svh; }
+          .hero-section { height: 110vh; min-height: 110vh; }
           @media (max-width: 768px) {
-            .hero-section { height: 100svh; min-height: 100svh; }
+            .hero-section { height: 110vh; min-height: 110vh; }
             .hero-arrow { display: none !important; }
           }
         `}</style>
       </section>
 
 
-      {/* ════ 2. NUESTROS PRODUCTOS ════ */}
-      <section className="section-padding">
+      {/* ════ 2. NUESTROS PRODUCTOS (LA COLECCIÓN) ════ */}
+      <section className="section-padding" style={{ backgroundColor: '#FCFBF9' }}>
         <div className="container">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', letterSpacing: '4px', textTransform: 'uppercase' }}>
-              NUESTROS PRODUCTOS
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', marginBottom: '0.5rem', color: 'var(--color-black)', letterSpacing: '2px', textTransform: 'uppercase' }}>
+              LA COLECCIÓN
             </h2>
-            <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '1.5rem', letterSpacing: '0.5px' }}>
-              Descubre nuestra selección de fragancias.
+            <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: '1.5rem', letterSpacing: '0.5px', fontWeight: '300' }}>
+              Fragancias seleccionadas para ti
             </p>
-            <Link to="/tienda" style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px' }}>
+            <Link to="/tienda" style={{ fontSize: '0.7rem', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', transition: 'opacity 0.3s' }} onMouseEnter={e => e.target.style.opacity = 0.6} onMouseLeave={e => e.target.style.opacity = 1}>
               VER TODOS →
             </Link>
           </div>
 
-          <div className="featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
-            {products.slice(0, 8).map(p => (
+          {/* Filtros Editoriales */}
+          <div className="catalog-filters no-scrollbar" style={{ display: 'flex', justifyContent: 'center', gap: '2.5rem', marginBottom: '3.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+            {['TODOS', 'MUJER', 'HOMBRE', 'UNISEX', 'OFERTAS'].map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase',
+                  color: activeCategory === cat ? '#000' : '#888',
+                  fontWeight: activeCategory === cat ? '500' : '400',
+                  borderBottom: activeCategory === cat ? '1px solid #000' : '1px solid transparent',
+                  paddingBottom: '0.3rem', transition: 'all 0.3s ease', whiteSpace: 'nowrap'
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="featured-grid">
+            {displayProducts.map(p => (
               <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
             ))}
           </div>
         </div>
 
         <style>{`
+          .catalog-filters { justify-content: center; }
+          .featured-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem 2rem; }
           @media (max-width: 1024px) {
-            .featured-grid { grid-template-columns: repeat(3,1fr) !important; }
+            .featured-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 1.5rem; }
           }
           @media (max-width: 768px) {
-            .featured-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
+            .catalog-filters { justify-content: flex-start; padding-left: 1.5rem; padding-right: 1.5rem; }
+            .featured-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem 1rem; }
           }
         `}</style>
       </section>
@@ -439,38 +476,156 @@ const Home = () => {
 
 /* ── Shared Product Card Component ── */
 export const ProductCard = ({ product, onFav, fav, onAdd }) => (
-  <div className="product-card" style={{ background: '#ffffff', display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'center' }}>
-    <div className="product-card__image-wrap" style={{ position: 'relative', aspectRatio: '4/5', overflow: 'hidden', backgroundColor: 'var(--color-cream)', borderRadius: '4px' }}>
-      <Link to={`/producto/${product.id}`}>
-        <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  <div className="product-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'left', backgroundColor: 'transparent' }}>
+    <div 
+      className="product-card__image-wrap" 
+      style={{ 
+        position: 'relative', 
+        aspectRatio: '4/5', 
+        overflow: 'hidden', 
+        backgroundColor: '#F9F8F6', 
+        borderRadius: '6px',
+        marginBottom: '1.2rem'
+      }}
+    >
+      <Link to={`/producto/${product.id}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+        <img 
+          src={product.image} 
+          alt={product.name} 
+          className="product-img"
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover',
+            transition: 'transform 0.6s ease'
+          }} 
+        />
       </Link>
+      
+      {/* Etiqueta de Descuento Discreta */}
       {product.discount && (
-        <span className="product-card__badge" style={{ position: 'absolute', top: '10px', left: '10px', background: '#FF0000', color: '#fff', padding: '4px 12px', fontSize: '0.7rem', letterSpacing: '1px', fontWeight: 'bold', borderRadius: '20px' }}>
-          -{product.discount}% OFF
+        <span style={{ 
+          position: 'absolute', 
+          top: '12px', 
+          left: '12px', 
+          background: '#111', 
+          color: '#fff', 
+          padding: '4px 10px', 
+          fontSize: '0.6rem', 
+          letterSpacing: '1.5px', 
+          fontWeight: '500', 
+          textTransform: 'uppercase',
+          borderRadius: '2px' 
+        }}>
+          OFERTA · {product.discount}%
         </span>
       )}
+
+      {/* Botón Corazón Minimalista */}
+      <button
+        onClick={(e) => { e.preventDefault(); onFav(); }}
+        style={{
+          position: 'absolute', top: '12px', right: '12px',
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        }}
+        className={fav ? 'fav-active' : ''}
+      >
+        <Heart size={20} strokeWidth={1.5} color={fav ? '#000' : '#444'} fill={fav ? '#000' : 'none'} />
+      </button>
+
+      {/* Botón "+" Premium */}
       {onAdd && (
         <button
           onClick={(e) => { e.preventDefault(); onAdd(); }}
-          style={{ position: 'absolute', bottom: '10px', right: '10px', width: '35px', height: '35px', backgroundColor: '#fff', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', color: '#000' }}
+          className="add-to-cart-btn"
+          style={{ 
+            position: 'absolute', 
+            bottom: '12px', 
+            right: '12px', 
+            width: '32px', 
+            height: '32px', 
+            backgroundColor: '#111', 
+            borderRadius: '50%',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            cursor: 'pointer', 
+            border: 'none',
+            color: '#fff',
+            transition: 'transform 0.2s ease, background-color 0.2s ease',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+          }}
         >
-          <Plus size={20} strokeWidth={1.5} />
+          <Plus size={16} strokeWidth={2} />
         </button>
       )}
     </div>
-    <div className="product-card__info" style={{ padding: '1rem 0', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+    
+    <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0 0.2rem' }}>
+      <p style={{ 
+        fontFamily: 'var(--font-sans)', 
+        fontSize: '0.65rem', 
+        fontWeight: '500', 
+        letterSpacing: '2px',
+        textTransform: 'uppercase', 
+        color: '#888', 
+        marginBottom: '0.4rem' 
+      }}>
+        {product.brand}
+      </p>
+      
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
-        <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: '500', textTransform: 'uppercase', color: '#222', lineHeight: '1.4', marginBottom: '0.5rem' }}>
-          {product.brand} {product.name}
-        </p>
+        <h3 style={{ 
+          fontFamily: 'var(--font-serif)', 
+          fontSize: '1rem', 
+          fontWeight: '400', 
+          color: '#111', 
+          lineHeight: '1.3', 
+          marginBottom: '0.8rem',
+          height: '2.6em', /* Fuerza a que siempre ocupe el mismo espacio aunque sea de 1 línea */
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical'
+        }}>
+          {product.name}
+        </h3>
       </Link>
-      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.3rem', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
-          {product.oldPrice && <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85rem' }}>${product.oldPrice.toLocaleString()}</span>}
-          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '1rem', color: '#000', fontWeight: '600' }}>${product.price.toLocaleString()}</span>
-        </div>
+      
+      <div style={{ marginTop: 'auto', display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', color: '#000', fontWeight: '500' }}>
+          ${product.price.toLocaleString()}
+        </span>
+        {product.oldPrice && (
+          <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.75rem', fontWeight: '300' }}>
+            ${product.oldPrice.toLocaleString()}
+          </span>
+        )}
       </div>
     </div>
+
+    <style>{`
+      .product-card:hover .product-img {
+        transform: scale(1.03);
+      }
+      .add-to-cart-btn:hover {
+        transform: scale(1.1);
+        background-color: #333 !important;
+      }
+      .add-to-cart-btn:active {
+        transform: scale(0.95);
+      }
+      .fav-active {
+        animation: heartBeat 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      @keyframes heartBeat {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+      }
+    `}</style>
   </div>
 );
 
