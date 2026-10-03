@@ -60,37 +60,15 @@ const Header = () => {
             position: 'relative', /* Importante para el centrado absoluto del logo */
           }}>
 
-            {/* LEFT — Hamburger (mobile) + Desktop Nav */}
+            {/* LEFT — Hamburger */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flex: 1 }}>
-              {/* Mobile hamburger */}
               <button
-                className="mobile-only"
                 aria-label="Menú"
-                style={{ color: 'inherit' }}
+                style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 onClick={() => setMenuOpen(true)}
               >
-                <Menu size={22} strokeWidth={1.5} />
+                <Menu size={24} strokeWidth={1.5} />
               </button>
-
-              {/* Desktop nav */}
-              <nav className="desktop-only" style={{ display: 'flex', gap: '1.8rem' }}>
-                {navLinks.map(l => (
-                  <Link
-                    key={l.label}
-                    to={l.path}
-                    style={{
-                      fontSize: '0.78rem',
-                      letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                      color: 'inherit',
-                      fontWeight: '500',
-                      opacity: 0.85,
-                    }}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
-              </nav>
             </div>
 
             {/* CENTER — Logo SVG sin fondo */}
@@ -107,10 +85,10 @@ const Header = () => {
               <svg
                 viewBox="0 0 160 50"
                 height="38"
-                aria-label="DFV Perfumes"
+                aria-label="DFB Perfumes"
                 style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
               >
-                {/* Letras DFV centradas */}
+                {/* Letras DFB centradas */}
                 <text
                   x="50%" y="36"
                   textAnchor="middle"
@@ -119,7 +97,7 @@ const Header = () => {
                   fontWeight="400"
                   letterSpacing="-1"
                   fill={solid ? '#111111' : '#ffffff'}
-                >DFV</text>
+                >DFB</text>
                 {/* PERFUMES debajo centrado */}
                 <text
                   x="50%" y="50"
@@ -181,8 +159,8 @@ const Header = () => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <svg viewBox="0 0 160 50" height="30" aria-label="DFV Perfumes" style={{ display: 'block' }}>
-                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="#050505">DFV</text>
+                <svg viewBox="0 0 160 50" height="30" aria-label="DFB Perfumes" style={{ display: 'block' }}>
+                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="#050505">DFB</text>
                   <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="#050505">PERFUMES</text>
                 </svg>
                 <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>

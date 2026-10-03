@@ -246,9 +246,8 @@ const Home = () => {
         </div>
 
         <style>{`
-          .hero-section { height: 110vh; min-height: 110vh; }
+          .hero-section { height: 100vh; min-height: 100vh; width: 100vw; overflow: hidden; }
           @media (max-width: 768px) {
-            .hero-section { height: 110vh; min-height: 110vh; }
             .hero-arrow { display: none !important; }
           }
         `}</style>
