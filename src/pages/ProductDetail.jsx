@@ -23,7 +23,10 @@ const ProductDetail = () => {
   );
 
   const images = [product.image, product.image, product.image];
-  const related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
+  let related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
+  if (related.length === 0) {
+    related = products.filter(p => p.id !== product.id).slice(0, 4);
+  }
 
   const today = new Date();
   const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
