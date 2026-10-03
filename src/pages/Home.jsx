@@ -27,8 +27,8 @@ const Home = () => {
       <section
         className="hero-section"
         style={{
-          height: '100dvh',
-          minHeight: '600px',
+          height: '100vh',
+          minHeight: '100vh',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
@@ -160,12 +160,6 @@ const Home = () => {
             0%   { transform: scaleY(0); opacity: 0; }
             60%  { transform: scaleY(1); opacity: 1; }
             100% { transform: scaleY(1); opacity: 0; }
-          }
-          /* Fallback para navegadores sin soporte dvh */
-          @supports not (height: 1dvh) {
-            .hero-section {
-              height: 100vh !important;
-            }
           }
         `}</style>
       </section>
