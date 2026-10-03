@@ -54,14 +54,14 @@ const Header = () => {
             margin: '0 auto',
             padding: '0 2.5rem',
             width: '100%',
-            display: 'grid',
-            gridTemplateColumns: '1fr auto 1fr',
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '1rem',
+            position: 'relative', /* Importante para el centrado absoluto del logo */
           }}>
 
             {/* LEFT — Hamburger (mobile) + Desktop Nav */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flex: 1 }}>
               {/* Mobile hamburger */}
               <button
                 className="mobile-only"
@@ -94,7 +94,16 @@ const Header = () => {
             </div>
 
             {/* CENTER — Logo SVG sin fondo */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+            <Link to="/" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textDecoration: 'none',
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 10,
+            }}>
               <svg
                 viewBox="0 0 220 60"
                 height="42"
@@ -125,7 +134,7 @@ const Header = () => {
             </Link>
 
             {/* RIGHT — Icons */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem', flex: 1 }}>
               <button style={{ color: 'inherit' }} aria-label="Buscar"><Search size={20} /></button>
 
               <Link to="/favoritos" style={{ position: 'relative', color: 'inherit' }} aria-label="Favoritos">

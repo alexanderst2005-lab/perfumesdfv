@@ -15,29 +15,33 @@ const Home = () => {
   return (
     <div>
 
-      {/* ════ 1. HERO ════ */}
-      {/*
-        LÓGICA DE ALTURA:
-        - marginTop: -106px sube la hero para que quede detrás del header fijo
-        - Para que el borde inferior = 100svh (borde visible), la altura debe ser 100svh + 106px
-        - 100svh en móvil excluye la UI del browser (barra URL), a diferencia de 100vh
+      {/* ════ 1. HERO — PANTALLA COMPLETA ════
+          
+          ARQUITECTURA:
+          • El header fijo (106px) es transparente y flota SOBRE la hero (no resta altura)
+          • main tiene marginTop:0 en home, así que la hero empieza en y=0 del documento
+          • height: 100svh = exactamente el viewport visible del móvil (excluye browser UI)
+          • La imagen cubre inset:0 incluyendo los 106px detrás del header transparente
+          • La siguiente sección empieza en y=100svh = fuera del viewport inicial ✓
       */}
-      <section style={{
-        height: `calc(100svh + ${TOTAL_HEADER}px)`,
-        minHeight: `calc(600px + ${TOTAL_HEADER}px)`,
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        marginTop: `-${TOTAL_HEADER}px`,
-        overflow: 'hidden',
-        textAlign: 'center',
-      }}>
-        {/* Animated Background — cubre absolutamente todo */}
+      <section
+        className="hero-section"
+        style={{
+          height: '100svh',
+          minHeight: '600px',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          overflow: 'hidden',
+          textAlign: 'center',
+        }}
+      >
+        {/* Imagen animada — cubre TODA la sección incluido el área del header */}
         <div style={{
           position: 'absolute',
-          top: 0, left: 0, right: 0, bottom: 0,
+          inset: 0,
           backgroundImage: 'url(/hero.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
@@ -46,40 +50,53 @@ const Home = () => {
           zIndex: 0,
         }} />
 
-        {/* Gradiente — más oscuro abajo para leer el texto */}
+        {/* Gradiente — sutil arriba, oscuro abajo para leer el texto */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.85) 100%)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.02) 30%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%)',
           zIndex: 1,
         }} />
 
-        {/* Contenido — pegado al fondo con paddingBottom para que el SCROLL no lo tape */}
+        {/* CONTENIDO — alineado al fondo, con paddingBottom para no tapar el SCROLL */}
         <div style={{
           position: 'relative',
           zIndex: 2,
           color: '#fff',
-          padding: '0 1.5rem',
-          paddingBottom: '5.5rem',
           width: '100%',
           maxWidth: '600px',
+          padding: '0 1.5rem',
+          paddingBottom: '5rem',
         }}>
-          <p style={{ fontSize: '0.7rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.65, marginBottom: '1rem', fontWeight: '400' }}>
+          <p style={{
+            fontSize: '0.65rem',
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+            opacity: 0.6,
+            marginBottom: '0.8rem',
+            fontWeight: '400',
+          }}>
             FRAGANCIAS DE LUJO
           </p>
 
           <h1 style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(2rem, 7vw, 4.5rem)',
+            fontSize: 'clamp(1.9rem, 6vw, 4.5rem)',
             fontWeight: '400',
             lineHeight: '1.15',
-            marginBottom: '1rem',
-            textShadow: '0 2px 30px rgba(0,0,0,0.5)',
+            marginBottom: '0.85rem',
+            textShadow: '0 2px 30px rgba(0,0,0,0.6)',
           }}>
             Tu esencia,<br/>tu identidad.
           </h1>
 
-          <p style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '2rem', fontWeight: '300', letterSpacing: '0.5px' }}>
+          <p style={{
+            fontSize: '0.9rem',
+            opacity: 0.7,
+            marginBottom: '2rem',
+            fontWeight: '300',
+            letterSpacing: '0.3px',
+          }}>
             Fragancias que cuentan tu historia.
           </p>
 
@@ -90,36 +107,35 @@ const Home = () => {
               padding: '0.85rem 2.5rem',
               border: '1px solid rgba(255,255,255,0.65)',
               color: '#fff',
-              fontSize: '0.75rem',
-              letterSpacing: '2px',
+              fontSize: '0.72rem',
+              letterSpacing: '2.5px',
               textTransform: 'uppercase',
-              backdropFilter: 'blur(6px)',
+              backdropFilter: 'blur(8px)',
               backgroundColor: 'rgba(255,255,255,0.08)',
-              transition: 'all 0.3s ease',
             }}
           >
             DESCUBRIR COLECCIÓN
           </Link>
         </div>
 
-        {/* SCROLL — absolutamente al fondo de la hero */}
+        {/* SCROLL — al borde inferior de la hero */}
         <div style={{
           position: 'absolute',
           bottom: '1rem',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 3,
-          color: 'rgba(255,255,255,0.55)',
+          color: 'rgba(255,255,255,0.5)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.35rem',
+          gap: '0.3rem',
         }}>
-          <span style={{ fontSize: '0.55rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
+          <span style={{ fontSize: '0.5rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
           <div style={{
             width: '1px',
-            height: '32px',
-            backgroundColor: 'rgba(255,255,255,0.35)',
+            height: '30px',
+            backgroundColor: 'rgba(255,255,255,0.3)',
             animation: 'scrollLine 2s ease-in-out infinite',
             transformOrigin: 'top',
           }} />
@@ -128,17 +144,19 @@ const Home = () => {
         <style>{`
           @keyframes kenBurns {
             0%   { transform: scale(1)    translate(0, 0); }
-            50%  { transform: scale(1.08) translate(-1%, 1%); }
-            100% { transform: scale(1.05) translate(1%, -1%); }
+            50%  { transform: scale(1.07) translate(-1%, 0.5%); }
+            100% { transform: scale(1.05) translate(0.5%, -0.5%); }
           }
           @keyframes scrollLine {
             0%   { transform: scaleY(0); opacity: 0; }
-            50%  { transform: scaleY(1); opacity: 1; }
+            60%  { transform: scaleY(1); opacity: 1; }
             100% { transform: scaleY(1); opacity: 0; }
           }
-          /* Fallback para browsers sin soporte de svh */
+          /* Fallback para navegadores sin soporte svh (iOS < 16, Android < 12) */
           @supports not (height: 1svh) {
-            .hero-section { height: calc(100vh + ${TOTAL_HEADER}px) !important; }
+            .hero-section {
+              height: 100vh !important;
+            }
           }
         `}</style>
       </section>
