@@ -391,9 +391,6 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
           {product.oldPrice && <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85rem' }}>${product.oldPrice.toLocaleString()}</span>}
           <span style={{ fontFamily: 'var(--font-sans)', fontSize: '1rem', color: '#000', fontWeight: '600' }}>${product.price.toLocaleString()}</span>
         </div>
-        <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.2rem' }}>
-          3 cuotas de <strong style={{ color: '#000' }}>${Math.ceil(product.price / 3).toLocaleString()}</strong> con <span style={{ color: '#00D1FF', fontWeight: 'bold' }}>Addi</span>
-        </div>
       </div>
     </div>
   </div>
