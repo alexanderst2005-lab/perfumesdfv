@@ -1,20 +1,20 @@
 export const products = [
   {
     id: '1',
-    name: 'Oud Wood Intense',
-    brand: 'Tom Ford',
+    name: 'Khamrah',
+    brand: 'Lattafa',
     category: 'Unisex',
-    family: 'Amaderado',
-    price: 350,
-    oldPrice: 400,
-    discount: 12.5,
-    sizes: ['50 ml', '100 ml'],
-    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=600&auto=format&fit=crop',
-    description: 'Una fragancia intensa y exótica que captura la esencia pura de la madera de oud.',
+    family: 'Oriental Vainilla',
+    price: 185000,
+    oldPrice: 220000,
+    discount: 15,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=600&auto=format&fit=crop',
+    description: 'Khamrah es una fragancia oriental amaderada y dulce que cautiva con sus ricas notas de praliné, vainilla y especias cálidas. Una verdadera joya de Lattafa que evoca lujo y sofisticación.',
     notes: {
-      top: 'Pimienta rosa, Cardamomo',
-      heart: 'Madera de Oud, Sándalo, Vetiver',
-      base: 'Haba tonka, Vainilla, Ámbar'
+      top: 'Canela, Nuez moscada, Bergamota',
+      heart: 'Dátiles, Praliné, Nardos, Mahonial',
+      base: 'Vainilla, Haba tonka, Madera de ámbar, Mirra'
     },
     concentration: 'Eau de Parfum',
     inStock: true,
@@ -23,18 +23,18 @@ export const products = [
   },
   {
     id: '2',
-    name: 'Baccarat Rouge 540',
-    brand: 'Maison Francis Kurkdjian',
-    category: 'Unisex',
-    family: 'Floral',
-    price: 450,
-    sizes: ['70 ml', '200 ml'],
-    image: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=600&auto=format&fit=crop',
-    description: 'Luminoso y sofisticado, Baccarat Rouge 540 se posa en la piel como un soplo floral y amaderado.',
+    name: 'Yara',
+    brand: 'Lattafa',
+    category: 'Mujer',
+    family: 'Floral Frutal',
+    price: 165000,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=600&auto=format&fit=crop',
+    description: 'Yara es una fragancia deliciosamente femenina, dulce y cremosa. Una explosión de fresas, orquídeas y vainilla suave que deja una estela encantadora e inolvidable.',
     notes: {
-      top: 'Jazmín, Azafrán',
-      heart: 'Madera de cedro',
-      base: 'Ámbar gris'
+      top: 'Heliotropo, Orquídea, Mandarina',
+      heart: 'Frutas tropicales, Acorde Gourmand',
+      base: 'Vainilla, Sándalo, Almizcle'
     },
     concentration: 'Eau de Parfum',
     inStock: true,
@@ -43,42 +43,42 @@ export const products = [
   },
   {
     id: '3',
-    name: 'Sauvage Elixir',
-    brand: 'Dior',
+    name: 'Club de Nuit Intense Man',
+    brand: 'Armaf',
     category: 'Hombre',
-    family: 'Fresco',
-    price: 180,
-    sizes: ['60 ml', '100 ml'],
+    family: 'Amaderado Especiado',
+    price: 210000,
+    sizes: ['105 ml', '200 ml'],
     image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=600&auto=format&fit=crop',
-    description: 'Una fragancia concentrada extraída de la frescura extrema con un corazón especiado cálido.',
+    description: 'Una fragancia masculina icónica, potente y ahumada. Abre con un estallido cítrico y se asienta en un corazón ahumado de abedul y pachulí, ideal para dejar huella.',
     notes: {
-      top: 'Pomelo, Especias',
-      heart: 'Lavanda',
-      base: 'Maderas ricas, Pachulí'
+      top: 'Limón, Piña, Bergamota, Grosellas negras, Manzana',
+      heart: 'Abedul, Jazmín, Rosa',
+      base: 'Almizcle, Ámbar gris, Pachulí, Vainilla'
     },
-    concentration: 'Elixir',
+    concentration: 'Eau de Toilette',
     inStock: true,
     isNew: false,
     isBestSeller: true
   },
   {
     id: '4',
-    name: 'Libre Intense',
-    brand: 'YSL',
-    category: 'Mujer',
-    family: 'Oriental',
-    price: 160,
-    oldPrice: 190,
-    discount: 15,
-    sizes: ['50 ml', '90 ml'],
-    image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=600&auto=format&fit=crop',
-    description: 'La fragancia de la libertad, audaz y floral, para la mujer que vive según sus propias reglas.',
+    name: 'Asad',
+    brand: 'Lattafa',
+    category: 'Hombre',
+    family: 'Oriental Especiado',
+    price: 155000,
+    oldPrice: 180000,
+    discount: 14,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=600&auto=format&fit=crop',
+    description: 'Lattafa Asad es una fragancia ambarina especiada con un carácter intenso, cálido y seductor. Perfecto para el hombre moderno que busca elegancia con un toque exótico.',
     notes: {
-      top: 'Mandarina, Lavanda',
-      heart: 'Jazmín, Orquídea',
-      base: 'Vainilla, Haba Tonka, Ámbar gris'
+      top: 'Pimienta negra, Piña, Tabaco',
+      heart: 'Café, Pachulí, Iris',
+      base: 'Ámbar, Vainilla, Maderas secas, Benjuí'
     },
-    concentration: 'Eau de Parfum Intense',
+    concentration: 'Eau de Parfum',
     inStock: true,
     isNew: true,
     isBestSeller: false
@@ -86,5 +86,5 @@ export const products = [
 ];
 
 export const brands = [
-  'Dior', 'Chanel', 'Tom Ford', 'YSL', 'Maison Francis Kurkdjian', 'Creed', 'Byredo', 'Jo Malone'
+  'Lattafa', 'Armaf', 'Maison Alhambra', 'Afnan', 'Rasasi', 'Swiss Arabian', 'Fragrance World'
 ];
