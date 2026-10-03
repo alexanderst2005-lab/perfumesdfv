@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { useShop } from '../../context/ShopContext';
-import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X } from 'lucide-react';
 
 const InventoryModule = () => {
   const { products, isLoadingProducts } = useShop();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   
-  // Placeholder data for the form. We'll wire up the save logic soon.
   const [formData, setFormData] = useState({
     id: '', name: '', brand: '', category: 'Mujer', family: '', 
     price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
     description: '', concentration: 'Eau de Parfum', 
     stockCount: 10, inStock: true, active: true, image: ''
   });
+
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   const openCreateModal = () => {
     setEditingProduct(null);
@@ -23,6 +26,8 @@ const InventoryModule = () => {
       description: '', concentration: 'Eau de Parfum', 
       stockCount: 10, inStock: true, active: true, image: ''
     });
+    setImageFile(null);
+    setImagePreview('');
     setIsModalOpen(true);
   };
 
@@ -35,7 +40,75 @@ const InventoryModule = () => {
       concentration: p.concentration || '', stockCount: p.stockCount || 10, 
       inStock: p.inStock, active: p.active !== false, image: p.image || ''
     });
+    setImageFile(null);
+    setImagePreview(p.image || '');
     setIsModalOpen(true);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      let finalImageUrl = formData.image;
+
+      // Si subió una imagen nueva
+      if (imageFile && imagePreview) {
+        const uploadRes = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imagePreview })
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadData.success) {
+          finalImageUrl = uploadData.url;
+        } else {
+          alert('Error subiendo imagen: ' + uploadData.error);
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      const payload = {
+        ...formData,
+        price: parseInt(formData.price),
+        oldPrice: formData.oldPrice ? parseInt(formData.oldPrice) : null,
+        discount: formData.discount ? parseInt(formData.discount) : null,
+        stockCount: parseInt(formData.stockCount),
+        sizes: JSON.parse(formData.sizes || '[]'),
+        image: finalImageUrl
+      };
+
+      const res = await fetch('/api/admin/products', {
+        method: editingProduct ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('Producto guardado correctamente. Recarga la página para ver los cambios.');
+        setIsModalOpen(false);
+      } else {
+        alert('Error: ' + data.error);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert('Error al guardar el producto');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -93,7 +166,12 @@ const InventoryModule = () => {
                   <button onClick={() => openEditModal(p)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '1rem' }}>
                     <Edit size={18} />
                   </button>
-                  <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                  <button onClick={async () => {
+                    if(window.confirm('¿Desactivar producto?')) {
+                      await fetch('/api/admin/products', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: p.id}) });
+                      alert('Actualiza la página');
+                    }
+                  }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                     <Trash2 size={18} />
                   </button>
                 </td>
@@ -109,6 +187,19 @@ const InventoryModule = () => {
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>{editingProduct ? 'Editar Producto' : 'Crear Producto'}</h2>
             
             <div style={{ display: 'grid', gap: '1rem' }}>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ width: '80px', height: '80px', backgroundColor: '#f3f4f6', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {imagePreview ? <img src={imagePreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <ImageIcon color="#9ca3af" />}
+                </div>
+                <div>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <Upload size={16} /> Subir Imagen
+                    <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                  </label>
+                </div>
+              </div>
+
               <input type="text" placeholder="ID único (ej. p-15)" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%' }} disabled={!!editingProduct} />
               <input type="text" placeholder="Nombre del perfume" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%' }} />
               <div style={{ display: 'flex', gap: '1rem' }}>
@@ -125,13 +216,15 @@ const InventoryModule = () => {
               </div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
                 <input type="checkbox" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} />
-                Producto Activo (Visible en la tienda)
+                Producto Activo (Visible en la tienda pública)
               </label>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
-              <button onClick={() => setIsModalOpen(false)} style={{ padding: '0.75rem 1.5rem', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button>
-              <button style={{ padding: '0.75rem 1.5rem', backgroundColor: '#000', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Guardar</button>
+              <button onClick={() => setIsModalOpen(false)} style={{ padding: '0.75rem 1.5rem', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '8px', cursor: 'pointer' }} disabled={isSaving}>Cancelar</button>
+              <button onClick={handleSave} disabled={isSaving} style={{ padding: '0.75rem 1.5rem', backgroundColor: '#000', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Save size={18} /> {isSaving ? 'Guardando...' : 'Guardar Producto'}
+              </button>
             </div>
           </div>
         </div>
