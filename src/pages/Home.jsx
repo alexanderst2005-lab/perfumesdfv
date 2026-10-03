@@ -195,42 +195,41 @@ const Home = () => {
       </section>
 
       {/* ════ 3. LA EXPERIENCIA DFV ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-black)', color: 'var(--color-cream)', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="container" style={{ textAlign: 'center', maxWidth: '1000px' }}>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 5vw, 2.8rem)', fontWeight: '400', marginBottom: '1rem', letterSpacing: '1px' }}>
-            Encuentra tu perfume ideal
-          </h2>
-          <div style={{ width: '40px', height: '1px', backgroundColor: 'var(--color-gold)', margin: '0 auto 1.5rem', opacity: 0.6 }} />
-          <p style={{ fontSize: '0.95rem', opacity: 0.75, marginBottom: '4rem', letterSpacing: '0.8px', fontWeight: '300', textTransform: 'uppercase' }}>
-            Una fragancia para cada personalidad, momento y ocasión.
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem 1.5rem', alignItems: 'start' }}>
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+        <div className="container" style={{ maxWidth: '800px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4.5rem 2rem', alignItems: 'start' }}>
             {[
               {
-                title: 'Fragancias originales',
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="10" width="12" height="11" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><line x1="12" y1="7" x2="12" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+                title: 'Fragancias Originales',
+                desc: '100% auténticas y garantizadas para tu tranquilidad.',
+                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="10" width="12" height="11" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><line x1="12" y1="7" x2="12" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
               },
               {
-                title: 'Envíos a todo el país',
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="8" width="15" height="10" rx="1"/><path d="M17 8h3l2 3v7h-5"/><circle cx="6" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><line x1="2" y1="13" x2="17" y2="13"/></svg>
+                title: 'Atención por WhatsApp',
+                desc: 'Te brindamos acompañamiento constante de forma inmediata.',
+                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /><path d="M9.5 9c-.3-.2-.5-.3-.8-.3s-.6.2-.8.5c-.3.4-.6 1-.6 1.4s.3 1.1.9 1.8c1.3 1.6 2.8 2.6 4.6 3.1.6.2 1.3.2 1.7-.1.4-.3.6-.8.8-1.2.1-.3.1-.7.1-.8-.2-.1-.8-.4-1.3-.6-.4-.2-.6-.2-.8-.1-.1.1-.3.4-.5.6-.2.2-.4.2-.6.1-.8-.4-1.6-1-2.2-1.7-.2-.2-.2-.4-.1-.6.1-.1.2-.2.3-.4.1-.1.1-.3 0-.5-.2-.4-.6-1.2-.7-1.3z" /></svg>
               },
               {
-                title: 'Atención personalizada',
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><circle cx="12" cy="12" r="3" strokeWidth="0.5" fill="none"/></svg>
+                title: 'Envíos a Todo el País',
+                desc: 'Envíos seguros a nivel nacional con opción de pago contra entrega.',
+                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="8" width="15" height="10" rx="1"/><path d="M17 8h3l2 3v7h-5"/><circle cx="6" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><line x1="2" y1="13" x2="17" y2="13"/></svg>
               },
               {
-                title: 'Asesoría para elegir tu fragancia',
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z"/><circle cx="12" cy="12" r="1.5" fill="var(--color-gold)"/></svg>
+                title: 'Garantía y Asesoría',
+                desc: 'Te ayudamos a descubrir tu aroma perfecto, pensado para ti.',
+                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z"/></svg>
               }
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <div style={{ marginBottom: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(185,154,91,0.05)', border: '1px solid rgba(185,154,91,0.15)' }}>
+                <div style={{ marginBottom: '1.2rem', color: '#444' }}>
                   {item.icon}
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: '400', letterSpacing: '0.5px', color: 'var(--color-white)', lineHeight: '1.4', maxWidth: '180px' }}>
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', letterSpacing: '0.5px', color: '#333', marginBottom: '0.6rem' }}>
                   {item.title}
                 </h3>
+                <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#777', lineHeight: '1.6', maxWidth: '300px' }}>
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
