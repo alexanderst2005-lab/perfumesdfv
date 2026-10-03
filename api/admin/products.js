@@ -10,11 +10,11 @@ export default async function handler(req, res) {
       const result = await sql`
         INSERT INTO products (
           id, name, brand, category, family, price, old_price, discount, sizes,
-          image, description, notes, concentration, in_stock, stock_count, is_new, is_best_seller, active
+          image, images, description, notes, concentration, in_stock, stock_count, is_new, is_best_seller, active
         ) VALUES (
           ${p.id}, ${p.name}, ${p.brand}, ${p.category}, ${p.family}, ${p.price},
           ${p.oldPrice || null}, ${p.discount || null}, ${JSON.stringify(p.sizes || [])},
-          ${p.image}, ${p.description}, ${JSON.stringify(p.notes || {})}, ${p.concentration},
+          ${p.image}, ${JSON.stringify(p.images || [])}, ${p.description}, ${JSON.stringify(p.notes || {})}, ${p.concentration},
           ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.active}
         ) RETURNING *
       `;
@@ -42,6 +42,7 @@ export default async function handler(req, res) {
           discount = ${p.discount || null},
           sizes = ${JSON.stringify(p.sizes || [])},
           image = ${p.image},
+          images = ${JSON.stringify(p.images || [])},
           description = ${p.description},
           notes = ${JSON.stringify(p.notes || {})},
           concentration = ${p.concentration},

@@ -6,6 +6,8 @@ import OrdersModule from '../components/admin/OrdersModule';
 import SettingsModule from '../components/admin/SettingsModule';
 import CampaignsModule from '../components/admin/CampaignsModule';
 import FaqModule from '../components/admin/FaqModule';
+import CustomersModule from '../components/admin/CustomersModule';
+import StoresModule from '../components/admin/StoresModule';
 
 const AdminDashboard = () => {
   const { products, isLoadingProducts } = useShop();
@@ -94,11 +96,13 @@ const AdminDashboard = () => {
 
         {activeTab === 'inventory' && <InventoryModule />}
         {activeTab === 'orders' && <OrdersModule />}
+        {activeTab === 'customers' && <CustomersModule />}
         {activeTab === 'campaigns' && <CampaignsModule />}
         {activeTab === 'faq' && <FaqModule />}
+        {activeTab === 'stores' && <StoresModule />}
         {activeTab === 'settings' && <SettingsModule />}
 
-        {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'campaigns' && activeTab !== 'faq' && activeTab !== 'settings' && (
+        {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'customers' && activeTab !== 'campaigns' && activeTab !== 'faq' && activeTab !== 'stores' && activeTab !== 'settings' && (
           <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem' }}>Módulo en Construcción (Fase 3)</h2>
             <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>

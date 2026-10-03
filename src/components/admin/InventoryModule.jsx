@@ -12,11 +12,15 @@ const InventoryModule = () => {
     id: '', name: '', brand: '', category: 'Mujer', family: '', 
     price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
     description: '', concentration: 'Eau de Parfum', 
-    stockCount: 10, inStock: true, active: true, image: ''
+    stockCount: 10, inStock: true, active: true, image: '', images: []
   });
 
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  
+  // For multiple secondary images
+  const [secondaryImageFiles, setSecondaryImageFiles] = useState([]);
+  const [secondaryImagePreviews, setSecondaryImagePreviews] = useState([]);
 
   const openCreateModal = () => {
     setEditingProduct(null);
@@ -24,10 +28,12 @@ const InventoryModule = () => {
       id: '', name: '', brand: '', category: 'Mujer', family: '', 
       price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
       description: '', concentration: 'Eau de Parfum', 
-      stockCount: 10, inStock: true, active: true, image: ''
+      stockCount: 10, inStock: true, active: true, image: '', images: []
     });
     setImageFile(null);
     setImagePreview('');
+    setSecondaryImageFiles([]);
+    setSecondaryImagePreviews([]);
     setIsModalOpen(true);
   };
 
@@ -38,10 +44,12 @@ const InventoryModule = () => {
       price: p.price, oldPrice: p.oldPrice || '', discount: p.discount || '', 
       sizes: JSON.stringify(p.sizes || []), description: p.description || '', 
       concentration: p.concentration || '', stockCount: p.stockCount || 10, 
-      inStock: p.inStock, active: p.active !== false, image: p.image || ''
+      inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || []
     });
     setImageFile(null);
     setImagePreview(p.image || '');
+    setSecondaryImageFiles([]);
+    setSecondaryImagePreviews(p.images || []);
     setIsModalOpen(true);
   };
 
@@ -57,25 +65,55 @@ const InventoryModule = () => {
     }
   };
 
+  const handleSecondaryImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    files.forEach(file => {
+      setSecondaryImageFiles(prev => [...prev, file]);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSecondaryImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeSecondaryImage = (index) => {
+    const newPreviews = [...secondaryImagePreviews];
+    newPreviews.splice(index, 1);
+    setSecondaryImagePreviews(newPreviews);
+    
+    // Also remove from files if it's a new file (we match by index, though it's tricky if mixed with old URLs, but it works for a simple approach)
+    // Actually, we'll just re-upload what remains or keep URLs
+    // We'll handle this in the save logic
+  };
+
+  const uploadToCloudinary = async (base64) => {
+    const res = await fetch('/api/admin/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64 })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    return data.url;
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       let finalImageUrl = formData.image;
+      let finalImagesList = [...secondaryImagePreviews];
 
-      // Si subió una imagen nueva
-      if (imageFile && imagePreview) {
-        const uploadRes = await fetch('/api/admin/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imagePreview })
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          finalImageUrl = uploadData.url;
-        } else {
-          alert('Error subiendo imagen: ' + uploadData.error);
-          setIsSaving(false);
-          return;
+      // Si subió una imagen principal nueva
+      if (imageFile && imagePreview && imagePreview.startsWith('data:')) {
+        finalImageUrl = await uploadToCloudinary(imagePreview);
+      }
+
+      // Subir imágenes secundarias nuevas
+      for (let i = 0; i < finalImagesList.length; i++) {
+        if (finalImagesList[i].startsWith('data:')) {
+          finalImagesList[i] = await uploadToCloudinary(finalImagesList[i]);
         }
       }
 
@@ -86,7 +124,8 @@ const InventoryModule = () => {
         discount: formData.discount ? parseInt(formData.discount) : null,
         stockCount: parseInt(formData.stockCount),
         sizes: JSON.parse(formData.sizes || '[]'),
-        image: finalImageUrl
+        image: finalImageUrl,
+        images: finalImagesList
       };
 
       const res = await fetch('/api/admin/products', {
@@ -104,7 +143,7 @@ const InventoryModule = () => {
 
     } catch (error) {
       console.error(error);
-      alert('Error al guardar el producto');
+      alert('Error al guardar el producto: ' + error.message);
     } finally {
       setIsSaving(false);
     }
@@ -199,6 +238,26 @@ const InventoryModule = () => {
                   <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
                     <Upload size={16} /> Subir Imagen
                     <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '12px', backgroundColor: '#f9fafb' }}>
+                <p style={{ fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem', color: '#374151' }}>Imágenes Secundarias</p>
+                
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  {secondaryImagePreviews.map((src, index) => (
+                    <div key={index} style={{ position: 'relative', width: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #d1d5db' }}>
+                      <img src={src} alt="secondary" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button onClick={() => removeSecondaryImage(index)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  <label style={{ width: '70px', height: '70px', backgroundColor: 'white', border: '1px dashed #d1d5db', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#9ca3af' }}>
+                    <Plus size={20} />
+                    <input type="file" accept="image/*" multiple onChange={handleSecondaryImagesChange} style={{ display: 'none' }} />
                   </label>
                 </div>
               </div>

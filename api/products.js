@@ -23,6 +23,7 @@ export default async function handler(req, res) {
       discount: row.discount,
       sizes: row.sizes,
       image: row.image,
+      images: row.images || [],
       description: row.description,
       notes: row.notes,
       concentration: row.concentration,
