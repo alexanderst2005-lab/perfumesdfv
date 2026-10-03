@@ -7,46 +7,46 @@ import { useShop } from '../context/ShopContext';
 const HERO_SLIDES = [
   {
     id: 1,
-    campaign: 'THE SIGNATURE',
-    title: 'LA FRAGANCIA QUE TE DEFINE',
-    subtitle: 'Descubre nuestra selección de fragancias.',
-    buttonText: 'DESCUBRIR PERFUMES',
+    campaign: 'ROYAL SAPPHIRE',
+    title: 'LUJO EN TUS MANOS',
+    subtitle: 'Descubre el poder de una joya embotellada.',
+    buttonText: 'DESCUBRIR',
     buttonLink: '/tienda',
-    imageDesktop: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=1920&auto=format&fit=crop',
-    imageMobile: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=800&auto=format&fit=crop',
+    imageDesktop: '/hero_campaign_1.png',
+    imageMobile: '/hero_campaign_1.png',
     alignment: 'center'
   },
   {
     id: 2,
-    campaign: 'MEN',
-    title: 'CARÁCTER EN CADA NOTA',
-    subtitle: 'Explora fragancias diseñadas para dejar huella.',
+    campaign: 'BHARARA COLLECTION',
+    title: 'LA DUPLA PERFECTA',
+    subtitle: 'Fragancias para destacar en cualquier ocasión.',
     buttonText: 'VER COLECCIÓN',
-    buttonLink: '/tienda?cat=Hombre',
-    imageDesktop: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1920&auto=format&fit=crop',
-    imageMobile: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=800&auto=format&fit=crop',
-    alignment: 'left'
+    buttonLink: '/tienda',
+    imageDesktop: '/hero_campaign_2.png',
+    imageMobile: '/hero_campaign_2.png',
+    alignment: 'center'
   },
   {
     id: 3,
-    campaign: 'WOMEN',
-    title: 'TU AROMA, TU IDENTIDAD',
-    subtitle: 'Encuentra una fragancia que hable de ti.',
-    buttonText: 'DESCUBRIR',
+    campaign: 'LATTAFA PARA ELLA',
+    title: 'ESENCIA FEMENINA',
+    subtitle: 'Aromas dulces y florales que enamoran.',
+    buttonText: 'VER CATÁLOGO',
     buttonLink: '/tienda?cat=Mujer',
-    imageDesktop: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1920&auto=format&fit=crop',
-    imageMobile: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop',
-    alignment: 'right'
+    imageDesktop: '/hero_campaign_3.png',
+    imageMobile: '/hero_campaign_3.png',
+    alignment: 'center'
   },
   {
     id: 4,
-    campaign: 'ARABIAN COLLECTION',
-    title: 'AROMAS QUE IMPACTAN',
-    subtitle: 'Descubre nuevas experiencias olfativas.',
+    campaign: "BADE'E AL OUD",
+    title: 'MISTERIO ÁRABE',
+    subtitle: 'Notas intensas y maderas exóticas.',
     buttonText: 'EXPLORAR',
     buttonLink: '/tienda',
-    imageDesktop: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?q=80&w=1920&auto=format&fit=crop',
-    imageMobile: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?q=80&w=800&auto=format&fit=crop',
+    imageDesktop: '/hero_campaign_4.png',
+    imageMobile: '/hero_campaign_4.png',
     alignment: 'center'
   }
 ];
