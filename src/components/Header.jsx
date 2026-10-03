@@ -34,8 +34,8 @@ const Header = () => {
 
   return (
     <>
-      {/* ── Container (fixed, stacks AnnouncementBar + header) ── */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
+      {/* ── Container (absolute, para que suba y desaparezca con el scroll) ── */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1000 }}>
         <AnnouncementBar transparent={!solid} />
 
         <header style={{
