@@ -165,14 +165,22 @@ const Home = () => {
       {/* ════ 2. CATEGORÍAS ════ */}
       <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Por género y ocasión</p>
-            <h2 className="title-md">Descubre tu fragancia</h2>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <p className="eyebrow" style={{ marginBottom: '0.5rem', opacity: 0.6 }}>Por género y ocasión</p>
+            <h2 style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '1.8rem',
+              fontWeight: '400',
+              color: '#222',
+              letterSpacing: '0.5px'
+            }}>
+              Descubre tu fragancia
+            </h2>
           </div>
 
-          <div className="no-scrollbar" style={{ display: 'flex', gap: '1rem', paddingBottom: '0.5rem' }}>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '1rem', paddingBottom: '1rem' }}>
             {[
-              { label: 'Hombre', cat: 'Hombre', img: 'https://images.unsplash.com/photo-1547887538-047f814db358?q=80&w=400&auto=format&fit=crop' },
+              { label: 'Hombre', cat: 'Hombre', img: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=400&auto=format&fit=crop' },
               { label: 'Mujer',  cat: 'Mujer',  img: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=400&auto=format&fit=crop' },
               { label: 'Unisex', cat: 'Unisex', img: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=400&auto=format&fit=crop' },
               { label: 'Sets',   cat: 'Sets',   img: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=400&auto=format&fit=crop' },
@@ -181,13 +189,21 @@ const Home = () => {
               <Link
                 key={c.label}
                 to={`/tienda?category=${c.cat}`}
-                style={{ flex: '0 0 auto', minWidth: '140px', position: 'relative', overflow: 'hidden', height: '180px', borderRadius: '4px', background: '#111' }}
+                style={{
+                  flex: '0 0 auto',
+                  minWidth: '150px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  height: '200px',
+                  borderRadius: '2px',
+                  background: '#000'
+                }}
               >
-                <img src={c.img} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6, transition: 'transform 0.4s ease' }}
-                  onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
+                <img src={c.img} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65, transition: 'transform 0.5s ease' }}
+                  onMouseEnter={e => e.target.style.transform = 'scale(1.08)'}
                   onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                 />
-                <span style={{ position: 'absolute', bottom: '12px', left: '12px', color: '#fff', fontSize: '0.8rem', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: '500' }}>
+                <span style={{ position: 'absolute', bottom: '15px', left: '15px', color: '#fff', fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '400' }}>
                   {c.label}
                 </span>
               </Link>
