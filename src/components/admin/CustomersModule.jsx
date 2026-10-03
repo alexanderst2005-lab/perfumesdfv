@@ -6,10 +6,8 @@ const CustomersModule = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   React.useEffect(() => {
-    setCustomers([
-      { id: 1, name: 'Juan Pérez', email: 'juan@example.com', phone: '3001234567', total_spent: 145000, orders_count: 2 },
-      { id: 2, name: 'María Gómez', email: 'maria@example.com', phone: '3109876543', total_spent: 210000, orders_count: 1 }
-    ]);
+    // Aquí se cargarán los clientes desde la base de datos
+    setCustomers([]);
     setIsLoading(false);
   }, []);
 

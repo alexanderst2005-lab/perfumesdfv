@@ -6,10 +6,8 @@ const FaqModule = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   React.useEffect(() => {
-    setFaqs([
-      { id: 1, question: '¿Cuánto cuesta el envío?', answer: 'El envío es gratis por compras superiores a...', active: true },
-      { id: 2, question: '¿Son originales?', answer: 'Sí, 100% originales garantizados.', active: true }
-    ]);
+    // Se cargarán desde la BD en la Fase 4
+    setFaqs([]);
     setIsLoading(false);
   }, []);
 

@@ -226,19 +226,34 @@ const InventoryModule = () => {
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>{editingProduct ? 'Editar Producto' : 'Crear Producto'}</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem' }}>{editingProduct ? 'Editar Producto' : 'Crear Producto'}</h2>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem' }}>
+                <X size={24} color="#6b7280" />
+              </button>
+            </div>
             
             <div style={{ display: 'grid', gap: '1rem' }}>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{ width: '80px', height: '80px', backgroundColor: '#f3f4f6', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {imagePreview ? <img src={imagePreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <ImageIcon color="#9ca3af" />}
+                <div style={{ width: '80px', height: '80px', backgroundColor: '#f3f4f6', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #d1d5db' }}>
+                  {imagePreview ? (
+                    <img src={imagePreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : <ImageIcon color="#9ca3af" />}
                 </div>
                 <div>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
-                    <Upload size={16} /> Subir Imagen
-                    <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
-                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                      <Upload size={16} /> Subir Imagen
+                      <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                    </label>
+                    {imagePreview && (
+                      <button onClick={(e) => { e.preventDefault(); setImagePreview(''); setImageFile(null); setFormData({...formData, image: ''}); }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                        <Trash2 size={16} /> Eliminar
+                      </button>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>Imagen Principal</p>
                 </div>
               </div>
 

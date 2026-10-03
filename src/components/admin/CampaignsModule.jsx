@@ -5,12 +5,9 @@ const CampaignsModule = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mocked state until API is wired up
   React.useEffect(() => {
-    setCampaigns([
-      { id: 1, title: 'ROYAL SAPPHIRE', subtitle: 'LUJO EN TUS MANOS', active: true, image_desktop: '' },
-      { id: 2, title: 'OFERTA VERANO', subtitle: '30% DE DESCUENTO', active: false, image_desktop: '' }
-    ]);
+    // Se cargarán desde la BD en la Fase 4
+    setCampaigns([]);
     setIsLoading(false);
   }, []);
 

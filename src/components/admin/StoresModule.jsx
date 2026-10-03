@@ -6,9 +6,8 @@ const StoresModule = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   React.useEffect(() => {
-    setStores([
-      { id: 1, name: 'Sede Principal', address: 'Calle 123 #45-67, Ciudad', phone: '300 123 4567', active: true }
-    ]);
+    // Aquí se cargarán las sedes desde la base de datos
+    setStores([]);
     setIsLoading(false);
   }, []);
 
