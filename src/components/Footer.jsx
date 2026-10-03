@@ -73,24 +73,36 @@ const Footer = () => (
     <style>{`
       @media (max-width: 768px) {
         footer {
-          padding: 3rem 0 2rem !important;
+          padding: 3rem 0 6rem !important; /* Espacio extra para el botón flotante de WA */
         }
         footer > div > div:first-child {
           grid-template-columns: 1fr 1fr !important;
-          gap: 2rem !important;
-          margin-bottom: 2.5rem !important;
+          gap: 2.5rem 1rem !important;
+          margin-bottom: 3rem !important;
         }
         footer > div > div:first-child > div:first-child {
           grid-column: 1 / -1;
+          margin-bottom: 1rem;
         }
         footer > div > div:first-child > div:nth-child(4) {
           grid-column: 1 / -1;
         }
         footer h4 {
-          margin-bottom: 0.8rem !important;
+          margin-bottom: 1rem !important;
+          font-size: 0.8rem !important;
         }
         footer ul {
-          gap: 0.5rem !important;
+          gap: 0.8rem !important;
+        }
+        footer > div > div:last-child {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.2rem;
+        }
+        footer > div > div:last-child > div {
+          display: flex;
+          flex-direction: column;
+          gap: 0.8rem;
         }
       }
     `}</style>

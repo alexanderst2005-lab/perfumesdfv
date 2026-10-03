@@ -311,13 +311,13 @@ const Home = () => {
       </section>
 
       {/* ════ PREGUNTAS FRECUENTES ════ */}
-      <section className="section-padding" style={{ backgroundColor: '#fff' }}>
-        <div className="container" style={{ maxWidth: '700px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.8rem' }}>
+      <section style={{ backgroundColor: '#fff', padding: '3rem 0 2rem' }}>
+        <div className="container" style={{ maxWidth: '600px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
               Preguntas Frecuentes
             </h2>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#666', lineHeight: '1.6', fontWeight: '300' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#666', lineHeight: '1.5', fontWeight: '300' }}>
               Encuentra respuestas a las preguntas más comunes sobre nuestros perfumes, compras y atención.
             </p>
           </div>
@@ -352,13 +352,13 @@ const Home = () => {
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
                     style={{
                       width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      background: 'none', border: 'none', padding: '1.5rem 0', cursor: 'pointer', textAlign: 'left',
-                      fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: '#111'
+                      background: 'none', border: 'none', padding: '1.2rem 0', cursor: 'pointer', textAlign: 'left',
+                      fontFamily: 'var(--font-serif)', fontSize: '0.95rem', color: '#111'
                     }}
                   >
                     <span style={{ paddingRight: '1rem' }}>{faq.q}</span>
                     <span style={{ color: '#000', transition: 'transform 0.3s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
-                      {isOpen ? <Minus size={18} strokeWidth={1.5} /> : <Plus size={18} strokeWidth={1.5} />}
+                      {isOpen ? <Minus size={16} strokeWidth={1.5} /> : <Plus size={16} strokeWidth={1.5} />}
                     </span>
                   </button>
                   <div
@@ -369,7 +369,7 @@ const Home = () => {
                       opacity: isOpen ? 1 : 0
                     }}
                   >
-                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#666', lineHeight: '1.7', paddingBottom: '1.5rem' }}>
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#666', lineHeight: '1.6', paddingBottom: '1.2rem' }}>
                       {faq.a}
                     </p>
                   </div>
@@ -378,14 +378,14 @@ const Home = () => {
             })}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '3.5rem' }}>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.85rem', color: '#888', marginBottom: '0.8rem', letterSpacing: '1px' }}>¿NECESITAS MÁS AYUDA?</p>
+          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.6rem', letterSpacing: '1px' }}>¿NECESITAS MÁS AYUDA?</p>
             <a 
               href="https://wa.me/573000000000" 
               target="_blank" 
               rel="noreferrer"
               style={{
-                display: 'inline-block', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
+                display: 'inline-block', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
               }}
               onMouseEnter={e => e.target.style.opacity = 0.6}
               onMouseLeave={e => e.target.style.opacity = 1}
@@ -397,176 +397,51 @@ const Home = () => {
       </section>
 
       {/* ════ TRAYECTORIA DE LA MARCA ════ */}
-      <section style={{ backgroundColor: '#F9F8F6', padding: '4rem 0', borderTop: '1px solid #EAE8E4', borderBottom: '1px solid #EAE8E4' }}>
+      <section style={{ backgroundColor: '#F9F8F6', padding: '3rem 0', borderTop: '1px solid #EAE8E4' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '3px', color: '#888', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', letterSpacing: '3px', color: '#888', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
             DESDE 1992
           </p>
-          <div style={{ width: '1px', height: '30px', backgroundColor: '#D5D1C8', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: '#111', letterSpacing: '1px', marginBottom: '1rem' }}>
+          <div style={{ width: '1px', height: '20px', backgroundColor: '#D5D1C8', margin: '0 auto 1.2rem' }} />
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', color: '#111', letterSpacing: '1px', marginBottom: '0.8rem' }}>
             MÁS DE 30 AÑOS DE TRAYECTORIA
           </h2>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', color: '#666', fontStyle: 'italic' }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', color: '#666', fontStyle: 'italic' }}>
             Perfumes originales e importados.
           </p>
         </div>
       </section>
 
-      {/* ════ 3. LA EXPERIENCIA DFV ════ */}
-      <section className="section-padding">
-        <div className="container" style={{ maxWidth: '800px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4.5rem 2rem', alignItems: 'start' }}>
-            {[
-              {
-                title: 'Fragancias Originales',
-                desc: '100% auténticas y garantizadas para tu tranquilidad.',
-                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="10" width="12" height="11" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><line x1="12" y1="7" x2="12" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
-              },
-              {
-                title: 'Atención por WhatsApp',
-                desc: 'Te brindamos acompañamiento constante de forma inmediata.',
-                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /><path d="M9.5 9c-.3-.2-.5-.3-.8-.3s-.6.2-.8.5c-.3.4-.6 1-.6 1.4s.3 1.1.9 1.8c1.3 1.6 2.8 2.6 4.6 3.1.6.2 1.3.2 1.7-.1.4-.3.6-.8.8-1.2.1-.3.1-.7.1-.8-.2-.1-.8-.4-1.3-.6-.4-.2-.6-.2-.8-.1-.1.1-.3.4-.5.6-.2.2-.4.2-.6.1-.8-.4-1.6-1-2.2-1.7-.2-.2-.2-.4-.1-.6.1-.1.2-.2.3-.4.1-.1.1-.3 0-.5-.2-.4-.6-1.2-.7-1.3z" /></svg>
-              },
-              {
-                title: 'Envíos a Todo el País',
-                desc: 'Envíos seguros a nivel nacional con opción de pago contra entrega.',
-                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="8" width="15" height="10" rx="1"/><path d="M17 8h3l2 3v7h-5"/><circle cx="6" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><line x1="2" y1="13" x2="17" y2="13"/></svg>
-              },
-              {
-                title: 'Garantía y Asesoría',
-                desc: 'Te ayudamos a descubrir tu aroma perfecto, pensado para ti.',
-                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z"/></svg>
-              }
-            ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <div style={{ marginBottom: '1.2rem', color: '#444' }}>
-                  {item.icon}
-                </div>
-                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', letterSpacing: '0.5px', color: '#333', marginBottom: '0.6rem' }}>
-                  {item.title}
-                </h3>
-                <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#777', lineHeight: '1.6', maxWidth: '300px' }}>
-                  {item.desc}
-                </p>
-              </div>
-            ))}
+      {/* ════ MÉTODOS DE PAGO Y ALIADOS ════ */}
+      <section style={{ padding: '2rem 0', borderTop: '1px solid #EAE8E4', backgroundColor: '#fff' }}>
+        <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div className="payment-allies-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '2rem', opacity: 0.85 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888' }}>
+                MÉTODOS DE PAGO
+              </span>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '1px', color: '#444' }}>TRANSFERENCIA</span>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '1px', color: '#444' }}>EFECTIVO</span>
+            </div>
+            
+            <div style={{ width: '1px', height: '15px', backgroundColor: '#D5D1C8', display: 'inline-block' }} className="pa-divider" />
+            
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888' }}>
+                NUESTROS ALIADOS
+              </span>
+              <span style={{ fontSize: '1rem', fontWeight: '700', fontFamily: 'var(--font-sans)', letterSpacing: '-0.8px', color: '#111' }}>addi</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: '600', fontFamily: 'var(--font-sans)', letterSpacing: '-0.3px', color: '#111' }}><span style={{ fontWeight: '400' }}>siste</span>crédito</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: '800', fontFamily: 'var(--font-sans)', letterSpacing: '-0.5px', color: '#111' }}>bold.</span>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* ════ 5. SECCIÓN DE ATENCIÓN / TIENDA ════ */}
-      <section className="section-padding">
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
-              Nuestras Sedes
-            </h2>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#777', letterSpacing: '0.5px' }}>
-              Visítanos y encuentra tu fragancia ideal.
-            </p>
-          </div>
-
-          <div className="sedes-container no-scrollbar">
-            {[
-              {
-                name: 'Sede Palmira',
-                address: 'Calle 31 #27-44, Palmira',
-                hours: 'L–V: 9 AM – 7 PM  |  S: 9 AM – 7 PM',
-                img: 'https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=700&auto=format&fit=crop',
-                maps: '#',
-                wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Sede%20Palmira',
-              },
-              {
-                name: 'C.C. Llanogrande',
-                address: 'Centro Comercial Llanogrande',
-                hours: 'L–J: 10:30 AM – 8 PM  |  V–S: 10:30 AM – 8:30 PM  |  D–F: 11 AM – 7:30 PM',
-                img: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=700&auto=format&fit=crop',
-                maps: '#',
-                wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Llanogrande',
-              },
-            ].map(s => (
-              <div key={s.name} className="sede-card" style={{ border: '1px solid rgba(0,0,0,0.06)', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ aspectRatio: '16/9', overflow: 'hidden' }}>
-                  <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{ padding: '1.5rem' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem', color: '#222' }}>{s.name}</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#555', marginBottom: '0.2rem', letterSpacing: '0.5px' }}>{s.address}</p>
-                  <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.5rem', lineHeight: '1.6' }}>{s.hours}</p>
-                  <div style={{ display: 'flex', gap: '0.8rem' }}>
-                    <a href={s.maps} style={{ flex: 1, padding: '0.6rem', fontSize: '0.65rem', textAlign: 'center', border: '1px solid #ddd', color: '#333', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>CÓMO LLEGAR</a>
-                    <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.6rem', fontSize: '0.65rem', textAlign: 'center', background: '#111', color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>WHATSAPP</a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <style>{`
-          .sedes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-          }
           @media (max-width: 768px) {
-            .sedes-container {
-              display: flex;
-              overflow-x: auto;
-              scroll-snap-type: x mandatory;
-              gap: 1rem;
-              padding-bottom: 1.5rem;
-              margin: 0 -1.5rem;
-              padding: 0 1.5rem 1.5rem 1.5rem;
-              -webkit-overflow-scrolling: touch;
-            }
-            .sede-card {
-              flex: 0 0 85%;
-              scroll-snap-align: center;
-            }
+            .payment-allies-container { flex-direction: column; gap: 0.8rem !important; }
+            .pa-divider { display: none !important; }
           }
         `}</style>
-      </section>
-
-      {/* ════ 6. MÉTODOS DE PAGO Y ALIADOS ════ */}
-      <section style={{ padding: '3rem 0 2rem', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-        <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
-          
-          {/* Métodos de Pago */}
-          <div style={{ marginBottom: '2.5rem' }}>
-            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--color-black)', marginBottom: '1rem' }}>
-              Métodos de Pago
-            </h4>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#666', textTransform: 'uppercase' }}>Transferencia</span>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#666', textTransform: 'uppercase' }}>Efectivo</span>
-            </div>
-          </div>
-
-          <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--color-gold)', margin: '0 auto 2.5rem', opacity: 0.4 }} />
-
-          {/* Nuestros Aliados */}
-          <div>
-            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--color-black)', marginBottom: '1.5rem' }}>
-              Nuestros Aliados
-            </h4>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', flexWrap: 'wrap', opacity: 0.85 }}>
-              {/* Addi */}
-              <div style={{ fontSize: '1.3rem', fontWeight: '700', fontFamily: 'var(--font-sans)', letterSpacing: '-1px', color: 'var(--color-black)' }}>
-                addi
-              </div>
-              {/* Sistecrédito */}
-              <div style={{ fontSize: '1rem', fontWeight: '600', fontFamily: 'var(--font-sans)', letterSpacing: '-0.3px', color: 'var(--color-black)', display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontWeight: '400' }}>siste</span>crédito
-              </div>
-              {/* Bold */}
-              <div style={{ fontSize: '1.2rem', fontWeight: '800', fontFamily: 'var(--font-sans)', letterSpacing: '-0.5px', color: 'var(--color-black)' }}>
-                bold.
-              </div>
-            </div>
-          </div>
-
-        </div>
       </section>
 
 
