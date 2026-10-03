@@ -12,8 +12,8 @@ const HERO_SLIDES = [
     subtitle: 'Descubre nuestra selección de fragancias.',
     buttonText: 'DESCUBRIR PERFUMES',
     buttonLink: '/tienda',
-    imageDesktop: 'https://images.unsplash.com/photo-1615486171448-4fd1cfd93f7c?q=80&w=1920&auto=format&fit=crop',
-    imageMobile: 'https://images.unsplash.com/photo-1615486171448-4fd1cfd93f7c?q=80&w=800&auto=format&fit=crop',
+    imageDesktop: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=1920&auto=format&fit=crop',
+    imageMobile: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=800&auto=format&fit=crop',
     alignment: 'center'
   },
   {
