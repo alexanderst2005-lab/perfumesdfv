@@ -148,7 +148,11 @@ const InventoryModule = () => {
                 </td>
                 <td style={{ padding: '1rem', fontWeight: '500' }}>${p.price.toLocaleString()}</td>
                 <td style={{ padding: '1rem' }}>
-                  <span style={{ color: p.stockCount > 5 ? '#10b981' : '#ef4444', fontWeight: 'bold' }}>{p.stockCount} unid.</span>
+                  {p.inStock ? (
+                    <span style={{ color: p.stockCount > 5 ? '#10b981' : '#f59e0b', fontWeight: 'bold' }}>{p.stockCount} unid.</span>
+                  ) : (
+                    <span style={{ color: '#ef4444', fontWeight: 'bold', backgroundColor: '#fee2e2', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}>AGOTADO</span>
+                  )}
                 </td>
                 <td style={{ padding: '1rem' }}>
                   {p.active !== false ? (
@@ -213,10 +217,16 @@ const InventoryModule = () => {
                 <input type="number" placeholder="Precio ($)" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
                 <input type="number" placeholder="Stock" value={formData.stockCount} onChange={e => setFormData({...formData, stockCount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
               </div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
-                <input type="checkbox" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} />
-                Producto Activo (Visible en la tienda pública)
-              </label>
+              <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
+                  <input type="checkbox" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} style={{ width: '18px', height: '18px' }} />
+                  Visible en la Tienda
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
+                  <input type="checkbox" checked={formData.inStock} onChange={e => setFormData({...formData, inStock: e.target.checked})} style={{ width: '18px', height: '18px' }} />
+                  Disponible (Hay Stock)
+                </label>
+              </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
