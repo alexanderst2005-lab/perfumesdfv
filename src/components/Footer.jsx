@@ -1,106 +1,223 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { MapPin, Clock, MessageCircle, Mail } from 'lucide-react';
+
+const InstagramIcon = ({ size = 20, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const FacebookIcon = ({ size = 20, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </svg>
+);
+
+const TikTokIcon = ({ size = 20, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5v3a3 3 0 0 1-3-3" />
+  </svg>
+);
+
+const sectionTitleStyle = {
+  fontSize: '0.7rem',
+  letterSpacing: '2px',
+  textTransform: 'uppercase',
+  color: 'rgba(255,255,255,0.4)',
+  marginBottom: '1.25rem',
+  fontFamily: 'var(--font-sans)',
+  fontWeight: '500'
+};
+
+const linkStyle = {
+  color: 'rgba(255,255,255,0.6)',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  transition: 'color 0.2s',
+  fontFamily: 'var(--font-sans)',
+  fontWeight: '300'
+};
+
 const Footer = () => (
   <footer style={{ backgroundColor: 'var(--color-black)', color: 'var(--color-cream)', padding: '5rem 0 3rem' }}>
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2.5rem' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
 
-      {/* Top grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '4rem', marginBottom: '4rem' }}>
-
-        {/* Brand */}
-        <div>
+      <div className="footer-grid">
+        
+        {/* 1. Marca */}
+        <div className="footer-brand">
           <svg viewBox="0 0 160 50" height="38" aria-label="DFV Perfumes" style={{ display: 'block', marginBottom: '1.25rem' }}>
             <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="var(--color-cream)">DFV</text>
             <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="var(--color-cream)">PERFUMES</text>
           </svg>
-          <p style={{ color: 'rgba(245,242,236,0.65)', fontSize: '0.88rem', lineHeight: '1.8', maxWidth: '260px' }}>
+          <p style={{ color: 'rgba(245,242,236,0.65)', fontSize: '0.88rem', lineHeight: '1.8', maxWidth: '260px', marginBottom: '2rem', fontFamily: 'var(--font-sans)', fontWeight: '300' }}>
             Tu esencia, tu identidad.<br />Fragancias que cuentan tu historia.
           </p>
-          <div style={{ display: 'flex', gap: '1.25rem', marginTop: '1.5rem' }}>
-            {['Instagram', 'Facebook', 'TikTok'].map(s => (
-              <a key={s} href="#" style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase', transition: 'color 0.2s' }}
-                onMouseEnter={e => e.target.style.color = '#fff'}
-                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
-              >{s}</a>
-            ))}
+          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }} className="social-links">
+            <a href="https://www.instagram.com/perfumesdfv?stkn=N2V4M3Z2emh4cWR2" target="_blank" rel="noreferrer" style={{ color: 'rgba(255,255,255,0.5)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}>
+              <InstagramIcon size={20} />
+            </a>
+            <a href="#" target="_blank" rel="noreferrer" style={{ color: 'rgba(255,255,255,0.5)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}>
+              <FacebookIcon size={20} />
+            </a>
+            <a href="#" target="_blank" rel="noreferrer" style={{ color: 'rgba(255,255,255,0.5)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}>
+              <TikTokIcon size={20} />
+            </a>
           </div>
         </div>
 
-        {/* Tienda */}
+        {/* 2. Tienda */}
         <div>
-          <h4 style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.25rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>Tienda</h4>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <h4 style={sectionTitleStyle}>Tienda</h4>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem', padding: 0, margin: 0 }}>
             {[['Todos', '/tienda'], ['Hombre', '/tienda?category=Hombre'], ['Mujer', '/tienda?category=Mujer'], ['Unisex', '/tienda?category=Unisex'], ['Ofertas', '/tienda?offers=true']].map(([l, p]) => (
-              <li key={l}><Link to={p} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>{l}</Link></li>
+              <li key={l}>
+                <Link to={p} style={linkStyle} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.6)'}>{l}</Link>
+              </li>
             ))}
           </ul>
         </div>
 
-        {/* Ayuda */}
+        {/* 3. Ayuda */}
         <div>
-          <h4 style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.25rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>Ayuda</h4>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <h4 style={sectionTitleStyle}>Ayuda</h4>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem', padding: 0, margin: 0 }}>
             {['Envíos', 'Cambios y devoluciones', 'Preguntas frecuentes', 'Contacto'].map(i => (
-              <li key={i}><a href="#" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>{i}</a></li>
+              <li key={i}>
+                <Link to="#" style={linkStyle} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.6)'}>{i}</Link>
+              </li>
             ))}
           </ul>
         </div>
 
-        {/* Contacto */}
+        {/* 4. Nuestras Tiendas */}
+        <div className="stores-section">
+          <h4 style={sectionTitleStyle}>Nuestras Tiendas</h4>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Llanogrande */}
+            <div>
+              <h5 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', color: '#fff', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)', fontWeight: '400' }}>Llanogrande</h5>
+              <p style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+                <MapPin size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <span>Centro Comercial Llanogrande</span>
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', lineHeight: '1.5' }}>
+                <Clock size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  Lunes a jueves:<br/>10:30 a. m. – 8:00 p. m.<br/><br/>
+                  Viernes y sábado:<br/>10:30 a. m. – 8:30 p. m.<br/><br/>
+                  Domingos y festivos:<br/>11:00 a. m. – 7:30 p. m.
+                </div>
+              </div>
+            </div>
+
+            {/* Palmira */}
+            <div>
+              <h5 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', color: '#fff', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)', fontWeight: '400' }}>Palmira</h5>
+              <p style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+                <MapPin size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <span>Calle 31 #27-44<br/>Palmira</span>
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', lineHeight: '1.5' }}>
+                <Clock size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  Lunes a sábado:<br/>9:00 a. m. – 12:30 p. m.<br/>2:30 p. m. – 7:00 p. m.<br/><br/>
+                  Domingos y festivos:<br/>No hay servicio.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 5. Contacto */}
         <div>
-          <h4 style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.25rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>Contacto</h4>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            <li style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>WhatsApp: +57 300 000 0000</li>
-            <li style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>info@dfvperfumes.com</li>
+          <h4 style={sectionTitleStyle}>Contacto</h4>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, margin: 0 }}>
+            <li>
+              <a href="https://wa.me/573000000000" target="_blank" rel="noreferrer" style={{ ...linkStyle, display: 'flex', alignItems: 'center', gap: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}>
+                <MessageCircle size={16} /> WhatsApp
+              </a>
+            </li>
+            <li>
+              <a href="mailto:info@dfvperfumes.com" style={{ ...linkStyle, display: 'flex', alignItems: 'center', gap: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}>
+                <Mail size={16} /> Correo electrónico
+              </a>
+            </li>
           </ul>
         </div>
+
       </div>
 
       {/* Bottom bar */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.78rem' }}>
+      <div className="footer-bottom">
+        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
           &copy; {new Date().getFullYear()} DFV PERFUMES. Todos los derechos reservados.
         </p>
-        <div style={{ display: 'flex', gap: '1.5rem' }}>
-          {['Términos y condiciones', 'Política de privacidad', 'Política de envíos'].map(l => (
-            <a key={l} href="#" style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.78rem' }}>{l}</a>
+        <div className="footer-legal">
+          {['Términos y condiciones', 'Política de privacidad', 'Política de envíos', 'Política de cambios'].map(l => (
+            <Link key={l} to="#" style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.6)'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.3)'}>
+              {l}
+            </Link>
           ))}
         </div>
       </div>
     </div>
 
     <style>{`
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 0.8fr 0.8fr 1.5fr 1fr;
+        gap: 3rem;
+        margin-bottom: 5rem;
+      }
+      .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.08);
+        padding-top: 2rem;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .footer-legal {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 1024px) {
+        .footer-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 3rem;
+        }
+        .footer-brand {
+          grid-column: 1 / -1;
+        }
+      }
+
       @media (max-width: 768px) {
         footer {
-          padding: 3rem 0 6rem !important; /* Espacio extra para el botón flotante de WA */
+          padding: 4rem 0 6rem !important; /* Extra padding bottom for WhatsApp overlap */
         }
-        footer > div > div:first-child {
-          grid-template-columns: 1fr 1fr !important;
-          gap: 2.5rem 1rem !important;
-          margin-bottom: 3rem !important;
+        .footer-grid {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          margin-bottom: 3rem;
         }
-        footer > div > div:first-child > div:first-child {
-          grid-column: 1 / -1;
-          margin-bottom: 1rem;
+        .social-links {
+          justify-content: flex-start;
         }
-        footer > div > div:first-child > div:nth-child(4) {
-          grid-column: 1 / -1;
-        }
-        footer h4 {
-          margin-bottom: 1rem !important;
-          font-size: 0.8rem !important;
-        }
-        footer ul {
-          gap: 0.8rem !important;
-        }
-        footer > div > div:last-child {
+        .footer-bottom {
           flex-direction: column;
           align-items: flex-start;
-          gap: 1.2rem;
+          gap: 1.5rem;
         }
-        footer > div > div:last-child > div {
-          display: flex;
+        .footer-legal {
           flex-direction: column;
           gap: 0.8rem;
         }
