@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ShopProvider } from './context/ShopContext';
 import Header from './components/Header';
@@ -19,6 +19,12 @@ import AdminDashboard from './pages/AdminDashboard';
 function AppInner() {
   const { pathname } = useLocation();
   const isHome = pathname === '/';
+
+  // SCROLL AL INICIO CADA VEZ QUE CAMBIA LA RUTA
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
