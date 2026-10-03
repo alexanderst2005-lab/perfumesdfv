@@ -163,7 +163,7 @@ const Home = () => {
 
 
       {/* ════ 2. NUESTROS PRODUCTOS ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
+      <section className="section-padding">
         <div className="container">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3.5rem' }}>
             <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', letterSpacing: '4px', textTransform: 'uppercase' }}>
@@ -195,7 +195,7 @@ const Home = () => {
       </section>
 
       {/* ════ 3. LA EXPERIENCIA DFV ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+      <section className="section-padding">
         <div className="container" style={{ maxWidth: '800px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4.5rem 2rem', alignItems: 'start' }}>
             {[
@@ -237,7 +237,7 @@ const Home = () => {
       </section>
 
       {/* ════ 5. SECCIÓN DE ATENCIÓN / TIENDA ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
+      <section className="section-padding">
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: '400', color: 'var(--color-black)' }}>
@@ -284,7 +284,7 @@ const Home = () => {
       </section>
 
       {/* ════ 6. MÉTODOS DE PAGO ════ */}
-      <section style={{ padding: '4rem 0', backgroundColor: 'var(--color-cream)', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+      <section style={{ padding: '4rem 0', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1.5rem' }}>MÉTODOS DE PAGO</h4>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', opacity: 0.7 }}>
