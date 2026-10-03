@@ -9,12 +9,38 @@ export const ShopProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
   // Load from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('perfume_cart');
     const savedFavs = localStorage.getItem('perfume_favs');
     if (savedCart) setCart(JSON.parse(savedCart));
     if (savedFavs) setFavorites(JSON.parse(savedFavs));
+  }, []);
+
+  // Fetch products from Neon DB via API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setProducts(data);
+          const uniqueBrands = [...new Set(data.map(p => p.brand))];
+          setBrands(uniqueBrands);
+        } else {
+          console.error("Error response fetching products");
+        }
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+    fetchProducts();
   }, []);
 
   // Save to localStorage when changed
@@ -74,6 +100,7 @@ export const ShopProvider = ({ children }) => {
 
   return (
     <ShopContext.Provider value={{
+      products, brands, isLoadingProducts,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite,
       cartTotal, cartCount

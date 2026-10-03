@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
-import { products } from '../data/mockProducts';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
 
@@ -9,7 +8,7 @@ const TOTAL_HEADER = 106;
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { addToCart, toggleFavorite, isFavorite } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts } = useShop();
   const product = products.find(p => p.id === id);
 
   const [size, setSize] = useState(product?.sizes?.[0]);

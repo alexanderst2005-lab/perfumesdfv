@@ -1,7 +1,8 @@
 import React from 'react';
-import { products } from '../data/mockProducts';
+import { useShop } from '../context/ShopContext';
 
 const AdminDashboard = () => {
+  const { products } = useShop();
   return (
     <div style={{ minHeight: '80vh', backgroundColor: '#f5f5f5', padding: '2rem 0' }}>
       <div className="container">

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SlidersHorizontal, ChevronDown, X, Search, Heart } from 'lucide-react';
-import { products, brands } from '../data/mockProducts';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
 
@@ -10,8 +9,8 @@ const Store = () => {
   const params = new URLSearchParams(search);
   const initCat = params.get('category') || 'Todos';
 
-  const { addToCart, toggleFavorite, isFavorite } = useShop();
-  
+  const { addToCart, toggleFavorite, isFavorite, products, brands, isLoadingProducts } = useShop();
+
   // Filters state
   const [category, setCategory] = useState(initCat);
   const [brand, setBrand] = useState('Todas');

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { products, brands } from '../data/mockProducts';
 import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 
@@ -54,7 +53,7 @@ const HERO_SLIDES = [
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
-  const { addToCart, toggleFavorite, isFavorite } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts } = useShop();
   const [activeCategory, setActiveCategory] = useState('TODOS');
   const [openFaq, setOpenFaq] = useState(null);
   const featured = products.slice(0, 4);
