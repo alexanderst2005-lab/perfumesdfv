@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { MapPin } from 'lucide-react';
+import { MapPin, Clock } from 'lucide-react';
 
 const InstagramIcon = ({ size = 20, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -50,8 +50,8 @@ const Footer = () => (
         
         {/* 1. Marca */}
         <div className="footer-brand">
-          <svg viewBox="0 0 160 50" height="38" aria-label="DFB Perfumes" style={{ display: 'block', marginBottom: '1.25rem' }}>
-            <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="var(--color-cream)">DFB</text>
+          <svg viewBox="0 0 160 50" height="38" aria-label="DFV Perfumes" style={{ display: 'block', marginBottom: '1.25rem' }}>
+            <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="var(--color-cream)">DFV</text>
             <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="var(--color-cream)">PERFUMES</text>
           </svg>
           <p style={{ color: 'rgba(245,242,236,0.65)', fontSize: '0.88rem', lineHeight: '1.8', maxWidth: '260px', marginBottom: '2rem', fontFamily: 'var(--font-sans)', fontWeight: '300' }}>
@@ -98,39 +98,39 @@ const Footer = () => (
         <div className="stores-section">
           <h4 style={sectionTitleStyle}>Nuestras Tiendas</h4>
           
-          <div className="stores-container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem', padding: 0, margin: 0 }}>
-              <li style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                <MapPin size={14} style={{ marginTop: '3px', flexShrink: 0 }} />
+          <div className="stores-container" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Llanogrande */}
+            <div>
+              <h5 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', color: '#fff', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)', fontWeight: '400' }}>Llanogrande</h5>
+              <p style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+                <MapPin size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
                 <span>Centro Comercial Llanogrande</span>
-              </li>
-              <li style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                <MapPin size={14} style={{ marginTop: '3px', flexShrink: 0 }} />
-                <span>Palmira<br/><span style={{ fontSize: '0.75rem', opacity: 0.8 }}>Calle 31 #27-44</span></span>
-              </li>
-            </ul>
-            
-            <Link 
-              to="#" 
-              style={{ 
-                fontSize: '0.7rem', 
-                letterSpacing: '2px', 
-                textTransform: 'uppercase', 
-                color: '#fff', 
-                borderBottom: '1px solid rgba(255,255,255,0.3)', 
-                paddingBottom: '3px', 
-                fontWeight: '500', 
-                textDecoration: 'none',
-                transition: 'all 0.3s',
-                display: 'inline-block',
-                width: 'fit-content',
-                marginTop: '0.5rem'
-              }}
-              onMouseEnter={e => { e.target.style.opacity = 0.7; e.target.style.borderBottomColor = '#fff'; }}
-              onMouseLeave={e => { e.target.style.opacity = 1; e.target.style.borderBottomColor = 'rgba(255,255,255,0.3)'; }}
-            >
-              VER UBICACIONES →
-            </Link>
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', lineHeight: '1.5' }}>
+                <Clock size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  Lunes a jueves:<br/>10:30 a. m. – 8:00 p. m.<br/><br/>
+                  Viernes y sábado:<br/>10:30 a. m. – 8:30 p. m.<br/><br/>
+                  Domingos y festivos:<br/>11:00 a. m. – 7:30 p. m.
+                </div>
+              </div>
+            </div>
+
+            {/* Palmira */}
+            <div>
+              <h5 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', color: '#fff', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)', fontWeight: '400' }}>Palmira</h5>
+              <p style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+                <MapPin size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <span>Calle 31 #27-44<br/>Palmira</span>
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', lineHeight: '1.5' }}>
+                <Clock size={14} style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  Lunes a sábado:<br/>9:00 a. m. – 12:30 p. m.<br/>2:30 p. m. – 7:00 p. m.<br/><br/>
+                  Domingos y festivos:<br/>No hay servicio.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ const Footer = () => (
       {/* Bottom bar */}
       <div className="footer-bottom">
         <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', fontFamily: 'var(--font-sans)', letterSpacing: '1px', marginBottom: '1rem', fontWeight: '500' }}>
-          &copy; 2026 DFB PERFUMES. TODOS LOS DERECHOS RESERVADOS.
+          &copy; 2026 DFV PERFUMES. TODOS LOS DERECHOS RESERVADOS.
         </p>
         <div className="footer-legal">
           {['Términos y condiciones', 'Política de envíos', 'Política de cambios', 'Política de privacidad'].map((l, index) => (
