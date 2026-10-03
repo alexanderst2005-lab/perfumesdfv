@@ -147,19 +147,6 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ 5. NUEVOS INGRESOS ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
-        <div className="container">
-          <h2 className="title-md text-center" style={{ marginBottom: '3rem' }}>Nuevos Ingresos</h2>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: '1.25rem' }}>
-            {newArrivals.map(p => (
-              <div key={p.id} style={{ flex: '0 0 240px' }}>
-                <ProductCard product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes[0])} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ════ 6. MARCAS ════ */}
       <section className="section-padding" style={{ borderTop: '1px solid var(--color-gray-light)', borderBottom: '1px solid var(--color-gray-light)', overflow: 'hidden' }}>
@@ -242,40 +229,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ════ 9. FORMAS DE PAGO ════ */}
-      <section className="section-padding">
-        <div className="container text-center">
-          <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Flexibilidad para ti</p>
-          <h2 className="title-md" style={{ marginBottom: '0.75rem' }}>Formas de Pago</h2>
-          <p style={{ color: 'var(--color-gray)', marginBottom: '3rem', fontSize: '0.9rem' }}>Elige la opción que más se adapte a ti.</p>
-          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-            {[
-              { label: 'Transferencia Bancaria', icon: '🏦', available: true },
-              { label: 'Pago en Efectivo', icon: '💵', available: true },
-              { label: 'Pago en Línea', icon: '💳', available: false },
-            ].map(m => (
-              <div key={m.label} style={{
-                padding: '2rem 2.5rem',
-                border: '1px solid var(--color-gray-light)',
-                minWidth: '180px',
-                position: 'relative',
-                opacity: m.available ? 1 : 0.65,
-              }}>
-                <div style={{ fontSize: '1.8rem', marginBottom: '0.75rem' }}>{m.icon}</div>
-                <p style={{ fontSize: '0.85rem', fontWeight: '500', letterSpacing: '0.5px' }}>{m.label}</p>
-                {!m.available && (
-                  <span style={{
-                    position: 'absolute', top: '-10px', right: '-10px',
-                    background: '#111', color: '#fff',
-                    fontSize: '0.6rem', padding: '0.25rem 0.6rem',
-                    borderRadius: '20px', letterSpacing: '1px',
-                  }}>PRÓXIMAMENTE</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
     </div>
   );
