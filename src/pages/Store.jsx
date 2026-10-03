@@ -28,29 +28,29 @@ const Store = () => {
   });
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: `${TOTAL_HEADER + 40}px`, paddingBottom: '4rem' }}>
+    <div style={{ minHeight: '100vh', paddingTop: '115px', paddingBottom: '4rem' }}>
       <div className="container">
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>DFV PERFUMES</p>
-          <h1 className="title-lg" style={{ marginBottom: '0.75rem' }}>Perfumes</h1>
-          <p style={{ color: 'var(--color-gray)', fontSize: '0.95rem' }}>Explora nuestra colección de fragancias.</p>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <p className="eyebrow" style={{ marginBottom: '0.3rem', opacity: 0.6, fontSize: '0.65rem' }}>DFV PERFUMES</p>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: '400', marginBottom: '0.5rem', color: '#111' }}>Perfumes</h1>
+          <p style={{ color: 'var(--color-gray)', fontSize: '0.85rem' }}>Explora nuestra colección de fragancias.</p>
         </div>
 
         {/* Search + Filter Row */}
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-            <Search size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray)' }} />
+            <Search size={14} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray)' }} />
             <input
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Buscar perfumes…"
               style={{
                 width: '100%',
-                padding: '0.85rem 1rem 0.85rem 2.8rem',
+                padding: '0.65rem 1rem 0.65rem 2.4rem',
                 border: '1px solid var(--color-gray-light)',
-                fontSize: '0.9rem',
+                fontSize: '0.8rem',
                 outline: 'none',
                 fontFamily: 'var(--font-sans)',
               }}
@@ -59,31 +59,32 @@ const Store = () => {
           <button
             onClick={() => setFilterOpen(true)}
             style={{
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-              padding: '0.85rem 1.5rem',
+              display: 'flex', alignItems: 'center', gap: '0.4rem',
+              padding: '0.65rem 1.2rem',
               border: '1px solid var(--color-gray-light)',
-              fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase',
+              fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase',
               backgroundColor: 'transparent', cursor: 'pointer',
             }}
           >
-            <SlidersHorizontal size={16} /> FILTRAR
+            <SlidersHorizontal size={14} /> FILTRAR
           </button>
         </div>
 
         {/* Category Pills */}
-        <div className="no-scrollbar" style={{ display: 'flex', gap: '0.5rem', marginBottom: '3rem' }}>
+        <div className="no-scrollbar" style={{ display: 'flex', gap: '0.4rem', marginBottom: '2.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
           {categories.map(c => (
             <button
               key={c}
               onClick={() => setCategory(c)}
               style={{
-                padding: '0.5rem 1.2rem',
+                padding: '0.4rem 1rem',
                 border: '1px solid',
                 borderColor: category === c ? 'var(--color-black)' : 'var(--color-gray-light)',
                 backgroundColor: category === c ? 'var(--color-black)' : 'transparent',
                 color: category === c ? '#fff' : 'var(--color-black)',
-                fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase',
+                fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase',
                 whiteSpace: 'nowrap', cursor: 'pointer', flexShrink: 0,
+                transition: 'all 0.2s'
               }}
             >
               {c}
