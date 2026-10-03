@@ -26,18 +26,18 @@ const ProductDetail = () => {
   const related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
 
   return (
-    <div style={{ paddingTop: '85px' }}>
+    <div style={{ paddingTop: '55px' }}>
 
       {/* Back */}
-      <div className="container" style={{ paddingTop: '0.8rem', paddingBottom: '0.2rem' }}>
+      <div className="container" style={{ paddingTop: '0', paddingBottom: '0' }}>
         <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', letterSpacing: '1px', color: 'var(--color-gray)', textTransform: 'uppercase' }}>
           <ArrowLeft size={14} /> Volver a Perfumes
         </Link>
       </div>
 
       {/* Main Grid */}
-      <div className="container" style={{ paddingTop: '1rem', paddingBottom: '4rem' }}>
-        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '4rem', alignItems: 'start' }}>
+      <div className="container" style={{ paddingTop: '0.8rem', paddingBottom: '4rem' }}>
+        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '3rem', alignItems: 'start' }}>
 
           {/* Gallery */}
           <div>
