@@ -98,7 +98,7 @@ const Footer = () => (
         <div className="stores-section">
           <h4 style={sectionTitleStyle}>Nuestras Tiendas</h4>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div className="stores-container" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Llanogrande */}
             <div>
               <h5 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', color: '#fff', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)', fontWeight: '400' }}>Llanogrande</h5>
@@ -135,7 +135,7 @@ const Footer = () => (
         </div>
 
         {/* 5. Contacto */}
-        <div>
+        <div className="contact-section">
           <h4 style={sectionTitleStyle}>Contacto</h4>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, margin: 0 }}>
             <li>
@@ -202,12 +202,27 @@ const Footer = () => (
 
       @media (max-width: 768px) {
         footer {
-          padding: 4rem 0 6rem !important; /* Extra padding bottom for WhatsApp overlap */
+          padding: 3rem 0 6rem !important; /* Espacio extra para WhatsApp */
         }
         .footer-grid {
-          grid-template-columns: 1fr;
-          gap: 3rem;
-          margin-bottom: 3rem;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem 1rem;
+          margin-bottom: 2rem;
+        }
+        .footer-brand {
+          grid-column: 1 / -1;
+          margin-bottom: 0.5rem;
+        }
+        .stores-section {
+          grid-column: 1 / -1;
+        }
+        .stores-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+        }
+        .contact-section {
+          grid-column: 1 / -1;
         }
         .social-links {
           justify-content: flex-start;
@@ -216,10 +231,17 @@ const Footer = () => (
           flex-direction: column;
           align-items: flex-start;
           gap: 1.5rem;
+          padding-top: 1.5rem;
         }
         .footer-legal {
-          flex-direction: column;
-          gap: 0.8rem;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 0.8rem 1.5rem;
+        }
+      }
+      @media (max-width: 480px) {
+        .stores-container {
+          grid-template-columns: 1fr; /* Para pantallas muy pequeñas apilar las tiendas */
         }
       }
     `}</style>
