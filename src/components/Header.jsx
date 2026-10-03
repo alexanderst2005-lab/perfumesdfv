@@ -85,10 +85,10 @@ const Header = () => {
               <svg
                 viewBox="0 0 160 50"
                 height="38"
-                aria-label="DFB Perfumes"
+                aria-label="DFV Perfumes"
                 style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
               >
-                {/* Letras DFB centradas */}
+                {/* Letras DFV centradas */}
                 <text
                   x="50%" y="36"
                   textAnchor="middle"
@@ -97,7 +97,7 @@ const Header = () => {
                   fontWeight="400"
                   letterSpacing="-1"
                   fill={solid ? '#111111' : '#ffffff'}
-                >DFB</text>
+                >DFV</text>
                 {/* PERFUMES debajo centrado */}
                 <text
                   x="50%" y="50"
@@ -159,8 +159,8 @@ const Header = () => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <svg viewBox="0 0 160 50" height="30" aria-label="DFB Perfumes" style={{ display: 'block' }}>
-                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="#050505">DFB</text>
+                <svg viewBox="0 0 160 50" height="30" aria-label="DFV Perfumes" style={{ display: 'block' }}>
+                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="#050505">DFV</text>
                   <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="#050505">PERFUMES</text>
                 </svg>
                 <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>
