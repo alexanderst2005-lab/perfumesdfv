@@ -1,8 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { products, brands } from '../data/mockProducts';
-import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus } from 'lucide-react';
+import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+
+const HERO_SLIDES = [
+  {
+    id: 1,
+    campaign: 'THE SIGNATURE',
+    title: 'LA FRAGANCIA QUE TE DEFINE',
+    subtitle: 'Descubre nuestra selección de fragancias.',
+    buttonText: 'DESCUBRIR PERFUMES',
+    buttonLink: '/tienda',
+    imageDesktop: 'https://images.unsplash.com/photo-1615486171448-4fd1cfd93f7c?q=80&w=1920&auto=format&fit=crop',
+    imageMobile: 'https://images.unsplash.com/photo-1615486171448-4fd1cfd93f7c?q=80&w=800&auto=format&fit=crop',
+    alignment: 'center'
+  },
+  {
+    id: 2,
+    campaign: 'MEN',
+    title: 'CARÁCTER EN CADA NOTA',
+    subtitle: 'Explora fragancias diseñadas para dejar huella.',
+    buttonText: 'VER COLECCIÓN',
+    buttonLink: '/tienda?cat=Hombre',
+    imageDesktop: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1920&auto=format&fit=crop',
+    imageMobile: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=800&auto=format&fit=crop',
+    alignment: 'left'
+  },
+  {
+    id: 3,
+    campaign: 'WOMEN',
+    title: 'TU AROMA, TU IDENTIDAD',
+    subtitle: 'Encuentra una fragancia que hable de ti.',
+    buttonText: 'DESCUBRIR',
+    buttonLink: '/tienda?cat=Mujer',
+    imageDesktop: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1920&auto=format&fit=crop',
+    imageMobile: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop',
+    alignment: 'right'
+  },
+  {
+    id: 4,
+    campaign: 'ARABIAN COLLECTION',
+    title: 'AROMAS QUE IMPACTAN',
+    subtitle: 'Descubre nuevas experiencias olfativas.',
+    buttonText: 'EXPLORAR',
+    buttonLink: '/tienda',
+    imageDesktop: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?q=80&w=1920&auto=format&fit=crop',
+    imageMobile: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?q=80&w=800&auto=format&fit=crop',
+    alignment: 'center'
+  }
+];
 
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
@@ -12,154 +59,185 @@ const Home = () => {
   const newArrivals = products.slice(0, 4);
   const bestSellers = products.filter(p => p.isBestSeller);
 
+  // --- HERO LOGIC ---
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+
+  const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
+  const handleTouchEnd = (e) => {
+    const touchEnd = e.changedTouches[0].clientX;
+    if (touchStart - touchEnd > 50) nextSlide();
+    if (touchStart - touchEnd < -50) prevSlide();
+  };
+
   return (
     <div>
 
-      {/* ════ 1. HERO — PANTALLA COMPLETA ════
-          
-          ARQUITECTURA:
-          • El header fijo (106px) es transparente y flota SOBRE la hero (no resta altura)
-          • main tiene marginTop:0 en home, así que la hero empieza en y=0 del documento
-          • height: 100svh = exactamente el viewport visible del móvil (excluye browser UI)
-          • La imagen cubre inset:0 incluyendo los 106px detrás del header transparente
-          • La siguiente sección empieza en y=100svh = fuera del viewport inicial ✓
-      */}
       <section
         className="hero-section"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{
-          height: '100vh',
-          minHeight: '100vh',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          textAlign: 'center',
+          backgroundColor: '#000'
         }}
       >
-        {/* Imagen animada — cubre TODA la sección incluido el área del header */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/hero.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          animation: 'kenBurns 18s ease-in-out infinite alternate',
-          transformOrigin: 'center center',
-          zIndex: 0,
-        }} />
-
-        {/* Gradiente — sutil arriba, oscuro abajo para leer el texto */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.02) 30%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.88) 100%)',
-          zIndex: 1,
-        }} />
-
-        {/* CONTENIDO — centrado verticalmente */}
-        <div style={{
-          position: 'relative',
-          zIndex: 2,
-          color: '#fff',
-          width: '100%',
-          maxWidth: '600px',
-          padding: '0 1.5rem',
-        }}>
-          <p style={{
-            fontSize: '0.65rem',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            opacity: 0.6,
-            marginBottom: '0.8rem',
-            fontWeight: '400',
-          }}>
-            FRAGANCIAS DE LUJO
-          </p>
-
-          <h1 style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(1.9rem, 6vw, 4.5rem)',
-            fontWeight: '400',
-            lineHeight: '1.15',
-            marginBottom: '0.85rem',
-            textShadow: '0 2px 30px rgba(0,0,0,0.6)',
-          }}>
-            Tu esencia,<br/>tu identidad.
-          </h1>
-
-          <p style={{
-            fontSize: '0.9rem',
-            opacity: 0.7,
-            marginBottom: '2rem',
-            fontWeight: '300',
-            letterSpacing: '0.3px',
-          }}>
-            Fragancias que cuentan tu historia.
-          </p>
-
-          <Link
-            to="/tienda"
+        {HERO_SLIDES.map((slide, index) => (
+          <div
+            key={slide.id}
             style={{
-              display: 'inline-block',
-              padding: '1.2rem 3rem',
-              border: '1px solid rgba(255,255,255,0.4)',
-              color: '#fff',
-              fontSize: '0.8rem',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              backdropFilter: 'blur(10px)',
-              backgroundColor: 'rgba(0,0,0,0.45)',
-              fontWeight: '500',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = 'rgba(0,0,0,0.7)';
-              e.target.style.borderColor = 'rgba(255,255,255,0.8)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'rgba(0,0,0,0.45)';
-              e.target.style.borderColor = 'rgba(255,255,255,0.4)';
+              position: 'absolute',
+              inset: 0,
+              opacity: index === currentSlide ? 1 : 0,
+              visibility: index === currentSlide ? 'visible' : 'hidden',
+              transition: 'opacity 1.2s ease-in-out, visibility 1.2s ease-in-out',
+              zIndex: index === currentSlide ? 1 : 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: slide.alignment === 'left' ? 'flex-start' : slide.alignment === 'right' ? 'flex-end' : 'center',
+              textAlign: slide.alignment,
+              padding: '0 5%',
             }}
           >
-            DESCUBRIR COLECCIÓN
-          </Link>
-        </div>
+            <picture>
+              <source media="(max-width: 768px)" srcSet={slide.imageMobile} />
+              <img 
+                src={slide.imageDesktop} 
+                alt={slide.title} 
+                loading={index === 0 ? "eager" : "lazy"}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  zIndex: -2,
+                  transform: index === currentSlide ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'transform 7s ease-out'
+                }}
+              />
+            </picture>
+            
+            {/* Overlay sutil adaptado a la alineación */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: slide.alignment === 'center' 
+                ? 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)'
+                : slide.alignment === 'left'
+                ? 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)'
+                : 'linear-gradient(to left, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)',
+              zIndex: -1
+            }} />
 
-        {/* SCROLL — al borde inferior de la hero */}
-        <div style={{
-          position: 'absolute',
-          bottom: '1rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 3,
-          color: 'rgba(255,255,255,0.5)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '0.3rem',
-        }}>
-          <span style={{ fontSize: '0.5rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
-          <div style={{
-            width: '1px',
-            height: '30px',
-            backgroundColor: 'rgba(255,255,255,0.3)',
-            animation: 'scrollLine 2s ease-in-out infinite',
-            transformOrigin: 'top',
-          }} />
+            {/* Contenido */}
+            <div style={{
+              maxWidth: '650px',
+              width: '100%',
+              opacity: index === currentSlide ? 1 : 0,
+              transform: index === currentSlide ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'all 0.8s ease-out 0.3s'
+            }}>
+              <p style={{ color: '#fff', fontSize: '0.65rem', letterSpacing: '4px', textTransform: 'uppercase', opacity: 0.8, marginBottom: '1rem' }}>
+                {slide.campaign}
+              </p>
+              <h1 style={{ color: '#fff', fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 6vw, 4.5rem)', fontWeight: '400', lineHeight: '1.1', marginBottom: '1rem', textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
+                {slide.title}
+              </h1>
+              <p style={{ color: '#fff', fontSize: '1rem', opacity: 0.85, marginBottom: '2.5rem', fontWeight: '300', textShadow: '0 1px 10px rgba(0,0,0,0.3)' }}>
+                {slide.subtitle}
+              </p>
+              <Link
+                to={slide.buttonLink}
+                style={{
+                  display: 'inline-block',
+                  padding: '1.1rem 3rem',
+                  border: '1px solid rgba(255,255,255,0.6)',
+                  color: '#fff',
+                  fontSize: '0.8rem',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  backgroundColor: 'transparent',
+                  fontWeight: '500',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#fff';
+                  e.target.style.color = '#000';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = '#fff';
+                }}
+              >
+                {slide.buttonText}
+              </Link>
+            </div>
+          </div>
+        ))}
+
+        {/* Flechas Desktop */}
+        <button 
+          onClick={prevSlide}
+          className="hero-arrow hero-arrow-left"
+          style={{ position: 'absolute', left: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = 1}
+          onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
+        >
+          <ChevronLeft size={40} strokeWidth={1} />
+        </button>
+        <button 
+          onClick={nextSlide}
+          className="hero-arrow hero-arrow-right"
+          style={{ position: 'absolute', right: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = 1}
+          onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
+        >
+          <ChevronRight size={40} strokeWidth={1} />
+        </button>
+
+        {/* Indicadores Inferiores */}
+        <div style={{ position: 'absolute', bottom: '2.5rem', display: 'flex', gap: '1rem', alignItems: 'center', zIndex: 10 }}>
+          {HERO_SLIDES.map((_, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button
+                onClick={() => setCurrentSlide(idx)}
+                style={{
+                  background: 'none', border: 'none', color: '#fff', cursor: 'pointer',
+                  fontSize: '0.75rem', letterSpacing: '1px', opacity: idx === currentSlide ? 1 : 0.4,
+                  transition: 'opacity 0.3s'
+                }}
+              >
+                0{idx + 1}
+              </button>
+              {idx < HERO_SLIDES.length - 1 && (
+                <div style={{ width: '30px', height: '1px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
+              )}
+            </div>
+          ))}
         </div>
 
         <style>{`
-          @keyframes kenBurns {
-            0%   { transform: scale(1)    translate(0, 0); }
-            50%  { transform: scale(1.07) translate(-1%, 0.5%); }
-            100% { transform: scale(1.05) translate(0.5%, -0.5%); }
-          }
-          @keyframes scrollLine {
-            0%   { transform: scaleY(0); opacity: 0; }
-            60%  { transform: scaleY(1); opacity: 1; }
-            100% { transform: scaleY(1); opacity: 0; }
+          .hero-section { height: 85vh; min-height: 600px; }
+          @media (max-width: 768px) {
+            .hero-section { height: 75vh; min-height: 500px; }
+            .hero-arrow { display: none !important; }
           }
         `}</style>
       </section>
