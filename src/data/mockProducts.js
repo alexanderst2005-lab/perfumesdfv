@@ -82,6 +82,86 @@ export const products = [
     inStock: true,
     isNew: true,
     isBestSeller: false
+  },
+  {
+    id: '5',
+    name: 'Interlude Man',
+    brand: 'Amouage',
+    category: 'Hombre',
+    family: 'Oriental Amaderado',
+    price: 1350000,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1595535373192-fc8938babfa3?q=80&w=600&auto=format&fit=crop',
+    description: 'Conocido como el "Rey Azul", Interlude Man de Amouage es una obra maestra de la perfumería de Omán. Una fragancia de lujo extremo que combina humo, resinas e incienso, creando una experiencia olfativa profunda, caótica pero armoniosa.',
+    notes: {
+      top: 'Orégano, Pimienta, Bergamota',
+      heart: 'Incienso, Opopónaco, Ámbar, Ládano',
+      base: 'Cuero, Madera de agar (Oud), Sándalo, Pachulí'
+    },
+    concentration: 'Eau de Parfum',
+    inStock: true,
+    isNew: true,
+    isBestSeller: true
+  },
+  {
+    id: '6',
+    name: 'La Yuqawam Pour Homme',
+    brand: 'Rasasi',
+    category: 'Hombre',
+    family: 'Oriental Cuero',
+    price: 550000,
+    sizes: ['75 ml'],
+    image: 'https://images.unsplash.com/photo-1582211594533-268f4f1edcb9?q=80&w=600&auto=format&fit=crop',
+    description: 'La Yuqawam, que significa "Irresistible" en árabe, es una fragancia de cuero exquisita y sofisticada. Mezcla la rudeza del cuero con el dulzor de la frambuesa, logrando un equilibrio perfecto y una duración nuclear.',
+    notes: {
+      top: 'Frambuesa, Azafrán, Tomillo',
+      heart: 'Incienso de olíbano, Jazmín, Abrótano',
+      base: 'Cuero, Gamuza, Notas amaderadas, Ámbar'
+    },
+    concentration: 'Eau de Parfum',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '7',
+    name: 'Amber Oud Gold Edition',
+    brand: 'Al Haramain',
+    category: 'Unisex',
+    family: 'Oriental Vainilla',
+    price: 580000,
+    sizes: ['120 ml'],
+    image: 'https://images.unsplash.com/photo-1616422285623-13fa92004223?q=80&w=600&auto=format&fit=crop',
+    description: 'Una explosión frutal y dulce incrustada en un fondo de ámbar y vainilla. Amber Oud Gold Edition es opulento, llamativo y proyecta de manera excepcional. Perfecto para quienes aman las fragancias dulces y lujosas.',
+    notes: {
+      top: 'Bergamota, Notas verdes',
+      heart: 'Melón, Notas dulces, Piña, Ámbar',
+      base: 'Vainilla, Almizcle, Notas amaderadas'
+    },
+    concentration: 'Eau de Parfum',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '8',
+    name: 'Reflection Man',
+    brand: 'Amouage',
+    category: 'Hombre',
+    family: 'Almizcle Amaderado Floral',
+    price: 1450000,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?q=80&w=600&auto=format&fit=crop',
+    description: 'Reflection Man es la definición de la elegancia masculina en la perfumería árabe. Un bouquet floral blanco sobre una base amaderada que transmite pureza, limpieza y una sofisticación inigualable.',
+    notes: {
+      top: 'Romero, Pimienta rosa, Petit grain',
+      heart: 'Jazmín, Neroli, Raíz de lirio, Ylang-ylang',
+      base: 'Sándalo, Vetiver, Cedro, Pachulí'
+    },
+    concentration: 'Eau de Parfum',
+    inStock: true,
+    isNew: true,
+    isBestSeller: false
   }
 ];
 
