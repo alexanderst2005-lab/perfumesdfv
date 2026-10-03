@@ -1,225 +1,317 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { products, brands } from '../data/mockProducts';
-import { CheckCircle, ShieldCheck, Truck, MessageCircle, Heart } from 'lucide-react';
+import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck } from 'lucide-react';
+import { useShop } from '../context/ShopContext';
+
+const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
-  const featuredProducts = products.slice(0, 4);
-  const newArrivals = products.filter(p => p.id === 1 || p.id === 2 || p.id === 3 || p.id === 4);
-  const bestSellers = products.filter(p => p.isBestSeller).slice(0, 4);
+  const { addToCart, toggleFavorite, isFavorite } = useShop();
+  const featured = products.slice(0, 4);
+  const newArrivals = products.slice(0, 4);
+  const bestSellers = products.filter(p => p.isBestSeller);
 
   return (
-    <div style={{ paddingBottom: '65px' /* for mobile bottom nav */ }}>
-      {/* 1. HERO */}
-      <section style={{ height: '100vh', position: 'relative', display: 'flex', alignItems: 'center', marginTop: '-115px', backgroundImage: 'url(https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1400&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)' }}></div>
-        <div className="container" style={{ position: 'relative', zIndex: 1, color: 'var(--color-white)', maxWidth: '600px', width: '100%' }}>
-          <h2 style={{ fontSize: '1rem', letterSpacing: '2px', marginBottom: '1rem', color: 'var(--color-gold)' }}>TU ESENCIA, TU IDENTIDAD</h2>
-          <h1 className="title-large" style={{ fontFamily: 'var(--font-serif)', marginBottom: '2rem' }}>Fragancias que<br/>cuentan tu historia.</h1>
-          <Link to="/tienda" className="btn-primary" style={{ backgroundColor: 'var(--color-white)', color: 'var(--color-black)', border: 'none' }}>
+    <div>
+
+      {/* ════ 1. HERO ════ */}
+      <section style={{
+        height: '100vh',
+        minHeight: '600px',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'flex-end',
+        marginTop: `-${TOTAL_HEADER}px`,
+        backgroundImage: 'url(https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1600&auto=format&fit=crop)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%)' }} />
+        <div className="container" style={{ position: 'relative', zIndex: 1, color: '#fff', paddingBottom: '5rem', maxWidth: '700px' }}>
+          <p className="eyebrow" style={{ color: 'var(--color-gold)', marginBottom: '1rem' }}>DFV PERFUMES</p>
+          <h1 className="title-xl" style={{ marginBottom: '1.5rem', fontWeight: '400' }}>
+            Tu esencia,<br />tu identidad.
+          </h1>
+          <p style={{ fontSize: '1.1rem', opacity: 0.85, marginBottom: '2.5rem', fontWeight: '300' }}>
+            Fragancias que cuentan tu historia.
+          </p>
+          <Link to="/tienda" className="btn-primary" style={{ backgroundColor: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(4px)' }}>
             DESCUBRIR COLECCIÓN
           </Link>
         </div>
-        <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', color: 'white', fontSize: '0.8rem', letterSpacing: '2px', zIndex: 1, textAlign: 'center' }}>
-          SCROLL <br/> ↓
-        </div>
       </section>
 
-      {/* 2. CATEGORÍAS RÁPIDAS */}
-      <section className="section-padding container" style={{ paddingBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', textAlign: 'center', marginBottom: '2rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Descubre tu fragancia</h2>
-        <div className="quick-categories" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-          {['Hombre', 'Mujer', 'Unisex', 'Sets', 'Lujo', 'Ofertas'].map(cat => (
-            <Link key={cat} to={`/tienda?category=${cat}`} style={{ minWidth: '120px', flex: 1, textAlign: 'center', border: '1px solid var(--color-gray-light)', padding: '1.5rem 1rem', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem', color: 'var(--color-black)' }}>
-              {cat}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. NUESTROS PRODUCTOS */}
-      <section className="section-padding container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}>
-          <div>
-            <h2 className="title-medium" style={{ fontFamily: 'var(--font-serif)', marginBottom: '0.5rem' }}>Nuestros Productos</h2>
-            <p style={{ color: 'var(--color-gray)' }}>Descubre nuestra selección de fragancias.</p>
+      {/* ════ 2. CATEGORÍAS ════ */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Por género y ocasión</p>
+            <h2 className="title-md">Descubre tu fragancia</h2>
           </div>
-          <Link to="/tienda" className="view-all-link" style={{ fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase', borderBottom: '1px solid var(--color-black)', paddingBottom: '2px' }}>
-            VER TODOS &rarr;
+
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '1rem', paddingBottom: '0.5rem' }}>
+            {[
+              { label: 'Hombre', cat: 'Hombre', img: 'https://images.unsplash.com/photo-1547887538-047f814db358?q=80&w=400&auto=format&fit=crop' },
+              { label: 'Mujer',  cat: 'Mujer',  img: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=400&auto=format&fit=crop' },
+              { label: 'Unisex', cat: 'Unisex', img: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=400&auto=format&fit=crop' },
+              { label: 'Sets',   cat: 'Sets',   img: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=400&auto=format&fit=crop' },
+              { label: 'Ofertas',cat: 'Ofertas',img: 'https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=400&auto=format&fit=crop' },
+            ].map(c => (
+              <Link
+                key={c.label}
+                to={`/tienda?category=${c.cat}`}
+                style={{ flex: '0 0 auto', minWidth: '140px', position: 'relative', overflow: 'hidden', height: '180px', borderRadius: '4px', background: '#111' }}
+              >
+                <img src={c.img} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6, transition: 'transform 0.4s ease' }}
+                  onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
+                  onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                />
+                <span style={{ position: 'absolute', bottom: '12px', left: '12px', color: '#fff', fontSize: '0.8rem', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: '500' }}>
+                  {c.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════ 3. NUESTROS PRODUCTOS ════ */}
+      <section className="section-padding">
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>Selección curada</p>
+              <h2 className="title-md">Nuestros Productos</h2>
+            </div>
+            <Link to="/tienda" className="btn-ghost">VER TODOS <ArrowRight size={14} /></Link>
+          </div>
+
+          <div className="featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
+            {featured.map(p => (
+              <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes[0])} />
+            ))}
+          </div>
+        </div>
+
+        <style>{`
+          @media (max-width: 1024px) {
+            .featured-grid { grid-template-columns: repeat(3,1fr) !important; }
+          }
+          @media (max-width: 768px) {
+            .featured-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
+          }
+        `}</style>
+      </section>
+
+      {/* ════ 4. EDITORIAL BANNER ════ */}
+      <section className="editorial-grid" style={{
+        position: 'relative',
+        backgroundColor: '#0a0a0a',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '420px',
+        overflow: 'hidden',
+      }}>
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          <img
+            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop"
+            alt="Perfume editorial"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '4rem 3rem', color: '#fff' }}>
+          <p className="eyebrow" style={{ color: 'var(--color-gold)', marginBottom: '1.2rem' }}>La experiencia DFV</p>
+          <h2 className="title-md" style={{ marginBottom: '1.5rem' }}>Encuentra tu<br/>perfume ideal</h2>
+          <p style={{ opacity: 0.75, marginBottom: '2.5rem', fontSize: '0.95rem', lineHeight: '1.8' }}>
+            Una fragancia para cada personalidad,<br/>momento y ocasión.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
+            {['Fragancias originales', 'Envíos a todo el país', 'Atención personalizada'].map(b => (
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', opacity: 0.85 }}>
+                <CheckCircle size={16} style={{ color: 'var(--color-gold)', flexShrink: 0 }} /> {b}
+              </div>
+            ))}
+          </div>
+          <Link to="/tienda" className="btn-secondary" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff', alignSelf: 'flex-start' }}>
+            DESCUBRIR COLECCIÓN →
           </Link>
         </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '2rem' }}>
-          {featuredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
+
+        <style>{`
+          @media (max-width: 768px) {
+            .editorial-grid { grid-template-columns: 1fr !important; }
+            .editorial-grid > div:first-child { height: 220px; }
+            .editorial-grid > div:last-child { padding: 2.5rem 1.5rem !important; }
+          }
+        `}</style>
+      </section>
+
+      {/* ════ 5. NUEVOS INGRESOS ════ */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+        <div className="container">
+          <h2 className="title-md text-center" style={{ marginBottom: '3rem' }}>Nuevos Ingresos</h2>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '1.25rem' }}>
+            {newArrivals.map(p => (
+              <div key={p.id} style={{ flex: '0 0 240px' }}>
+                <ProductCard product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes[0])} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════ 6. MARCAS ════ */}
+      <section className="section-padding" style={{ borderTop: '1px solid var(--color-gray-light)', borderBottom: '1px solid var(--color-gray-light)', overflow: 'hidden' }}>
+        <div className="container">
+          <p className="eyebrow text-center" style={{ marginBottom: '2rem' }}>Nuestras marcas</p>
+        </div>
+        <div style={{ display: 'flex', width: 'max-content', animation: 'marquee 20s linear infinite' }}>
+          {[...brands, ...brands, ...brands].map((b, i) => (
+            <span key={i} style={{ padding: '0 3rem', fontSize: '1rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-gray)', fontFamily: 'var(--font-serif)', whiteSpace: 'nowrap' }}>
+              {b}
+            </span>
           ))}
         </div>
       </section>
 
-      {/* 4. ENCUENTRA TU PERFUME IDEAL */}
-      <section style={{ position: 'relative', padding: '8rem 2rem', textAlign: 'center', color: 'white', backgroundColor: '#000', margin: '4rem 0' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1400&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }}></div>
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px', margin: '0 auto' }}>
-          <h2 className="title-medium" style={{ fontFamily: 'var(--font-serif)' }}>Encuentra tu perfume ideal</h2>
-          <p style={{ marginBottom: '2.5rem', fontSize: '1.1rem', color: 'var(--color-cream)' }}>Una fragancia para cada personalidad, momento y ocasión.</p>
-          <Link to="/tienda" className="btn-primary" style={{ backgroundColor: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-gold)' }}>
-            EXPLORAR COLECCIÓN
-          </Link>
-        </div>
-      </section>
-
-      {/* 5. NUEVOS INGRESOS */}
-      <section className="section-padding container">
-        <h2 className="title-medium text-center" style={{ fontFamily: 'var(--font-serif)', marginBottom: '3rem' }}>Nuevos Ingresos</h2>
-        <div className="product-carousel" style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '2rem', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-          {newArrivals.map(product => (
-            <div key={product.id} style={{ minWidth: '250px', flex: '0 0 auto' }}>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 6. MÁS VENDIDOS */}
-      <section className="section-padding container">
-        <h2 className="title-medium text-center" style={{ fontFamily: 'var(--font-serif)', marginBottom: '3rem' }}>Más Vendidos</h2>
-        <div className="product-carousel" style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '2rem', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-          {bestSellers.map(product => (
-            <div key={product.id} style={{ minWidth: '250px', flex: '0 0 auto' }}>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 7. MARCAS */}
-      <section style={{ backgroundColor: 'var(--color-cream)', padding: '4rem 0', overflow: 'hidden' }}>
-        <h2 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', textAlign: 'center', marginBottom: '3rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Descubre nuestras marcas</h2>
-        <div style={{ display: 'flex', width: 'max-content', animation: 'marquee 25s linear infinite' }}>
-          {[...brands, ...brands, ...brands].map((brand, i) => (
-            <div key={i} style={{ margin: '0 3rem', fontSize: '1.5rem', fontFamily: 'var(--font-serif)', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)' }}>
-              {brand}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 8. BENEFICIOS */}
-      <section className="section-padding container" style={{ padding: '6rem 1rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem', textAlign: 'center' }}>
-          <div>
-            <CheckCircle size={32} style={{ margin: '0 auto 1rem', color: 'var(--color-gold)' }} />
-            <h4 style={{ fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Fragancias Originales</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>100% auténticas y garantizadas.</p>
-          </div>
-          <div>
-            <Truck size={32} style={{ margin: '0 auto 1rem', color: 'var(--color-gold)' }} />
-            <h4 style={{ fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Envíos a todo el país</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>Rápidos y seguros a tu puerta.</p>
-          </div>
-          <div>
-            <MessageCircle size={32} style={{ margin: '0 auto 1rem', color: 'var(--color-gold)' }} />
-            <h4 style={{ fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Atención Personalizada</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>Te ayudamos a elegir tu esencia.</p>
-          </div>
-          <div>
-            <ShieldCheck size={32} style={{ margin: '0 auto 1rem', color: 'var(--color-gold)' }} />
-            <h4 style={{ fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Compra Segura</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>Tus datos están protegidos.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. VISÍTANOS (Sedes) */}
-      <section className="section-padding container" style={{ borderTop: '1px solid var(--color-gray-light)' }}>
-        <h2 className="title-medium text-center" style={{ fontFamily: 'var(--font-serif)', marginBottom: '3rem' }}>Visítanos</h2>
-        <div className="product-carousel" style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '2rem', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-          
-          {/* Sede Palmira */}
-          <div style={{ minWidth: '300px', flex: '1', border: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-white)', overflow: 'hidden' }}>
-            <div style={{ height: '250px', backgroundImage: 'url(https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=800&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-            <div style={{ padding: '2rem' }}>
-              <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Sede Palmira</h3>
-              <p style={{ color: 'var(--color-gray)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Calle 31 #27-44, Palmira</p>
-              <div style={{ fontSize: '0.85rem', color: 'var(--color-gray)', marginBottom: '2rem' }}>
-                <p><strong>L-V:</strong> 09:00 AM — 07:00 PM</p>
-                <p><strong>S:</strong> 09:00 AM — 07:00 PM</p>
+      {/* ════ 7. BENEFICIOS ════ */}
+      <section className="section-padding">
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem', textAlign: 'center' }}>
+            {[
+              { icon: <CheckCircle size={28} />, title: 'Fragancias Originales', desc: '100% auténticas y garantizadas.' },
+              { icon: <Truck size={28} />, title: 'Envíos a todo el país', desc: 'Rápidos y seguros a tu puerta.' },
+              { icon: <MessageCircle size={28} />, title: 'Atención Personalizada', desc: 'Te ayudamos a elegir tu esencia.' },
+              { icon: <ShieldCheck size={28} />, title: 'Compra Segura', desc: 'Tus datos están protegidos.' },
+            ].map(b => (
+              <div key={b.title}>
+                <div style={{ color: 'var(--color-gold)', display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>{b.icon}</div>
+                <h4 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', fontFamily: 'var(--font-sans)', fontWeight: '600' }}>{b.title}</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>{b.desc}</p>
               </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <a href="#" className="btn-secondary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>CÓMO LLEGAR</a>
-                <a href="#" className="btn-primary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>WHATSAPP</a>
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Sede Llanogrande */}
-          <div style={{ minWidth: '300px', flex: '1', border: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-white)', overflow: 'hidden' }}>
-            <div style={{ height: '250px', backgroundImage: 'url(https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=800&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-            <div style={{ padding: '2rem' }}>
-              <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Sede Llanogrande</h3>
-              <p style={{ color: 'var(--color-gray)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Centro Comercial Llanogrande</p>
-              <div style={{ fontSize: '0.85rem', color: 'var(--color-gray)', marginBottom: '2rem' }}>
-                <p><strong>L-J:</strong> 10:30 AM — 08:00 PM</p>
-                <p><strong>V-S:</strong> 10:30 AM — 08:30 PM</p>
-                <p><strong>D-F:</strong> 11:00 AM — 07:30 PM</p>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <a href="#" className="btn-secondary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>CÓMO LLEGAR</a>
-                <a href="#" className="btn-primary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>WHATSAPP</a>
-              </div>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      {/* 10. FORMAS DE PAGO */}
-      <section style={{ backgroundColor: 'var(--color-cream)', padding: '4rem 0' }}>
+      {/* ════ 8. VISÍTANOS ════ */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Encuéntranos</p>
+            <h2 className="title-md">Visítanos</h2>
+            <p style={{ color: 'var(--color-gray)', marginTop: '0.75rem', fontSize: '0.95rem' }}>Encuentra nuestras tiendas y recibe atención personalizada.</p>
+          </div>
+
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '1.5rem' }}>
+            {[
+              {
+                name: 'Sede Palmira',
+                address: 'Calle 31 #27-44, Palmira',
+                hours: 'L–V: 9 AM – 7 PM  |  S: 9 AM – 7 PM',
+                img: 'https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=700&auto=format&fit=crop',
+                maps: '#',
+                wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Sede%20Palmira',
+              },
+              {
+                name: 'C.C. Llanogrande',
+                address: 'Centro Comercial Llanogrande',
+                hours: 'L–J: 10:30 AM – 8 PM  |  V–S: 10:30 AM – 8:30 PM  |  D–F: 11 AM – 7:30 PM',
+                img: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=700&auto=format&fit=crop',
+                maps: '#',
+                wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Llanogrande',
+              },
+            ].map(s => (
+              <div key={s.name} style={{ flex: '0 0 320px', flexGrow: 1, background: '#fff', overflow: 'hidden', border: '1px solid var(--color-gray-light)' }}>
+                <div style={{ height: '220px', overflow: 'hidden' }}>
+                  <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ padding: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem' }}>{s.name}</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)', marginBottom: '0.5rem' }}>{s.address}</p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--color-gray)', marginBottom: '1.5rem', lineHeight: '1.7' }}>{s.hours}</p>
+                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    <a href={s.maps} className="btn-secondary" style={{ flex: 1, padding: '0.65rem', fontSize: '0.72rem', textAlign: 'center' }}>CÓMO LLEGAR</a>
+                    <a href={s.wa} target="_blank" rel="noreferrer" className="btn-primary" style={{ flex: 1, padding: '0.65rem', fontSize: '0.72rem', textAlign: 'center' }}>WHATSAPP</a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════ 9. FORMAS DE PAGO ════ */}
+      <section className="section-padding">
         <div className="container text-center">
-          <h2 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Formas de Pago</h2>
+          <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Flexibilidad para ti</p>
+          <h2 className="title-md" style={{ marginBottom: '0.75rem' }}>Formas de Pago</h2>
           <p style={{ color: 'var(--color-gray)', marginBottom: '3rem', fontSize: '0.9rem' }}>Elige la opción que más se adapte a ti.</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1.5rem' }}>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', minWidth: '180px', border: '1px solid var(--color-gray-light)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Transferencia
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', minWidth: '180px', border: '1px solid var(--color-gray-light)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Efectivo
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', minWidth: '180px', border: '1px solid var(--color-gray-light)', position: 'relative', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-gray)' }}>
-              <div style={{ position: 'absolute', top: '-10px', right: '-10px', backgroundColor: 'var(--color-black)', color: 'white', fontSize: '0.6rem', padding: '0.3rem 0.6rem', borderRadius: '12px', letterSpacing: '1px' }}>PRÓXIMAMENTE</div>
-              Pago en Línea
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+            {[
+              { label: 'Transferencia Bancaria', icon: '🏦', available: true },
+              { label: 'Pago en Efectivo', icon: '💵', available: true },
+              { label: 'Pago en Línea', icon: '💳', available: false },
+            ].map(m => (
+              <div key={m.label} style={{
+                padding: '2rem 2.5rem',
+                border: '1px solid var(--color-gray-light)',
+                minWidth: '180px',
+                position: 'relative',
+                opacity: m.available ? 1 : 0.65,
+              }}>
+                <div style={{ fontSize: '1.8rem', marginBottom: '0.75rem' }}>{m.icon}</div>
+                <p style={{ fontSize: '0.85rem', fontWeight: '500', letterSpacing: '0.5px' }}>{m.label}</p>
+                {!m.available && (
+                  <span style={{
+                    position: 'absolute', top: '-10px', right: '-10px',
+                    background: '#111', color: '#fff',
+                    fontSize: '0.6rem', padding: '0.25rem 0.6rem',
+                    borderRadius: '20px', letterSpacing: '1px',
+                  }}>PRÓXIMAMENTE</span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <style>{`
-        .quick-categories::-webkit-scrollbar, .product-carousel::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 };
 
-// Componente para la Tarjeta de Producto rediseñada
-const ProductCard = ({ product }) => (
-  <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-    <Link to={`/producto/${product.id}`} style={{ position: 'relative', paddingBottom: '125%', overflow: 'hidden', backgroundColor: 'var(--color-cream)', marginBottom: '1rem' }}>
-      <img src={product.image} alt={product.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-    </Link>
-    <button style={{ position: 'absolute', top: '10px', right: '10px', color: 'var(--color-black)', backgroundColor: 'rgba(255,255,255,0.8)', padding: '8px', borderRadius: '50%' }}>
-      <Heart size={18} />
-    </button>
-    <Link to={`/producto/${product.id}`} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <p style={{ fontSize: '0.75rem', color: 'var(--color-gray)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.2rem' }}>{product.brand}</p>
-      <h3 style={{ fontSize: '1rem', marginBottom: '0.2rem', fontFamily: 'var(--font-sans)', fontWeight: '400' }}>{product.name}</h3>
-      <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', marginBottom: '0.5rem' }}>100 ml</p>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-        <p style={{ fontWeight: '500' }}>${product.price}</p>
-        <button style={{ padding: '0.4rem 0.8rem', border: '1px solid var(--color-black)', backgroundColor: 'transparent', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Agregar</button>
+/* ── Shared Product Card Component ── */
+export const ProductCard = ({ product, onFav, fav, onAdd }) => (
+  <div className="product-card">
+    <div className="product-card__image-wrap">
+      <Link to={`/producto/${product.id}`}>
+        <img src={product.image} alt={product.name} />
+      </Link>
+      <button
+        className="product-card__fav"
+        onClick={onFav}
+        aria-label="Favorito"
+        style={{ border: 'none', cursor: 'pointer' }}
+      >
+        <Heart
+          size={16}
+          fill={fav ? 'var(--color-gold)' : 'none'}
+          stroke={fav ? 'var(--color-gold)' : 'var(--color-gray-dark)'}
+        />
+      </button>
+    </div>
+    <div className="product-card__info">
+      <p className="product-card__brand">{product.brand}</p>
+      <Link to={`/producto/${product.id}`}>
+        <p className="product-card__name">{product.name}</p>
+      </Link>
+      <p className="product-card__size">{product.sizes?.[0] || '100 ml'}</p>
+      <div className="product-card__footer">
+        <span className="product-card__price">${product.price.toLocaleString()}</span>
+        <button className="product-card__btn" onClick={onAdd}>AGREGAR</button>
       </div>
-    </Link>
+    </div>
   </div>
 );
 

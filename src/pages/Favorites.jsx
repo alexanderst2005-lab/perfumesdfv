@@ -1,49 +1,50 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { Trash2, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
+import { ProductCard } from './Home';
 
 const Favorites = () => {
-  const { favorites, toggleFavorite, addToCart } = useShop();
+  const { favorites, toggleFavorite, addToCart, isFavorite } = useShop();
 
   return (
-    <div className="container section-padding" style={{ minHeight: '60vh' }}>
-      <h1 className="title-medium text-center" style={{ marginBottom: '3rem' }}>Mis Favoritos</h1>
-      
+    <div className="container" style={{ paddingTop: '4rem', paddingBottom: '5rem', minHeight: '60vh' }}>
+      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>Tu selección</p>
+        <h1 className="title-md">Favoritos</h1>
+      </div>
+
       {favorites.length === 0 ? (
-        <div className="text-center">
-          <p style={{ color: 'var(--color-gray)', marginBottom: '2rem' }}>Aún no tienes perfumes en tus favoritos.</p>
-          <Link to="/tienda" className="btn-primary">Explorar Colección</Link>
+        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <Heart size={48} style={{ margin: '0 auto 1.5rem', color: 'var(--color-gray-light)', display: 'block' }} />
+          <p style={{ color: 'var(--color-gray)', marginBottom: '2rem', fontSize: '1rem' }}>
+            Guarda aquí tus fragancias favoritas.
+          </p>
+          <Link to="/tienda" className="btn-primary">EXPLORAR PERFUMES</Link>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
-          {favorites.map(product => (
-            <div key={product.id} style={{ border: '1px solid var(--color-gray-light)', padding: '1rem', position: 'relative' }}>
-              <button 
-                onClick={() => toggleFavorite(product)}
-                style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 2, backgroundColor: 'var(--color-white)', padding: '0.5rem', borderRadius: '50%' }}
-              >
-                <Trash2 size={18} color="var(--color-gray)" />
-              </button>
-              
-              <Link to={`/producto/${product.id}`} style={{ display: 'block', textAlign: 'center', marginBottom: '1rem' }}>
-                <img src={product.image} alt={product.name} style={{ width: '100%', height: '300px', objectFit: 'cover', marginBottom: '1rem' }} />
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', textTransform: 'uppercase' }}>{product.brand}</p>
-                <h3 style={{ fontSize: '1.2rem', margin: '0.5rem 0' }}>{product.name}</h3>
-                <p style={{ fontWeight: '500' }}>${product.price}</p>
-              </Link>
-              
-              <button 
-                className="btn-secondary" 
-                style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', padding: '0.8rem' }}
-                onClick={() => addToCart(product, 1, product.sizes[0])}
-              >
-                <ShoppingBag size={18} /> Agregar
-              </button>
-            </div>
-          ))}
-        </div>
+        <>
+          <p style={{ color: 'var(--color-gray)', marginBottom: '2rem', fontSize: '0.85rem' }}>
+            {favorites.length} {favorites.length === 1 ? 'fragancia guardada' : 'fragancias guardadas'}
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }} className="fav-grid">
+            {favorites.map(p => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                onFav={() => toggleFavorite(p)}
+                fav={isFavorite(p.id)}
+                onAdd={() => addToCart(p, 1, p.sizes[0])}
+              />
+            ))}
+          </div>
+        </>
       )}
+
+      <style>{`
+        @media (max-width: 1024px) { .fav-grid { grid-template-columns: repeat(3,1fr) !important; } }
+        @media (max-width: 768px)  { .fav-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; } }
+      `}</style>
     </div>
   );
 };

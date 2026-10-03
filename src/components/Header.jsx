@@ -5,212 +5,186 @@ import { useShop } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnnouncementBar from './AnnouncementBar';
 
+const HEADER_H = 70;
+const ANNOUNCE_H = 36;
+
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { cartCount, favorites, setIsCartOpen } = useShop();
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const isHome = location.pathname === '/';
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const isSolid = !isHomePage || isScrolled;
-
-  const headerContainerStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-  };
-
-  const headerStyle = {
-    height: '80px',
-    backgroundColor: isSolid ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
-    backdropFilter: isSolid ? 'blur(10px)' : 'none',
-    boxShadow: isSolid ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
-    color: isSolid ? 'var(--color-black)' : 'var(--color-white)',
-    transition: 'var(--transition-smooth)',
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-  };
+  const solid = !isHome || scrolled;
 
   const navLinks = [
-    { name: 'Tienda', path: '/tienda' },
-    { name: 'Hombre', path: '/tienda?category=Hombre' },
-    { name: 'Mujer', path: '/tienda?category=Mujer' },
-    { name: 'Unisex', path: '/tienda?category=Unisex' },
-    { name: 'Marcas', path: '/tienda?category=Marcas' },
-    { name: 'Ofertas', path: '/tienda?offers=true' }
+    { label: 'Tienda',   path: '/tienda' },
+    { label: 'Hombre',   path: '/tienda?category=Hombre' },
+    { label: 'Mujer',    path: '/tienda?category=Mujer' },
+    { label: 'Unisex',   path: '/tienda?category=Unisex' },
+    { label: 'Marcas',   path: '/tienda?category=Marcas' },
+    { label: 'Ofertas',  path: '/tienda?offers=true' },
   ];
 
   return (
     <>
-      <div style={headerContainerStyle}>
+      {/* ── Container (fixed, stacks AnnouncementBar + header) ── */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
         <AnnouncementBar />
-        <header style={headerStyle}>
-          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            
-            {/* Mobile Menu Button (Left) */}
-            <div className="mobile-header-left" style={{ flex: 1, display: 'none' }}>
-              <button style={{ color: 'inherit' }} onClick={() => setIsMobileMenuOpen(true)}>
+
+        <header style={{
+          height: `${HEADER_H}px`,
+          backgroundColor: solid ? 'rgba(255,255,255,0.97)' : 'transparent',
+          backdropFilter: solid ? 'blur(12px)' : 'none',
+          borderBottom: solid ? '1px solid var(--color-gray-light)' : 'none',
+          color: solid ? 'var(--color-black)' : '#fff',
+          transition: 'background-color 0.3s ease, color 0.3s ease, border 0.3s ease',
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+        }}>
+          <div style={{
+            maxWidth: '1400px',
+            margin: '0 auto',
+            padding: '0 2.5rem',
+            width: '100%',
+            display: 'grid',
+            gridTemplateColumns: '1fr auto 1fr',
+            alignItems: 'center',
+            gap: '1rem',
+          }}>
+
+            {/* LEFT — Hamburger (mobile) + Desktop Nav */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+              {/* Mobile hamburger */}
+              <button
+                className="mobile-only"
+                aria-label="Menú"
+                style={{ color: 'inherit' }}
+                onClick={() => setMenuOpen(true)}
+              >
                 <Menu size={24} />
               </button>
-            </div>
 
-            {/* Logo (Left on Desktop, Centered on Mobile) */}
-            <div className="header-logo-container" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-              <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
-                <img 
-                  src="/logo.png" 
-                  alt="DFV Perfumes" 
-                  style={{ 
-                    height: '54px', 
-                    width: '54px',
-                    objectFit: 'cover',
-                    borderRadius: '50%',
-                    display: 'block'
-                  }} 
-                />
-              </Link>
-            </div>
-
-            {/* Desktop Nav (Centered) */}
-            <nav className="desktop-nav" style={{ flex: 2, display: 'flex', justifyContent: 'center' }}>
-              <ul style={{ display: 'flex', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
-                {navLinks.map((link) => (
-                  <li key={link.name}>
-                    <Link to={link.path} style={{ color: 'inherit', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '500' }}>
-                      {link.name}
-                    </Link>
-                  </li>
+              {/* Desktop nav */}
+              <nav className="desktop-only" style={{ display: 'flex', gap: '1.8rem' }}>
+                {navLinks.map(l => (
+                  <Link
+                    key={l.label}
+                    to={l.path}
+                    style={{
+                      fontSize: '0.78rem',
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase',
+                      color: 'inherit',
+                      fontWeight: '500',
+                      opacity: 0.85,
+                    }}
+                  >
+                    {l.label}
+                  </Link>
                 ))}
-              </ul>
-            </nav>
+              </nav>
+            </div>
 
-            {/* Icons (Right) */}
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1.2rem' }}>
-              <button style={{ color: 'inherit' }}><Search size={22} /></button>
-              
-              <Link to="/favoritos" style={{ position: 'relative', color: 'inherit' }}>
-                <Heart size={22} />
+            {/* CENTER — Logo */}
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img
+                src="/logo.png"
+                alt="DFV Perfumes"
+                style={{ height: '52px', width: 'auto', objectFit: 'contain', display: 'block', maxWidth: '160px' }}
+              />
+            </Link>
+
+            {/* RIGHT — Icons */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem' }}>
+              <button style={{ color: 'inherit' }} aria-label="Buscar"><Search size={20} /></button>
+
+              <Link to="/favoritos" style={{ position: 'relative', color: 'inherit' }} aria-label="Favoritos">
+                <Heart size={20} />
                 {favorites.length > 0 && (
-                  <span style={{ position: 'absolute', top: '-6px', right: '-8px', background: 'var(--color-gold)', color: '#fff', fontSize: '10px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {favorites.length}
-                  </span>
+                  <span style={badgeStyle}>{favorites.length}</span>
                 )}
               </Link>
-              
-              <button style={{ position: 'relative', color: 'inherit' }} onClick={() => setIsCartOpen(true)}>
-                <ShoppingBag size={22} />
-                {cartCount > 0 && (
-                  <span style={{ position: 'absolute', top: '-6px', right: '-8px', background: 'var(--color-gold)', color: '#fff', fontSize: '10px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {cartCount}
-                  </span>
-                )}
+
+              <button
+                style={{ position: 'relative', color: 'inherit' }}
+                aria-label="Carrito"
+                onClick={() => setIsCartOpen(true)}
+              >
+                <ShoppingBag size={20} />
+                {cartCount > 0 && <span style={badgeStyle}>{cartCount}</span>}
               </button>
             </div>
-            
+
           </div>
         </header>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* ── Mobile side menu ── */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div 
-            initial={{ x: '-100%' }} 
-            animate={{ x: 0 }} 
-            exit={{ x: '-100%' }}
-            style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: '300px', backgroundColor: 'var(--color-white)', zIndex: 2000, padding: '2rem', boxShadow: '2px 0 10px rgba(0,0,0,0.1)' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3rem' }}>
-              <Link to="/" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 'bold' }} onClick={() => setIsMobileMenuOpen(false)}>DFV PERFUMES</Link>
-              <button onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
-            </div>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.1rem', textTransform: 'uppercase', color: 'var(--color-black)' }}>Inicio</Link>
-              {navLinks.map(link => (
-                <Link key={link.name} to={link.path} onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.1rem', textTransform: 'uppercase', color: 'var(--color-black)' }}>
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-          </motion.div>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1998 }}
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.28 }}
+              style={{
+                position: 'fixed', top: 0, left: 0, bottom: 0,
+                width: '280px', backgroundColor: '#fff', zIndex: 1999,
+                padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                <img src="/logo.png" alt="DFV Perfumes" style={{ height: '40px', objectFit: 'contain' }} />
+                <button onClick={() => setMenuOpen(false)}><X size={22} /></button>
+              </div>
+              <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                <Link to="/" onClick={() => setMenuOpen(false)} style={menuLinkStyle}>Inicio</Link>
+                {navLinks.map(l => (
+                  <Link key={l.label} to={l.path} onClick={() => setMenuOpen(false)} style={menuLinkStyle}>
+                    {l.label}
+                  </Link>
+                ))}
+              </nav>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-
-
-
-      <style>{`
-        .mobile-bottom-nav {
-          display: none;
-        }
-
-        @media (max-width: 768px) {
-          .desktop-nav { display: none !important; }
-          .mobile-header-left { display: flex !important; }
-          .header-logo-container { justify-content: center !important; }
-          
-          .mobile-bottom-nav {
-            display: flex;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 65px;
-            background-color: var(--color-black);
-            color: var(--color-white);
-            z-index: 999;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: env(safe-area-inset-bottom);
-          }
-          
-          .bottom-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            color: var(--color-white);
-            font-size: 0.6rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            width: 25%;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-          }
-          .bottom-nav-item:active {
-            color: var(--color-gold);
-          }
-          .bottom-nav-badge {
-            position: absolute;
-            top: -5px;
-            right: -8px;
-            background: var(--color-gold);
-            color: white;
-            font-size: 9px;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-        }
-      `}</style>
     </>
   );
+};
+
+const badgeStyle = {
+  position: 'absolute', top: '-7px', right: '-9px',
+  background: 'var(--color-gold)', color: '#fff',
+  fontSize: '9px', minWidth: '16px', height: '16px',
+  borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+  fontWeight: '600',
+};
+
+const menuLinkStyle = {
+  fontSize: '1rem',
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
+  color: 'var(--color-black)',
+  fontWeight: '400',
+  padding: '0.3rem 0',
+  borderBottom: '1px solid var(--color-gray-light)',
 };
 
 export default Header;

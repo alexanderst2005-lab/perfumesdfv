@@ -1,21 +1,23 @@
 import React from 'react';
 
-const AnnouncementBar = () => {
-  const messages = [
-    "✦ ATENCIÓN PERSONALIZADA",
-    "✦ ENVÍOS A TODO EL PAÍS",
-    "✦ ASESORÍA PARA ELEGIR TU FRAGANCIA",
-    "✦ COMPRA SEGURA",
-    "✦ EMPAQUE ESPECIAL"
-  ];
+const items = [
+  'ATENCIÓN PERSONALIZADA',
+  'ENVÍOS A TODO EL PAÍS',
+  'ASESORÍA PARA ELEGIR TU FRAGANCIA',
+  'COMPRA SEGURA',
+  'EMPAQUE ESPECIAL',
+];
 
-  const duplicatedMessages = [...messages, ...messages, ...messages]; // Duplicate to ensure smooth loop
+const AnnouncementBar = () => {
+  // Build one long string, then duplicate it exactly once for seamless loop
+  const single = items.map(i => `✦ ${i}`).join('   ·   ');
+  const content = `${single}   ·   ${single}`;
 
   return (
     <div style={{
-      backgroundColor: '#050505',
-      color: 'var(--color-white)',
-      height: '35px',
+      backgroundColor: '#0a0a0a',
+      color: '#fff',
+      height: '36px',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
@@ -23,33 +25,15 @@ const AnnouncementBar = () => {
       zIndex: 1001,
       width: '100%',
       fontFamily: 'var(--font-sans)',
-      fontSize: '0.75rem',
-      letterSpacing: '1px'
+      fontSize: '0.7rem',
+      letterSpacing: '1.5px',
+      userSelect: 'none',
     }}>
-      <div className="marquee-content">
-        {duplicatedMessages.map((msg, index) => (
-          <span key={index} style={{
-            marginRight: '3rem',
-            whiteSpace: 'nowrap',
-            display: 'inline-flex',
-            alignItems: 'center'
-          }}>
-            <span style={{ color: 'var(--color-gold)', marginRight: '0.5rem' }}>✦</span>
-            {msg.replace('✦', '').trim()}
-          </span>
-        ))}
+      <div className="marquee-track" style={{ whiteSpace: 'nowrap' }}>
+        {content}
+        &nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+        {content}
       </div>
-      <style>{`
-        .marquee-content {
-          display: flex;
-          animation: marquee 30s linear infinite;
-          width: max-content;
-        }
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-33.33%); }
-        }
-      `}</style>
     </div>
   );
 };

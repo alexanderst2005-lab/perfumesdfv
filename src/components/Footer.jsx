@@ -1,61 +1,84 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Footer = () => {
-  return (
-    <footer style={{ backgroundColor: 'var(--color-black)', color: 'var(--color-white)', padding: '5rem 0 3rem 0', marginTop: 'auto', borderTop: '1px solid #222' }}>
-      <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem', marginBottom: '4rem' }}>
+const Footer = () => (
+  <footer style={{ backgroundColor: '#111', color: '#fff', padding: '5rem 0 3rem' }}>
+    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2.5rem' }}>
+
+      {/* Top grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '4rem', marginBottom: '4rem' }}>
+
+        {/* Brand */}
         <div>
-          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem', letterSpacing: '2px' }}>DFV PERFUMES</h3>
-          <p style={{ color: 'var(--color-gray-light)', fontSize: '0.9rem', marginBottom: '2rem' }}>Tu esencia, tu identidad.<br/>Perfumes que hablan de ti.</p>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <a href="#" style={{ color: 'var(--color-white)', opacity: 0.8 }}>Instagram</a>
-            <a href="#" style={{ color: 'var(--color-white)', opacity: 0.8 }}>Facebook</a>
-            <a href="#" style={{ color: 'var(--color-white)', opacity: 0.8 }}>TikTok</a>
+          <img src="/logo.png" alt="DFV Perfumes" style={{ height: '56px', objectFit: 'contain', marginBottom: '1.25rem' }} />
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.88rem', lineHeight: '1.8', maxWidth: '260px' }}>
+            Tu esencia, tu identidad.<br />Fragancias que cuentan tu historia.
+          </p>
+          <div style={{ display: 'flex', gap: '1.25rem', marginTop: '1.5rem' }}>
+            {['Instagram', 'Facebook', 'TikTok'].map(s => (
+              <a key={s} href="#" style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.target.style.color = '#fff'}
+                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+              >{s}</a>
+            ))}
           </div>
         </div>
-        
+
+        {/* Tienda */}
         <div>
-          <h4 style={{ marginBottom: '1.5rem', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray-light)' }}>Tienda</h4>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            <li><Link to="/tienda" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Todos los productos</Link></li>
-            <li><Link to="/tienda?category=Hombre" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Hombre</Link></li>
-            <li><Link to="/tienda?category=Mujer" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Mujer</Link></li>
-            <li><Link to="/tienda?category=Unisex" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Unisex</Link></li>
-            <li><Link to="/tienda?category=Marcas" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Marcas</Link></li>
-            <li><Link to="/tienda?category=Ofertas" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Ofertas</Link></li>
+          <h4 style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.25rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>Tienda</h4>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            {[['Todos', '/tienda'], ['Hombre', '/tienda?category=Hombre'], ['Mujer', '/tienda?category=Mujer'], ['Unisex', '/tienda?category=Unisex'], ['Ofertas', '/tienda?offers=true']].map(([l, p]) => (
+              <li key={l}><Link to={p} style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>{l}</Link></li>
+            ))}
           </ul>
         </div>
-        
+
+        {/* Ayuda */}
         <div>
-          <h4 style={{ marginBottom: '1.5rem', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray-light)' }}>Ayuda</h4>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            <li><Link to="#" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Envíos</Link></li>
-            <li><Link to="#" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Cambios y devoluciones</Link></li>
-            <li><Link to="#" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Preguntas frecuentes</Link></li>
-            <li><Link to="#" style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Contacto</Link></li>
+          <h4 style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.25rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>Ayuda</h4>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            {['Envíos', 'Cambios y devoluciones', 'Preguntas frecuentes', 'Contacto'].map(i => (
+              <li key={i}><a href="#" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>{i}</a></li>
+            ))}
           </ul>
         </div>
-        
+
+        {/* Contacto */}
         <div>
-          <h4 style={{ marginBottom: '1.5rem', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray-light)' }}>Contacto</h4>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            <li style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>WhatsApp: +57 300 000 0000</li>
-            <li style={{ color: 'var(--color-white)', fontSize: '0.9rem', opacity: 0.8 }}>Correo: info@dfvperfumes.com</li>
+          <h4 style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.25rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>Contacto</h4>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            <li style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>WhatsApp: +57 300 000 0000</li>
+            <li style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem' }}>info@dfvperfumes.com</li>
           </ul>
         </div>
       </div>
-      
-      <div className="container" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <p style={{ color: 'var(--color-gray)', fontSize: '0.8rem' }}>&copy; {new Date().getFullYear()} DFV PERFUMES. Todos los derechos reservados.</p>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link to="#" style={{ color: 'var(--color-gray)', fontSize: '0.8rem' }}>Términos y condiciones</Link>
-          <Link to="#" style={{ color: 'var(--color-gray)', fontSize: '0.8rem' }}>Política de privacidad</Link>
-          <Link to="#" style={{ color: 'var(--color-gray)', fontSize: '0.8rem' }}>Política de envíos</Link>
+
+      {/* Bottom bar */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
+        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.78rem' }}>
+          &copy; {new Date().getFullYear()} DFV PERFUMES. Todos los derechos reservados.
+        </p>
+        <div style={{ display: 'flex', gap: '1.5rem' }}>
+          {['Términos y condiciones', 'Política de privacidad', 'Política de envíos'].map(l => (
+            <a key={l} href="#" style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.78rem' }}>{l}</a>
+          ))}
         </div>
       </div>
-    </footer>
-  );
-};
+    </div>
+
+    <style>{`
+      @media (max-width: 768px) {
+        footer > div > div:first-child {
+          grid-template-columns: 1fr 1fr !important;
+          gap: 2.5rem !important;
+        }
+        footer > div > div:first-child > div:first-child {
+          grid-column: 1 / -1;
+        }
+      }
+    `}</style>
+  </footer>
+);
 
 export default Footer;

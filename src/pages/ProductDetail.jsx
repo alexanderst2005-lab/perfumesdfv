@@ -1,145 +1,196 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { products } from '../data/mockProducts';
 import { useShop } from '../context/ShopContext';
+import { ProductCard } from './Home';
+
+const TOTAL_HEADER = 106;
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart, toggleFavorite, isFavorite } = useShop();
-  
   const product = products.find(p => p.id === id);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0]);
-  const [quantity, setQuantity] = useState(1);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Fake array of images for the gallery
-  const productImages = [product?.image, product?.image, product?.image];
+  const [size, setSize] = useState(product?.sizes?.[0]);
+  const [qty, setQty] = useState(1);
+  const [imgIdx, setImgIdx] = useState(0);
 
-  if (!product) return <div className="container section-padding text-center">Producto no encontrado</div>;
+  if (!product) return (
+    <div style={{ paddingTop: `${TOTAL_HEADER + 40}px`, textAlign: 'center', padding: '5rem 1rem', color: 'var(--color-gray)' }}>
+      Producto no encontrado. <Link to="/tienda" style={{ borderBottom: '1px solid' }}>Volver a la tienda</Link>
+    </div>
+  );
 
-  const nextImage = () => setCurrentImageIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
-  const prevImage = () => setCurrentImageIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1));
-
-  const handleAddToCart = () => {
-    addToCart(product, quantity, selectedSize);
-  };
+  const images = [product.image, product.image, product.image];
+  const related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
 
   return (
-    <div className="container section-padding">
-      <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem' }}>
-        
-        {/* Left: Image Gallery */}
-        <div className="product-image-container" style={{ position: 'relative' }}>
-          <div style={{ backgroundColor: 'var(--color-cream)', position: 'relative', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '8px' }}>
-            <img src={productImages[currentImageIndex]} alt={product.name} className="product-image" style={{ width: '100%', height: '100%', maxHeight: '500px', objectFit: 'cover' }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
-            <button onClick={prevImage} style={{ padding: '0.5rem' }}><ChevronLeft size={20} /></button>
-            <span style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>{currentImageIndex + 1} / {productImages.length}</span>
-            <button onClick={nextImage} style={{ padding: '0.5rem' }}><ChevronRight size={20} /></button>
-          </div>
-        </div>
+    <div style={{ paddingTop: `${TOTAL_HEADER}px` }}>
 
-        {/* Right: Info */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p style={{ textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            {product.brand}
-          </p>
-          <h1 className="title-medium" style={{ marginBottom: '1rem' }}>{product.name}</h1>
-          <p style={{ color: 'var(--color-gray)', marginBottom: '2rem' }}>⭐⭐⭐⭐⭐ 4.9 | 25 reseñas</p>
-          
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '2rem' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: '500' }}>${product.price}</span>
-            {product.oldPrice && (
-              <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '1.1rem' }}>
-                ${product.oldPrice}
+      {/* Back */}
+      <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '0.5rem' }}>
+        <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', letterSpacing: '1px', color: 'var(--color-gray)', textTransform: 'uppercase' }}>
+          <ArrowLeft size={14} /> Perfumes
+        </Link>
+      </div>
+
+      {/* Main Grid */}
+      <div className="container" style={{ paddingTop: '2rem', paddingBottom: '5rem' }}>
+        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '5rem', alignItems: 'start' }}>
+
+          {/* Gallery */}
+          <div>
+            <div style={{ position: 'relative', backgroundColor: 'var(--color-cream)', overflow: 'hidden', aspectRatio: '1/1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img
+                src={images[imgIdx]}
+                alt={product.name}
+                style={{ width: '80%', height: '80%', objectFit: 'contain' }}
+              />
+              <button onClick={() => setImgIdx(i => (i === 0 ? images.length - 1 : i - 1))}
+                style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.85)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ChevronLeft size={18} />
+              </button>
+              <button onClick={() => setImgIdx(i => (i === images.length - 1 ? 0 : i + 1))}
+                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.85)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ChevronRight size={18} />
+              </button>
+              <span style={{ position: 'absolute', bottom: '1rem', right: '1rem', fontSize: '0.75rem', color: 'var(--color-gray)', letterSpacing: '1px' }}>
+                {imgIdx + 1} / {images.length}
               </span>
-            )}
-          </div>
-
-          <div style={{ marginBottom: '2rem' }}>
-            <p style={{ marginBottom: '1rem', fontWeight: '500' }}>Tamaño</p>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              {product.sizes.map(size => (
-                <button 
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
+            </div>
+            {/* Thumbnails */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setImgIdx(i)}
                   style={{
-                    padding: '0.8rem 1.5rem',
-                    border: `1px solid ${selectedSize === size ? 'var(--color-black)' : 'var(--color-gray-light)'}`,
-                    backgroundColor: selectedSize === size ? 'var(--color-black)' : 'transparent',
-                    color: selectedSize === size ? 'var(--color-white)' : 'var(--color-black)',
+                    width: '80px', height: '80px',
+                    border: `2px solid ${imgIdx === i ? 'var(--color-black)' : 'var(--color-gray-light)'}`,
+                    overflow: 'hidden', backgroundColor: 'var(--color-cream)',
+                    padding: '0.25rem', cursor: 'pointer',
                   }}
                 >
-                  {size}
+                  <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </button>
               ))}
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-            <p style={{ color: 'green', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'green', display: 'inline-block' }}></span>
-              Disponible
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--color-gray-light)', padding: '0.5rem 1rem' }}>
-              <button onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus size={18} /></button>
-              <span style={{ margin: '0 1.5rem', fontWeight: '500' }}>{quantity}</span>
-              <button onClick={() => setQuantity(q => q + 1)}><Plus size={18} /></button>
+          {/* Info */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>{product.brand}</p>
+              <h1 className="title-md" style={{ marginBottom: '0.5rem' }}>{product.name}</h1>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>{product.concentration}</p>
             </div>
-            <button className="btn-primary" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }} onClick={handleAddToCart}>
-              <ShoppingBag size={18} /> AGREGAR AL CARRITO
-            </button>
-          </div>
 
-          <button 
-            onClick={() => toggleFavorite(product)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: isFavorite(product.id) ? 'var(--color-gold)' : 'var(--color-gray)', marginBottom: '3rem', fontWeight: '500' }}
-          >
-            <Heart size={20} fill={isFavorite(product.id) ? 'var(--color-gold)' : 'none'} /> 
-            {isFavorite(product.id) ? 'EN FAVORITOS' : 'AGREGAR A FAVORITOS'}
-          </button>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
+              <span style={{ fontSize: '1.6rem', fontWeight: '500' }}>${product.price.toLocaleString()}</span>
+              {product.oldPrice && (
+                <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '1.1rem' }}>
+                  ${product.oldPrice.toLocaleString()}
+                </span>
+              )}
+              {product.discount && (
+                <span style={{ backgroundColor: 'var(--color-black)', color: '#fff', fontSize: '0.7rem', padding: '0.2rem 0.5rem', letterSpacing: '1px' }}>
+                  -{product.discount}%
+                </span>
+              )}
+            </div>
 
-          <div style={{ borderTop: '1px solid var(--color-gray-light)', paddingTop: '2rem' }}>
-            <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Descripción</h4>
-            <p style={{ color: 'var(--color-gray)', lineHeight: '1.8' }}>{product.description}</p>
-          </div>
-          
-          <div style={{ marginTop: '2rem' }}>
-            <p><strong>Familia olfativa:</strong> {product.family}</p>
-            <p><strong>Concentración:</strong> {product.concentration}</p>
-            <p><strong>Notas de salida:</strong> {product.notes.top}</p>
-            <p><strong>Notas de corazón:</strong> {product.notes.heart}</p>
-            <p><strong>Notas de fondo:</strong> {product.notes.base}</p>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Relacionados */}
-      <div style={{ marginTop: '5rem' }}>
-        <h3 className="title-medium text-center" style={{ marginBottom: '2rem' }}>También te puede gustar</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '2rem' }}>
-          {products.slice(0, 4).map(p => (
-            <Link key={p.id} to={`/producto/${p.id}`} style={{ textAlign: 'center' }}>
-              <div style={{ backgroundColor: 'var(--color-cream)', marginBottom: '1rem', overflow: 'hidden', borderRadius: '8px' }}>
-                <img src={p.image} alt={p.name} style={{ width: '100%', height: '250px', objectFit: 'cover' }} />
+            {/* Sizes */}
+            {product.sizes?.length > 0 && (
+              <div>
+                <p style={{ fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem', color: 'var(--color-gray)' }}>Presentación</p>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {product.sizes.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setSize(s)}
+                      style={{
+                        padding: '0.5rem 1rem', fontSize: '0.82rem',
+                        border: `1px solid ${size === s ? 'var(--color-black)' : 'var(--color-gray-light)'}`,
+                        backgroundColor: size === s ? 'var(--color-black)' : 'transparent',
+                        color: size === s ? '#fff' : 'var(--color-black)', cursor: 'pointer',
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)' }}>{p.brand}</p>
-              <h4 style={{ fontSize: '1rem' }}>{p.name}</h4>
-              <p>${p.price}</p>
-            </Link>
-          ))}
+            )}
+
+            {/* Quantity */}
+            <div>
+              <p style={{ fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem', color: 'var(--color-gray)' }}>Cantidad</p>
+              <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid var(--color-gray-light)' }}>
+                <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ padding: '0.65rem 1rem' }}><Minus size={16} /></button>
+                <span style={{ padding: '0.65rem 1.25rem', minWidth: '3rem', textAlign: 'center', fontWeight: '500' }}>{qty}</span>
+                <button onClick={() => setQty(q => q + 1)} style={{ padding: '0.65rem 1rem' }}><Plus size={16} /></button>
+              </div>
+            </div>
+
+            {/* CTAs */}
+            <div style={{ display: 'flex', gap: '0.75rem', flexDirection: 'column' }}>
+              <button
+                className="btn-primary"
+                style={{ width: '100%', padding: '1rem', gap: '0.5rem' }}
+                onClick={() => addToCart(product, qty, size)}
+              >
+                <ShoppingBag size={18} /> AGREGAR AL CARRITO
+              </button>
+              <button
+                onClick={() => toggleFavorite(product)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                  width: '100%', padding: '0.9rem',
+                  border: '1px solid var(--color-gray-light)',
+                  color: isFavorite(product.id) ? 'var(--color-gold)' : 'var(--color-gray)',
+                  fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase',
+                  cursor: 'pointer',
+                }}
+              >
+                <Heart size={16} fill={isFavorite(product.id) ? 'var(--color-gold)' : 'none'} />
+                {isFavorite(product.id) ? 'EN FAVORITOS' : 'GUARDAR EN FAVORITOS'}
+              </button>
+            </div>
+
+            {/* Description */}
+            <div style={{ borderTop: '1px solid var(--color-gray-light)', paddingTop: '1.5rem' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)', lineHeight: '1.9', marginBottom: '1.5rem' }}>{product.description}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1.5rem', fontSize: '0.82rem' }}>
+                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Familia</p><p>{product.family}</p></div>
+                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Concentración</p><p>{product.concentration}</p></div>
+                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de salida</p><p>{product.notes?.top}</p></div>
+                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de corazón</p><p>{product.notes?.heart}</p></div>
+                <div style={{ gridColumn: '1/-1' }}><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de fondo</p><p>{product.notes?.base}</p></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Related */}
+      {related.length > 0 && (
+        <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '4rem 0', backgroundColor: 'var(--color-cream)' }}>
+          <div className="container">
+            <h2 className="title-sm text-center" style={{ marginBottom: '3rem' }}>También te puede gustar</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.5rem' }} className="related-grid">
+              {related.map(p => (
+                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes[0])} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <style>{`
         @media (max-width: 768px) {
-          .product-grid { gap: 2rem !important; }
-          .product-image { max-height: 350px !important; }
+          .detail-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+          .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
         }
       `}</style>
     </div>
