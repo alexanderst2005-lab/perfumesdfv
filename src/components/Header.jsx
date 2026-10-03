@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Heart, ShoppingBag, Menu, X, Home as HomeIcon, Grid } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Menu, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnnouncementBar from './AnnouncementBar';
@@ -147,31 +147,7 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="mobile-bottom-nav">
-        <Link to="/" className="bottom-nav-item">
-          <HomeIcon size={20} />
-          <span>INICIO</span>
-        </Link>
-        <Link to="/tienda" className="bottom-nav-item">
-          <Grid size={20} />
-          <span>TIENDA</span>
-        </Link>
-        <Link to="/favoritos" className="bottom-nav-item">
-          <div style={{ position: 'relative' }}>
-            <Heart size={20} />
-            {favorites.length > 0 && <span className="bottom-nav-badge">{favorites.length}</span>}
-          </div>
-          <span>FAVORITOS</span>
-        </Link>
-        <button className="bottom-nav-item" onClick={() => setIsCartOpen(true)}>
-          <div style={{ position: 'relative' }}>
-            <ShoppingBag size={20} />
-            {cartCount > 0 && <span className="bottom-nav-badge">{cartCount}</span>}
-          </div>
-          <span>CARRITO</span>
-        </button>
-      </div>
+
 
       <style>{`
         .mobile-bottom-nav {
