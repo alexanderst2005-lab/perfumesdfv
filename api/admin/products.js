@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 
       // Usually it's better to deactivate than delete to keep order history intact
       const result = await sql`
-        UPDATE products SET active = false WHERE id = ${id} RETURNING *
+        DELETE FROM products WHERE id = ${id} RETURNING *
       `;
       return res.status(200).json({ success: true, product: result[0] });
     } catch (error) {

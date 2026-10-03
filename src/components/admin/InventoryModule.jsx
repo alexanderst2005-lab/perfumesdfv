@@ -97,8 +97,7 @@ const InventoryModule = () => {
 
       const data = await res.json();
       if (data.success) {
-        alert('Producto guardado correctamente. Recarga la página para ver los cambios.');
-        setIsModalOpen(false);
+        window.location.reload();
       } else {
         alert('Error: ' + data.error);
       }
@@ -167,9 +166,9 @@ const InventoryModule = () => {
                     <Edit size={18} />
                   </button>
                   <button onClick={async () => {
-                    if(window.confirm('¿Desactivar producto?')) {
+                    if(window.confirm('¿Seguro que deseas eliminar definitivamente este producto?')) {
                       await fetch('/api/admin/products', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: p.id}) });
-                      alert('Actualiza la página');
+                      window.location.reload();
                     }
                   }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                     <Trash2 size={18} />
