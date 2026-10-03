@@ -239,13 +239,16 @@ const Home = () => {
       {/* ════ 5. SECCIÓN DE ATENCIÓN / TIENDA ════ */}
       <section className="section-padding">
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: '400', color: 'var(--color-black)' }}>
-              Nuestras Boutiques
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
+              Nuestras Sedes
             </h2>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#777', letterSpacing: '0.5px' }}>
+              Visítanos y encuentra tu fragancia ideal.
+            </p>
           </div>
 
-          <div className="no-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+          <div className="sedes-container no-scrollbar">
             {[
               {
                 name: 'Sede Palmira',
@@ -264,23 +267,47 @@ const Home = () => {
                 wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Llanogrande',
               },
             ].map(s => (
-              <div key={s.name} style={{ background: 'var(--color-cream)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ height: '260px', overflow: 'hidden' }}>
+              <div key={s.name} className="sede-card" style={{ border: '1px solid rgba(0,0,0,0.06)', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ aspectRatio: '16/9', overflow: 'hidden' }}>
                   <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div style={{ padding: '2rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', marginBottom: '0.8rem', color: 'var(--color-black)' }}>{s.name}</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--color-gray-dark)', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>{s.address}</p>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', marginBottom: '2rem', lineHeight: '1.7' }}>{s.hours}</p>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <a href={s.maps} style={{ flex: 1, padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', border: '1px solid var(--color-black)', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase' }}>CÓMO LLEGAR</a>
-                    <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', background: 'var(--color-black)', color: 'var(--color-cream)', letterSpacing: '1px', textTransform: 'uppercase' }}>WHATSAPP</a>
+                <div style={{ padding: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem', color: '#222' }}>{s.name}</h3>
+                  <p style={{ fontSize: '0.8rem', color: '#555', marginBottom: '0.2rem', letterSpacing: '0.5px' }}>{s.address}</p>
+                  <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.5rem', lineHeight: '1.6' }}>{s.hours}</p>
+                  <div style={{ display: 'flex', gap: '0.8rem' }}>
+                    <a href={s.maps} style={{ flex: 1, padding: '0.6rem', fontSize: '0.65rem', textAlign: 'center', border: '1px solid #ddd', color: '#333', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>CÓMO LLEGAR</a>
+                    <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.6rem', fontSize: '0.65rem', textAlign: 'center', background: '#111', color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>WHATSAPP</a>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
+
+        <style>{`
+          .sedes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+          }
+          @media (max-width: 768px) {
+            .sedes-container {
+              display: flex;
+              overflow-x: auto;
+              scroll-snap-type: x mandatory;
+              gap: 1rem;
+              padding-bottom: 1.5rem;
+              margin: 0 -1.5rem;
+              padding: 0 1.5rem 1.5rem 1.5rem;
+              -webkit-overflow-scrolling: touch;
+            }
+            .sede-card {
+              flex: 0 0 85%;
+              scroll-snap-align: center;
+            }
+          }
+        `}</style>
       </section>
 
       {/* ════ 6. MÉTODOS DE PAGO ════ */}
