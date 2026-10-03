@@ -33,7 +33,7 @@ const Home = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
           overflow: 'hidden',
           textAlign: 'center',
         }}
@@ -58,7 +58,7 @@ const Home = () => {
           zIndex: 1,
         }} />
 
-        {/* CONTENIDO — alineado al fondo, con paddingBottom mayor para subir los textos */}
+        {/* CONTENIDO — centrado verticalmente */}
         <div style={{
           position: 'relative',
           zIndex: 2,
@@ -66,7 +66,6 @@ const Home = () => {
           width: '100%',
           maxWidth: '600px',
           padding: '0 1.5rem',
-          paddingBottom: '10rem',
         }}>
           <p style={{
             fontSize: '0.65rem',
@@ -104,14 +103,24 @@ const Home = () => {
             to="/tienda"
             style={{
               display: 'inline-block',
-              padding: '0.85rem 2.5rem',
-              border: '1px solid rgba(255,255,255,0.65)',
+              padding: '1.2rem 3rem',
+              border: '1px solid rgba(255,255,255,0.4)',
               color: '#fff',
-              fontSize: '0.72rem',
-              letterSpacing: '2.5px',
+              fontSize: '0.8rem',
+              letterSpacing: '3px',
               textTransform: 'uppercase',
-              backdropFilter: 'blur(8px)',
-              backgroundColor: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(10px)',
+              backgroundColor: 'rgba(0,0,0,0.45)',
+              fontWeight: '500',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'rgba(0,0,0,0.7)';
+              e.target.style.borderColor = 'rgba(255,255,255,0.8)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'rgba(0,0,0,0.45)';
+              e.target.style.borderColor = 'rgba(255,255,255,0.4)';
             }}
           >
             DESCUBRIR COLECCIÓN
