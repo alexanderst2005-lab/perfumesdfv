@@ -163,17 +163,6 @@ const ProductDetail = () => {
               </button>
             </div>
 
-            {/* Description */}
-            <div style={{ backgroundColor: '#FAF9F6', padding: '2rem 1.5rem', margin: '2rem -1rem 0 -1rem' }}>
-              <p style={{ fontSize: '0.95rem', color: '#777', lineHeight: '1.8', marginBottom: '2rem' }}>{product.description}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem 1.5rem', fontSize: '0.85rem' }}>
-                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Familia</p><p style={{ color: '#000' }}>{product.family}</p></div>
-                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Concentración</p><p style={{ color: '#000' }}>{product.concentration}</p></div>
-                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de salida</p><p style={{ color: '#000' }}>{product.notes?.top}</p></div>
-                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de corazón</p><p style={{ color: '#000' }}>{product.notes?.heart}</p></div>
-                <div style={{ gridColumn: '1/-1' }}><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de fondo</p><p style={{ color: '#000' }}>{product.notes?.base}</p></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
