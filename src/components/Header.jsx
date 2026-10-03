@@ -69,7 +69,7 @@ const Header = () => {
 
           {/* Logo */}
           <Link to="/" className="header-logo" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 'bold', letterSpacing: '2px' }}>
-            NÖIT NOIR
+            DFV PERFUMES
           </Link>
 
           {/* Desktop Nav */}

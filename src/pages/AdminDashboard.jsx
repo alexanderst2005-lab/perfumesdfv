@@ -28,8 +28,11 @@ const AdminDashboard = () => {
 
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)' }}>Gestión de Productos</h2>
-            <button className="btn-primary" style={{ padding: '0.8rem 1.5rem' }}>+ NUEVO PRODUCTO</button>
+            <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)' }}>Gestión de la Tienda</h2>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button className="btn-secondary" style={{ padding: '0.8rem 1.5rem' }}>GESTIONAR SEDES</button>
+              <button className="btn-primary" style={{ padding: '0.8rem 1.5rem' }}>+ NUEVO PRODUCTO</button>
+            </div>
           </div>
           
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>

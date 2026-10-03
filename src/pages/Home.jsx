@@ -132,6 +132,79 @@ const Home = () => {
           <Link to="/tienda" className="btn-primary" style={{ marginTop: '1rem' }}>ENCONTRAR PERFUMES</Link>
         </div>
       </section>
+
+      {/* Nuestros Puntos de Venta */}
+      <section className="section-padding container">
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="title-medium">Visítanos</h2>
+          <p style={{ color: 'var(--color-gray)', marginTop: '1rem' }}>Encuentra nuestras tiendas y recibe atención personalizada.</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          {/* Sede Palmira */}
+          <div style={{ border: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-white)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: '250px', backgroundImage: 'url(https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=800&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Sede Palmira</h3>
+              <p style={{ color: 'var(--color-gray)', marginBottom: '1.5rem', fontWeight: '500' }}>Calle 31 #27-44, Palmira</p>
+              
+              <h4 style={{ fontSize: '0.9rem', marginBottom: '1rem', borderBottom: '1px solid var(--color-gray-light)', paddingBottom: '0.5rem' }}>Horario de atención</h4>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-gray)', marginBottom: '2rem', flex: 1 }}>
+                <p><strong>Lunes - Viernes:</strong><br/>09:00 AM — 12:30 PM<br/>02:30 PM — 07:00 PM</p>
+                <p style={{ marginTop: '0.5rem' }}><strong>Sábado:</strong><br/>09:00 AM — 07:00 PM</p>
+                <p style={{ marginTop: '0.5rem' }}><strong>Domingos y festivos:</strong><br/>No hay servicio.</p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
+                <a href="#" className="btn-secondary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>CÓMO LLEGAR</a>
+                <a href="#" className="btn-primary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>CONTACTAR</a>
+              </div>
+            </div>
+          </div>
+
+          {/* Sede Llanogrande */}
+          <div style={{ border: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-white)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: '250px', backgroundImage: 'url(https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=800&auto=format&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Sede Llanogrande</h3>
+              <p style={{ color: 'var(--color-gray)', marginBottom: '1.5rem', fontWeight: '500' }}>Centro Comercial Llanogrande</p>
+              
+              <h4 style={{ fontSize: '0.9rem', marginBottom: '1rem', borderBottom: '1px solid var(--color-gray-light)', paddingBottom: '0.5rem' }}>Horario de atención</h4>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-gray)', marginBottom: '2rem', flex: 1 }}>
+                <p><strong>Lunes — Jueves:</strong><br/>10:30 AM — 08:00 PM</p>
+                <p style={{ marginTop: '0.5rem' }}><strong>Viernes — Sábado:</strong><br/>10:30 AM — 08:30 PM</p>
+                <p style={{ marginTop: '0.5rem' }}><strong>Domingos y festivos:</strong><br/>11:00 AM — 07:30 PM</p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
+                <a href="#" className="btn-secondary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>CÓMO LLEGAR</a>
+                <a href="#" className="btn-primary" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', fontSize: '0.8rem' }}>CONTACTAR</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Formas de Pago */}
+      <section style={{ backgroundColor: 'var(--color-cream)', padding: '4rem 0' }}>
+        <div className="container text-center">
+          <h2 className="title-medium" style={{ marginBottom: '1rem' }}>Formas de Pago</h2>
+          <p style={{ color: 'var(--color-gray)', marginBottom: '3rem' }}>Elige la opción que más se adapte a ti.</p>
+          
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
+            <div style={{ backgroundColor: 'white', padding: '2rem', minWidth: '200px', border: '1px solid var(--color-gray-light)' }}>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Transferencia Bancaria</h4>
+            </div>
+            <div style={{ backgroundColor: 'white', padding: '2rem', minWidth: '200px', border: '1px solid var(--color-gray-light)' }}>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Pago en Efectivo</h4>
+            </div>
+            <div style={{ backgroundColor: 'white', padding: '2rem', minWidth: '200px', border: '1px solid var(--color-gray-light)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-10px', right: '-10px', backgroundColor: 'var(--color-black)', color: 'white', fontSize: '0.7rem', padding: '0.3rem 0.6rem', borderRadius: '12px' }}>PRÓXIMAMENTE</div>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Pago en Línea</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
