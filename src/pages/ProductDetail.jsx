@@ -33,14 +33,7 @@ const ProductDetail = () => {
   const formatD = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
 
   return (
-    <div className="product-page-wrapper" style={{ paddingTop: '1.2rem' }}>
-
-      {/* Back */}
-      <div className="container" style={{ paddingBottom: '0.5rem' }}>
-        <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', letterSpacing: '1px', color: 'var(--color-gray)', textTransform: 'uppercase' }}>
-          <ArrowLeft size={14} /> Volver a Perfumes
-        </Link>
-      </div>
+    <div className="product-page-wrapper" style={{ paddingTop: '0.8rem' }}>
 
       {/* Main Grid */}
       <div className="container product-detail-container" style={{ paddingBottom: '4rem' }}>
@@ -48,23 +41,38 @@ const ProductDetail = () => {
 
           {/* Gallery */}
           <div className="gallery-section">
-            <div className="gallery-main-image" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img
-                src={images[imgIdx]}
-                alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
+            <div 
+              className="gallery-scroll-container no-scrollbar"
+              style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', gap: '1rem', padding: '0 1rem' }}
+              onScroll={(e) => {
+                const scrollLeft = e.target.scrollLeft;
+                const width = e.target.offsetWidth;
+                const newIdx = Math.round(scrollLeft / width);
+                if (newIdx !== imgIdx) setImgIdx(newIdx);
+              }}
+            >
+              {images.map((img, idx) => (
+                <div key={idx} className="gallery-slide" style={{ flex: '0 0 88%', scrollSnapAlign: 'center', position: 'relative', overflow: 'hidden', borderRadius: '4px', backgroundColor: 'var(--color-cream)' }}>
+                  <img src={img} alt={`${product.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              ))}
             </div>
             
-            {/* Gallery Controls */}
+            {/* Gallery Indicator */}
             {images.length > 1 && (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem', color: 'var(--color-gray)' }}>
-                <button onClick={() => setImgIdx(i => (i === 0 ? images.length - 1 : i - 1))} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
-                  <ChevronLeft size={18} />
+                <button onClick={() => {
+                  const container = document.querySelector('.gallery-scroll-container');
+                  if(container) container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
+                }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
+                  <ChevronLeft size={16} />
                 </button>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '2px' }}>{imgIdx + 1} / {images.length}</span>
-                <button onClick={() => setImgIdx(i => (i === images.length - 1 ? 0 : i + 1))} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
-                  <ChevronRight size={18} />
+                <button onClick={() => {
+                  const container = document.querySelector('.gallery-scroll-container');
+                  if(container) container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
+                }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
+                  <ChevronRight size={16} />
                 </button>
               </div>
             )}
@@ -223,15 +231,18 @@ const ProductDetail = () => {
       )}
 
       <style>{`
-        .gallery-main-image {
+        .gallery-slide {
           aspect-ratio: 1/1;
         }
         @media (max-width: 768px) {
           .detail-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
           .product-detail-container { padding: 0 !important; }
-          .gallery-section { width: 100vw; margin-left: -1rem; margin-right: -1rem; margin-bottom: 0.5rem; }
-          .gallery-main-image {
-            aspect-ratio: 4/3; /* En móvil es un poco más ancha que alta para no ocupar toda la altura del viewport */
+          .gallery-section { width: 100vw; margin-left: 0; margin-right: 0; margin-bottom: 0.5rem; }
+          .gallery-slide {
+            aspect-ratio: 4/5; /* Mucho más vertical para que se vea imponente como en la referencia */
+          }
+          .gallery-scroll-container {
+            padding: 0 1rem !important; /* Espacio a la izquierda para el primer slide */
           }
           .info-section { padding: 1rem 1rem !important; gap: 1rem !important; }
           .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }

@@ -9,7 +9,7 @@ export const products = [
     oldPrice: 220000,
     discount: 15,
     sizes: ['100 ml'],
-    image: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?q=80&w=600&auto=format&fit=crop',
     description: 'Khamrah es una fragancia oriental amaderada y dulce que cautiva con sus ricas notas de praliné, vainilla y especias cálidas. Una verdadera joya de Lattafa que evoca lujo y sofisticación.',
     notes: {
       top: 'Canela, Nuez moscada, Bergamota',
