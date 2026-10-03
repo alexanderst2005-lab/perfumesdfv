@@ -310,15 +310,44 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ 6. MÉTODOS DE PAGO ════ */}
-      <section style={{ padding: '4rem 0', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1.5rem' }}>MÉTODOS DE PAGO</h4>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', opacity: 0.7 }}>
-            <span style={{ fontSize: '0.9rem', letterSpacing: '1px', color: 'var(--color-black)' }}>TRANSFERENCIA BANCARIA</span>
-            <span style={{ fontSize: '0.9rem', letterSpacing: '1px', color: 'var(--color-black)' }}>EFECTIVO</span>
-            <span style={{ fontSize: '0.9rem', letterSpacing: '1px', color: 'var(--color-black)' }}>TARJETAS (PRÓXIMAMENTE)</span>
+      {/* ════ 6. MÉTODOS DE PAGO Y ALIADOS ════ */}
+      <section style={{ padding: '6rem 0', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+        <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
+          
+          {/* Métodos de Pago */}
+          <div style={{ marginBottom: '4rem' }}>
+            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', marginBottom: '2rem' }}>
+              Métodos de Pago
+            </h4>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', letterSpacing: '1px', color: '#666', textTransform: 'uppercase' }}>Transferencia</span>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', letterSpacing: '1px', color: '#666', textTransform: 'uppercase' }}>Efectivo</span>
+            </div>
           </div>
+
+          <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--color-gold)', margin: '0 auto 4rem', opacity: 0.4 }} />
+
+          {/* Nuestros Aliados */}
+          <div>
+            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', marginBottom: '2.5rem' }}>
+              Nuestros Aliados
+            </h4>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4rem', flexWrap: 'wrap', opacity: 0.85 }}>
+              {/* Addi */}
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', fontFamily: 'var(--font-sans)', letterSpacing: '-1.5px', color: 'var(--color-black)' }}>
+                addi
+              </div>
+              {/* Sistecrédito */}
+              <div style={{ fontSize: '1.4rem', fontWeight: '600', fontFamily: 'var(--font-sans)', letterSpacing: '-0.5px', color: 'var(--color-black)', display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontWeight: '400' }}>siste</span>crédito
+              </div>
+              {/* Bold */}
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', fontFamily: 'var(--font-sans)', letterSpacing: '-0.5px', color: 'var(--color-black)' }}>
+                bold.
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
