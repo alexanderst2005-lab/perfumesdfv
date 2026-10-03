@@ -55,10 +55,7 @@ const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
   const { addToCart, toggleFavorite, isFavorite } = useShop();
-const Home = () => {
-  const { addToCart, toggleFavorite, isFavorite } = useShop();
   const [activeCategory, setActiveCategory] = useState('TODOS');
-  
   const featured = products.slice(0, 4);
   const newArrivals = products.slice(0, 4);
   const bestSellers = products.filter(p => p.isBestSeller);
