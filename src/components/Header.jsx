@@ -50,10 +50,9 @@ const Header = () => {
           alignItems: 'center',
           width: '100%',
         }}>
-          <div style={{
+          <div className="header-container" style={{
             maxWidth: '1400px',
             margin: '0 auto',
-            padding: '0 2.5rem',
             width: '100%',
             display: 'flex',
             justifyContent: 'space-between',
@@ -200,6 +199,12 @@ const Header = () => {
           </>
         )}
       </AnimatePresence>
+      <style>{`
+        .header-container { padding: 0 2.5rem; }
+        @media (max-width: 768px) {
+          .header-container { padding: 0 1.2rem !important; }
+        }
+      `}</style>
     </>
   );
 };
