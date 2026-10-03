@@ -234,9 +234,9 @@ const Home = () => {
         </div>
 
         <style>{`
-          .hero-section { height: 85vh; min-height: 600px; }
+          .hero-section { height: 100svh; min-height: 100svh; }
           @media (max-width: 768px) {
-            .hero-section { height: 75vh; min-height: 500px; }
+            .hero-section { height: 100svh; min-height: 100svh; }
             .hero-arrow { display: none !important; }
           }
         `}</style>
