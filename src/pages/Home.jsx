@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { products, brands } from '../data/mockProducts';
-import { CheckCircle, ShieldCheck, Truck, MessageCircle } from 'lucide-react';
+import { CheckCircle, ShieldCheck, Truck, MessageCircle, Heart } from 'lucide-react';
 
 const Home = () => {
   const featuredProducts = products.slice(0, 4);
