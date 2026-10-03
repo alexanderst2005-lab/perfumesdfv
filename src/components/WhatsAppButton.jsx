@@ -6,6 +6,7 @@ const WhatsAppButton = () => {
       href="https://wa.me/573000000000" 
       target="_blank" 
       rel="noopener noreferrer"
+      className="whatsapp-floating-btn"
       style={{
         position: 'fixed',
         bottom: '2rem',

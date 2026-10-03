@@ -183,9 +183,8 @@ const ProductDetail = () => {
         <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '3.5rem 0' }}>
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.8rem', opacity: 0.6 }}>Selección curada</p>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px' }}>
-                También te puede gustar
+              <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.4rem', fontWeight: '600', color: 'var(--color-black)', letterSpacing: '0.5px' }}>
+                También te recomendamos
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.5rem' }} className="related-grid">
@@ -214,6 +213,7 @@ const ProductDetail = () => {
       </div>
 
       <style>{`
+        .whatsapp-floating-btn { display: none !important; }
         .gallery-slide {
           aspect-ratio: 1/1;
         }

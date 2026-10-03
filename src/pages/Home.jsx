@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { products, brands } from '../data/mockProducts';
-import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck } from 'lucide-react';
+import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
@@ -361,46 +361,39 @@ const Home = () => {
 
 /* ── Shared Product Card Component ── */
 export const ProductCard = ({ product, onFav, fav, onAdd }) => (
-  <div className="product-card" style={{ background: '#ffffff', display: 'flex', flexDirection: 'column', height: '100%' }}>
-    <div className="product-card__image-wrap" style={{ position: 'relative', aspectRatio: '3/4', overflow: 'hidden' }}>
+  <div className="product-card" style={{ background: '#ffffff', display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'center' }}>
+    <div className="product-card__image-wrap" style={{ position: 'relative', aspectRatio: '4/5', overflow: 'hidden', backgroundColor: 'var(--color-cream)', borderRadius: '4px' }}>
       <Link to={`/producto/${product.id}`}>
         <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </Link>
-      {product.id % 2 !== 0 && (
-        <span className="product-card__badge" style={{ position: 'absolute', top: '12px', left: '12px', background: '#333', color: '#fff', padding: '4px 8px', fontSize: '0.65rem', letterSpacing: '1px', fontWeight: '500' }}>NUEVO</span>
+      {product.discount && (
+        <span className="product-card__badge" style={{ position: 'absolute', top: '10px', left: '10px', background: '#FF0000', color: '#fff', padding: '4px 12px', fontSize: '0.7rem', letterSpacing: '1px', fontWeight: 'bold', borderRadius: '20px' }}>
+          -{product.discount}% OFF
+        </span>
       )}
-      <button
-        className="product-card__fav"
-        onClick={onFav}
-        aria-label="Favorito"
-        style={{ position: 'absolute', top: '12px', right: '12px', background: '#fff', border: 'none', borderRadius: '50%', width: '34px', height: '34px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
-      >
-        <Heart size={16} fill={fav ? '#333' : 'none'} stroke={fav ? '#333' : '#666'} strokeWidth={1.5} />
-      </button>
+      {onAdd && (
+        <button
+          onClick={(e) => { e.preventDefault(); onAdd(); }}
+          style={{ position: 'absolute', bottom: '10px', right: '10px', width: '35px', height: '35px', backgroundColor: '#fff', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', color: '#000' }}
+        >
+          <Plus size={20} strokeWidth={1.5} />
+        </button>
+      )}
     </div>
-    <div className="product-card__info" style={{ padding: '1.2rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+    <div className="product-card__info" style={{ padding: '1rem 0', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
-        <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#222', lineHeight: '1.4', marginBottom: '1rem' }}>
-          {product.name}
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: '500', textTransform: 'uppercase', color: '#222', lineHeight: '1.4', marginBottom: '0.5rem' }}>
+          {product.brand} {product.name}
         </p>
       </Link>
-      <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: '#444', letterSpacing: '0.5px' }}>$ {product.price.toLocaleString()}</span>
-        {onAdd && (
-          <button 
-            onClick={(e) => { e.preventDefault(); onAdd(); }}
-            style={{ 
-              fontSize: '0.65rem', color: '#666', background: 'transparent', 
-              border: 'none', borderBottom: '1px solid #ccc', paddingBottom: '2px',
-              textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', transition: 'var(--transition)'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#000'; e.currentTarget.style.borderColor = '#000'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#666'; e.currentTarget.style.borderColor = '#ccc'; }}
-            aria-label="Añadir a carrito"
-          >
-            Añadir
-          </button>
-        )}
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.3rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
+          {product.oldPrice && <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85rem' }}>${product.oldPrice.toLocaleString()}</span>}
+          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '1rem', color: '#000', fontWeight: '600' }}>${product.price.toLocaleString()}</span>
+        </div>
+        <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.2rem' }}>
+          3 cuotas de <strong style={{ color: '#000' }}>${Math.ceil(product.price / 3).toLocaleString()}</strong> con <span style={{ color: '#00D1FF', fontWeight: 'bold' }}>Addi</span>
+        </div>
       </div>
     </div>
   </div>
