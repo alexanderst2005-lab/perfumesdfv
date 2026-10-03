@@ -137,7 +137,9 @@ const ProductDetail = () => {
             {/* CTAs */}
             <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column', marginTop: '0.5rem' }}>
               <button
-                style={{ width: '100%', padding: '0.85rem', gap: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', border: '1px solid #111', color: '#111', fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase', cursor: 'pointer' }}
+                style={{ width: '100%', padding: '0.85rem', gap: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)', fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase', cursor: 'pointer', transition: 'var(--transition)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-black)'; e.currentTarget.style.color = 'var(--color-white)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-black)'; }}
                 onClick={() => addToCart(product, qty, size)}
               >
                 <ShoppingBag size={16} /> AGREGAR AL CARRITO
@@ -186,11 +188,11 @@ const ProductDetail = () => {
 
       {/* Related */}
       {related.length > 0 && (
-        <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '3.5rem 0', backgroundColor: '#fff' }}>
+        <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '3.5rem 0' }}>
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-              <p className="eyebrow" style={{ marginBottom: '0.5rem', opacity: 0.6 }}>Selección curada</p>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: '400', color: '#111', letterSpacing: '0.5px' }}>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.8rem', opacity: 0.6 }}>Selección curada</p>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px' }}>
                 También te puede gustar
               </h2>
             </div>
