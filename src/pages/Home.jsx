@@ -412,34 +412,38 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ════ MÉTODOS DE PAGO Y ALIADOS ════ */}
-      <section style={{ padding: '2rem 0', borderTop: '1px solid #EAE8E4', backgroundColor: '#fff' }}>
-        <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div className="payment-allies-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '2rem', opacity: 0.85 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888' }}>
-                MÉTODOS DE PAGO
-              </span>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '1px', color: '#444' }}>TRANSFERENCIA</span>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '1px', color: '#444' }}>EFECTIVO</span>
-            </div>
-            
-            <div style={{ width: '1px', height: '15px', backgroundColor: '#D5D1C8', display: 'inline-block' }} className="pa-divider" />
-            
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888' }}>
-                NUESTROS ALIADOS
-              </span>
-              <span style={{ fontSize: '1rem', fontWeight: '700', fontFamily: 'var(--font-sans)', letterSpacing: '-0.8px', color: '#111' }}>addi</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: '600', fontFamily: 'var(--font-sans)', letterSpacing: '-0.3px', color: '#111' }}><span style={{ fontWeight: '400' }}>siste</span>crédito</span>
-              <span style={{ fontSize: '0.9rem', fontWeight: '800', fontFamily: 'var(--font-sans)', letterSpacing: '-0.5px', color: '#111' }}>bold.</span>
+      {/* ════ OPCIONES DE PAGO Y ALIADOS ════ */}
+      <section style={{ padding: '3rem 0', backgroundColor: '#fff', borderTop: '1px solid #EAE8E4' }}>
+        <div className="container" style={{ textAlign: 'center' }}>
+          
+          {/* Opciones de Pago */}
+          <div style={{ marginBottom: '3rem' }}>
+            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: '0.8rem' }}>
+              OPCIONES DE PAGO
+            </h4>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', alignItems: 'center' }}>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#222' }}>TRANSFERENCIA</span>
+              <span style={{ fontSize: '0.75rem', color: '#999' }}>·</span>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#222' }}>EFECTIVO</span>
             </div>
           </div>
+
+          {/* Nuestros Aliados */}
+          <div>
+            <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: '1.5rem' }}>
+              NUESTROS ALIADOS
+            </h4>
+            <div className="allies-logos" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', opacity: 0.85 }}>
+              <img src="/addi.png" alt="Addi" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/sistecredito.png" alt="Sistecrédito" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/bold.png" alt="Bold" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
+            </div>
+          </div>
+
         </div>
         <style>{`
           @media (max-width: 768px) {
-            .payment-allies-container { flex-direction: column; gap: 0.8rem !important; }
-            .pa-divider { display: none !important; }
+            .allies-logos { gap: 2rem !important; flex-wrap: wrap; }
           }
         `}</style>
       </section>
