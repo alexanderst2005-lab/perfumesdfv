@@ -58,7 +58,7 @@ const Home = () => {
           zIndex: 1,
         }} />
 
-        {/* CONTENIDO — alineado al fondo, con paddingBottom para no tapar el SCROLL */}
+        {/* CONTENIDO — alineado al fondo, con paddingBottom mayor para subir los textos */}
         <div style={{
           position: 'relative',
           zIndex: 2,
@@ -66,7 +66,7 @@ const Home = () => {
           width: '100%',
           maxWidth: '600px',
           padding: '0 1.5rem',
-          paddingBottom: '5rem',
+          paddingBottom: '10rem',
         }}>
           <p style={{
             fontSize: '0.65rem',

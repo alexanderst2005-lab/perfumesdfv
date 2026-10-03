@@ -105,27 +105,27 @@ const Header = () => {
               zIndex: 10,
             }}>
               <svg
-                viewBox="0 0 220 60"
-                height="42"
+                viewBox="0 0 160 50"
+                height="38"
                 aria-label="DFV Perfumes"
                 style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
               >
-                {/* Letras DFV */}
+                {/* Letras DFV centradas */}
                 <text
-                  x="0" y="44"
+                  x="50%" y="36"
+                  textAnchor="middle"
                   fontFamily="Georgia, 'Times New Roman', serif"
-                  fontSize="52"
+                  fontSize="46"
                   fontWeight="400"
                   letterSpacing="-1"
                   fill={solid ? '#111111' : '#ffffff'}
                 >DFV</text>
-                {/* Acento rojo encima de la V */}
-                <path d="M178 4 Q188 1 200 8" stroke="#c0392b" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                {/* PERFUMES debajo */}
+                {/* PERFUMES debajo centrado */}
                 <text
-                  x="2" y="60"
+                  x="50%" y="50"
+                  textAnchor="middle"
                   fontFamily="'Helvetica Neue', Arial, sans-serif"
-                  fontSize="12"
+                  fontSize="10"
                   fontWeight="400"
                   letterSpacing="6"
                   fill={solid ? '#111111' : '#ffffff'}
