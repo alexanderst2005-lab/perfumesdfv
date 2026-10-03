@@ -179,35 +179,49 @@ img {
   flex-direction: column;
   background: var(--color-white);
   position: relative;
+  transition: transform 0.3s ease;
 }
 
 .product-card__image-wrap {
   position: relative;
   overflow: hidden;
-  background-color: var(--color-cream);
+  background-color: #f7f7f7;
   aspect-ratio: 3/4;
 }
 
 .product-card__image-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: 1rem;
+  object-fit: cover;
+  padding: 0;
   transition: transform 0.5s ease;
 }
 
 .product-card:hover .product-card__image-wrap img {
-  transform: scale(1.04);
+  transform: scale(1.05);
+}
+
+.product-card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #333;
+  color: #fff;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  padding: 0.35rem 0.6rem;
+  z-index: 2;
+  font-weight: 500;
 }
 
 .product-card__fav {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(255,255,255,0.9);
+  background: #fff;
   border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,50 +230,31 @@ img {
 }
 
 .product-card__fav:hover {
-  background: var(--color-white);
-  box-shadow: var(--shadow-sm);
+  transform: scale(1.1);
 }
 
 .product-card__info {
-  padding: 1rem 0.25rem 0;
+  padding: 1rem 0;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.product-card__brand {
-  font-size: 0.7rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--color-gray);
-  margin-bottom: 0.3rem;
-}
-
 .product-card__name {
   font-family: var(--font-sans);
-  font-size: 0.95rem;
-  font-weight: 400;
-  margin-bottom: 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
   color: var(--color-black);
-}
-
-.product-card__size {
-  font-size: 0.78rem;
-  color: var(--color-gray);
-  margin-bottom: 0.6rem;
-}
-
-.product-card__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 0.5rem;
+  line-height: 1.4;
 }
 
 .product-card__price {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #444;
 }
 
 .product-card__btn {

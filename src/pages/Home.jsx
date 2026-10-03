@@ -355,12 +355,16 @@ const Home = () => {
 };
 
 /* ── Shared Product Card Component ── */
-export const ProductCard = ({ product, onFav, fav, onAdd }) => (
+export const ProductCard = ({ product, onFav, fav }) => (
   <div className="product-card">
     <div className="product-card__image-wrap">
       <Link to={`/producto/${product.id}`}>
         <img src={product.image} alt={product.name} />
       </Link>
+      {/* Etiqueta NUEVO tipo Imagen 2 */}
+      {product.id % 2 !== 0 && (
+        <span className="product-card__badge">NUEVO</span>
+      )}
       <button
         className="product-card__fav"
         onClick={onFav}
@@ -369,21 +373,16 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
       >
         <Heart
           size={16}
-          fill={fav ? 'var(--color-gold)' : 'none'}
-          stroke={fav ? 'var(--color-gold)' : 'var(--color-gray-dark)'}
+          fill={fav ? 'var(--color-black)' : 'none'}
+          stroke={fav ? 'var(--color-black)' : 'var(--color-gray-dark)'}
         />
       </button>
     </div>
     <div className="product-card__info">
-      <p className="product-card__brand">{product.brand}</p>
-      <Link to={`/producto/${product.id}`}>
+      <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
         <p className="product-card__name">{product.name}</p>
       </Link>
-      <p className="product-card__size">{product.sizes?.[0] || '100 ml'}</p>
-      <div className="product-card__footer">
-        <span className="product-card__price">${product.price.toLocaleString()}</span>
-        <button className="product-card__btn" onClick={onAdd}>AGREGAR</button>
-      </div>
+      <span className="product-card__price">${product.price.toLocaleString()}</span>
     </div>
   </div>
 );
