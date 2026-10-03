@@ -67,8 +67,18 @@ const Header = () => {
 
             {/* Logo (Left on Desktop, Centered on Mobile) */}
             <div className="header-logo-container" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-              <Link to="/" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 'bold', letterSpacing: '2px', color: 'inherit' }}>
-                DFV PERFUMES
+              <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+                <img 
+                  src="/logo.png" 
+                  alt="DFV Perfumes" 
+                  style={{ 
+                    height: '54px', 
+                    width: '54px',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    display: 'block'
+                  }} 
+                />
               </Link>
             </div>
 
