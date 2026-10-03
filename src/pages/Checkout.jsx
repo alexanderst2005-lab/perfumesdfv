@@ -62,83 +62,181 @@ const Checkout = () => {
     );
   }
 
+  const inputStyle = {
+    padding: '0.9rem 1rem',
+    border: '1px solid #EAE8E4',
+    borderRadius: '4px',
+    width: '100%',
+    fontSize: '0.85rem',
+    outline: 'none',
+    backgroundColor: '#FCFBF9',
+    fontFamily: 'var(--font-sans)',
+    color: '#333',
+    transition: 'border-color 0.2s ease'
+  };
+
+  const sectionTitleStyle = {
+    fontFamily: 'var(--font-serif)',
+    fontSize: '0.85rem',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    color: '#111',
+    marginBottom: '1.2rem',
+    paddingBottom: '0.5rem',
+    borderBottom: '1px solid #EAE8E4'
+  };
+
   return (
-    <div className="container section-padding" style={{ paddingTop: '120px' }}>
-      <h1 className="title-medium text-center" style={{ marginBottom: '3rem', fontFamily: 'var(--font-serif)' }}>Finalizar Compra</h1>
-      
-      <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '4rem' }}>
-        {/* Formulario */}
-        <form onSubmit={handleCheckout}>
-          <h3 style={{ marginBottom: '1.5rem', fontFamily: 'var(--font-serif)', fontSize: '1.2rem', color: 'var(--color-black)' }}>Información del Cliente</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2.5rem' }}>
-            <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" placeholder="Nombre completo *" style={{ padding: '0.85rem', border: '1px solid var(--color-gray-light)', width: '100%', gridColumn: 'span 2', fontSize: '0.85rem' }} />
-            <input required name="telefono" value={formData.telefono} onChange={handleChange} type="tel" placeholder="Teléfono *" style={{ padding: '0.85rem', border: '1px solid var(--color-gray-light)', width: '100%', fontSize: '0.85rem' }} />
-            <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="Correo electrónico" style={{ padding: '0.85rem', border: '1px solid var(--color-gray-light)', width: '100%', fontSize: '0.85rem' }} />
-          </div>
+    <div className="checkout-container">
+      <div className="checkout-wrapper">
+        
+        {/* Encabezado */}
+        <div style={{ marginBottom: '2rem' }}>
+          <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'var(--font-sans)', fontSize: '0.65rem', color: '#666', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#000'} onMouseLeave={e => e.target.style.color = '#666'}>
+            <span style={{ fontSize: '1rem', lineHeight: 1 }}>&larr;</span> VOLVER AL CARRITO
+          </Link>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: '400', color: '#111', letterSpacing: '1px', textTransform: 'uppercase' }}>
+            FINALIZAR COMPRA
+          </h1>
+        </div>
 
-          <h3 style={{ marginBottom: '1.5rem', fontFamily: 'var(--font-serif)', fontSize: '1.2rem', color: 'var(--color-black)' }}>Dirección de Entrega</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', marginBottom: '2.5rem' }}>
-            <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ciudad *" style={{ padding: '0.85rem', border: '1px solid var(--color-gray-light)', width: '100%', fontSize: '0.85rem' }} />
-            <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Dirección *" style={{ padding: '0.85rem', border: '1px solid var(--color-gray-light)', width: '100%', fontSize: '0.85rem' }} />
-            <textarea name="notas" value={formData.notas} onChange={handleChange} placeholder="Notas adicionales (opcional)" rows="3" style={{ padding: '0.85rem', border: '1px solid var(--color-gray-light)', width: '100%', fontSize: '0.85rem', resize: 'vertical' }}></textarea>
-          </div>
-
-          <h3 style={{ marginBottom: '1.5rem', fontFamily: 'var(--font-serif)', fontSize: '1.2rem', color: 'var(--color-black)' }}>Método de Pago</h3>
-          <div style={{ padding: '2rem', border: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-cream)', textAlign: 'center', marginBottom: '2rem' }}>
-            <p style={{ color: 'var(--color-black)', fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: '500' }}>Pedido por WhatsApp</p>
-            <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: 'var(--color-gray)', lineHeight: '1.5' }}>Tu pedido será enviado directamente a nuestro equipo a través de WhatsApp, donde coordinaremos el pago y envío de manera personalizada.</p>
-          </div>
+        <div className="checkout-grid">
           
-          {/* Botón en móvil, lo duplicamos o dejamos solo el del resumen. Mejor en el resumen. */}
-        </form>
-
-        {/* Resumen */}
-        <div>
-          <div style={{ backgroundColor: '#FDFBF7', border: '1px solid rgba(0,0,0,0.05)', padding: '2.5rem' }}>
-            <h3 style={{ marginBottom: '2rem', fontFamily: 'var(--font-serif)', fontSize: '1.2rem' }}>Resumen del Pedido</h3>
+          {/* Columna Izquierda: Formulario */}
+          <form onSubmit={handleCheckout} className="checkout-form">
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
-              {cart.map(item => (
-                <div key={`${item.id}-${item.selectedSize}`} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <div style={{ width: '60px', height: '60px', backgroundColor: '#fff', border: '1px solid rgba(0,0,0,0.05)' }}>
-                    <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={sectionTitleStyle}>Información del Cliente</h3>
+              <div className="form-group-full" style={{ marginBottom: '1rem' }}>
+                <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" placeholder="Nombre completo *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+              <div className="form-group-split">
+                <input required name="telefono" value={formData.telefono} onChange={handleChange} type="tel" placeholder="Teléfono *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="Correo electrónico" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h3 style={sectionTitleStyle}>Dirección de Entrega</h3>
+              <div className="form-group-full" style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ciudad *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Dirección *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                <textarea name="notas" value={formData.notas} onChange={handleChange} placeholder="Notas adicionales (opcional)" rows="3" style={{ ...inputStyle, resize: 'vertical', minHeight: '80px' }} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'}></textarea>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <h3 style={sectionTitleStyle}>Método de Pago</h3>
+              <div style={{ padding: '1.2rem', border: '1px solid #EAE8E4', backgroundColor: '#fff', borderRadius: '4px', textAlign: 'center' }}>
+                <p style={{ color: '#111', fontFamily: 'var(--font-sans)', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '1px' }}>Pedido por WhatsApp</p>
+                <p style={{ fontSize: '0.8rem', marginTop: '0.4rem', color: '#666', lineHeight: '1.5', fontFamily: 'var(--font-sans)' }}>Tu pedido será enviado directamente a nuestro equipo a través de WhatsApp, donde coordinaremos el pago y envío de manera personalizada.</p>
+              </div>
+            </div>
+
+          </form>
+
+          {/* Columna Derecha: Resumen */}
+          <div className="checkout-summary-wrap">
+            <div className="checkout-summary">
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', marginBottom: '1.5rem', color: '#111', textTransform: 'uppercase', letterSpacing: '1px' }}>Resumen del Pedido</h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '2rem' }}>
+                {cart.map((item, idx) => (
+                  <div key={`${item.id}-${item.selectedSize}-${idx}`} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ width: '50px', height: '50px', backgroundColor: '#F9F8F6', borderRadius: '4px', overflow: 'hidden' }}>
+                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ fontSize: '0.75rem', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#111' }}>{item.name}</h4>
+                      <p style={{ fontSize: '0.65rem', color: '#888', marginTop: '0.2rem' }}>{item.selectedSize ? item.selectedSize : item.brand} | Cantidad: {item.quantity}</p>
+                      <p style={{ fontWeight: '500', fontSize: '0.8rem', marginTop: '0.3rem', color: '#000' }}>${(item.price * item.quantity).toLocaleString()}</p>
+                    </div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.name}</h4>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--color-gray)', marginTop: '0.2rem' }}>{item.selectedSize ? item.selectedSize : item.brand} | Cantidad: {item.quantity}</p>
-                    <p style={{ fontWeight: '500', fontSize: '0.85rem', marginTop: '0.4rem' }}>${(item.price * item.quantity).toLocaleString()}</p>
-                  </div>
+                ))}
+              </div>
+
+              <div style={{ borderTop: '1px solid #EAE8E4', paddingTop: '1.2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', fontSize: '0.8rem' }}>
+                  <span style={{ color: '#666' }}>Subtotal</span>
+                  <span style={{ color: '#111' }}>${cartTotal.toLocaleString()}</span>
                 </div>
-              ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '0.8rem' }}>
+                  <span style={{ color: '#666' }}>Envío</span>
+                  <span style={{ color: '#111' }}>Por calcular</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: '400', fontFamily: 'var(--font-serif)', borderTop: '1px solid #EAE8E4', paddingTop: '1rem', color: '#111' }}>
+                  <span>Total</span>
+                  <span>${cartTotal.toLocaleString()}</span>
+                </div>
+              </div>
+              
+              <button className="btn-primary" onClick={handleCheckout} style={{ width: '100%', marginTop: '2rem', padding: '1rem', fontSize: '0.75rem', letterSpacing: '2px' }}>
+                FINALIZAR PEDIDO
+              </button>
+              <p style={{ textAlign: 'center', fontSize: '0.6rem', color: '#999', marginTop: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Compra segura y personalizada</p>
             </div>
-
-            <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--color-gray)' }}>Subtotal</span>
-                <span>${cartTotal.toLocaleString()}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--color-gray)' }}>Envío</span>
-                <span>Por calcular</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: '400', fontFamily: 'var(--font-serif)', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '1rem' }}>
-                <span>Total</span>
-                <span>${cartTotal.toLocaleString()}</span>
-              </div>
-            </div>
-            
-            <button className="btn-primary" onClick={handleCheckout} style={{ width: '100%', marginTop: '2.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
-              ENVIAR PEDIDO A WHATSAPP
-            </button>
-            <p style={{ textAlign: 'center', fontSize: '0.65rem', color: 'var(--color-gray)', marginTop: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Compra segura y personalizada</p>
           </div>
+
         </div>
       </div>
+
       <style>{`
-        @media (max-width: 768px) {
+        .checkout-container {
+          padding-top: 3rem; /* Much closer to top */
+          padding-bottom: 4rem;
+          display: flex;
+          justify-content: center;
+        }
+        .checkout-wrapper {
+          width: 100%;
+          max-width: 1000px;
+          padding: 0 20px;
+        }
+        .checkout-grid {
+          display: grid;
+          grid-template-columns: 1fr 380px;
+          gap: 4rem;
+          align-items: start;
+        }
+        .form-group-split {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+        }
+        .checkout-summary {
+          background-color: #fff;
+          border: 1px solid #EAE8E4;
+          padding: 2rem;
+          position: sticky;
+          top: 120px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 850px) {
+          .checkout-container {
+            padding-top: 1.5rem;
+            padding-bottom: 6rem; /* Extra padding to avoid WhatsApp overlap */
+          }
+          .checkout-wrapper {
+            padding: 0 16px;
+          }
           .checkout-grid {
-            grid-template-columns: 1fr !important;
-            gap: 2.5rem !important;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+          }
+          .form-group-split {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+          .checkout-summary {
+            padding: 1.5rem;
+            position: relative;
+            top: 0;
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+            border-top: 1px solid #EAE8E4;
+            background-color: transparent;
           }
         }
       `}</style>
