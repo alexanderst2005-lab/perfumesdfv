@@ -162,62 +162,11 @@ const Home = () => {
       </section>
 
 
-      {/* ════ 2. CATEGORÍAS ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '2rem',
-              fontWeight: '400',
-              color: 'var(--color-black)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase'
-            }}>
-              Descubre tu fragancia
-            </h2>
-          </div>
-
-          <div className="no-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', paddingBottom: '1rem' }}>
-            {[
-              { label: 'Hombre', cat: 'Hombre' },
-              { label: 'Mujer',  cat: 'Mujer' },
-              { label: 'Unisex', cat: 'Unisex' }
-            ].map(c => (
-              <Link
-                key={c.label}
-                to={`/tienda?category=${c.cat}`}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  padding: '3rem 1rem',
-                  backgroundColor: 'var(--color-cream)',
-                  border: '1px solid rgba(0,0,0,0.04)',
-                  color: 'var(--color-black)',
-                  fontSize: '0.85rem', letterSpacing: '2px', textTransform: 'uppercase',
-                  fontWeight: '400', transition: 'var(--transition)',
-                  textDecoration: 'none'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--color-gold)';
-                  e.currentTarget.style.color = 'var(--color-gold)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(0,0,0,0.04)';
-                  e.currentTarget.style.color = 'var(--color-black)';
-                }}
-              >
-                {c.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════ 3. NUESTROS PRODUCTOS ════ */}
+      {/* ════ 2. NUESTROS PRODUCTOS ════ */}
       <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
         <div className="container">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: '400', marginBottom: '0.8rem', color: 'var(--color-black)' }}>
+            <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', letterSpacing: '4px', textTransform: 'uppercase' }}>
               NUESTROS PRODUCTOS
             </h2>
             <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '1.5rem', letterSpacing: '0.5px' }}>
@@ -337,43 +286,44 @@ const Home = () => {
 
 /* ── Shared Product Card Component ── */
 export const ProductCard = ({ product, onFav, fav, onAdd }) => (
-  <div className="product-card">
-    <div className="product-card__image-wrap">
+  <div className="product-card" style={{ background: '#ffffff', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="product-card__image-wrap" style={{ position: 'relative', aspectRatio: '3/4', overflow: 'hidden' }}>
       <Link to={`/producto/${product.id}`}>
-        <img src={product.image} alt={product.name} />
+        <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </Link>
       {product.id % 2 !== 0 && (
-        <span className="product-card__badge">NUEVO</span>
+        <span className="product-card__badge" style={{ position: 'absolute', top: '12px', left: '12px', background: '#333', color: '#fff', padding: '4px 8px', fontSize: '0.65rem', letterSpacing: '1px', fontWeight: '500' }}>NUEVO</span>
       )}
       <button
         className="product-card__fav"
         onClick={onFav}
         aria-label="Favorito"
-        style={{ border: 'none', cursor: 'pointer' }}
+        style={{ position: 'absolute', top: '12px', right: '12px', background: '#fff', border: 'none', borderRadius: '50%', width: '34px', height: '34px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
       >
-        <Heart size={16} fill={fav ? 'var(--color-black)' : 'none'} stroke={fav ? 'var(--color-black)' : 'var(--color-gray-dark)'} />
+        <Heart size={16} fill={fav ? '#333' : 'none'} stroke={fav ? '#333' : '#666'} strokeWidth={1.5} />
       </button>
     </div>
-    <div className="product-card__info">
-      <p style={{ fontSize: '0.65rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '0.3rem' }}>{product.brand}</p>
+    <div className="product-card__info" style={{ padding: '1.2rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
-        <p className="product-card__name">{product.name}</p>
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#222', lineHeight: '1.4', marginBottom: '1rem' }}>
+          {product.name}
+        </p>
       </Link>
-      <p style={{ fontSize: '0.75rem', color: 'var(--color-gray)', marginBottom: '0.8rem' }}>{product.sizes?.[0] || '100 ml'}</p>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-        <span className="product-card__price">${product.price.toLocaleString()}</span>
+      <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: '#444', letterSpacing: '0.5px' }}>$ {product.price.toLocaleString()}</span>
         {onAdd && (
           <button 
-            onClick={onAdd}
+            onClick={(e) => { e.preventDefault(); onAdd(); }}
             style={{ 
-              fontSize: '0.65rem', letterSpacing: '1px', textTransform: 'uppercase', 
-              padding: '0.4rem 0.8rem', border: '1px solid var(--color-black)', 
-              background: 'transparent', color: 'var(--color-black)', cursor: 'pointer', transition: 'var(--transition)' 
+              fontSize: '0.65rem', color: '#666', background: 'transparent', 
+              border: 'none', borderBottom: '1px solid #ccc', paddingBottom: '2px',
+              textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', transition: 'var(--transition)'
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-black)'; e.currentTarget.style.color = 'var(--color-white)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-black)'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#000'; e.currentTarget.style.borderColor = '#000'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#666'; e.currentTarget.style.borderColor = '#ccc'; }}
+            aria-label="Añadir a carrito"
           >
-            AÑADIR
+            Añadir
           </button>
         )}
       </div>
