@@ -163,48 +163,15 @@ const ProductDetail = () => {
               </button>
             </div>
 
-            {/* Delivery Timeline */}
-            <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
-              <h4 style={{ fontSize: '1rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.5rem', color: 'var(--color-black)' }}>Entrega Estimada</h4>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', textAlign: 'center' }}>
-                <div style={{ position: 'absolute', top: '18px', left: '15%', right: '15%', height: '2px', backgroundColor: 'var(--color-black)', zIndex: 0 }}></div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', zIndex: 1, backgroundColor: 'var(--color-white)', padding: '0 0.5rem', flex: 1 }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#4C4C4C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                  </div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--color-black)' }}>{formatD(today)}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-gray)' }}>Compra hoy</span>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', zIndex: 1, backgroundColor: 'var(--color-white)', padding: '0 0.5rem', flex: 1 }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#4C4C4C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                  </div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--color-black)' }}>{formatD(tomorrow)}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-gray)' }}>Enviamos mañana</span>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', zIndex: 1, backgroundColor: 'var(--color-white)', padding: '0 0.5rem', flex: 1 }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#4C4C4C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  </div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--color-black)' }}>{formatD(arrivalStart)} - {formatD(arrivalEnd)}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-gray)' }}>Recíbelo pronto</span>
-                </div>
-              </div>
-            </div>
-
             {/* Description */}
-            <div style={{ borderTop: '1px solid var(--color-gray-light)', paddingTop: '1.5rem' }}>
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)', lineHeight: '1.9', marginBottom: '1.5rem' }}>{product.description}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1.5rem', fontSize: '0.82rem' }}>
-                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Familia</p><p>{product.family}</p></div>
-                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Concentración</p><p>{product.concentration}</p></div>
-                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de salida</p><p>{product.notes?.top}</p></div>
-                <div><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de corazón</p><p>{product.notes?.heart}</p></div>
-                <div style={{ gridColumn: '1/-1' }}><p style={{ color: 'var(--color-gray)', marginBottom: '0.2rem', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de fondo</p><p>{product.notes?.base}</p></div>
+            <div style={{ backgroundColor: '#FAF9F6', padding: '2rem 1.5rem', margin: '2rem -1rem 0 -1rem' }}>
+              <p style={{ fontSize: '0.95rem', color: '#777', lineHeight: '1.8', marginBottom: '2rem' }}>{product.description}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem 1.5rem', fontSize: '0.85rem' }}>
+                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Familia</p><p style={{ color: '#000' }}>{product.family}</p></div>
+                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Concentración</p><p style={{ color: '#000' }}>{product.concentration}</p></div>
+                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de salida</p><p style={{ color: '#000' }}>{product.notes?.top}</p></div>
+                <div><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de corazón</p><p style={{ color: '#000' }}>{product.notes?.heart}</p></div>
+                <div style={{ gridColumn: '1/-1' }}><p style={{ color: '#A0A0A0', marginBottom: '0.4rem', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Notas de fondo</p><p style={{ color: '#000' }}>{product.notes?.base}</p></div>
               </div>
             </div>
           </div>
@@ -230,13 +197,30 @@ const ProductDetail = () => {
         </section>
       )}
 
+      {/* Mobile Sticky Bar */}
+      <div className="mobile-sticky-bar" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', borderTop: '1px solid #eee', padding: '0.8rem 1rem', zIndex: 999, flexDirection: 'column', gap: '0.5rem' }}>
+        <p style={{ fontSize: '0.75rem', fontWeight: '500', color: '#000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.brand} {product.name}</p>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            style={{ flex: 1, padding: '0.8rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#1A1A1A', border: 'none', color: '#fff', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: 'pointer' }}
+            onClick={() => addToCart(product, qty, size)}
+          >
+            AÑADIR AL CARRITO
+          </button>
+          <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" style={{ width: '45px', height: '45px', backgroundColor: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </a>
+        </div>
+      </div>
+
       <style>{`
         .gallery-slide {
           aspect-ratio: 1/1;
         }
+        .mobile-sticky-bar { display: none !important; }
         @media (max-width: 768px) {
           .detail-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
-          .product-detail-container { padding: 0 !important; }
+          .product-detail-container { padding: 0 !important; padding-bottom: 6rem !important; }
           .gallery-section { width: 100vw; margin-left: 0; margin-right: 0; margin-bottom: 0.5rem; }
           .gallery-slide {
             aspect-ratio: 4/5; /* Mucho más vertical para que se vea imponente como en la referencia */
@@ -246,6 +230,7 @@ const ProductDetail = () => {
           }
           .info-section { padding: 1rem 1rem !important; gap: 1rem !important; }
           .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
+          .mobile-sticky-bar { display: flex !important; }
         }
       `}</style>
     </div>
