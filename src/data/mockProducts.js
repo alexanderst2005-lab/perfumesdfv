@@ -162,6 +162,46 @@ export const products = [
     inStock: true,
     isNew: true,
     isBestSeller: false
+  },
+  {
+    id: '9',
+    name: 'Supremacy Incense',
+    brand: 'Afnan',
+    category: 'Hombre',
+    family: 'Amaderado Aromático',
+    price: 650000,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=600&auto=format&fit=crop',
+    description: 'Una fragancia oscura, misteriosa y profundamente ahumada. Supremacy Incense combina resinas, especias y un toque verde de orégano que emana lujo y poder puro.',
+    notes: {
+      top: 'Orégano, Especias, Bergamota',
+      heart: 'Ámbar, Ládano, Opopónaco',
+      base: 'Humo, Cuero, Pachulí, Madera de agar'
+    },
+    concentration: 'Eau de Parfum',
+    inStock: true,
+    isNew: false,
+    isBestSeller: true
+  },
+  {
+    id: '10',
+    name: 'Hawas Ice',
+    brand: 'Rasasi',
+    category: 'Hombre',
+    family: 'Aromático Frutal',
+    price: 550000,
+    sizes: ['100 ml'],
+    image: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=600&auto=format&fit=crop',
+    description: 'La evolución helada y potente del icónico Hawas. Hawas Ice eleva la frescura con notas de limón helado y menta, manteniendo un fondo dulce, afrutado y extremadamente seductor.',
+    notes: {
+      top: 'Manzana, Limón italiano, Bergamota, Anís estrellado',
+      heart: 'Ciruela, Menta, Flor de azahar',
+      base: 'Almizcle, Ámbar, Musgo de roble'
+    },
+    concentration: 'Eau de Parfum',
+    inStock: true,
+    isNew: true,
+    isBestSeller: true
   }
 ];
 

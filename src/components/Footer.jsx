@@ -177,7 +177,7 @@ const Footer = () => (
 
       @media (max-width: 768px) {
         footer {
-          padding: 3rem 0 5rem !important; /* Espacio extra para WhatsApp */
+          padding: 3rem 0 2rem !important;
         }
         .footer-grid {
           grid-template-columns: 1fr 1fr;
