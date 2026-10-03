@@ -26,18 +26,18 @@ const ProductDetail = () => {
   const related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
 
   return (
-    <div style={{ paddingTop: `${TOTAL_HEADER}px` }}>
+    <div style={{ paddingTop: '85px' }}>
 
       {/* Back */}
-      <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '0.5rem' }}>
-        <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', letterSpacing: '1px', color: 'var(--color-gray)', textTransform: 'uppercase' }}>
-          <ArrowLeft size={14} /> Perfumes
+      <div className="container" style={{ paddingTop: '0.8rem', paddingBottom: '0.2rem' }}>
+        <Link to="/tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', letterSpacing: '1px', color: 'var(--color-gray)', textTransform: 'uppercase' }}>
+          <ArrowLeft size={14} /> Volver a Perfumes
         </Link>
       </div>
 
       {/* Main Grid */}
-      <div className="container" style={{ paddingTop: '2rem', paddingBottom: '5rem' }}>
-        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '5rem', alignItems: 'start' }}>
+      <div className="container" style={{ paddingTop: '1rem', paddingBottom: '4rem' }}>
+        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '4rem', alignItems: 'start' }}>
 
           {/* Gallery */}
           <div>
@@ -103,17 +103,18 @@ const ProductDetail = () => {
             {/* Sizes */}
             {product.sizes?.length > 0 && (
               <div>
-                <p style={{ fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem', color: 'var(--color-gray)' }}>Presentación</p>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', color: 'var(--color-gray)' }}>Presentación</p>
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                   {product.sizes.map(s => (
                     <button
                       key={s}
                       onClick={() => setSize(s)}
                       style={{
-                        padding: '0.5rem 1rem', fontSize: '0.82rem',
+                        padding: '0.4rem 0.8rem', fontSize: '0.75rem',
                         border: `1px solid ${size === s ? 'var(--color-black)' : 'var(--color-gray-light)'}`,
                         backgroundColor: size === s ? 'var(--color-black)' : 'transparent',
                         color: size === s ? '#fff' : 'var(--color-black)', cursor: 'pointer',
+                        transition: 'all 0.2s'
                       }}
                     >
                       {s}
@@ -125,35 +126,45 @@ const ProductDetail = () => {
 
             {/* Quantity */}
             <div>
-              <p style={{ fontSize: '0.78rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem', color: 'var(--color-gray)' }}>Cantidad</p>
+              <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', color: 'var(--color-gray)' }}>Cantidad</p>
               <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid var(--color-gray-light)' }}>
-                <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ padding: '0.65rem 1rem' }}><Minus size={16} /></button>
-                <span style={{ padding: '0.65rem 1.25rem', minWidth: '3rem', textAlign: 'center', fontWeight: '500' }}>{qty}</span>
-                <button onClick={() => setQty(q => q + 1)} style={{ padding: '0.65rem 1rem' }}><Plus size={16} /></button>
+                <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ padding: '0.4rem 0.8rem' }}><Minus size={14} /></button>
+                <span style={{ padding: '0.4rem 1rem', minWidth: '2.5rem', textAlign: 'center', fontWeight: '500', fontSize: '0.85rem' }}>{qty}</span>
+                <button onClick={() => setQty(q => q + 1)} style={{ padding: '0.4rem 0.8rem' }}><Plus size={14} /></button>
               </div>
             </div>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', gap: '0.75rem', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column', marginTop: '0.5rem' }}>
               <button
-                className="btn-primary"
-                style={{ width: '100%', padding: '1rem', gap: '0.5rem' }}
+                style={{ width: '100%', padding: '0.85rem', gap: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', border: '1px solid #111', color: '#111', fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase', cursor: 'pointer' }}
                 onClick={() => addToCart(product, qty, size)}
               >
-                <ShoppingBag size={18} /> AGREGAR AL CARRITO
+                <ShoppingBag size={16} /> AGREGAR AL CARRITO
               </button>
+              <button
+                className="btn-primary"
+                style={{ width: '100%', padding: '0.85rem', gap: '0.5rem', fontSize: '0.75rem', cursor: 'pointer' }}
+                onClick={() => {
+                  addToCart(product, qty, size);
+                  window.location.href = '/checkout';
+                }}
+              >
+                COMPRAR AHORA
+              </button>
+              
               <button
                 onClick={() => toggleFavorite(product)}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  width: '100%', padding: '0.9rem',
-                  border: '1px solid var(--color-gray-light)',
-                  color: isFavorite(product.id) ? 'var(--color-gold)' : 'var(--color-gray)',
-                  fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase',
-                  cursor: 'pointer',
+                  width: '100%', padding: '0.7rem',
+                  border: 'none', background: 'transparent',
+                  color: isFavorite(product.id) ? 'var(--color-black)' : 'var(--color-gray)',
+                  fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase',
+                  cursor: 'pointer', marginTop: '0.2rem', textDecoration: 'underline'
                 }}
               >
-                <Heart size={16} fill={isFavorite(product.id) ? 'var(--color-gold)' : 'none'} />
+                <Heart size={14} fill={isFavorite(product.id) ? 'var(--color-black)' : 'none'} />
                 {isFavorite(product.id) ? 'EN FAVORITOS' : 'GUARDAR EN FAVORITOS'}
               </button>
             </div>
@@ -175,12 +186,17 @@ const ProductDetail = () => {
 
       {/* Related */}
       {related.length > 0 && (
-        <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '4rem 0', backgroundColor: 'var(--color-cream)' }}>
+        <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '3.5rem 0', backgroundColor: '#fff' }}>
           <div className="container">
-            <h2 className="title-sm text-center" style={{ marginBottom: '3rem' }}>También te puede gustar</h2>
+            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+              <p className="eyebrow" style={{ marginBottom: '0.5rem', opacity: 0.6 }}>Selección curada</p>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: '400', color: '#111', letterSpacing: '0.5px' }}>
+                También te puede gustar
+              </h2>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.5rem' }} className="related-grid">
               {related.map(p => (
-                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes[0])} />
+                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} />
               ))}
             </div>
           </div>
