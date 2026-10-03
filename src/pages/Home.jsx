@@ -49,20 +49,6 @@ const Home = () => {
         {/* Content — centered */}
         <div style={{ position: 'relative', zIndex: 1, color: '#fff', padding: '0 1.5rem', width: '100%', maxWidth: '600px' }}>
 
-          {/* Logo centered — mix-blend-mode removes black bg on dark background */}
-          <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
-            <img
-              src="/logo.png"
-              alt="DFV Perfumes"
-              style={{
-                height: '120px',
-                width: 'auto',
-                objectFit: 'contain',
-                mixBlendMode: 'screen',
-                filter: 'brightness(1.1)',
-              }}
-            />
-          </div>
 
           <p style={{ fontSize: '0.75rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.7, marginBottom: '1.25rem', fontWeight: '400' }}>
             FRAGANCIAS DE LUJO
