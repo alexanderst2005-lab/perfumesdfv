@@ -50,7 +50,10 @@ const Footer = () => (
         
         {/* 1. Marca */}
         <div className="footer-brand">
-          <img src="/logo.png" alt="DFV Perfumes" style={{ height: '56px', objectFit: 'contain', marginBottom: '1.25rem' }} />
+          <svg viewBox="0 0 160 50" height="38" aria-label="DFV Perfumes" style={{ display: 'block', marginBottom: '1.25rem' }}>
+            <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="var(--color-cream)">DFV</text>
+            <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="var(--color-cream)">PERFUMES</text>
+          </svg>
           <p style={{ color: 'rgba(245,242,236,0.65)', fontSize: '0.88rem', lineHeight: '1.8', maxWidth: '260px', marginBottom: '2rem', fontFamily: 'var(--font-sans)', fontWeight: '300' }}>
             Tu esencia, tu identidad.<br />Fragancias que cuentan tu historia.
           </p>
