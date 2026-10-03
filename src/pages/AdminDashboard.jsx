@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Image as ImageIcon, Settings, Store, HelpCircle, LayoutTemplate } from 'lucide-react';
 import InventoryModule from '../components/admin/InventoryModule';
+import OrdersModule from '../components/admin/OrdersModule';
+import SettingsModule from '../components/admin/SettingsModule';
 
 const AdminDashboard = () => {
   const { products, isLoadingProducts } = useShop();
@@ -89,12 +91,14 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === 'inventory' && <InventoryModule />}
+        {activeTab === 'orders' && <OrdersModule />}
+        {activeTab === 'settings' && <SettingsModule />}
 
-        {activeTab !== 'dashboard' && activeTab !== 'inventory' && (
+        {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'settings' && (
           <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem' }}>Módulo en Construcción (Fase 2)</h2>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem' }}>Módulo en Construcción (Fase 3)</h2>
             <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>
-              Este módulo será conectado a la base de datos de Neon en la siguiente fase de desarrollo.
+              Este módulo será habilitado en las próximas actualizaciones.
             </p>
           </div>
         )}
