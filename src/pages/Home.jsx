@@ -271,8 +271,9 @@ const Home = () => {
           </div>
 
           {/* Filtros Editoriales */}
-          <div className="catalog-filters no-scrollbar" style={{ display: 'flex', justifyContent: 'center', gap: '2.5rem', marginBottom: '3.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-            {['TODOS', 'MUJER', 'HOMBRE', 'UNISEX', 'OFERTAS'].map(cat => (
+          <div className="catalog-filters-wrapper no-scrollbar" style={{ width: '100%', overflowX: 'auto', marginBottom: '3.5rem', paddingBottom: '0.5rem', WebkitOverflowScrolling: 'touch' }}>
+            <div className="catalog-filters" style={{ display: 'flex', gap: '2.5rem', padding: '0 1.5rem' }}>
+              {['TODOS', 'MUJER', 'HOMBRE', 'UNISEX'].map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -287,7 +288,8 @@ const Home = () => {
               >
                 {cat}
               </button>
-            ))}
+              ))}
+            </div>
           </div>
 
           <div className="featured-grid">
@@ -298,13 +300,14 @@ const Home = () => {
         </div>
 
         <style>{`
-          .catalog-filters { justify-content: center; }
+          .catalog-filters { justify-content: center; min-width: max-content; }
           .featured-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem 2rem; }
           @media (max-width: 1024px) {
             .featured-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 1.5rem; }
           }
           @media (max-width: 768px) {
-            .catalog-filters { justify-content: flex-start; padding-left: 1.5rem; padding-right: 1.5rem; }
+            .catalog-filters { justify-content: flex-start; }
+            .catalog-filters-wrapper { margin-left: -1.5rem; margin-right: -1.5rem; width: calc(100% + 3rem); padding-left: 0; padding-right: 0; }
             .featured-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem 1rem; }
           }
         `}</style>
@@ -489,9 +492,9 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
           left: '12px', 
           background: '#111', 
           color: '#fff', 
-          padding: '4px 10px', 
+          padding: '4px 8px', 
           fontSize: '0.6rem', 
-          letterSpacing: '1.5px', 
+          letterSpacing: '1px', 
           fontWeight: '500', 
           textTransform: 'uppercase',
           borderRadius: '2px' 
@@ -514,7 +517,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
         <Heart size={20} strokeWidth={1.5} color={fav ? '#000' : '#444'} fill={fav ? '#000' : 'none'} />
       </button>
 
-      {/* Botón "+" Premium */}
+      {/* Nuevo Botón Agregar al Carrito */}
       {onAdd && (
         <button
           onClick={(e) => { e.preventDefault(); onAdd(); }}
@@ -522,22 +525,26 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
           style={{ 
             position: 'absolute', 
             bottom: '12px', 
-            right: '12px', 
-            width: '32px', 
-            height: '32px', 
-            backgroundColor: '#111', 
-            borderRadius: '50%',
+            left: '50%',
+            padding: '0.6rem 1.2rem',
+            backgroundColor: '#fff', 
+            border: '1px solid #111',
+            borderRadius: '2px',
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
             cursor: 'pointer', 
-            border: 'none',
-            color: '#fff',
-            transition: 'transform 0.2s ease, background-color 0.2s ease',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+            color: '#111',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.65rem',
+            fontWeight: '500',
+            letterSpacing: '1px',
+            transition: 'all 0.3s ease',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
           }}
         >
-          <Plus size={16} strokeWidth={2} />
+          AGREGAR AL CARRITO
         </button>
       )}
     </div>
@@ -589,13 +596,33 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
       .product-card:hover .product-img {
         transform: scale(1.03);
       }
+      
+      .add-to-cart-btn {
+        opacity: 0;
+        transform: translate(-50%, 10px) !important;
+      }
+      .product-card:hover .add-to-cart-btn {
+        opacity: 1;
+        transform: translate(-50%, 0) !important;
+      }
       .add-to-cart-btn:hover {
-        transform: scale(1.1);
-        background-color: #333 !important;
+        background-color: #111 !important;
+        color: #fff !important;
       }
-      .add-to-cart-btn:active {
-        transform: scale(0.95);
+      
+      @media (max-width: 1024px) {
+        .add-to-cart-btn {
+          opacity: 1;
+          transform: translate(-50%, 0) !important;
+        }
       }
+      @media (max-width: 480px) {
+        .add-to-cart-btn {
+          padding: 0.5rem 0.8rem !important;
+          font-size: 0.55rem !important;
+        }
+      }
+
       .fav-active {
         animation: heartBeat 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
