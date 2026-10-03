@@ -163,49 +163,50 @@ const Home = () => {
 
 
       {/* ════ 2. CATEGORÍAS ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <p className="eyebrow" style={{ marginBottom: '0.5rem', opacity: 0.6 }}>Por género y ocasión</p>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <h2 style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '1.8rem',
+              fontSize: '2rem',
               fontWeight: '400',
-              color: '#222',
-              letterSpacing: '0.5px'
+              color: 'var(--color-black)',
+              letterSpacing: '1px',
+              textTransform: 'uppercase'
             }}>
               Descubre tu fragancia
             </h2>
           </div>
 
-          <div className="no-scrollbar" style={{ display: 'flex', gap: '1rem', paddingBottom: '1rem' }}>
+          <div className="no-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', paddingBottom: '1rem' }}>
             {[
-              { label: 'Hombre', cat: 'Hombre', img: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=400&auto=format&fit=crop' },
-              { label: 'Mujer',  cat: 'Mujer',  img: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=400&auto=format&fit=crop' },
-              { label: 'Unisex', cat: 'Unisex', img: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=400&auto=format&fit=crop' },
-              { label: 'Sets',   cat: 'Sets',   img: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=400&auto=format&fit=crop' },
-              { label: 'Ofertas',cat: 'Ofertas',img: 'https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=400&auto=format&fit=crop' },
+              { label: 'Hombre', cat: 'Hombre' },
+              { label: 'Mujer',  cat: 'Mujer' },
+              { label: 'Unisex', cat: 'Unisex' }
             ].map(c => (
               <Link
                 key={c.label}
                 to={`/tienda?category=${c.cat}`}
                 style={{
-                  flex: '0 0 auto',
-                  minWidth: '150px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  height: '200px',
-                  borderRadius: '2px',
-                  background: '#000'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '3rem 1rem',
+                  backgroundColor: 'var(--color-cream)',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                  color: 'var(--color-black)',
+                  fontSize: '0.85rem', letterSpacing: '2px', textTransform: 'uppercase',
+                  fontWeight: '400', transition: 'var(--transition)',
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'var(--color-gold)';
+                  e.currentTarget.style.color = 'var(--color-gold)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgba(0,0,0,0.04)';
+                  e.currentTarget.style.color = 'var(--color-black)';
                 }}
               >
-                <img src={c.img} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65, transition: 'transform 0.5s ease' }}
-                  onMouseEnter={e => e.target.style.transform = 'scale(1.08)'}
-                  onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-                />
-                <span style={{ position: 'absolute', bottom: '15px', left: '15px', color: '#fff', fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '400' }}>
-                  {c.label}
-                </span>
+                {c.label}
               </Link>
             ))}
           </div>
@@ -213,19 +214,23 @@ const Home = () => {
       </section>
 
       {/* ════ 3. NUESTROS PRODUCTOS ════ */}
-      <section className="section-padding">
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>Selección curada</p>
-              <h2 className="title-md">Nuestros Productos</h2>
-            </div>
-            <Link to="/tienda" className="btn-ghost">VER TODOS <ArrowRight size={14} /></Link>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '3.5rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: '400', marginBottom: '0.8rem', color: 'var(--color-black)' }}>
+              NUESTROS PRODUCTOS
+            </h2>
+            <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem', marginBottom: '1.5rem', letterSpacing: '0.5px' }}>
+              Descubre nuestra selección de fragancias.
+            </p>
+            <Link to="/tienda" style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px' }}>
+              VER TODOS →
+            </Link>
           </div>
 
-          <div className="featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
-            {featured.map(p => (
-              <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes[0])} />
+          <div className="featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+            {products.slice(0, 8).map(p => (
+              <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
             ))}
           </div>
         </div>
@@ -240,94 +245,42 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ 4. EDITORIAL BANNER ════ */}
-      <section className="editorial-grid" style={{
-        position: 'relative',
-        backgroundColor: '#0a0a0a',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        minHeight: '420px',
-        overflow: 'hidden',
-      }}>
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
-          <img
-            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop"
-            alt="Perfume editorial"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '4rem 3rem', color: '#fff' }}>
-          <p className="eyebrow" style={{ color: 'var(--color-gold)', marginBottom: '1.2rem' }}>La experiencia DFV</p>
-          <h2 className="title-md" style={{ marginBottom: '1.5rem' }}>Encuentra tu<br/>perfume ideal</h2>
-          <p style={{ opacity: 0.75, marginBottom: '2.5rem', fontSize: '0.95rem', lineHeight: '1.8' }}>
-            Una fragancia para cada personalidad,<br/>momento y ocasión.
+      {/* ════ 4. LA EXPERIENCIA DFV ════ */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-black)', color: 'var(--color-cream)' }}>
+        <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: '400', marginBottom: '1.5rem' }}>
+            Encuentra tu perfume ideal
+          </h2>
+          <p style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '3.5rem', letterSpacing: '0.5px', fontWeight: '300' }}>
+            Una fragancia para cada personalidad, momento y ocasión.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
-            {['Fragancias originales', 'Envíos a todo el país', 'Atención personalizada'].map(b => (
-              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', opacity: 0.85 }}>
-                <CheckCircle size={16} style={{ color: 'var(--color-gold)', flexShrink: 0 }} /> {b}
-              </div>
-            ))}
-          </div>
-          <Link to="/tienda" className="btn-secondary" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff', alignSelf: 'flex-start' }}>
-            DESCUBRIR COLECCIÓN →
-          </Link>
-        </div>
 
-        <style>{`
-          @media (max-width: 768px) {
-            .editorial-grid { grid-template-columns: 1fr !important; }
-            .editorial-grid > div:first-child { height: 220px; }
-            .editorial-grid > div:last-child { padding: 2.5rem 1.5rem !important; }
-          }
-        `}</style>
-      </section>
-
-
-      {/* ════ 6. MARCAS ════ */}
-      <section className="section-padding" style={{ borderTop: '1px solid var(--color-gray-light)', borderBottom: '1px solid var(--color-gray-light)', overflow: 'hidden' }}>
-        <div className="container">
-          <p className="eyebrow text-center" style={{ marginBottom: '2rem' }}>Nuestras marcas</p>
-        </div>
-        <div style={{ display: 'flex', width: 'max-content', animation: 'marquee 20s linear infinite' }}>
-          {[...brands, ...brands, ...brands].map((b, i) => (
-            <span key={i} style={{ padding: '0 3rem', fontSize: '1rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-gray)', fontFamily: 'var(--font-serif)', whiteSpace: 'nowrap' }}>
-              {b}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* ════ 7. BENEFICIOS ════ */}
-      <section className="section-padding">
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem', textAlign: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', textAlign: 'left' }}>
             {[
-              { icon: <CheckCircle size={28} />, title: 'Fragancias Originales', desc: '100% auténticas y garantizadas.' },
-              { icon: <Truck size={28} />, title: 'Envíos a todo el país', desc: 'Rápidos y seguros a tu puerta.' },
-              { icon: <MessageCircle size={28} />, title: 'Atención Personalizada', desc: 'Te ayudamos a elegir tu esencia.' },
-              { icon: <ShieldCheck size={28} />, title: 'Compra Segura', desc: 'Tus datos están protegidos.' },
+              'Fragancias originales',
+              'Envíos a todo el país',
+              'Atención personalizada',
+              'Asesoría para elegir tu fragancia'
             ].map(b => (
-              <div key={b.title}>
-                <div style={{ color: 'var(--color-gold)', display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>{b.icon}</div>
-                <h4 style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', fontFamily: 'var(--font-sans)', fontWeight: '600' }}>{b.title}</h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)' }}>{b.desc}</p>
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', fontWeight: '300', letterSpacing: '0.5px' }}>
+                <CheckCircle size={18} style={{ color: 'var(--color-gold)', flexShrink: 0 }} />
+                <span>{b}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════ 8. VISÍTANOS ════ */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-cream)' }}>
+      {/* ════ 5. SECCIÓN DE ATENCIÓN / TIENDA ════ */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-white)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Encuéntranos</p>
-            <h2 className="title-md">Visítanos</h2>
-            <p style={{ color: 'var(--color-gray)', marginTop: '0.75rem', fontSize: '0.95rem' }}>Encuentra nuestras tiendas y recibe atención personalizada.</p>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: '400', color: 'var(--color-black)' }}>
+              Nuestras Boutiques
+            </h2>
           </div>
 
-          <div className="no-scrollbar" style={{ display: 'flex', gap: '1.5rem' }}>
+          <div className="no-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
             {[
               {
                 name: 'Sede Palmira',
@@ -346,21 +299,33 @@ const Home = () => {
                 wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Llanogrande',
               },
             ].map(s => (
-              <div key={s.name} style={{ flex: '0 0 320px', flexGrow: 1, background: '#fff', overflow: 'hidden', border: '1px solid var(--color-gray-light)' }}>
-                <div style={{ height: '220px', overflow: 'hidden' }}>
+              <div key={s.name} style={{ background: 'var(--color-cream)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ height: '260px', overflow: 'hidden' }}>
                   <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div style={{ padding: '1.5rem' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem' }}>{s.name}</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--color-gray)', marginBottom: '0.5rem' }}>{s.address}</p>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--color-gray)', marginBottom: '1.5rem', lineHeight: '1.7' }}>{s.hours}</p>
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <a href={s.maps} className="btn-secondary" style={{ flex: 1, padding: '0.65rem', fontSize: '0.72rem', textAlign: 'center' }}>CÓMO LLEGAR</a>
-                    <a href={s.wa} target="_blank" rel="noreferrer" className="btn-primary" style={{ flex: 1, padding: '0.65rem', fontSize: '0.72rem', textAlign: 'center' }}>WHATSAPP</a>
+                <div style={{ padding: '2rem' }}>
+                  <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', marginBottom: '0.8rem', color: 'var(--color-black)' }}>{s.name}</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-gray-dark)', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>{s.address}</p>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', marginBottom: '2rem', lineHeight: '1.7' }}>{s.hours}</p>
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <a href={s.maps} style={{ flex: 1, padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', border: '1px solid var(--color-black)', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase' }}>CÓMO LLEGAR</a>
+                    <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', background: 'var(--color-black)', color: 'var(--color-cream)', letterSpacing: '1px', textTransform: 'uppercase' }}>WHATSAPP</a>
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════ 6. MÉTODOS DE PAGO ════ */}
+      <section style={{ padding: '4rem 0', backgroundColor: 'var(--color-cream)', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+        <div className="container" style={{ textAlign: 'center' }}>
+          <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1.5rem' }}>MÉTODOS DE PAGO</h4>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', opacity: 0.7 }}>
+            <span style={{ fontSize: '0.9rem', letterSpacing: '1px', color: 'var(--color-black)' }}>TRANSFERENCIA BANCARIA</span>
+            <span style={{ fontSize: '0.9rem', letterSpacing: '1px', color: 'var(--color-black)' }}>EFECTIVO</span>
+            <span style={{ fontSize: '0.9rem', letterSpacing: '1px', color: 'var(--color-black)' }}>TARJETAS (PRÓXIMAMENTE)</span>
           </div>
         </div>
       </section>
@@ -371,13 +336,12 @@ const Home = () => {
 };
 
 /* ── Shared Product Card Component ── */
-export const ProductCard = ({ product, onFav, fav }) => (
+export const ProductCard = ({ product, onFav, fav, onAdd }) => (
   <div className="product-card">
     <div className="product-card__image-wrap">
       <Link to={`/producto/${product.id}`}>
         <img src={product.image} alt={product.name} />
       </Link>
-      {/* Etiqueta NUEVO tipo Imagen 2 */}
       {product.id % 2 !== 0 && (
         <span className="product-card__badge">NUEVO</span>
       )}
@@ -387,18 +351,32 @@ export const ProductCard = ({ product, onFav, fav }) => (
         aria-label="Favorito"
         style={{ border: 'none', cursor: 'pointer' }}
       >
-        <Heart
-          size={16}
-          fill={fav ? 'var(--color-black)' : 'none'}
-          stroke={fav ? 'var(--color-black)' : 'var(--color-gray-dark)'}
-        />
+        <Heart size={16} fill={fav ? 'var(--color-black)' : 'none'} stroke={fav ? 'var(--color-black)' : 'var(--color-gray-dark)'} />
       </button>
     </div>
     <div className="product-card__info">
+      <p style={{ fontSize: '0.65rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '0.3rem' }}>{product.brand}</p>
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
         <p className="product-card__name">{product.name}</p>
       </Link>
-      <span className="product-card__price">${product.price.toLocaleString()}</span>
+      <p style={{ fontSize: '0.75rem', color: 'var(--color-gray)', marginBottom: '0.8rem' }}>{product.sizes?.[0] || '100 ml'}</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+        <span className="product-card__price">${product.price.toLocaleString()}</span>
+        {onAdd && (
+          <button 
+            onClick={onAdd}
+            style={{ 
+              fontSize: '0.65rem', letterSpacing: '1px', textTransform: 'uppercase', 
+              padding: '0.4rem 0.8rem', border: '1px solid var(--color-black)', 
+              background: 'transparent', color: 'var(--color-black)', cursor: 'pointer', transition: 'var(--transition)' 
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-black)'; e.currentTarget.style.color = 'var(--color-white)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-black)'; }}
+          >
+            AÑADIR
+          </button>
+        )}
+      </div>
     </div>
   </div>
 );

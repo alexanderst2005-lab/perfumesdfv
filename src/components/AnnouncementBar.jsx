@@ -14,9 +14,9 @@ const content = `${single}   ·   ${single}`;
 const AnnouncementBar = ({ transparent = false }) => (
   <div style={{
     background: transparent
-      ? 'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.2))'
-      : '#0a0a0a',
-    color: '#fff',
+      ? 'linear-gradient(to bottom, rgba(5,5,5,0.7), rgba(5,5,5,0))'
+      : 'var(--color-black)',
+    color: 'var(--color-cream)',
     height: '36px',
     display: 'flex',
     alignItems: 'center',
@@ -24,13 +24,16 @@ const AnnouncementBar = ({ transparent = false }) => (
     zIndex: 1001,
     width: '100%',
     fontFamily: 'var(--font-sans)',
-    fontSize: '0.7rem',
-    letterSpacing: '1.5px',
+    fontSize: '0.68rem',
+    letterSpacing: '2px',
     userSelect: 'none',
     transition: 'background 0.4s ease',
+    borderBottom: transparent ? 'none' : '1px solid rgba(255,255,255,0.05)'
   }}>
     <div className="marquee-track" style={{ whiteSpace: 'nowrap' }}>
-      {content}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;{content}
+      <span dangerouslySetInnerHTML={{ __html: content.replace(/✦/g, '<span style="color:var(--color-gold);">✦</span>') }} />
+      &nbsp;&nbsp;&nbsp;<span style={{color:'var(--color-gold)'}}>✦</span>&nbsp;&nbsp;&nbsp;
+      <span dangerouslySetInnerHTML={{ __html: content.replace(/✦/g, '<span style="color:var(--color-gold);">✦</span>') }} />
     </div>
   </div>
 );

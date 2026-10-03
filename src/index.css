@@ -1,14 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  --color-black: #111111;
-  --color-white: #ffffff;
-  --color-cream: #F6F3EE;
+  --color-black: #050505;
+  --color-black-light: #0D0D0D;
+  --color-white: #F7F5F0;
+  --color-cream: #F5F2EC;
   --color-cream-dark: #EDE9E2;
-  --color-gold: #C5A46A;
-  --color-gold-light: #E8D9C0;
+  --color-gold: #B99A5B;
+  --color-gold-light: #D1B878;
   --color-gray-light: #E8E8E8;
-  --color-gray: #888888;
+  --color-gray: #A8A39A;
   --color-gray-dark: #444444;
   --header-height: 70px;
   --announcement-height: 36px;

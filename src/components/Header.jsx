@@ -70,7 +70,7 @@ const Header = () => {
                 style={{ color: 'inherit' }}
                 onClick={() => setMenuOpen(true)}
               >
-                <Menu size={24} />
+                <Menu size={22} strokeWidth={1.5} />
               </button>
 
               {/* Desktop nav */}
@@ -136,10 +136,10 @@ const Header = () => {
 
             {/* RIGHT — Icons */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem', flex: 1 }}>
-              <button style={{ color: 'inherit' }} aria-label="Buscar"><Search size={20} /></button>
+              <button style={{ color: 'inherit' }} aria-label="Buscar"><Search size={20} strokeWidth={1.5} /></button>
 
               <Link to="/favoritos" style={{ position: 'relative', color: 'inherit' }} aria-label="Favoritos">
-                <Heart size={20} />
+                <Heart size={20} strokeWidth={1.5} />
                 {favorites.length > 0 && (
                   <span style={badgeStyle}>{favorites.length}</span>
                 )}
@@ -150,7 +150,7 @@ const Header = () => {
                 aria-label="Carrito"
                 onClick={() => setIsCartOpen(true)}
               >
-                <ShoppingBag size={20} />
+                <ShoppingBag size={20} strokeWidth={1.5} />
                 {cartCount > 0 && <span style={badgeStyle}>{cartCount}</span>}
               </button>
             </div>
@@ -182,8 +182,11 @@ const Header = () => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <img src="/logo.png" alt="DFV Perfumes" style={{ height: '40px', objectFit: 'contain' }} />
-                <button onClick={() => setMenuOpen(false)}><X size={22} /></button>
+                <svg viewBox="0 0 160 50" height="30" aria-label="DFV Perfumes" style={{ display: 'block' }}>
+                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill="#050505">DFV</text>
+                  <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill="#050505">PERFUMES</text>
+                </svg>
+                <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>
               </div>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 <Link to="/" onClick={() => setMenuOpen(false)} style={menuLinkStyle}>Inicio</Link>
