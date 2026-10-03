@@ -104,7 +104,7 @@ const Footer = () => (
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', marginTop: '0.2rem' }}>Calle 31 #27-44</p>
             </div>
             
-            <Link to="/" style={{ 
+            <a href="/#sedes" style={{ 
               display: 'inline-block',
               fontSize: '0.7rem',
               letterSpacing: '1px',
@@ -116,7 +116,7 @@ const Footer = () => (
               fontWeight: '500'
             }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.8}>
               VER UBICACIONES &rarr;
-            </Link>
+            </a>
           </div>
         </div>
 

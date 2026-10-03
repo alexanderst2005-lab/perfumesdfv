@@ -399,7 +399,7 @@ const Home = () => {
       </section>
 
       {/* ════ NUESTRAS SEDES ════ */}
-      <section className="section-padding container">
+      <section id="sedes" className="section-padding container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
             Nuestras Sedes
