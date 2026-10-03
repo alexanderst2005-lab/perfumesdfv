@@ -16,7 +16,7 @@ const Header = () => {
   const isHome = location.pathname === '/';
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -36,7 +36,7 @@ const Header = () => {
     <>
       {/* ── Container (fixed, stacks AnnouncementBar + header) ── */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
-        <AnnouncementBar />
+        <AnnouncementBar transparent={!solid} />
 
         <header style={{
           height: `${HEADER_H}px`,
@@ -93,19 +93,21 @@ const Header = () => {
               </nav>
             </div>
 
-            {/* CENTER — Logo siempre visible */}
+            {/* CENTER — Logo */}
             <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <img
                 src="/logo.png"
                 alt="DFV Perfumes"
                 style={{
-                  height: '40px',
+                  height: '48px',
                   width: 'auto',
                   objectFit: 'contain',
                   display: 'block',
-                  maxWidth: '180px',
-                  filter: solid ? 'none' : 'invert(1) brightness(2)',
-                  mixBlendMode: solid ? 'normal' : 'screen',
+                  maxWidth: '200px',
+                  // On dark hero: invert(1) turns black letters white, then screen removes the white bg
+                  // On white header: multiply removes white bg showing black letters
+                  filter: solid ? 'none' : 'invert(1) brightness(1.5)',
+                  mixBlendMode: solid ? 'multiply' : 'screen',
                   transition: 'filter 0.3s ease',
                 }}
               />
