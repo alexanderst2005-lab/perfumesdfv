@@ -21,7 +21,8 @@ const Header = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const solid = !isHome || scrolled;
+  // En Home el header siempre es transparente (ya que sube con el scroll). En otras páginas es sólido.
+  const solid = !isHome;
 
   const navLinks = [
     { label: 'Tienda',   path: '/tienda' },
