@@ -185,41 +185,23 @@ const ProductDetail = () => {
         </section>
       )}
 
-      {/* Mobile Sticky Bar */}
-      <div className="mobile-sticky-bar" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', borderTop: '1px solid #eee', padding: '0.8rem 1rem', zIndex: 999, flexDirection: 'column', gap: '0.5rem' }}>
-        <p style={{ fontSize: '0.75rem', fontWeight: '500', color: '#000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.brand} {product.name}</p>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            style={{ flex: 1, padding: '0.8rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#1A1A1A', border: 'none', color: '#fff', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: 'pointer' }}
-            onClick={() => addToCart(product, qty, size)}
-          >
-            AÑADIR AL CARRITO
-          </button>
-          <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" style={{ width: '45px', height: '45px', backgroundColor: '#25D366', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-          </a>
-        </div>
-      </div>
-
       <style>{`
         .whatsapp-floating-btn { display: none !important; }
         .gallery-slide {
           aspect-ratio: 1/1;
         }
-        .mobile-sticky-bar { display: none !important; }
         @media (max-width: 768px) {
           .detail-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
-          .product-detail-container { padding: 0 !important; padding-bottom: 6rem !important; }
+          .product-detail-container { padding: 0 !important; }
           .gallery-section { width: 100vw; margin-left: 0; margin-right: 0; margin-bottom: 0.5rem; }
           .gallery-slide {
-            aspect-ratio: 4/5; /* Mucho más vertical para que se vea imponente como en la referencia */
+            aspect-ratio: 4/5;
           }
           .gallery-scroll-container {
-            padding: 0 1rem !important; /* Espacio a la izquierda para el primer slide */
+            padding: 0 1rem !important;
           }
           .info-section { padding: 1rem 1rem !important; gap: 1rem !important; }
           .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
-          .mobile-sticky-bar { display: flex !important; }
         }
       `}</style>
     </div>
