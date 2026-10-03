@@ -93,17 +93,20 @@ const Header = () => {
               </nav>
             </div>
 
-            {/* CENTER — Logo */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: solid ? 1 : 0, transition: 'opacity 0.3s ease', pointerEvents: solid ? 'auto' : 'none' }}>
+            {/* CENTER — Logo siempre visible */}
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <img
                 src="/logo.png"
                 alt="DFV Perfumes"
                 style={{
-                  height: '44px',
+                  height: '40px',
                   width: 'auto',
                   objectFit: 'contain',
                   display: 'block',
                   maxWidth: '180px',
+                  filter: solid ? 'none' : 'invert(1) brightness(2)',
+                  mixBlendMode: solid ? 'normal' : 'screen',
+                  transition: 'filter 0.3s ease',
                 }}
               />
             </Link>

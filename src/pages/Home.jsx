@@ -23,50 +23,57 @@ const Home = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         marginTop: `-${TOTAL_HEADER}px`,
-        paddingTop: `${TOTAL_HEADER}px`,
         overflow: 'hidden',
         textAlign: 'center',
       }}>
-        {/* Animated Background Image */}
+        {/* Animated Background — covers absolute full screen */}
         <div style={{
           position: 'absolute',
-          inset: 0,
+          top: 0, left: 0, right: 0, bottom: 0,
           backgroundImage: 'url(/hero.jpg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center top',
           animation: 'kenBurns 18s ease-in-out infinite alternate',
           transformOrigin: 'center center',
+          zIndex: 0,
         }} />
 
-        {/* Gradient overlay — dark at bottom, semi-dark at top */}
+        {/* Gradient — heavier at bottom for text readability */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.65) 100%)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.85) 100%)',
+          zIndex: 1,
         }} />
 
-        {/* Content — centered */}
-        <div style={{ position: 'relative', zIndex: 1, color: '#fff', padding: '0 1.5rem', width: '100%', maxWidth: '600px' }}>
-
-
-          <p style={{ fontSize: '0.75rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.7, marginBottom: '1.25rem', fontWeight: '400' }}>
+        {/* Content — pushed to bottom */}
+        <div style={{
+          position: 'relative',
+          zIndex: 2,
+          color: '#fff',
+          padding: '0 1.5rem',
+          paddingBottom: '5rem',
+          width: '100%',
+          maxWidth: '600px',
+        }}>
+          <p style={{ fontSize: '0.7rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.65, marginBottom: '1rem', fontWeight: '400' }}>
             FRAGANCIAS DE LUJO
           </p>
 
           <h1 style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(2rem, 6vw, 4rem)',
+            fontSize: 'clamp(2.2rem, 7vw, 4.5rem)',
             fontWeight: '400',
-            lineHeight: '1.2',
-            marginBottom: '1.5rem',
-            textShadow: '0 2px 20px rgba(0,0,0,0.4)',
+            lineHeight: '1.15',
+            marginBottom: '1rem',
+            textShadow: '0 2px 30px rgba(0,0,0,0.5)',
           }}>
             Tu esencia,<br/>tu identidad.
           </h1>
 
-          <p style={{ fontSize: '1rem', opacity: 0.75, marginBottom: '2.5rem', fontWeight: '300', letterSpacing: '0.5px' }}>
+          <p style={{ fontSize: '0.95rem', opacity: 0.7, marginBottom: '2.5rem', fontWeight: '300', letterSpacing: '0.5px' }}>
             Fragancias que cuentan tu historia.
           </p>
 
@@ -74,45 +81,44 @@ const Home = () => {
             to="/tienda"
             style={{
               display: 'inline-block',
-              padding: '1rem 3rem',
-              border: '1px solid rgba(255,255,255,0.7)',
+              padding: '0.9rem 2.8rem',
+              border: '1px solid rgba(255,255,255,0.65)',
               color: '#fff',
-              fontSize: '0.8rem',
+              fontSize: '0.75rem',
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              backdropFilter: 'blur(4px)',
-              backgroundColor: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(6px)',
+              backgroundColor: 'rgba(255,255,255,0.07)',
               transition: 'all 0.3s ease',
             }}
-            onMouseEnter={e => { e.target.style.backgroundColor = 'rgba(255,255,255,0.2)'; }}
-            onMouseLeave={e => { e.target.style.backgroundColor = 'rgba(255,255,255,0.08)'; }}
           >
             DESCUBRIR COLECCIÓN
           </Link>
         </div>
 
-        {/* SCROLL indicator */}
+        {/* SCROLL — absolute bottom */}
         <div style={{
           position: 'absolute',
-          bottom: '2.5rem',
+          bottom: '1.25rem',
           left: '50%',
           transform: 'translateX(-50%)',
-          zIndex: 1,
-          color: 'rgba(255,255,255,0.6)',
+          zIndex: 3,
+          color: 'rgba(255,255,255,0.55)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.5rem',
+          gap: '0.4rem',
         }}>
-          <span style={{ fontSize: '0.6rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
+          <span style={{ fontSize: '0.55rem', letterSpacing: '3px', textTransform: 'uppercase' }}>SCROLL</span>
           <div style={{
             width: '1px',
-            height: '40px',
-            backgroundColor: 'rgba(255,255,255,0.4)',
+            height: '35px',
+            backgroundColor: 'rgba(255,255,255,0.35)',
             animation: 'scrollLine 2s ease-in-out infinite',
             transformOrigin: 'top',
           }} />
         </div>
+
 
         <style>{`
           @keyframes kenBurns {
