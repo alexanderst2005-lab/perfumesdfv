@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { products, brands } from '../data/mockProducts';
-import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 
 const HERO_SLIDES = [
@@ -56,6 +56,7 @@ const TOTAL_HEADER = 106; // announcement(36) + header(70)
 const Home = () => {
   const { addToCart, toggleFavorite, isFavorite } = useShop();
   const [activeCategory, setActiveCategory] = useState('TODOS');
+  const [openFaq, setOpenFaq] = useState(null);
   const featured = products.slice(0, 4);
   const newArrivals = products.slice(0, 4);
   const bestSellers = products.filter(p => p.isBestSeller);
@@ -307,6 +308,108 @@ const Home = () => {
             .featured-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem 1rem; }
           }
         `}</style>
+      </section>
+
+      {/* ════ PREGUNTAS FRECUENTES ════ */}
+      <section className="section-padding" style={{ backgroundColor: '#fff' }}>
+        <div className="container" style={{ maxWidth: '700px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.8rem' }}>
+              Preguntas Frecuentes
+            </h2>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#666', lineHeight: '1.6', fontWeight: '300' }}>
+              Encuentra respuestas a las preguntas más comunes sobre nuestros perfumes, compras y atención.
+            </p>
+          </div>
+
+          <div style={{ borderTop: '1px solid #EAE8E4' }}>
+            {[
+              {
+                q: '¿Cómo puedo realizar una compra?',
+                a: 'Puedes explorar nuestro catálogo, seleccionar el perfume que deseas y agregarlo al carrito. Luego podrás revisar tu pedido, ingresar tus datos y finalizar la compra. Al finalizar, tu pedido será enviado a nuestro canal de WhatsApp para confirmar la información y continuar con la atención.'
+              },
+              {
+                q: '¿Los perfumes son originales?',
+                a: 'Sí. Trabajamos con perfumes originales e importados. En cada producto encontrarás la información disponible sobre la fragancia, su marca, presentación y precio.'
+              },
+              {
+                q: '¿Realizan envíos?',
+                a: 'Sí, contamos con opciones de entrega según la ciudad y la disponibilidad del servicio. Si tienes dudas sobre la entrega de tu pedido, puedes comunicarte con nosotros por WhatsApp.'
+              },
+              {
+                q: '¿Qué métodos de pago tienen disponibles?',
+                a: 'Los métodos de pago disponibles se informarán durante el proceso de compra o mediante nuestro canal de atención por WhatsApp.'
+              },
+              {
+                q: '¿Puedo recibir ayuda para elegir un perfume?',
+                a: 'Claro. Si no sabes qué fragancia elegir, puedes comunicarte con nosotros por WhatsApp y recibir orientación según tus preferencias, el tipo de fragancia que buscas y la ocasión para la que la necesitas.'
+              }
+            ].map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div key={idx} style={{ borderBottom: '1px solid #EAE8E4' }}>
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    style={{
+                      width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      background: 'none', border: 'none', padding: '1.5rem 0', cursor: 'pointer', textAlign: 'left',
+                      fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: '#111'
+                    }}
+                  >
+                    <span style={{ paddingRight: '1rem' }}>{faq.q}</span>
+                    <span style={{ color: '#000', transition: 'transform 0.3s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
+                      {isOpen ? <Minus size={18} strokeWidth={1.5} /> : <Plus size={18} strokeWidth={1.5} />}
+                    </span>
+                  </button>
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      maxHeight: isOpen ? '300px' : '0',
+                      opacity: isOpen ? 1 : 0
+                    }}
+                  >
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#666', lineHeight: '1.7', paddingBottom: '1.5rem' }}>
+                      {faq.a}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '3.5rem' }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.85rem', color: '#888', marginBottom: '0.8rem', letterSpacing: '1px' }}>¿NECESITAS MÁS AYUDA?</p>
+            <a 
+              href="https://wa.me/573000000000" 
+              target="_blank" 
+              rel="noreferrer"
+              style={{
+                display: 'inline-block', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
+              }}
+              onMouseEnter={e => e.target.style.opacity = 0.6}
+              onMouseLeave={e => e.target.style.opacity = 1}
+            >
+              CONSULTAR POR WHATSAPP
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ════ TRAYECTORIA DE LA MARCA ════ */}
+      <section style={{ backgroundColor: '#F9F8F6', padding: '4rem 0', borderTop: '1px solid #EAE8E4', borderBottom: '1px solid #EAE8E4' }}>
+        <div className="container" style={{ textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '3px', color: '#888', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
+            DESDE 1992
+          </p>
+          <div style={{ width: '1px', height: '30px', backgroundColor: '#D5D1C8', margin: '0 auto 1.5rem' }} />
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: '#111', letterSpacing: '1px', marginBottom: '1rem' }}>
+            MÁS DE 30 AÑOS DE TRAYECTORIA
+          </h2>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', color: '#666', fontStyle: 'italic' }}>
+            Perfumes originales e importados.
+          </p>
+        </div>
       </section>
 
       {/* ════ 3. LA EXPERIENCIA DFV ════ */}
