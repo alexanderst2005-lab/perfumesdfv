@@ -25,6 +25,7 @@ const Home = () => {
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: `-${TOTAL_HEADER}px`,
+        paddingTop: `${TOTAL_HEADER}px`,
         overflow: 'hidden',
         textAlign: 'center',
       }}>

@@ -93,12 +93,18 @@ const Header = () => {
               </nav>
             </div>
 
-            {/* CENTER — Logo (solo visible cuando header es sólido) */}
+            {/* CENTER — Logo */}
             <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: solid ? 1 : 0, transition: 'opacity 0.3s ease', pointerEvents: solid ? 'auto' : 'none' }}>
               <img
                 src="/logo.png"
                 alt="DFV Perfumes"
-                style={{ height: '52px', width: 'auto', objectFit: 'contain', display: 'block', maxWidth: '160px' }}
+                style={{
+                  height: '44px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  display: 'block',
+                  maxWidth: '180px',
+                }}
               />
             </Link>
 
