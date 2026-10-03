@@ -48,47 +48,32 @@ const ProductDetail = () => {
 
           {/* Gallery */}
           <div className="gallery-section">
-            <div className="gallery-main-image" style={{ position: 'relative', backgroundColor: 'var(--color-cream)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="gallery-main-image" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <img
                 src={images[imgIdx]}
                 alt={product.name}
-                style={{ width: '80%', height: '80%', objectFit: 'contain' }}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
-              <button onClick={() => setImgIdx(i => (i === 0 ? images.length - 1 : i - 1))}
-                style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.85)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ChevronLeft size={18} />
-              </button>
-              <button onClick={() => setImgIdx(i => (i === images.length - 1 ? 0 : i + 1))}
-                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.85)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ChevronRight size={18} />
-              </button>
-              <span style={{ position: 'absolute', bottom: '1rem', right: '1rem', fontSize: '0.75rem', color: 'var(--color-gray)', letterSpacing: '1px' }}>
-                {imgIdx + 1} / {images.length}
-              </span>
             </div>
-            {/* Thumbnails */}
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
-              {images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setImgIdx(i)}
-                  style={{
-                    width: '80px', height: '80px',
-                    border: `2px solid ${imgIdx === i ? 'var(--color-black)' : 'var(--color-gray-light)'}`,
-                    overflow: 'hidden', backgroundColor: 'var(--color-cream)',
-                    padding: '0.25rem', cursor: 'pointer',
-                  }}
-                >
-                  <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            
+            {/* Gallery Controls */}
+            {images.length > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem', color: 'var(--color-gray)' }}>
+                <button onClick={() => setImgIdx(i => (i === 0 ? images.length - 1 : i - 1))} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
+                  <ChevronLeft size={18} />
                 </button>
-              ))}
-            </div>
+                <span style={{ fontSize: '0.85rem', letterSpacing: '2px' }}>{imgIdx + 1} / {images.length}</span>
+                <button onClick={() => setImgIdx(i => (i === images.length - 1 ? 0 : i + 1))} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Info */}
-          <div className="info-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', paddingTop: '1rem' }}>
+          <div className="info-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', paddingTop: '0.5rem' }}>
             <div>
-              <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.4rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.3' }}>
+              <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.1rem', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.4' }}>
                 {product.brand} {product.name} {product.category} {product.concentration} {product.sizes?.[0]}
               </h1>
             </div>
