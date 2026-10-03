@@ -72,12 +72,25 @@ const Footer = () => (
 
     <style>{`
       @media (max-width: 768px) {
+        footer {
+          padding: 3rem 0 2rem !important;
+        }
         footer > div > div:first-child {
           grid-template-columns: 1fr 1fr !important;
-          gap: 2.5rem !important;
+          gap: 2rem !important;
+          margin-bottom: 2.5rem !important;
         }
         footer > div > div:first-child > div:first-child {
           grid-column: 1 / -1;
+        }
+        footer > div > div:first-child > div:nth-child(4) {
+          grid-column: 1 / -1;
+        }
+        footer h4 {
+          margin-bottom: 0.8rem !important;
+        }
+        footer ul {
+          gap: 0.5rem !important;
         }
       }
     `}</style>
