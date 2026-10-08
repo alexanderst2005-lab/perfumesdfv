@@ -15,12 +15,7 @@ const InventoryModule = () => {
     stockCount: 10, inStock: true, active: true, image: '', images: []
   });
 
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
-  
-  // For multiple secondary images
-  const [secondaryImageFiles, setSecondaryImageFiles] = useState([]);
-  const [secondaryImagePreviews, setSecondaryImagePreviews] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const openCreateModal = () => {
     setEditingProduct(null);
@@ -30,10 +25,7 @@ const InventoryModule = () => {
       description: '', concentration: 'Eau de Parfum', 
       stockCount: 10, inStock: true, active: true, image: '', images: []
     });
-    setImageFile(null);
-    setImagePreview('');
-    setSecondaryImageFiles([]);
-    setSecondaryImagePreviews([]);
+    setImagePreviews([]);
     setIsModalOpen(true);
   };
 
@@ -46,46 +38,28 @@ const InventoryModule = () => {
       concentration: p.concentration || '', stockCount: p.stockCount || 10, 
       inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || []
     });
-    setImageFile(null);
-    setImagePreview(p.image || '');
-    setSecondaryImageFiles([]);
-    setSecondaryImagePreviews(p.images || []);
+    const existingImages = [];
+    if (p.image) existingImages.push(p.image);
+    if (p.images && p.images.length > 0) existingImages.push(...p.images);
+    setImagePreviews(existingImages);
     setIsModalOpen(true);
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSecondaryImagesChange = (e) => {
+  const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    
     files.forEach(file => {
-      setSecondaryImageFiles(prev => [...prev, file]);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSecondaryImagePreviews(prev => [...prev, reader.result]);
+        setImagePreviews(prev => [...prev, reader.result]);
       };
       reader.readAsDataURL(file);
     });
   };
 
-  const removeSecondaryImage = (index) => {
-    const newPreviews = [...secondaryImagePreviews];
+  const removeImage = (index) => {
+    const newPreviews = [...imagePreviews];
     newPreviews.splice(index, 1);
-    setSecondaryImagePreviews(newPreviews);
-    
-    // Also remove from files if it's a new file (we match by index, though it's tricky if mixed with old URLs, but it works for a simple approach)
-    // Actually, we'll just re-upload what remains or keep URLs
-    // We'll handle this in the save logic
+    setImagePreviews(newPreviews);
   };
 
   const compressImage = (dataUrl, maxSize = 1600, quality = 0.85) => new Promise((resolve) => {
@@ -118,20 +92,17 @@ const InventoryModule = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      let finalImageUrl = formData.image;
-      let finalImagesList = [...secondaryImagePreviews];
+      let finalImagesList = [...imagePreviews];
 
-      // Si subió una imagen principal nueva
-      if (imageFile && imagePreview && imagePreview.startsWith('data:')) {
-        finalImageUrl = await uploadToCloudinary(imagePreview);
-      }
-
-      // Subir imágenes secundarias nuevas
+      // Subir imágenes nuevas
       for (let i = 0; i < finalImagesList.length; i++) {
         if (finalImagesList[i].startsWith('data:')) {
           finalImagesList[i] = await uploadToCloudinary(finalImagesList[i]);
         }
       }
+
+      const finalImageUrl = finalImagesList.length > 0 ? finalImagesList[0] : '';
+      const secondaryImages = finalImagesList.length > 1 ? finalImagesList.slice(1) : [];
 
       const payload = {
         ...formData,
@@ -141,7 +112,7 @@ const InventoryModule = () => {
         stockCount: parseInt(formData.stockCount),
         sizes: JSON.parse(formData.sizes || '[]'),
         image: finalImageUrl,
-        images: finalImagesList
+        images: secondaryImages
       };
 
       const res = await fetch('/api/admin/products', {
@@ -251,45 +222,38 @@ const InventoryModule = () => {
             
             <div style={{ display: 'grid', gap: '1rem' }}>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{ width: '80px', height: '80px', backgroundColor: '#f3f4f6', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #d1d5db' }}>
-                  {imagePreview ? (
-                    <img src={imagePreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : <ImageIcon color="#9ca3af" />}
-                </div>
-                <div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
-                      <Upload size={16} /> Subir Imagen
-                      <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
-                    </label>
-                    {imagePreview && (
-                      <button onClick={(e) => { e.preventDefault(); setImagePreview(''); setImageFile(null); setFormData({...formData, image: ''}); }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
-                        <Trash2 size={16} /> Eliminar
-                      </button>
-                    )}
-                  </div>
-                  <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>Imagen Principal</p>
-                </div>
-              </div>
-
               <div style={{ marginBottom: '1.5rem', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '12px', backgroundColor: '#f9fafb' }}>
-                <p style={{ fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem', color: '#374151' }}>Imágenes Secundarias</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <div>
+                    <p style={{ fontSize: '0.9rem', fontWeight: '500', color: '#374151' }}>Imágenes del Producto</p>
+                    <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>La primera imagen será la principal</p>
+                  </div>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#000', color: '#fff', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>
+                    <Upload size={16} /> Subir Imágenes
+                    <input type="file" accept="image/*" multiple onChange={handleImagesChange} style={{ display: 'none' }} />
+                  </label>
+                </div>
                 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  {secondaryImagePreviews.map((src, index) => (
-                    <div key={index} style={{ position: 'relative', width: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #d1d5db' }}>
-                      <img src={src} alt="secondary" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button onClick={() => removeSecondaryImage(index)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                  {imagePreviews.length === 0 && (
+                    <div style={{ width: '100%', padding: '2rem', textAlign: 'center', border: '1px dashed #d1d5db', borderRadius: '8px', color: '#9ca3af' }}>
+                      <ImageIcon size={32} style={{ marginBottom: '0.5rem' }} />
+                      <p>No hay imágenes subidas</p>
+                    </div>
+                  )}
+                  {imagePreviews.map((src, index) => (
+                    <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: index === 0 ? '2px solid #3b82f6' : '1px solid #d1d5db' }}>
+                      <img src={src} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {index === 0 && (
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#3b82f6', color: 'white', fontSize: '0.65rem', textAlign: 'center', padding: '2px 0' }}>
+                          Principal
+                        </div>
+                      )}
+                      <button onClick={() => removeImage(index)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
                         <X size={14} />
                       </button>
                     </div>
                   ))}
-                  
-                  <label style={{ width: '70px', height: '70px', backgroundColor: 'white', border: '1px dashed #d1d5db', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#9ca3af' }}>
-                    <Plus size={20} />
-                    <input type="file" accept="image/*" multiple onChange={handleSecondaryImagesChange} style={{ display: 'none' }} />
-                  </label>
                 </div>
               </div>
 
