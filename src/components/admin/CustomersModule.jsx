@@ -50,7 +50,11 @@ const CustomersModule = () => {
                   <button style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '1rem' }}>
                     <Edit size={18} />
                   </button>
-                  <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                  <button onClick={() => {
+                    if(window.confirm('¿Seguro que deseas eliminar a este cliente?')) {
+                      alert('Cliente eliminado (Simulación)');
+                    }
+                  }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                     <Trash2 size={18} />
                   </button>
                 </td>
