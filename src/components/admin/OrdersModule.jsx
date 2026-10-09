@@ -5,6 +5,8 @@ const OrdersModule = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
   useEffect(() => {
     fetch('/api/orders')
       .then(res => res.json())
@@ -39,6 +41,8 @@ const OrdersModule = () => {
     }
   };
 
+  const formatOrderId = (id) => `DFV-${String(id).padStart(4, '0')}`;
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -66,7 +70,7 @@ const OrdersModule = () => {
               const statusStyle = getStatusColor(o.status);
               return (
                 <tr key={o.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontWeight: '600' }}>{o.id}</td>
+                  <td style={{ padding: '1rem', fontWeight: '600' }}>{formatOrderId(o.id)}</td>
                   <td style={{ padding: '1rem' }}>
                     <p style={{ color: '#111827' }}>{o.customer_name}</p>
                     <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{o.customer_city}</p>
@@ -97,7 +101,7 @@ const OrdersModule = () => {
                   </td>
                   <td style={{ padding: '1rem', fontWeight: '600' }}>${o.total.toLocaleString()}</td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer' }}>
+                    <button onClick={() => setSelectedOrder(o)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer' }}>
                       <Eye size={18} />
                     </button>
                   </td>
@@ -107,6 +111,62 @@ const OrdersModule = () => {
           </tbody>
         </table>
       </div>
+
+      {selectedOrder && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+            <button onClick={() => setSelectedOrder(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+              <XCircle size={24} />
+            </button>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+              Detalles del Pedido {formatOrderId(selectedOrder.id)}
+            </h2>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+              <div>
+                <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Cliente</p>
+                <p style={{ fontWeight: '500' }}>{selectedOrder.customer_name}</p>
+                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_phone}</p>
+                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_email || 'Sin email'}</p>
+              </div>
+              <div>
+                <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Envío y Pago</p>
+                <p style={{ fontWeight: '500' }}>{selectedOrder.customer_city}</p>
+                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_address}</p>
+                <p style={{ fontSize: '0.9rem', color: '#374151', marginTop: '0.5rem', fontWeight: '500' }}>Método: <span style={{ color: '#059669' }}>{selectedOrder.payment_method}</span></p>
+              </div>
+            </div>
+
+            {selectedOrder.customer_notes && (
+              <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px', fontSize: '0.9rem' }}>
+                <strong style={{ color: '#374151' }}>Notas del cliente:</strong> {selectedOrder.customer_notes}
+              </div>
+            )}
+
+            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem' }}>Productos ({selectedOrder.items?.length || 0})</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {selectedOrder.items?.map((item, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid #f3f4f6' }}>
+                  <img src={item.image} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'contain', backgroundColor: '#f9fafb', borderRadius: '4px' }} />
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{item.name}</p>
+                    <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{item.selectedSize || item.brand}</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>Cant: {item.quantity}</p>
+                    <p style={{ fontWeight: '600' }}>${(item.price * item.quantity).toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1.25rem', fontWeight: '600' }}>
+              <span>Total Pedido:</span>
+              <span>${selectedOrder.total?.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

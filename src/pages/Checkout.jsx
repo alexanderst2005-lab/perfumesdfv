@@ -88,7 +88,7 @@ const Checkout = () => {
     }).then(res => res.json()).then(data => {
       // 2. Redirigir a WhatsApp
       if (data.success) {
-        message = `*NUEVO PEDIDO #${data.orderId}*\n\n` + message;
+        message = `*NUEVO PEDIDO #DFV-${String(data.orderId).padStart(4, '0')}*\n\n` + message;
       }
       message += `Método de Pago: ${metodos[paymentMethod]}\n\n`;
       message += `Nombre: ${formData.nombre}\n`;
