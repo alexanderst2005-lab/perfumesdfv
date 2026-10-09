@@ -56,10 +56,9 @@ const AdminDashboard = () => {
       
       {/* SIDEBAR */}
       <aside style={{ width: '250px', backgroundColor: '#ffffff', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '2rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {/* Logo Placeholder */}
-          <div style={{ width: '80px', height: '80px', backgroundColor: '#3f574d', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'var(--font-serif)', fontSize: '12px', textAlign: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-            DFV<br/>Perfumes
+        <div style={{ padding: '2.5rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ color: 'var(--color-black)', fontFamily: 'var(--font-serif)', fontWeight: '400', fontSize: '2.2rem', letterSpacing: '-0.5px', lineHeight: '0.9', textAlign: 'center' }}>
+            DFV<br/><span style={{ fontSize: '0.6rem', letterSpacing: '4px', textTransform: 'uppercase', display: 'block', textAlign: 'center', fontWeight: '300', marginTop: '4px' }}>PERFUMES</span>
           </div>
         </div>
         
