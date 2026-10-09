@@ -18,14 +18,25 @@ const OrdersModule = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const handleStatusChange = (id, newStatus) => {
+  const [shippingInfo, setShippingInfo] = useState({ carrier: '', tracking: '' });
+
+  const handleStatusChange = (id, newStatus, carrier = null, tracking = null) => {
+    const payload = { id, status: newStatus };
+    if (carrier && tracking) {
+      payload.shipping_carrier = carrier;
+      payload.tracking_number = tracking;
+    }
+
     fetch('/api/orders', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status: newStatus })
+      body: JSON.stringify(payload)
     }).then(res => res.json()).then(data => {
       if (data.success) {
-        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus, shipping_carrier: carrier || o.shipping_carrier, tracking_number: tracking || o.tracking_number } : o));
+        if (selectedOrder && selectedOrder.id === id) {
+          setSelectedOrder({ ...selectedOrder, status: newStatus, shipping_carrier: carrier || selectedOrder.shipping_carrier, tracking_number: tracking || selectedOrder.tracking_number });
+        }
       }
     });
   };
@@ -42,6 +53,11 @@ const OrdersModule = () => {
   };
 
   const formatOrderId = (id) => `DFV-${String(id).padStart(4, '0')}`;
+
+  const openOrderDetails = (order) => {
+    setSelectedOrder(order);
+    setShippingInfo({ carrier: order.shipping_carrier || '', tracking: order.tracking_number || '' });
+  };
 
   return (
     <div>
@@ -101,7 +117,7 @@ const OrdersModule = () => {
                   </td>
                   <td style={{ padding: '1rem', fontWeight: '600' }}>${o.total.toLocaleString()}</td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button onClick={() => setSelectedOrder(o)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer' }}>
+                    <button onClick={() => openOrderDetails(o)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer' }}>
                       <Eye size={18} />
                     </button>
                   </td>
@@ -126,15 +142,42 @@ const OrdersModule = () => {
               <div>
                 <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Cliente</p>
                 <p style={{ fontWeight: '500' }}>{selectedOrder.customer_name}</p>
+                <p style={{ fontSize: '0.9rem', color: '#374151' }}>CC: {selectedOrder.customer_cedula}</p>
                 <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_phone}</p>
-                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_email || 'Sin email'}</p>
+                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_email}</p>
               </div>
               <div>
                 <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Envío y Pago</p>
-                <p style={{ fontWeight: '500' }}>{selectedOrder.customer_city}</p>
+                <p style={{ fontWeight: '500' }}>{selectedOrder.customer_departamento}, {selectedOrder.customer_city}</p>
                 <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_address}</p>
                 <p style={{ fontSize: '0.9rem', color: '#374151', marginTop: '0.5rem', fontWeight: '500' }}>Método: <span style={{ color: '#059669' }}>{selectedOrder.payment_method}</span></p>
               </div>
+            </div>
+
+            <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#eef2ff', borderRadius: '8px', border: '1px solid #c7d2fe' }}>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#3730a3', marginBottom: '0.8rem', textTransform: 'uppercase' }}>Información de Envío</h3>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <input 
+                  type="text" 
+                  placeholder="Transportadora (Ej. Envía, Inter-Rapidísimo)" 
+                  value={shippingInfo.carrier}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, carrier: e.target.value })}
+                  style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #c7d2fe', fontSize: '0.85rem' }}
+                />
+                <input 
+                  type="text" 
+                  placeholder="Número de Guía" 
+                  value={shippingInfo.tracking}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, tracking: e.target.value })}
+                  style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #c7d2fe', fontSize: '0.85rem' }}
+                />
+              </div>
+              <button 
+                onClick={() => handleStatusChange(selectedOrder.id, 'ENVIADO', shippingInfo.carrier, shippingInfo.tracking)}
+                style={{ marginTop: '0.8rem', padding: '0.5rem 1rem', backgroundColor: '#3730a3', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', cursor: 'pointer', fontWeight: '500' }}
+              >
+                Guardar Guía y Marcar como ENVIADO
+              </button>
             </div>
 
             {selectedOrder.customer_notes && (

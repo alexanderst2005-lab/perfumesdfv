@@ -7,8 +7,10 @@ export default async function handler(req, res) {
     try {
       const {
         nombre,
+        cedula,
         telefono,
         email,
+        departamento,
         ciudad,
         direccion,
         notas,
@@ -20,8 +22,10 @@ export default async function handler(req, res) {
       const result = await sql`
         INSERT INTO orders (
           customer_name,
+          customer_cedula,
           customer_phone,
           customer_email,
+          customer_departamento,
           customer_city,
           customer_address,
           customer_notes,
@@ -31,8 +35,10 @@ export default async function handler(req, res) {
           status
         ) VALUES (
           ${nombre},
+          ${cedula},
           ${telefono},
-          ${email || null},
+          ${email},
+          ${departamento},
           ${ciudad},
           ${direccion},
           ${notas || null},
@@ -63,10 +69,20 @@ export default async function handler(req, res) {
 
   if (req.method === 'PUT') {
     try {
-      const { id, status } = req.body;
-      await sql`UPDATE orders SET status = ${status} WHERE id = ${id}`;
+      const { id, status, shipping_carrier, tracking_number } = req.body;
+      
+      if (shipping_carrier !== undefined && tracking_number !== undefined) {
+        await sql`
+          UPDATE orders 
+          SET status = ${status}, shipping_carrier = ${shipping_carrier}, tracking_number = ${tracking_number} 
+          WHERE id = ${id}
+        `;
+      } else {
+        await sql`UPDATE orders SET status = ${status} WHERE id = ${id}`;
+      }
       return res.status(200).json({ success: true });
     } catch (error) {
+      console.error(error);
       return res.status(500).json({ success: false, error: 'Database error' });
     }
   }

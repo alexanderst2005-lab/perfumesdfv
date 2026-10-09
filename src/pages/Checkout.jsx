@@ -7,8 +7,10 @@ const Checkout = () => {
   
   const [formData, setFormData] = useState({
     nombre: '',
+    cedula: '',
     telefono: '',
     email: '',
+    departamento: '',
     ciudad: '',
     direccion: '',
     notas: ''
@@ -29,7 +31,7 @@ const Checkout = () => {
       return;
     }
     
-    if (!formData.nombre || !formData.telefono || !formData.ciudad || !formData.direccion) {
+    if (!formData.nombre || !formData.email || !formData.cedula || !formData.departamento || !formData.ciudad || !formData.direccion || !formData.telefono) {
       alert("Por favor completa los campos obligatorios.");
       return;
     }
@@ -40,17 +42,9 @@ const Checkout = () => {
     }
 
     if (paymentMethod === 'wompi') {
-      // Implementación de Pasarela Wompi
-      // Redirigir a Wompi o abrir widget
       const reference = `pedido_${Date.now()}`;
       const amountInCents = cartTotal * 100;
-      // Por ahora simulamos la redirección
       alert(`Aquí se abrirá la pasarela de WOMPI por un valor de $${cartTotal.toLocaleString()}\nFalta configurar la llave pública.`);
-      /* 
-      // Ejemplo de redirección a checkout de wompi
-      const wompiUrl = `https://checkout.wompi.co/p/?public-key=TU_LLAVE_PUBLICA_AQUI&currency=COP&amount-in-cents=${amountInCents}&reference=${reference}`;
-      window.location.href = wompiUrl;
-      */
       return;
     }
 
@@ -76,8 +70,10 @@ const Checkout = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nombre: formData.nombre,
+        cedula: formData.cedula,
         telefono: formData.telefono,
         email: formData.email,
+        departamento: formData.departamento,
         ciudad: formData.ciudad,
         direccion: formData.direccion,
         notas: formData.notas,
@@ -91,11 +87,13 @@ const Checkout = () => {
         message = `*NUEVO PEDIDO #DFV-${String(data.orderId).padStart(4, '0')}*\n\n` + message;
       }
       message += `Método de Pago: ${metodos[paymentMethod]}\n\n`;
+      message += `Email: ${formData.email}\n`;
       message += `Nombre: ${formData.nombre}\n`;
-      message += `Teléfono: ${formData.telefono}\n`;
-      if (formData.email) message += `Email: ${formData.email}\n`;
+      message += `Cédula: ${formData.cedula}\n`;
+      message += `Departamento: ${formData.departamento}\n`;
       message += `Ciudad: ${formData.ciudad}\n`;
       message += `Dirección: ${formData.direccion}\n`;
+      message += `Teléfono: ${formData.telefono}\n`;
       if (formData.notas) message += `Notas: ${formData.notas}\n`;
 
       const encodedMessage = encodeURIComponent(message);
@@ -126,7 +124,18 @@ const Checkout = () => {
     backgroundColor: '#FCFBF9',
     fontFamily: 'var(--font-sans)',
     color: '#333',
-    transition: 'border-color 0.2s ease'
+    transition: 'border-color 0.2s ease',
+    marginBottom: '1rem'
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: '0.4rem',
+    letterSpacing: '1px',
+    textTransform: 'uppercase'
   };
 
   const sectionTitleStyle = {
@@ -160,22 +169,44 @@ const Checkout = () => {
           <form onSubmit={handleCheckout} className="checkout-form">
             
             <div style={{ marginBottom: '2.5rem' }}>
-              <h3 style={sectionTitleStyle}>Información del Cliente</h3>
-              <div className="form-group-full" style={{ marginBottom: '1rem' }}>
-                <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" placeholder="Nombre completo *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Correo Electrónico *</label>
+                <input required name="email" value={formData.email} onChange={handleChange} type="email" placeholder="Ej. juan@gmail.com (Para enviarte la factura)" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
               </div>
-              <div className="form-group-split">
-                <input required name="telefono" value={formData.telefono} onChange={handleChange} type="tel" placeholder="Teléfono *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
-                <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="Correo electrónico" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Nombre Completo *</label>
+                <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" placeholder="Ej. Juan Pérez" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
               </div>
-            </div>
 
-            <div style={{ marginBottom: '2.5rem' }}>
-              <h3 style={sectionTitleStyle}>Dirección de Entrega</h3>
-              <div className="form-group-full" style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ciudad *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
-                <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Dirección *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
-                <textarea name="notas" value={formData.notas} onChange={handleChange} placeholder="Instrucciones especiales de entrega, referencias, etc." rows="3" style={{ ...inputStyle, resize: 'vertical', minHeight: '80px' }} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'}></textarea>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Cédula (Para el envío) *</label>
+                <input required name="cedula" value={formData.cedula} onChange={handleChange} type="text" placeholder="Ej. 1010123456" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Departamento *</label>
+                <input required name="departamento" value={formData.departamento} onChange={handleChange} type="text" placeholder="Ej. Antioquia" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Ciudad *</label>
+                <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ej. Medellín" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Dirección Exacta *</label>
+                <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Ej. Calle 123 # 45-67 Apto 8" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Teléfono / WhatsApp *</label>
+                <input required name="telefono" value={formData.telefono} onChange={handleChange} type="tel" placeholder="Ej. 3001234567" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={labelStyle}>Notas Adicionales (Opcional)</label>
+                <textarea name="notas" value={formData.notas} onChange={handleChange} placeholder="Instrucciones especiales de entrega, referencias, etc." rows="3" style={{ ...inputStyle, resize: 'vertical', minHeight: '80px', marginBottom: 0 }} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'}></textarea>
               </div>
             </div>
 
