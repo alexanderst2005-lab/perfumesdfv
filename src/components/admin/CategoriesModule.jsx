@@ -39,7 +39,6 @@ const CategoriesModule = () => {
               <td style={{ padding: '1rem', color: '#6b7280' }}>{c.count}</td>
               <td style={{ padding: '1rem', textAlign: 'right' }}>
                 <button style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '1rem' }}><Edit size={16}/></button>
-                <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16}/></button>
               </td>
             </tr>
           ))}

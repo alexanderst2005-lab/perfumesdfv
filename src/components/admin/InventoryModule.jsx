@@ -203,14 +203,6 @@ const InventoryModule = () => {
                   <button onClick={() => openEditModal(p)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '1rem' }}>
                     <Edit size={18} />
                   </button>
-                  <button onClick={async () => {
-                    if(window.confirm('¿Seguro que deseas eliminar definitivamente este producto?')) {
-                      await fetch('/api/admin/products', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: p.id}) });
-                      window.location.reload();
-                    }
-                  }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
-                    <Trash2 size={18} />
-                  </button>
                 </td>
               </tr>
             ))}

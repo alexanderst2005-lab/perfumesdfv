@@ -33,8 +33,6 @@ const AdminDashboard = () => {
     { id: 'sales', label: 'Ventas', icon: BarChart2 },
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'customers', label: 'Clientes', icon: Users },
-    { id: 'content', label: 'Contenido', icon: FileText },
-    { id: 'campaigns', label: 'Campañas', icon: FileText },
     { id: 'settings', label: 'Configuración', icon: Settings },
   ];
 
@@ -203,8 +201,6 @@ const AdminDashboard = () => {
           {activeTab === 'sales' && <SalesModule />}
           {activeTab === 'categories' && <CategoriesModule />}
           {activeTab === 'customers' && <CustomersModule />}
-          {activeTab === 'content' && <ContentModule />}
-          {activeTab === 'campaigns' && <CampaignsModule />}
           {activeTab === 'settings' && <SettingsModule />}
         </main>
       </div>
