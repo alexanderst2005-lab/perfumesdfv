@@ -270,6 +270,10 @@ const InventoryModule = () => {
                 <input type="number" placeholder="Precio ($)" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
                 <input type="number" placeholder="Stock" value={formData.stockCount} onChange={e => setFormData({...formData, stockCount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
               </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <input type="number" placeholder="Precio Anterior (Opcional)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
+                <input type="number" placeholder="% Descuento (Ej: 15)" value={formData.discount} onChange={e => setFormData({...formData, discount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
+              </div>
               <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
                   <input type="checkbox" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} style={{ width: '18px', height: '18px' }} />
