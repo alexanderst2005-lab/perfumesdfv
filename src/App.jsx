@@ -19,6 +19,7 @@ import AdminDashboard from './pages/AdminDashboard';
 function AppInner() {
   const { pathname } = useLocation();
   const isHome = pathname === '/';
+  const isAdmin = pathname.startsWith('/admin');
 
   // SCROLL AL INICIO CADA VEZ QUE CAMBIA LA RUTA
   useEffect(() => {
@@ -27,9 +28,9 @@ function AppInner() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header />
-      <CartDrawer />
-      <main style={{ flex: 1, marginTop: isHome ? 0 : '106px' }}>
+      {!isAdmin && <Header />}
+      {!isAdmin && <CartDrawer />}
+      <main style={{ flex: 1, marginTop: isHome || isAdmin ? 0 : '106px' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tienda" element={<Store />} />
@@ -40,8 +41,8 @@ function AppInner() {
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>
-      <Footer />
-      <WhatsAppButton />
+      {!isAdmin && <Footer />}
+      {!isAdmin && <WhatsAppButton />}
     </div>
   );
 }

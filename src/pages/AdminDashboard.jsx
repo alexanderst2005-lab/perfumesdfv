@@ -27,7 +27,6 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'products', label: 'Productos', icon: Package },
     { id: 'inventory', label: 'Inventario', icon: Package },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
     { id: 'sales', label: 'Ventas', icon: BarChart2 },
@@ -195,7 +194,6 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {activeTab === 'products' && <InventoryModule />}
           {activeTab === 'inventory' && <InventoryModule />}
           {activeTab === 'orders' && <OrdersModule />}
           {activeTab === 'sales' && <SalesModule />}
