@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Edit, CheckCircle, Package, Truck, XCircle, Clock } from 'lucide-react';
+import { Eye, Edit, CheckCircle, Package, Truck, XCircle, Clock, Trash2 } from 'lucide-react';
 
 const OrdersModule = () => {
   const [orders, setOrders] = useState([]);
@@ -128,8 +128,19 @@ const OrdersModule = () => {
                   </td>
                   <td style={{ padding: '1rem', fontWeight: '600' }}>${o.total.toLocaleString()}</td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button onClick={() => openOrderDetails(o)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer' }}>
+                    <button onClick={() => openOrderDetails(o)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '0.75rem' }}>
                       <Eye size={18} />
+                    </button>
+                    <button onClick={async () => {
+                      if(window.confirm('¿Seguro que deseas eliminar definitivamente este pedido?')) {
+                        try {
+                          const res = await fetch('/api/orders', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: o.id}) });
+                          if(res.ok) window.location.reload();
+                          else alert('Error al eliminar');
+                        } catch(e) { alert('Error de red'); }
+                      }
+                    }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                      <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>
