@@ -1,39 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Image as ImageIcon, Settings, Store, HelpCircle, LayoutTemplate } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight } from 'lucide-react';
 import InventoryModule from '../components/admin/InventoryModule';
 import OrdersModule from '../components/admin/OrdersModule';
 import SettingsModule from '../components/admin/SettingsModule';
 import CampaignsModule from '../components/admin/CampaignsModule';
-import FaqModule from '../components/admin/FaqModule';
 import CustomersModule from '../components/admin/CustomersModule';
-import StoresModule from '../components/admin/StoresModule';
 
 const AdminDashboard = () => {
   const { products, isLoadingProducts } = useShop();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/orders')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setOrders(data.data);
+        }
+      });
+  }, []);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'products', label: 'Productos', icon: Package },
     { id: 'inventory', label: 'Inventario', icon: Package },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
-    { id: 'customers', label: 'Clientes', icon: Users },
+    { id: 'sales', label: 'Ventas', icon: BarChart2 },
     { id: 'categories', label: 'Categorías', icon: Tags },
-    { id: 'campaigns', label: 'Campañas', icon: LayoutTemplate },
-    { id: 'media', label: 'Biblioteca', icon: ImageIcon },
+    { id: 'customers', label: 'Clientes', icon: Users },
+    { id: 'content', label: 'Contenido', icon: FileText },
+    { id: 'campaigns', label: 'Campañas', icon: FileText },
     { id: 'settings', label: 'Configuración', icon: Settings },
   ];
 
+  // Calculate stats
+  const totalRevenue = orders.filter(o => o.status !== 'CANCELADO').reduce((acc, o) => acc + o.total, 0);
+  const totalOrders = orders.filter(o => o.status !== 'CANCELADO').length;
+  
+  const statusEnCamino = orders.filter(o => o.status === 'ENVIADO').length;
+  const statusPendiente = orders.filter(o => o.status === 'NUEVO' || o.status === 'EN PREPARACIÓN').length;
+  const statusCancelado = orders.filter(o => o.status === 'CANCELADO').length;
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const thisMonthOrders = orders.filter(o => {
+    const d = new Date(o.created_at);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear && o.status !== 'CANCELADO';
+  });
+  const thisMonthRevenue = thisMonthOrders.reduce((acc, o) => acc + o.total, 0);
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#fafafa' }}>
+      
       {/* SIDEBAR */}
-      <aside style={{ width: '260px', backgroundColor: '#111827', color: 'white', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '2rem 1.5rem', borderBottom: '1px solid #374151' }}>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', letterSpacing: '1px' }}>DFV ADMIN</h2>
-          <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>Panel de Control CMS</p>
+      <aside style={{ width: '250px', backgroundColor: '#ffffff', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '2rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {/* Logo Placeholder */}
+          <div style={{ width: '80px', height: '80px', backgroundColor: '#3f574d', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'var(--font-serif)', fontSize: '12px', textAlign: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+            DFV<br/>Perfumes
+          </div>
         </div>
         
-        <nav style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <nav style={{ flex: 1, padding: '1rem 0', display: 'flex', flexDirection: 'column' }}>
           {menuItems.map(item => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -42,14 +72,15 @@ const AdminDashboard = () => {
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%',
-                  padding: '0.75rem 1rem', borderRadius: '8px', border: 'none',
-                  backgroundColor: isActive ? '#374151' : 'transparent',
-                  color: isActive ? 'white' : '#9ca3af',
-                  fontSize: '0.9rem', fontWeight: '500', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '1rem', width: '100%',
+                  padding: '1rem 2rem', border: 'none',
+                  backgroundColor: isActive ? '#f9fafb' : 'transparent',
+                  color: isActive ? '#111827' : '#6b7280',
+                  fontSize: '0.9rem', fontWeight: isActive ? '600' : '500', cursor: 'pointer',
+                  borderLeft: isActive ? '4px solid #111827' : '4px solid transparent',
                   transition: 'all 0.2s', textAlign: 'left'
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#1f2937'; }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
                 <Icon size={18} />
@@ -58,55 +89,127 @@ const AdminDashboard = () => {
             )
           })}
         </nav>
+
+        <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #e5e7eb' }}>
+          <button style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', padding: '0.75rem', backgroundColor: 'transparent', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', cursor: 'pointer', justifyContent: 'center' }}>
+            <LogOut size={16} />
+            Cerrar Sesión
+          </button>
+        </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main style={{ flex: 1, padding: '3rem 4rem', overflowY: 'auto', backgroundColor: '#f3f4f6' }}>
-        {activeTab === 'dashboard' && (
-          <div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '2rem', color: '#111827' }}>Resumen de Actividad</h1>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        
+        {/* HEADER */}
+        <header style={{ height: '70px', backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 3rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+            {menuItems.find(m => m.id === activeTab)?.label || 'Dashboard'}
+          </h1>
+          <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>Administrador</div>
+        </header>
+
+        <main style={{ flex: 1, padding: '3rem', overflowY: 'auto' }}>
+          {activeTab === 'dashboard' && (
+            <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
               
-              <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                <p style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.5rem' }}>TOTAL PRODUCTOS</p>
-                <h3 style={{ fontSize: '2rem', fontWeight: '600' }}>{isLoadingProducts ? '...' : products.length}</h3>
-              </div>
-              
-              <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                <p style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.5rem' }}>PEDIDOS NUEVOS</p>
-                <h3 style={{ fontSize: '2rem', fontWeight: '600' }}>0</h3>
+              {/* TOP CARDS ROW 1 */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>INGRESOS DEL MES</p>
+                    <DollarSign size={16} color="#9ca3af" />
+                  </div>
+                  <h3 style={{ fontSize: '1.75rem', fontWeight: '600', color: '#111827', margin: '0 0 0.25rem 0' }}>${thisMonthRevenue.toLocaleString()}</h3>
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>Pedidos confirmados</p>
+                </div>
+                
+                <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>ESTA SEMANA</p>
+                    <TrendingUp size={16} color="#9ca3af" />
+                  </div>
+                  <h3 style={{ fontSize: '1.75rem', fontWeight: '600', color: '#111827', margin: '0 0 0.25rem 0' }}>${thisMonthRevenue.toLocaleString()}</h3>
+                  <p style={{ fontSize: '0.75rem', color: '#10b981', margin: 0 }}>+0% vs semana anterior</p>
+                </div>
               </div>
 
-              <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                <p style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', marginBottom: '0.5rem' }}>VENTAS DEL MES</p>
-                <h3 style={{ fontSize: '2rem', fontWeight: '600' }}>$0</h3>
+              {/* TOP CARDS ROW 2 */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL PEDIDOS</p>
+                    <Calendar size={16} color="#9ca3af" />
+                  </div>
+                  <h3 style={{ fontSize: '1.75rem', fontWeight: '600', color: '#111827', margin: '0 0 0.25rem 0' }}>{totalOrders}</h3>
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>{totalOrders} confirmados</p>
+                </div>
+                
+                <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>INGRESOS TOTALES</p>
+                    <BarChart2 size={16} color="#9ca3af" />
+                  </div>
+                  <h3 style={{ fontSize: '1.75rem', fontWeight: '600', color: '#111827', margin: '0 0 0.25rem 0' }}>${totalRevenue.toLocaleString()}</h3>
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>Histórico</p>
+                </div>
+              </div>
+
+              {/* TOP PRODUCTOS VENDIDOS */}
+              <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', marginBottom: '1.5rem' }}>
+                <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1.5rem' }}>TOP PRODUCTOS VENDIDOS</p>
+                <p style={{ color: '#9ca3af', fontSize: '0.85rem' }}>No hay datos aún.</p>
+              </div>
+
+              {/* PEDIDOS POR ESTADO */}
+              <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', marginBottom: '1.5rem' }}>
+                <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1.5rem' }}>PEDIDOS POR ESTADO</p>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1, backgroundColor: '#e0f2fe', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#0284c7' }}>{statusEnCamino}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#0284c7', textTransform: 'uppercase', letterSpacing: '1px' }}>EN CAMINO</span>
+                  </div>
+                  <div style={{ flex: 1, backgroundColor: '#fef9c3', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#ca8a04' }}>{statusPendiente}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#ca8a04', textTransform: 'uppercase', letterSpacing: '1px' }}>PENDIENTE</span>
+                  </div>
+                  <div style={{ flex: 1, backgroundColor: '#fee2e2', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#dc2626' }}>{statusCancelado}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '1px' }}>CANCELADO</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ULTIMOS PEDIDOS */}
+              <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => setActiveTab('orders')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <ShoppingCart size={18} color="#4b5563" />
+                  <p style={{ color: '#111827', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>ÚLTIMOS PEDIDOS</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#6b7280', fontSize: '0.8rem', fontWeight: '500' }}>
+                  VER TODOS <ChevronRight size={14} />
+                </div>
               </div>
 
             </div>
+          )}
 
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Pedidos Recientes</h2>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '3rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-              <ShoppingCart size={40} color="#d1d5db" style={{ margin: '0 auto 1rem' }} />
-              <p style={{ color: '#6b7280' }}>No hay pedidos recientes.</p>
+          {activeTab === 'inventory' && <InventoryModule />}
+          {activeTab === 'orders' && <OrdersModule />}
+          {activeTab === 'customers' && <CustomersModule />}
+          {activeTab === 'campaigns' && <CampaignsModule />}
+          {activeTab === 'settings' && <SettingsModule />}
+
+          {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'customers' && activeTab !== 'campaigns' && activeTab !== 'settings' && (
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem', color: '#111827' }}>Módulo en Construcción (Próximamente)</h2>
+              <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>
+                Este módulo se habilitará en las siguientes fases del desarrollo.
+              </p>
             </div>
-          </div>
-        )}
-
-        {activeTab === 'inventory' && <InventoryModule />}
-        {activeTab === 'orders' && <OrdersModule />}
-        {activeTab === 'customers' && <CustomersModule />}
-        {activeTab === 'campaigns' && <CampaignsModule />}
-        {activeTab === 'settings' && <SettingsModule />}
-
-        {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'customers' && activeTab !== 'campaigns' && activeTab !== 'settings' && (
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem' }}>Módulo en Construcción (Fase 3)</h2>
-            <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>
-              Este módulo será habilitado en las próximas actualizaciones.
-            </p>
-          </div>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
     </div>
   );
 };
