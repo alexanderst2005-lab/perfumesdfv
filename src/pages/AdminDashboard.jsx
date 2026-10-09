@@ -6,6 +6,9 @@ import OrdersModule from '../components/admin/OrdersModule';
 import SettingsModule from '../components/admin/SettingsModule';
 import CampaignsModule from '../components/admin/CampaignsModule';
 import CustomersModule from '../components/admin/CustomersModule';
+import SalesModule from '../components/admin/SalesModule';
+import CategoriesModule from '../components/admin/CategoriesModule';
+import ContentModule from '../components/admin/ContentModule';
 
 const AdminDashboard = () => {
   const { products, isLoadingProducts } = useShop();
@@ -194,20 +197,15 @@ const AdminDashboard = () => {
             </div>
           )}
 
+          {activeTab === 'products' && <InventoryModule />}
           {activeTab === 'inventory' && <InventoryModule />}
           {activeTab === 'orders' && <OrdersModule />}
+          {activeTab === 'sales' && <SalesModule />}
+          {activeTab === 'categories' && <CategoriesModule />}
           {activeTab === 'customers' && <CustomersModule />}
+          {activeTab === 'content' && <ContentModule />}
           {activeTab === 'campaigns' && <CampaignsModule />}
           {activeTab === 'settings' && <SettingsModule />}
-
-          {activeTab !== 'dashboard' && activeTab !== 'inventory' && activeTab !== 'orders' && activeTab !== 'customers' && activeTab !== 'campaigns' && activeTab !== 'settings' && (
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '4rem', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1rem', color: '#111827' }}>Módulo en Construcción (Próximamente)</h2>
-              <p style={{ color: '#6b7280', maxWidth: '400px', margin: '0 auto' }}>
-                Este módulo se habilitará en las siguientes fases del desarrollo.
-              </p>
-            </div>
-          )}
         </main>
       </div>
     </div>
