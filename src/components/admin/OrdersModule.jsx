@@ -155,13 +155,13 @@ const OrdersModule = () => {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', position: 'relative' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#111827' }}>Información de Envío</h2>
-            <p style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '1.5rem' }}>Para marcar el pedido como ENVIADO, por favor ingresa los datos de envío que se enviarán al cliente.</p>
+            <p style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '1.5rem' }}>Ingresa la transportadora y guía para el cliente. <br/><strong style={{color:'#059669'}}>Si es entrega local, puedes dejarlo en blanco.</strong></p>
             
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Transportadora *</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Transportadora (Opcional)</label>
               <input 
                 type="text" 
-                placeholder="Ej. Envía, Inter-Rapidísimo" 
+                placeholder="Ej. Envía, Inter-Rapidísimo (Opcional)" 
                 value={shippingInfo.carrier}
                 onChange={(e) => setShippingInfo({ ...shippingInfo, carrier: e.target.value })}
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
@@ -169,10 +169,10 @@ const OrdersModule = () => {
             </div>
             
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Número de Guía *</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Número de Guía (Opcional)</label>
               <input 
                 type="text" 
-                placeholder="Ej. 9876543210" 
+                placeholder="Ej. 9876543210 (Opcional)" 
                 value={shippingInfo.tracking}
                 onChange={(e) => setShippingInfo({ ...shippingInfo, tracking: e.target.value })}
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
@@ -188,10 +188,6 @@ const OrdersModule = () => {
               </button>
               <button 
                 onClick={() => {
-                  if(!shippingInfo.carrier || !shippingInfo.tracking) {
-                    alert('Por favor llena la transportadora y el número de guía');
-                    return;
-                  }
                   handleStatusChange(shippingPrompt, 'ENVIADO', shippingInfo.carrier, shippingInfo.tracking);
                   setShippingPrompt(null);
                 }}
@@ -231,18 +227,18 @@ const OrdersModule = () => {
             </div>
 
             <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#eef2ff', borderRadius: '8px', border: '1px solid #c7d2fe' }}>
-              <h3 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#3730a3', marginBottom: '0.8rem', textTransform: 'uppercase' }}>Información de Envío</h3>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#3730a3', marginBottom: '0.8rem', textTransform: 'uppercase' }}>Información de Envío (Opcional si es local)</h3>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <input 
                   type="text" 
-                  placeholder="Transportadora (Ej. Envía, Inter-Rapidísimo)" 
+                  placeholder="Transportadora (Opcional)" 
                   value={shippingInfo.carrier}
                   onChange={(e) => setShippingInfo({ ...shippingInfo, carrier: e.target.value })}
                   style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #c7d2fe', fontSize: '0.85rem' }}
                 />
                 <input 
                   type="text" 
-                  placeholder="Número de Guía" 
+                  placeholder="Número de Guía (Opcional)" 
                   value={shippingInfo.tracking}
                   onChange={(e) => setShippingInfo({ ...shippingInfo, tracking: e.target.value })}
                   style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #c7d2fe', fontSize: '0.85rem' }}
