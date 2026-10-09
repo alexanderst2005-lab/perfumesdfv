@@ -53,6 +53,15 @@ async function sendOrderEmail(type, order) {
       <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
       <p style="font-size: 12px; color: #666;">¡Gracias por elegir DFV Perfumes!</p>
     </div>`;
+  } else if (type === 'CANCELADO') {
+    subject = `Actualización sobre tu pedido ${orderIdFormat} - DFV Perfumes`;
+    html = `<div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+      <h2 style="color: #111;">Hola ${order.customer_name},</h2>
+      <p>Te informamos que tu pedido <strong>${orderIdFormat}</strong> ha sido cancelado.</p>
+      <p>Si crees que esto es un error o deseas realizar un nuevo pedido, no dudes en contactarnos a través de nuestro WhatsApp.</p>
+      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+      <p style="font-size: 12px; color: #666;">¡Gracias por elegir DFV Perfumes!</p>
+    </div>`;
   }
 
   if (subject && html) {
@@ -135,8 +144,8 @@ export default async function handler(req, res) {
       `;
       
       const newOrder = result[0];
-      // Enviar correo de pedido nuevo en el background sin bloquear la respuesta
-      sendOrderEmail('NUEVO', newOrder).catch(console.error);
+      // AWAIT ES OBLIGATORIO EN VERCEL SERVERLESS
+      await sendOrderEmail('NUEVO', newOrder);
 
       return res.status(201).json({ success: true, orderId: newOrder.id });
     } catch (error) {
@@ -173,9 +182,9 @@ export default async function handler(req, res) {
         updatedOrder = result[0];
       }
       
-      // Enviar correo de actualización si aplica
-      if (updatedOrder && (status === 'EN PREPARACIÓN' || status === 'ENVIADO')) {
-        sendOrderEmail(status, updatedOrder).catch(console.error);
+      // AWAIT ES OBLIGATORIO
+      if (updatedOrder && (status === 'EN PREPARACIÓN' || status === 'ENVIADO' || status === 'CANCELADO')) {
+        await sendOrderEmail(status, updatedOrder);
       }
 
       return res.status(200).json({ success: true });
