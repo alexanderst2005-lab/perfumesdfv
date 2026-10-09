@@ -104,11 +104,21 @@ const InventoryModule = () => {
       const finalImageUrl = finalImagesList.length > 0 ? finalImagesList[0] : '';
       const secondaryImages = finalImagesList.length > 1 ? finalImagesList.slice(1) : [];
 
+      let finalPrice = parseInt(formData.price);
+      let finalOldPrice = formData.oldPrice ? parseInt(formData.oldPrice) : null;
+      let finalDiscount = formData.discount ? parseInt(formData.discount) : null;
+
+      if (finalOldPrice && !finalDiscount && finalOldPrice > finalPrice) {
+        finalDiscount = Math.round(((finalOldPrice - finalPrice) / finalOldPrice) * 100);
+      } else if (finalDiscount && !finalOldPrice && finalDiscount > 0 && finalDiscount < 100) {
+        finalOldPrice = Math.round(finalPrice / (1 - (finalDiscount / 100)));
+      }
+
       const payload = {
         ...formData,
-        price: parseInt(formData.price),
-        oldPrice: formData.oldPrice ? parseInt(formData.oldPrice) : null,
-        discount: formData.discount ? parseInt(formData.discount) : null,
+        price: finalPrice,
+        oldPrice: finalOldPrice,
+        discount: finalDiscount,
         stockCount: parseInt(formData.stockCount),
         sizes: JSON.parse(formData.sizes || '[]'),
         image: finalImageUrl,
@@ -271,8 +281,8 @@ const InventoryModule = () => {
                 <input type="number" placeholder="Stock" value={formData.stockCount} onChange={e => setFormData({...formData, stockCount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <input type="number" placeholder="Precio Anterior (Opcional)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
-                <input type="number" placeholder="% Descuento (Ej: 15)" value={formData.discount} onChange={e => setFormData({...formData, discount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
+                <input type="number" placeholder="Precio Anterior (Calcula % Auto)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, el % de descuento se calcula solo." />
+                <input type="number" placeholder="% Descuento (Calcula Precio Auto)" value={formData.discount} onChange={e => setFormData({...formData, discount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, el precio anterior se calcula solo." />
               </div>
               <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
