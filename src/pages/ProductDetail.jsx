@@ -249,18 +249,19 @@ const ProductDetail = () => {
           .product-detail-container { padding: 0 1.5rem !important; }
           
           .gallery-section { 
-            width: 85% !important; 
-            margin: 1rem auto !important; 
+            width: 100vw !important; 
+            margin-left: -1.5rem !important; 
+            margin-bottom: 1.5rem !important; 
           }
           .gallery-slide {
             aspect-ratio: 1/1 !important;
-            flex: 0 0 100% !important;
-            border-radius: 8px !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+            flex: 0 0 92% !important;
+            border-radius: 4px !important;
+            box-shadow: none !important;
           }
           .gallery-scroll-container {
-            padding: 0 !important;
-            gap: 0 !important;
+            padding: 0 0 0 1.5rem !important;
+            gap: 0.5rem !important;
           }
           
           .info-section { padding: 0.5rem 0 !important; gap: 1rem !important; }
