@@ -382,7 +382,7 @@ const Home = () => {
           <div style={{ textAlign: 'center', marginTop: '3rem' }}>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.6rem', letterSpacing: '1px' }}>¿NECESITAS MÁS AYUDA?</p>
             <a 
-              href="https://wa.me/573000000000" 
+              href="https://wa.me/573027642208" 
               target="_blank" 
               rel="noreferrer"
               style={{

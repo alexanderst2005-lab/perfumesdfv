@@ -6,9 +6,27 @@ const OrdersModule = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // We will fetch real orders once the API is ready, for now we show empty state or mock
-    setIsLoading(false);
+    fetch('/api/orders')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setOrders(data.data);
+        }
+      })
+      .finally(() => setIsLoading(false));
   }, []);
+
+  const handleStatusChange = (id, newStatus) => {
+    fetch('/api/orders', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: newStatus })
+    }).then(res => res.json()).then(data => {
+      if (data.success) {
+        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+      }
+    });
+  };
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -55,9 +73,27 @@ const OrdersModule = () => {
                   </td>
                   <td style={{ padding: '1rem', color: '#6b7280' }}>{new Date(o.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: statusStyle.bg, color: statusStyle.color, borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                      {statusStyle.icon} {o.status}
-                    </span>
+                    <select
+                      value={o.status}
+                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                      style={{
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: statusStyle.bg,
+                        color: statusStyle.color,
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        border: '1px solid ' + statusStyle.color,
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="NUEVO">NUEVO</option>
+                      <option value="CONFIRMADO">CONFIRMADO</option>
+                      <option value="EN PREPARACIÓN">EN PREPARACIÓN</option>
+                      <option value="ENVIADO">ENVIADO</option>
+                      <option value="CANCELADO">CANCELADO</option>
+                    </select>
                   </td>
                   <td style={{ padding: '1rem', fontWeight: '600' }}>${o.total.toLocaleString()}</td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>

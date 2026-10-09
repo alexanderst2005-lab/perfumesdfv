@@ -69,18 +69,42 @@ const Checkout = () => {
       'contra_entrega': 'Pago Contra Entrega',
       'transferencia': 'Transferencia Bancaria',
     };
-    message += `Método de Pago: ${metodos[paymentMethod]}\n\n`;
+    
+    // 1. Guardar en BD
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: formData.nombre,
+        telefono: formData.telefono,
+        email: formData.email,
+        ciudad: formData.ciudad,
+        direccion: formData.direccion,
+        notas: formData.notas,
+        metodoPago: metodos[paymentMethod],
+        total: cartTotal,
+        cart: cart
+      })
+    }).then(res => res.json()).then(data => {
+      // 2. Redirigir a WhatsApp
+      if (data.success) {
+        message = `*NUEVO PEDIDO #${data.orderId}*\n\n` + message;
+      }
+      message += `Método de Pago: ${metodos[paymentMethod]}\n\n`;
+      message += `Nombre: ${formData.nombre}\n`;
+      message += `Teléfono: ${formData.telefono}\n`;
+      if (formData.email) message += `Email: ${formData.email}\n`;
+      message += `Ciudad: ${formData.ciudad}\n`;
+      message += `Dirección: ${formData.direccion}\n`;
+      if (formData.notas) message += `Notas: ${formData.notas}\n`;
 
-    message += `Nombre: ${formData.nombre}\n`;
-    message += `Teléfono: ${formData.telefono}\n`;
-    if (formData.email) message += `Email: ${formData.email}\n`;
-    message += `Ciudad: ${formData.ciudad}\n`;
-    message += `Dirección: ${formData.direccion}\n`;
-    if (formData.notas) message += `Notas: ${formData.notas}\n`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = "573000000000"; // Reemplazar con el número real
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappNumber = "573027642208"; 
+      window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+    }).catch(err => {
+      console.error(err);
+      alert("Hubo un error guardando el pedido, por favor intenta nuevamente.");
+    });
   };
 
   if (cart.length === 0) {
