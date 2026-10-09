@@ -106,12 +106,10 @@ const InventoryModule = () => {
 
       let finalPrice = parseInt(formData.price);
       let finalOldPrice = formData.oldPrice ? parseInt(formData.oldPrice) : null;
-      let finalDiscount = formData.discount ? parseInt(formData.discount) : null;
+      let finalDiscount = null;
 
-      if (finalOldPrice && !finalDiscount && finalOldPrice > finalPrice) {
+      if (finalOldPrice && finalOldPrice > finalPrice) {
         finalDiscount = Math.round(((finalOldPrice - finalPrice) / finalOldPrice) * 100);
-      } else if (finalDiscount && !finalOldPrice && finalDiscount > 0 && finalDiscount < 100) {
-        finalOldPrice = Math.round(finalPrice / (1 - (finalDiscount / 100)));
       }
 
       const payload = {
@@ -119,7 +117,7 @@ const InventoryModule = () => {
         price: finalPrice,
         oldPrice: finalOldPrice,
         discount: finalDiscount,
-        stockCount: parseInt(formData.stockCount),
+        stockCount: 10,
         sizes: JSON.parse(formData.sizes || '[]'),
         image: finalImageUrl,
         images: secondaryImages
@@ -185,9 +183,9 @@ const InventoryModule = () => {
                 <td style={{ padding: '1rem', fontWeight: '500' }}>${p.price.toLocaleString()}</td>
                 <td style={{ padding: '1rem' }}>
                   {p.inStock ? (
-                    <span style={{ color: p.stockCount > 5 ? '#10b981' : '#f59e0b', fontWeight: 'bold' }}>{p.stockCount} unid.</span>
+                    <span style={{ display: 'inline-flex', padding: '0.2rem 0.5rem', backgroundColor: '#d1fae5', color: '#059669', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>DISPONIBLE</span>
                   ) : (
-                    <span style={{ color: '#ef4444', fontWeight: 'bold', backgroundColor: '#fee2e2', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem' }}>AGOTADO</span>
+                    <span style={{ display: 'inline-flex', padding: '0.2rem 0.5rem', backgroundColor: '#fee2e2', color: '#dc2626', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>AGOTADO</span>
                   )}
                 </td>
                 <td style={{ padding: '1rem' }}>
@@ -277,12 +275,8 @@ const InventoryModule = () => {
                 </select>
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <input type="number" placeholder="Precio ($)" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
-                <input type="number" placeholder="Stock" value={formData.stockCount} onChange={e => setFormData({...formData, stockCount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
-              </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <input type="number" placeholder="Precio Anterior (Calcula % Auto)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, el % de descuento se calcula solo." />
-                <input type="number" placeholder="% Descuento (Calcula Precio Auto)" value={formData.discount} onChange={e => setFormData({...formData, discount: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, el precio anterior se calcula solo." />
+                <input type="number" placeholder="Precio Actual ($)" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
+                <input type="number" placeholder="Precio Anterior (Opcional, para tacharlo)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, saldrá como precio tachado." />
               </div>
               <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
