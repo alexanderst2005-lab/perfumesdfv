@@ -1,4 +1,4 @@
-require('dotenv').config();
+
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const FROM_EMAIL = process.env.BREVO_FROM_EMAIL || 'ventas@perfumesdfv.com'; 

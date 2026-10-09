@@ -121,7 +121,6 @@ const OrdersModule = () => {
                       }}
                     >
                       <option value="NUEVO">NUEVO</option>
-                      <option value="CONFIRMADO">CONFIRMADO</option>
                       <option value="EN PREPARACIÓN">EN PREPARACIÓN</option>
                       <option value="ENVIADO">ENVIADO</option>
                       <option value="CANCELADO">CANCELADO</option>
