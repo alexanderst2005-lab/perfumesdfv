@@ -59,6 +59,18 @@ const OrdersModule = () => {
     setShippingInfo({ carrier: order.shipping_carrier || '', tracking: order.tracking_number || '' });
   };
 
+  const [shippingPrompt, setShippingPrompt] = useState(null);
+
+  const handleStatusSelect = (id, newStatus) => {
+    if (newStatus === 'ENVIADO') {
+      const order = orders.find(o => o.id === id);
+      setShippingPrompt(id);
+      setShippingInfo({ carrier: order?.shipping_carrier || '', tracking: order?.tracking_number || '' });
+    } else {
+      handleStatusChange(id, newStatus);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -95,7 +107,7 @@ const OrdersModule = () => {
                   <td style={{ padding: '1rem' }}>
                     <select
                       value={o.status}
-                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                      onChange={(e) => handleStatusSelect(o.id, e.target.value)}
                       style={{
                         padding: '0.25rem 0.5rem',
                         backgroundColor: statusStyle.bg,
@@ -127,6 +139,60 @@ const OrdersModule = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal para Transportadora y Guía cuando se marca ENVIADO desde la tabla */}
+      {shippingPrompt && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', position: 'relative' }}>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#111827' }}>Información de Envío</h2>
+            <p style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '1.5rem' }}>Para marcar el pedido como ENVIADO, por favor ingresa los datos de envío que se enviarán al cliente.</p>
+            
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Transportadora *</label>
+              <input 
+                type="text" 
+                placeholder="Ej. Envía, Inter-Rapidísimo" 
+                value={shippingInfo.carrier}
+                onChange={(e) => setShippingInfo({ ...shippingInfo, carrier: e.target.value })}
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
+              />
+            </div>
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Número de Guía *</label>
+              <input 
+                type="text" 
+                placeholder="Ej. 9876543210" 
+                value={shippingInfo.tracking}
+                onChange={(e) => setShippingInfo({ ...shippingInfo, tracking: e.target.value })}
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button 
+                onClick={() => setShippingPrompt(null)}
+                style={{ padding: '0.5rem 1rem', backgroundColor: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '500' }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={() => {
+                  if(!shippingInfo.carrier || !shippingInfo.tracking) {
+                    alert('Por favor llena la transportadora y el número de guía');
+                    return;
+                  }
+                  handleStatusChange(shippingPrompt, 'ENVIADO', shippingInfo.carrier, shippingInfo.tracking);
+                  setShippingPrompt(null);
+                }}
+                style={{ padding: '0.5rem 1rem', backgroundColor: '#3730a3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '500' }}
+              >
+                Confirmar Envío
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedOrder && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>

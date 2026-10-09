@@ -1,16 +1,16 @@
 import { neon } from '@neondatabase/serverless';
-import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Configuración del remitente
-// IMPORTANTE: Si aún no tienes un dominio verificado, Resend solo enviará correos si usas 'onboarding@resend.dev' 
-// Y solo llegará al correo electrónico con el que creaste tu cuenta de Resend.
-// Para que le llegue a los clientes reales, debes verificar un dominio en Resend y cambiar esta variable.
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'; 
+// Configuración del remitente para Brevo (Sendinblue)
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+// Debes tener un remitente verificado en Brevo
+const FROM_EMAIL = process.env.BREVO_FROM_EMAIL || 'ventas@perfumesdfv.com'; 
+const FROM_NAME = 'DFV Perfumes';
 
 async function sendOrderEmail(type, order) {
-  if (!process.env.RESEND_API_KEY) return;
+  if (!BREVO_API_KEY) {
+    console.log('No Brevo API key configured. Skipping email.');
+    return;
+  }
   if (!order.customer_email) return;
 
   const orderIdFormat = `DFV-${String(order.id).padStart(4, '0')}`;
@@ -57,14 +57,29 @@ async function sendOrderEmail(type, order) {
 
   if (subject && html) {
     try {
-      await resend.emails.send({
-        from: FROM_EMAIL,
-        to: order.customer_email,
-        subject: subject,
-        html: html
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'api-key': BREVO_API_KEY,
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: FROM_NAME, email: FROM_EMAIL },
+          to: [{ email: order.customer_email, name: order.customer_name }],
+          subject: subject,
+          htmlContent: html
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error from Brevo API:', errorData);
+      } else {
+        console.log('Email sent successfully via Brevo');
+      }
     } catch (e) {
-      console.error('Error sending email via Resend:', e);
+      console.error('Error sending email via Brevo:', e);
     }
   }
 }
