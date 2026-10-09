@@ -83,15 +83,15 @@ const ProductDetail = () => {
           {/* Info */}
           <div className="info-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', paddingTop: '0.5rem' }}>
             <div>
-              <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.1rem', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.4' }}>
+              <h1 className="product-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.3' }}>
                 {product.brand} {product.name} {product.category} {product.concentration} {product.sizes?.[0]}
               </h1>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
-              <span style={{ fontSize: '1.4rem', fontWeight: '400', fontFamily: 'var(--font-sans)' }}>${product.price.toLocaleString()}</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
+              <span className="product-price" style={{ fontWeight: '400', fontFamily: 'var(--font-sans)' }}>${product.price.toLocaleString()}</span>
               {product.oldPrice && (
-                <span style={{ textDecoration: 'line-through', color: 'var(--color-gray)', fontSize: '1.1rem' }}>
+                <span className="product-old-price" style={{ textDecoration: 'line-through', color: 'var(--color-gray)' }}>
                   ${product.oldPrice.toLocaleString()}
                 </span>
               )}
@@ -221,20 +221,35 @@ const ProductDetail = () => {
 
       <style>{`
         .whatsapp-floating-btn { display: none !important; }
+        
+        .product-title { font-size: 1.25rem; }
+        .product-price { font-size: 1.5rem; }
+        .product-old-price { font-size: 1.1rem; }
+        
         .gallery-slide {
           aspect-ratio: 1/1;
         }
+        
         @media (max-width: 768px) {
-          .detail-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
-          .product-detail-container { padding: 0 !important; }
-          .gallery-section { width: 100vw; margin-left: 0; margin-right: 0; margin-bottom: 0.5rem; }
+          .product-title { font-size: 1.1rem; line-height: 1.4; }
+          .product-price { font-size: 1.35rem; }
+          .product-old-price { font-size: 1rem; }
+          
+          .detail-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+          .product-detail-container { padding: 0 1rem !important; }
+          
+          .gallery-section { width: 100%; margin-left: 0; margin-right: 0; margin-bottom: 0.5rem; }
           .gallery-slide {
-            aspect-ratio: 4/5;
+            aspect-ratio: 1/1;
+            flex: 0 0 100% !important;
+            border-radius: 8px;
           }
           .gallery-scroll-container {
-            padding: 0 1rem !important;
+            padding: 0 !important;
+            gap: 0 !important;
           }
-          .info-section { padding: 1rem 1rem !important; gap: 1rem !important; }
+          
+          .info-section { padding: 0.5rem 0 !important; gap: 1rem !important; }
           .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
         }
       `}</style>
