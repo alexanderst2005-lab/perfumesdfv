@@ -14,6 +14,9 @@ const Checkout = () => {
     notas: ''
   });
 
+  const [paymentMethod, setPaymentMethod] = useState('contra_entrega');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -31,6 +34,26 @@ const Checkout = () => {
       return;
     }
 
+    if (!acceptTerms) {
+      alert("Debes aceptar los Términos y Condiciones para continuar.");
+      return;
+    }
+
+    if (paymentMethod === 'wompi') {
+      // Implementación de Pasarela Wompi
+      // Redirigir a Wompi o abrir widget
+      const reference = `pedido_${Date.now()}`;
+      const amountInCents = cartTotal * 100;
+      // Por ahora simulamos la redirección
+      alert(`Aquí se abrirá la pasarela de WOMPI por un valor de $${cartTotal.toLocaleString()}\nFalta configurar la llave pública.`);
+      /* 
+      // Ejemplo de redirección a checkout de wompi
+      const wompiUrl = `https://checkout.wompi.co/p/?public-key=TU_LLAVE_PUBLICA_AQUI&currency=COP&amount-in-cents=${amountInCents}&reference=${reference}`;
+      window.location.href = wompiUrl;
+      */
+      return;
+    }
+
     let message = "Hola, quiero realizar el siguiente pedido:\n\n";
 
     cart.forEach(item => {
@@ -41,6 +64,13 @@ const Checkout = () => {
     });
 
     message += `*Total: $${cartTotal.toLocaleString()}*\n\n`;
+    
+    const metodos = {
+      'contra_entrega': 'Pago Contra Entrega',
+      'transferencia': 'Transferencia Bancaria',
+    };
+    message += `Método de Pago: ${metodos[paymentMethod]}\n\n`;
+
     message += `Nombre: ${formData.nombre}\n`;
     message += `Teléfono: ${formData.telefono}\n`;
     if (formData.email) message += `Email: ${formData.email}\n`;
@@ -121,16 +151,64 @@ const Checkout = () => {
               <div className="form-group-full" style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ciudad *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
                 <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Dirección *" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
-                <textarea name="notas" value={formData.notas} onChange={handleChange} placeholder="Notas adicionales (opcional)" rows="3" style={{ ...inputStyle, resize: 'vertical', minHeight: '80px' }} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'}></textarea>
+                <textarea name="notas" value={formData.notas} onChange={handleChange} placeholder="Instrucciones especiales de entrega, referencias, etc." rows="3" style={{ ...inputStyle, resize: 'vertical', minHeight: '80px' }} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'}></textarea>
               </div>
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
-              <h3 style={sectionTitleStyle}>Método de Pago</h3>
-              <div style={{ padding: '1.2rem', border: '1px solid #EAE8E4', backgroundColor: '#fff', borderRadius: '4px', textAlign: 'center' }}>
-                <p style={{ color: '#111', fontFamily: 'var(--font-sans)', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '1px' }}>Pedido por WhatsApp</p>
-                <p style={{ fontSize: '0.8rem', marginTop: '0.4rem', color: '#666', lineHeight: '1.5', fontFamily: 'var(--font-sans)' }}>Tu pedido será enviado directamente a nuestro equipo a través de WhatsApp, donde coordinaremos el pago y envío de manera personalizada.</p>
+              <h3 style={sectionTitleStyle}>MÉTODO DE PAGO</h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                
+                {/* Contra Entrega */}
+                <label style={{ display: 'flex', gap: '1rem', padding: '1.2rem', border: paymentMethod === 'contra_entrega' ? '1px solid #111' : '1px solid #EAE8E4', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#fff', alignItems: 'flex-start' }}>
+                  <input type="radio" name="paymentMethod" value="contra_entrega" checked={paymentMethod === 'contra_entrega'} onChange={() => setPaymentMethod('contra_entrega')} style={{ marginTop: '0.2rem' }} />
+                  <div>
+                    <span style={{ display: 'block', fontWeight: '500', fontSize: '0.9rem', color: '#111', marginBottom: '0.2rem' }}>Pago Contra Entrega</span>
+                    <span style={{ fontSize: '0.8rem', color: '#666' }}>Paga en efectivo al recibir tu pedido en casa.</span>
+                  </div>
+                </label>
+
+                {/* Transferencia */}
+                <label style={{ display: 'flex', gap: '1rem', padding: '1.2rem', border: paymentMethod === 'transferencia' ? '1px solid #111' : '1px solid #EAE8E4', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#fff', alignItems: 'flex-start' }}>
+                  <input type="radio" name="paymentMethod" value="transferencia" checked={paymentMethod === 'transferencia'} onChange={() => setPaymentMethod('transferencia')} style={{ marginTop: '0.2rem' }} />
+                  <div>
+                    <span style={{ display: 'block', fontWeight: '500', fontSize: '0.9rem', color: '#111', marginBottom: '0.2rem' }}>Pago por transferencia (WHATSAPP)</span>
+                    <span style={{ fontSize: '0.8rem', color: '#666' }}>Acuerda el pago por transferencia bancaria directa (Nequi, Daviplata, Bancolombia).</span>
+                  </div>
+                </label>
+
+                {/* Wompi */}
+                <label style={{ display: 'flex', gap: '1rem', padding: '1.2rem', border: paymentMethod === 'wompi' ? '1px solid #111' : '1px solid #EAE8E4', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#fff', alignItems: 'flex-start' }}>
+                  <input type="radio" name="paymentMethod" value="wompi" checked={paymentMethod === 'wompi'} onChange={() => setPaymentMethod('wompi')} style={{ marginTop: '0.2rem' }} />
+                  <div>
+                    <span style={{ display: 'block', fontWeight: '500', fontSize: '0.9rem', color: '#111', marginBottom: '0.2rem' }}>Pago Seguro en línea (Wompi)</span>
+                    <span style={{ fontSize: '0.8rem', color: '#666' }}>Tarjetas de crédito, débito, PSE, Nequi y más.</span>
+                  </div>
+                </label>
+
               </div>
+
+              {/* Info Box */}
+              {(paymentMethod === 'contra_entrega' || paymentMethod === 'transferencia') && (
+                <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '4px', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  <div style={{ color: '#16a34a', marginTop: '2px' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontWeight: '500', color: '#166534', fontSize: '0.85rem', marginBottom: '0.2rem' }}>Confirmación por WhatsApp</p>
+                    <p style={{ fontSize: '0.75rem', color: '#166534', lineHeight: '1.4' }}>Al presionar el botón se abrirá WhatsApp con toda la información de tu pedido lista para enviarnos. Nosotros confirmaremos tu compra y te indicaremos los pasos a seguir.</p>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <input type="checkbox" id="terms" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} style={{ marginTop: '3px' }} />
+                <label htmlFor="terms" style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.4' }}>
+                  Acepto los <a href="#" style={{ color: '#111' }}>Términos y Condiciones</a> y la Política de Tratamiento de Datos Personales.
+                </label>
+              </div>
+
             </div>
 
           </form>
@@ -170,10 +248,30 @@ const Checkout = () => {
                 </div>
               </div>
               
-              <button className="btn-primary" onClick={handleCheckout} style={{ width: '100%', marginTop: '2rem', padding: '1rem', fontSize: '0.75rem', letterSpacing: '2px' }}>
-                FINALIZAR PEDIDO
+              <button className="btn-primary" onClick={handleCheckout} style={{ 
+                width: '100%', 
+                marginTop: '2rem', 
+                padding: '1rem', 
+                fontSize: '0.75rem', 
+                letterSpacing: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                backgroundColor: paymentMethod === 'wompi' ? '#111' : '#25D366',
+                color: '#fff',
+                border: 'none',
+              }}>
+                {paymentMethod === 'wompi' ? (
+                  'PAGAR SEGURO CON WOMPI'
+                ) : (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    ENVIAR PEDIDO POR WHATSAPP
+                  </>
+                )}
               </button>
-              <p style={{ textAlign: 'center', fontSize: '0.6rem', color: '#999', marginTop: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Compra segura y personalizada</p>
+              <p style={{ textAlign: 'center', fontSize: '0.6rem', color: '#999', marginTop: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Compra segura y protegida</p>
             </div>
           </div>
 
