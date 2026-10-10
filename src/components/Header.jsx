@@ -24,14 +24,10 @@ const Header = () => {
   // En Home el header siempre es transparente (ya que sube con el scroll). En otras páginas es sólido.
   const solid = !isHome;
 
-  const dynamicNavLinks = categories ? categories.map(c => ({
-    label: c.name,
-    path: `/tienda?category=${encodeURIComponent(c.name)}`
-  })) : [];
-
   const navLinks = [
-    { label: 'Catálogo Completo', path: '/tienda' },
-    ...dynamicNavLinks
+    { label: 'Inicio', path: '/' },
+    { label: 'Tienda', path: '/tienda' },
+    { label: 'Contacto', path: '/contacto' }
   ];
 
   return (
@@ -61,60 +57,56 @@ const Header = () => {
             position: 'relative', /* Importante para el centrado absoluto del logo */
           }}>
 
-            {/* LEFT — Hamburger */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flex: 1 }}>
+            {/* LEFT / CENTER — Logo and Hamburger */}
+            <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
               <button
+                className="mobile-only"
                 aria-label="Menú"
-                style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', marginRight: '1rem' }}
                 onClick={() => setMenuOpen(true)}
               >
                 <Menu size={24} strokeWidth={1.5} />
               </button>
+              
+              <Link to="/" className="header-logo" style={{
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+                zIndex: 10,
+              }}>
+                <svg
+                  viewBox="0 0 160 50"
+                  height="38"
+                  aria-label="DFV Perfumes"
+                  style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
+                >
+                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill={solid ? '#111111' : '#ffffff'}>DFV</text>
+                  <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill={solid ? '#111111' : '#ffffff'}>PERFUMES</text>
+                </svg>
+              </Link>
             </div>
 
-            {/* CENTER — Logo SVG sin fondo */}
-            <Link to="/" style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textDecoration: 'none',
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 10,
-            }}>
-              <svg
-                viewBox="0 0 160 50"
-                height="38"
-                aria-label="DFV Perfumes"
-                style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
-              >
-                {/* Letras DFV centradas */}
-                <text
-                  x="50%" y="36"
-                  textAnchor="middle"
-                  fontFamily="Georgia, 'Times New Roman', serif"
-                  fontSize="46"
-                  fontWeight="400"
-                  letterSpacing="-1"
-                  fill={solid ? '#111111' : '#ffffff'}
-                >DFV</text>
-                {/* PERFUMES debajo centrado */}
-                <text
-                  x="50%" y="50"
-                  textAnchor="middle"
-                  fontFamily="'Helvetica Neue', Arial, sans-serif"
-                  fontSize="10"
-                  fontWeight="400"
-                  letterSpacing="6"
-                  fill={solid ? '#111111' : '#ffffff'}
-                >PERFUMES</text>
-              </svg>
-            </Link>
+            {/* CENTER — Desktop Nav */}
+            <nav className="desktop-only" style={{ display: 'flex', justifyContent: 'center', gap: '2.5rem', flex: 2 }}>
+              {navLinks.map(l => (
+                <Link key={l.label} to={l.path} style={{
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  fontSize: '0.75rem',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  fontWeight: '500',
+                  opacity: 0.8,
+                  transition: 'opacity 0.2s'
+                }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.8}>
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
 
             {/* RIGHT — Icons */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem', flex: 1 }}>
-              <button style={{ color: 'inherit' }} aria-label="Buscar"><Search size={20} strokeWidth={1.5} /></button>
+              <button style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer' }} aria-label="Buscar"><Search size={20} strokeWidth={1.5} /></button>
 
               <Link to="/favoritos" style={{ position: 'relative', color: 'inherit' }} aria-label="Favoritos">
                 <Heart size={20} strokeWidth={1.5} />
@@ -124,7 +116,7 @@ const Header = () => {
               </Link>
 
               <button
-                style={{ position: 'relative', color: 'inherit' }}
+                style={{ position: 'relative', color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer' }}
                 aria-label="Carrito"
                 onClick={() => setIsCartOpen(true)}
               >
@@ -167,13 +159,11 @@ const Header = () => {
                 <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>
               </div>
               <nav style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: '0.8rem' }}>
-                <Link to="/" onClick={() => setMenuOpen(false)} style={menuLinkStyle}>Inicio</Link>
                 {navLinks.map(l => (
                   <Link key={l.label} to={l.path} onClick={() => setMenuOpen(false)} style={menuLinkStyle}>
                     {l.label}
                   </Link>
                 ))}
-                <Link to="/contacto" onClick={() => setMenuOpen(false)} style={menuLinkStyle}>Contacto</Link>
               </nav>
             </motion.div>
           </>
@@ -181,8 +171,15 @@ const Header = () => {
       </AnimatePresence>
       <style>{`
         .header-container { padding: 0 2.5rem; }
+        .desktop-only { display: flex !important; }
+        .mobile-only { display: none !important; }
+        .header-logo { justify-content: flex-start; }
+        
         @media (max-width: 768px) {
           .header-container { padding: 0 1.2rem !important; }
+          .desktop-only { display: none !important; }
+          .mobile-only { display: flex !important; }
+          .header-logo { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; justify-content: center !important; }
         }
       `}</style>
     </>
