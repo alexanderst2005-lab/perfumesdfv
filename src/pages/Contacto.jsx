@@ -34,7 +34,8 @@ const Contacto = () => {
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
                     Ubicación & Envíos
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>Bucaramanga, Colombia</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>Centro Comercial Llanogrande, Palmira</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.2rem' }}>Calle 31 #27-44</p>
                   <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.2rem' }}>Envíos 100% seguros a todo el país.</p>
                 </div>
               </div>
@@ -57,7 +58,7 @@ const Contacto = () => {
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
                     Instagram
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>@dfvperfumes</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>@perfumesdfv</p>
                 </div>
               </div>
             </div>

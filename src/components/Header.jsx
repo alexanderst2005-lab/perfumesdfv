@@ -166,16 +166,14 @@ const Header = () => {
                 </svg>
                 <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>
               </div>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <nav style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: '0.8rem' }}>
                 <Link to="/" onClick={() => setMenuOpen(false)} style={menuLinkStyle}>Inicio</Link>
                 {navLinks.map(l => (
                   <Link key={l.label} to={l.path} onClick={() => setMenuOpen(false)} style={menuLinkStyle}>
                     {l.label}
                   </Link>
                 ))}
-                {/* Additional custom links */}
-                <Link to="/favoritos" onClick={() => setMenuOpen(false)} style={{...menuLinkStyle, marginTop: '1rem', color: '#6b7280'}}>Mis Favoritos</Link>
-                <Link to="/contacto" onClick={() => setMenuOpen(false)} style={{...menuLinkStyle, color: '#6b7280'}}>Contacto & Ayuda</Link>
+                <Link to="/contacto" onClick={() => setMenuOpen(false)} style={menuLinkStyle}>Contacto</Link>
               </nav>
             </motion.div>
           </>
@@ -200,13 +198,15 @@ const badgeStyle = {
 };
 
 const menuLinkStyle = {
-  fontSize: '1rem',
+  fontSize: '1.2rem',
+  fontFamily: 'var(--font-sans)',
   textTransform: 'uppercase',
-  letterSpacing: '1px',
+  letterSpacing: '3px',
   color: 'var(--color-black)',
-  fontWeight: '400',
-  padding: '0.3rem 0',
-  borderBottom: '1px solid var(--color-gray-light)',
+  fontWeight: '700',
+  padding: '0.8rem 0',
+  textAlign: 'center',
+  textDecoration: 'none',
 };
 
 export default Header;
