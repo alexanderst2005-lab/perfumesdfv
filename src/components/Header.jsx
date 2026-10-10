@@ -175,6 +175,7 @@ const Header = () => {
                 ))}
                 {/* Additional custom links */}
                 <Link to="/favoritos" onClick={() => setMenuOpen(false)} style={{...menuLinkStyle, marginTop: '1rem', color: '#6b7280'}}>Mis Favoritos</Link>
+                <Link to="/contacto" onClick={() => setMenuOpen(false)} style={{...menuLinkStyle, color: '#6b7280'}}>Contacto & Ayuda</Link>
               </nav>
             </motion.div>
           </>

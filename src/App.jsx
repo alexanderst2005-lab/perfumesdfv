@@ -13,6 +13,7 @@ import Favorites from './pages/Favorites';
 import Checkout from './pages/Checkout';
 import Account from './pages/Account';
 import AdminDashboard from './pages/AdminDashboard';
+import Contacto from './pages/Contacto';
 
 // Home handles its own marginTop via negative hero offset
 // Other pages handle their own paddingTop
@@ -38,6 +39,7 @@ function AppInner() {
           <Route path="/favoritos" element={<Favorites />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/mi-cuenta" element={<Account />} />
+          <Route path="/contacto" element={<Contacto />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>

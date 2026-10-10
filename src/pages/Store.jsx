@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SlidersHorizontal, ChevronDown, X, Search, Heart } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
@@ -18,14 +18,25 @@ const Store = () => {
   const [sortBy, setSortBy] = useState('destacados'); // destacados, recientes, precio_asc, precio_desc, nombre
   const [filterOpen, setFilterOpen] = useState(false);
 
+  // Sync state when URL params change
+  useEffect(() => {
+    const currentCat = params.get('category') || 'Todos';
+    setCategory(currentCat);
+  }, [search]);
+
   const categories = ['Todos', ...dbCategories.map(c => c.name), 'Ofertas'];
 
   // Apply filters and sorting
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => {
-      const matchCat = category === 'Todos' || p.category === category || (category === 'Ofertas' && p.discount);
-      const matchBrand = brand === 'Todas' || p.brand === brand;
-      const matchQ = !query || p.name.toLowerCase().includes(query.toLowerCase()) || p.brand.toLowerCase().includes(query.toLowerCase());
+      const matchCat = category === 'Todos' || 
+                       (p.category && p.category.toLowerCase() === category.toLowerCase()) || 
+                       (category === 'Ofertas' && p.discount);
+      const matchBrand = brand === 'Todas' || 
+                         (p.brand && p.brand.toLowerCase() === brand.toLowerCase());
+      const matchQ = !query || 
+                     (p.name && p.name.toLowerCase().includes(query.toLowerCase())) || 
+                     (p.brand && p.brand.toLowerCase().includes(query.toLowerCase()));
       return matchCat && matchBrand && matchQ;
     });
 
