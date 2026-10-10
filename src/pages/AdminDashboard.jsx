@@ -21,7 +21,9 @@ const AdminDashboard = () => {
   
   // Persist active tab in localStorage so it survives window.location.reload()
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('adminActiveTab') || 'dashboard';
+    const saved = localStorage.getItem('adminActiveTab');
+    if (saved === 'settings') return 'dashboard';
+    return saved || 'dashboard';
   });
 
   useEffect(() => {
