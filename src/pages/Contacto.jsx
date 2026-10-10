@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Mail, Instagram, MessageCircle } from 'lucide-react';
+import { MapPin, Mail, AtSign, MessageCircle } from 'lucide-react';
 
 const Contacto = () => {
   return (
@@ -52,7 +52,7 @@ const Contacto = () => {
 
               {/* Item */}
               <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
-                <Instagram size={20} strokeWidth={1.5} color="var(--color-black)" style={{ marginTop: '0.2rem' }} />
+                <AtSign size={20} strokeWidth={1.5} color="var(--color-black)" style={{ marginTop: '0.2rem' }} />
                 <div>
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
                     Instagram
