@@ -11,6 +11,12 @@ import CategoriesModule from '../components/admin/CategoriesModule';
 import ContentModule from '../components/admin/ContentModule';
 
 const AdminDashboard = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return sessionStorage.getItem('adminAuth') === 'true';
+  });
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+
   const { products, isLoadingProducts } = useShop();
   
   // Persist active tab in localStorage so it survives window.location.reload()
@@ -40,8 +46,7 @@ const AdminDashboard = () => {
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
     { id: 'sales', label: 'Ventas', icon: BarChart2 },
     { id: 'categories', label: 'Categorías', icon: Tags },
-    { id: 'customers', label: 'Clientes', icon: Users },
-    { id: 'settings', label: 'Configuración', icon: Settings },
+    { id: 'customers', label: 'Clientes', icon: Users }
   ];
 
   // Calculate stats
@@ -61,6 +66,65 @@ const AdminDashboard = () => {
   const thisMonthRevenue = thisMonthOrders.reduce((acc, o) => acc + o.total, 0);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginForm.username === 'admin' && loginForm.password === 'dfv2024') {
+      sessionStorage.setItem('adminAuth', 'true');
+      setIsLoggedIn(true);
+      setLoginError('');
+    } else {
+      setLoginError('Usuario o contraseña incorrectos');
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminAuth');
+    setIsLoggedIn(false);
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6' }}>
+        <div style={{ backgroundColor: 'white', padding: '3rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#111827', margin: 0 }}>DFV</h1>
+            <p style={{ fontSize: '0.7rem', letterSpacing: '4px', color: '#6b7280' }}>ADMINISTRACIÓN</p>
+          </div>
+          
+          <form onSubmit={handleLogin}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Usuario</label>
+              <input 
+                type="text" 
+                value={loginForm.username}
+                onChange={e => setLoginForm({...loginForm, username: e.target.value})}
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }}
+                required
+              />
+            </div>
+            
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Contraseña</label>
+              <input 
+                type="password" 
+                value={loginForm.password}
+                onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }}
+                required
+              />
+            </div>
+
+            {loginError && <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '1rem', textAlign: 'center' }}>{loginError}</p>}
+
+            <button type="submit" style={{ width: '100%', padding: '0.85rem', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' }}>
+              Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-layout" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#fafafa', position: 'relative' }}>
@@ -187,7 +251,7 @@ const AdminDashboard = () => {
         </nav>
 
         <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #e5e7eb' }}>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', padding: '0.75rem', backgroundColor: 'transparent', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', cursor: 'pointer', justifyContent: 'center' }}>
+          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', padding: '0.75rem', backgroundColor: 'transparent', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', cursor: 'pointer', justifyContent: 'center' }}>
             <LogOut size={16} />
             Cerrar Sesión
           </button>
@@ -300,7 +364,6 @@ const AdminDashboard = () => {
           {activeTab === 'sales' && <SalesModule />}
           {activeTab === 'categories' && <CategoriesModule />}
           {activeTab === 'customers' && <CustomersModule />}
-          {activeTab === 'settings' && <SettingsModule />}
         </main>
       </div>
     </div>
