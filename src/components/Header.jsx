@@ -11,7 +11,7 @@ const ANNOUNCE_H = 36;
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cartCount, favorites, setIsCartOpen } = useShop();
+  const { cartCount, favorites, setIsCartOpen, categories } = useShop();
   const location = useLocation();
   const isHome = location.pathname === '/';
 
@@ -24,13 +24,14 @@ const Header = () => {
   // En Home el header siempre es transparente (ya que sube con el scroll). En otras páginas es sólido.
   const solid = !isHome;
 
+  const dynamicNavLinks = categories ? categories.map(c => ({
+    label: c.name,
+    path: `/tienda?category=${encodeURIComponent(c.name)}`
+  })) : [];
+
   const navLinks = [
-    { label: 'Tienda',   path: '/tienda' },
-    { label: 'Hombre',   path: '/tienda?category=Hombre' },
-    { label: 'Mujer',    path: '/tienda?category=Mujer' },
-    { label: 'Unisex',   path: '/tienda?category=Unisex' },
-    { label: 'Marcas',   path: '/tienda?category=Marcas' },
-    { label: 'Ofertas',  path: '/tienda?offers=true' },
+    { label: 'Catálogo Completo', path: '/tienda' },
+    ...dynamicNavLinks
   ];
 
   return (
@@ -154,7 +155,7 @@ const Header = () => {
               transition={{ type: 'tween', duration: 0.28 }}
               style={{
                 position: 'fixed', top: 0, left: 0, bottom: 0,
-                width: '280px', backgroundColor: '#fff', zIndex: 1999,
+                width: '100%', backgroundColor: '#fff', zIndex: 1999,
                 padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column',
               }}
             >
@@ -172,6 +173,8 @@ const Header = () => {
                     {l.label}
                   </Link>
                 ))}
+                {/* Additional custom links */}
+                <Link to="/favoritos" onClick={() => setMenuOpen(false)} style={{...menuLinkStyle, marginTop: '1rem', color: '#6b7280'}}>Mis Favoritos</Link>
               </nav>
             </motion.div>
           </>
