@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
-  const { cart, cartTotal } = useShop();
+  const { cart, cartTotal, clearCart } = useShop();
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     nombre: '',
@@ -99,6 +100,9 @@ const Checkout = () => {
       const encodedMessage = encodeURIComponent(message);
       const whatsappNumber = "573027642208"; 
       window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+      
+      clearCart();
+      navigate('/');
     }).catch(err => {
       console.error(err);
       alert("Hubo un error guardando el pedido, por favor intenta nuevamente.");

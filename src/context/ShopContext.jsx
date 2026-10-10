@@ -106,11 +106,13 @@ export const ShopProvider = ({ children }) => {
   const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
+  const clearCart = () => setCart([]);
+
   return (
     <ShopContext.Provider value={{
       products, brands, categories, isLoadingProducts,
       cart, favorites, isCartOpen, setIsCartOpen,
-      addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite,
+      addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,
       cartTotal, cartCount
     }}>
       {children}
