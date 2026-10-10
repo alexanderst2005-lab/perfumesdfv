@@ -134,7 +134,13 @@ const Store = () => {
         </div>
 
         {/* Grid */}
-        {filteredAndSorted.length === 0 ? (
+        {isLoadingProducts ? (
+          <div style={{ textAlign: 'center', padding: '6rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ width: '40px', height: '40px', border: '3px solid #f3f4f6', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '1.5rem' }}></div>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--color-black)' }}>Cargando catálogo...</h3>
+            <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem' }}>Preparando las mejores fragancias para ti.</p>
+          </div>
+        ) : filteredAndSorted.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '6rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Search size={40} style={{ color: 'var(--color-gray-light)', marginBottom: '1.5rem' }} />
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--color-black)' }}>No encontramos productos</h3>
@@ -229,6 +235,7 @@ const Store = () => {
       )}
 
       <style>{`
+        @keyframes spin { 100% { transform: rotate(360deg); } }
         @media (max-width: 1024px) { .store-grid { grid-template-columns: repeat(3,1fr) !important; } }
         @media (max-width: 768px)  { .store-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; } }
       `}</style>
