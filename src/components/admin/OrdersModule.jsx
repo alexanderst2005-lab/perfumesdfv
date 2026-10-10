@@ -201,84 +201,120 @@ const OrdersModule = () => {
       )}
 
       {selectedOrder && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
-            <button onClick={() => setSelectedOrder(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
-              <XCircle size={24} />
-            </button>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-              Detalles del Pedido {formatOrderId(selectedOrder.id)}
-            </h2>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div className="no-scrollbar" style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '650px', maxHeight: '90vh', overflowY: 'auto', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            {/* Header */}
+            <div style={{ position: 'sticky', top: 0, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', padding: '1.5rem 2rem', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
               <div>
-                <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Cliente</p>
-                <p style={{ fontWeight: '500' }}>{selectedOrder.customer_name}</p>
-                <p style={{ fontSize: '0.9rem', color: '#374151' }}>CC: {selectedOrder.customer_cedula}</p>
-                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_phone}</p>
-                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_email}</p>
+                <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.2rem' }}>Orden</p>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', margin: 0, color: '#111827' }}>
+                  #{formatOrderId(selectedOrder.id)}
+                </h2>
               </div>
-              <div>
-                <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Envío y Pago</p>
-                <p style={{ fontWeight: '500' }}>{selectedOrder.customer_departamento}, {selectedOrder.customer_city}</p>
-                <p style={{ fontSize: '0.9rem', color: '#374151' }}>{selectedOrder.customer_address}</p>
-                <p style={{ fontSize: '0.9rem', color: '#374151', marginTop: '0.5rem', fontWeight: '500' }}>Método: <span style={{ color: '#059669' }}>{selectedOrder.payment_method}</span></p>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#eef2ff', borderRadius: '8px', border: '1px solid #c7d2fe' }}>
-              <h3 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#3730a3', marginBottom: '0.8rem', textTransform: 'uppercase' }}>Información de Envío (Opcional si es local)</h3>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <input 
-                  type="text" 
-                  placeholder="Transportadora (Opcional)" 
-                  value={shippingInfo.carrier}
-                  onChange={(e) => setShippingInfo({ ...shippingInfo, carrier: e.target.value })}
-                  style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #c7d2fe', fontSize: '0.85rem' }}
-                />
-                <input 
-                  type="text" 
-                  placeholder="Número de Guía (Opcional)" 
-                  value={shippingInfo.tracking}
-                  onChange={(e) => setShippingInfo({ ...shippingInfo, tracking: e.target.value })}
-                  style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #c7d2fe', fontSize: '0.85rem' }}
-                />
-              </div>
-              <button 
-                onClick={() => handleStatusChange(selectedOrder.id, 'ENVIADO', shippingInfo.carrier, shippingInfo.tracking)}
-                style={{ marginTop: '0.8rem', padding: '0.5rem 1rem', backgroundColor: '#3730a3', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', cursor: 'pointer', fontWeight: '500' }}
-              >
-                Guardar Guía y Marcar como ENVIADO
+              <button onClick={() => setSelectedOrder(null)} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#4b5563', transition: 'all 0.2s' }}>
+                <XCircle size={20} />
               </button>
             </div>
-
-            {selectedOrder.customer_notes && (
-              <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px', fontSize: '0.9rem' }}>
-                <strong style={{ color: '#374151' }}>Notas del cliente:</strong> {selectedOrder.customer_notes}
-              </div>
-            )}
-
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem' }}>Productos ({selectedOrder.items?.length || 0})</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {selectedOrder.items?.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid #f3f4f6' }}>
-                  <img src={item.image} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'contain', backgroundColor: '#f9fafb', borderRadius: '4px' }} />
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{item.name}</p>
-                    <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{item.selectedSize || item.brand}</p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>Cant: {item.quantity}</p>
-                    <p style={{ fontWeight: '600' }}>${(item.price * item.quantity).toLocaleString()}</p>
+            
+            <div style={{ padding: '2rem' }}>
+              {/* Información del Cliente y Envío en Tarjetas */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                
+                {/* Tarjeta Cliente */}
+                <div style={{ padding: '1.25rem', backgroundColor: '#fafafa', border: '1px solid #f0f0f0', borderRadius: '12px' }}>
+                  <p style={{ fontSize: '0.7rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', fontWeight: '600' }}>Información del Cliente</p>
+                  <p style={{ fontWeight: '600', fontSize: '1rem', color: '#111', margin: '0 0 0.25rem 0' }}>{selectedOrder.customer_name}</p>
+                  <p style={{ fontSize: '0.85rem', color: '#4b5563', margin: '0.2rem 0' }}>CC: {selectedOrder.customer_cedula}</p>
+                  <p style={{ fontSize: '0.85rem', color: '#4b5563', margin: '0.2rem 0' }}>{selectedOrder.customer_phone}</p>
+                  <p style={{ fontSize: '0.85rem', color: '#4b5563', margin: '0.2rem 0' }}>{selectedOrder.customer_email}</p>
+                </div>
+                
+                {/* Tarjeta Envío */}
+                <div style={{ padding: '1.25rem', backgroundColor: '#fafafa', border: '1px solid #f0f0f0', borderRadius: '12px' }}>
+                  <p style={{ fontSize: '0.7rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', fontWeight: '600' }}>Detalles de Envío y Pago</p>
+                  <p style={{ fontWeight: '500', fontSize: '0.9rem', color: '#111', margin: '0 0 0.25rem 0' }}>{selectedOrder.customer_departamento}, {selectedOrder.customer_city}</p>
+                  <p style={{ fontSize: '0.85rem', color: '#4b5563', margin: '0.2rem 0' }}>{selectedOrder.customer_address}</p>
+                  <div style={{ marginTop: '0.75rem', display: 'inline-block', padding: '0.25rem 0.5rem', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '4px' }}>
+                    <p style={{ fontSize: '0.75rem', color: '#065f46', margin: 0, fontWeight: '600' }}>{selectedOrder.payment_method}</p>
                   </div>
                 </div>
-              ))}
+
+              </div>
+
+              {selectedOrder.customer_notes && (
+                <div style={{ marginBottom: '2rem', padding: '1.25rem', backgroundColor: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px' }}>
+                  <p style={{ fontSize: '0.7rem', color: '#b45309', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem', fontWeight: '600', margin: 0 }}>Notas del cliente</p>
+                  <p style={{ fontSize: '0.9rem', color: '#92400e', margin: 0 }}>{selectedOrder.customer_notes}</p>
+                </div>
+              )}
+
+              {/* Transportadora */}
+              <div style={{ marginBottom: '2.5rem', padding: '1.5rem', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                <p style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', margin: '0 0 0.25rem 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Logística de Envío</p>
+                <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 1rem 0' }}>Si gestionas un envío nacional, ingresa la guía.</p>
+                
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Empresa (Ej. Envía)" 
+                    value={shippingInfo.carrier}
+                    onChange={(e) => setShippingInfo({ ...shippingInfo, carrier: e.target.value })}
+                    style={{ flex: 1, minWidth: '150px', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', outline: 'none' }}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Número de Guía" 
+                    value={shippingInfo.tracking}
+                    onChange={(e) => setShippingInfo({ ...shippingInfo, tracking: e.target.value })}
+                    style={{ flex: 1, minWidth: '150px', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', outline: 'none' }}
+                  />
+                  <button 
+                    onClick={() => {
+                      handleStatusChange(selectedOrder.id, 'ENVIADO', shippingInfo.carrier, shippingInfo.tracking);
+                      setSelectedOrder(null);
+                    }}
+                    style={{ padding: '0.75rem 1.5rem', backgroundColor: '#000', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', fontWeight: '500', transition: 'background 0.2s' }}
+                    onMouseEnter={e => e.target.style.backgroundColor = '#333'}
+                    onMouseLeave={e => e.target.style.backgroundColor = '#000'}
+                  >
+                    Marcar como ENVIADO
+                  </button>
+                </div>
+              </div>
+
+              {/* Lista de Productos */}
+              <div>
+                <p style={{ fontSize: '0.85rem', fontWeight: '600', color: '#111', margin: '0 0 1rem 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Productos Comprados ({selectedOrder.items?.length || 0})
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {selectedOrder.items?.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
+                      <div style={{ width: '60px', height: '60px', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontWeight: '600', fontSize: '0.95rem', color: '#111', margin: '0 0 0.2rem 0' }}>{item.name}</p>
+                        <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: 0 }}>{item.selectedSize || item.brand}</p>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 0.2rem 0' }}>Cant: {item.quantity}</p>
+                        <p style={{ fontWeight: '600', fontSize: '1rem', color: '#111', margin: 0 }}>${(item.price * item.quantity).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+            
+            {/* Footer / Total */}
+            <div style={{ backgroundColor: '#f8f9fa', padding: '1.5rem 2rem', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}>Total Pagado</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#111' }}>${selectedOrder.total?.toLocaleString()}</span>
             </div>
 
-            <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1.25rem', fontWeight: '600' }}>
-              <span>Total Pedido:</span>
-              <span>${selectedOrder.total?.toLocaleString()}</span>
-            </div>
           </div>
         </div>
       )}
