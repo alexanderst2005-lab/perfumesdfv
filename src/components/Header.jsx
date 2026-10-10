@@ -158,13 +158,18 @@ const Header = () => {
                 </svg>
                 <button onClick={() => setMenuOpen(false)}><X size={22} strokeWidth={1.5} /></button>
               </div>
-              <nav style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: '0.8rem' }}>
+              <nav style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: '2.5rem' }}>
                 {navLinks.map(l => (
                   <Link key={l.label} to={l.path} onClick={() => setMenuOpen(false)} style={menuLinkStyle}>
                     {l.label}
                   </Link>
                 ))}
               </nav>
+
+              <div style={{ textAlign: 'center', paddingBottom: '2rem' }}>
+                <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#666', marginBottom: '0.8rem' }}>SÍGUENOS EN REDES</p>
+                <a href="https://www.instagram.com/perfumesdfv" target="_blank" rel="noreferrer" style={{ fontSize: '0.95rem', color: 'var(--color-black)', textDecoration: 'none', fontWeight: '600', letterSpacing: '1px' }}>@perfumesdfv</a>
+              </div>
             </motion.div>
           </>
         )}
@@ -195,13 +200,13 @@ const badgeStyle = {
 };
 
 const menuLinkStyle = {
-  fontSize: '1.2rem',
+  fontSize: '1.6rem',
   fontFamily: 'var(--font-sans)',
   textTransform: 'uppercase',
-  letterSpacing: '3px',
+  letterSpacing: '4px',
   color: 'var(--color-black)',
-  fontWeight: '700',
-  padding: '0.8rem 0',
+  fontWeight: '600',
+  padding: '0.5rem 0',
   textAlign: 'center',
   textDecoration: 'none',
 };
