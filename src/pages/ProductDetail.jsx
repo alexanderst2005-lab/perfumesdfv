@@ -135,10 +135,11 @@ const ProductDetail = () => {
             <div style={{ display: 'flex', gap: '0.8rem', flexDirection: 'column', marginTop: '1rem' }}>
               <div style={{ display: 'flex', gap: '0.8rem' }}>
                 <button
-                  style={{ flex: 1, padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}
-                  onClick={() => addToCart(product, qty, size)}
+                  disabled={!product.inStock}
+                  style={{ flex: 1, padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: product.inStock ? 'pointer' : 'not-allowed', opacity: product.inStock ? 1 : 0.5, transition: 'all 0.2s' }}
+                  onClick={() => product.inStock && addToCart(product, qty, size)}
                 >
-                  AÑADIR AL CARRITO
+                  {product.inStock ? 'AÑADIR AL CARRITO' : 'AGOTADO'}
                 </button>
                 <button
                   onClick={() => toggleFavorite(product)}
@@ -152,15 +153,17 @@ const ProductDetail = () => {
                 </button>
               </div>
 
-              <button
-                style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#1A1A1A', border: 'none', color: '#fff', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}
-                onClick={() => {
-                  addToCart(product, qty, size);
-                  window.location.href = '/checkout';
-                }}
-              >
-                COMPRAR AHORA
-              </button>
+              {product.inStock && (
+                <button
+                  style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#1A1A1A', border: 'none', color: '#fff', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}
+                  onClick={() => {
+                    addToCart(product, qty, size);
+                    window.location.href = '/checkout';
+                  }}
+                >
+                  COMPRAR AHORA
+                </button>
+              )}
             </div>            {/* Delivery Timeline */}
             <div style={{ marginTop: '2.5rem', marginBottom: '1.5rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
               <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.5rem', color: '#000' }}>Entrega Estimada</h4>

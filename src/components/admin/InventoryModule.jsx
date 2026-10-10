@@ -182,11 +182,36 @@ const InventoryModule = () => {
                 </td>
                 <td style={{ padding: '1rem', fontWeight: '500' }}>${p.price.toLocaleString()}</td>
                 <td style={{ padding: '1rem' }}>
-                  {p.inStock ? (
-                    <span style={{ display: 'inline-flex', padding: '0.2rem 0.5rem', backgroundColor: '#d1fae5', color: '#059669', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>DISPONIBLE</span>
-                  ) : (
-                    <span style={{ display: 'inline-flex', padding: '0.2rem 0.5rem', backgroundColor: '#fee2e2', color: '#dc2626', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>AGOTADO</span>
-                  )}
+                  <select 
+                    value={p.inStock ? 'true' : 'false'}
+                    onChange={async (e) => {
+                      const newInStock = e.target.value === 'true';
+                      try {
+                        const updatedProduct = { ...p, inStock: newInStock };
+                        const res = await fetch('/api/admin/products', {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(updatedProduct)
+                        });
+                        if (res.ok) window.location.reload();
+                        else alert('Error al actualizar el estado');
+                      } catch(err) { alert('Error de red'); }
+                    }}
+                    style={{ 
+                      padding: '0.3rem 0.5rem', 
+                      borderRadius: '4px', 
+                      fontSize: '0.75rem', 
+                      fontWeight: 'bold', 
+                      cursor: 'pointer',
+                      border: 'none',
+                      outline: 'none',
+                      backgroundColor: p.inStock ? '#d1fae5' : '#fee2e2',
+                      color: p.inStock ? '#059669' : '#dc2626'
+                    }}
+                  >
+                    <option value="true">DISPONIBLE</option>
+                    <option value="false">AGOTADO</option>
+                  </select>
                 </td>
                 <td style={{ padding: '1rem' }}>
                   {p.active !== false ? (

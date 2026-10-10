@@ -573,6 +573,35 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
         </span>
       )}
 
+      {/* Overlay AGOTADO */}
+      {!product.inStock && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(255,255,255,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 5,
+          pointerEvents: 'none'
+        }}>
+          <span style={{
+            background: '#dc2626',
+            color: '#fff',
+            padding: '10px 20px',
+            fontSize: '1.2rem',
+            letterSpacing: '4px',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            transform: 'rotate(-10deg)',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+            fontFamily: 'var(--font-sans)'
+          }}>
+            AGOTADO
+          </span>
+        </div>
+      )}
+
       {/* Botón Corazón Minimalista */}
       <button
         onClick={(e) => { e.preventDefault(); onFav(); }}
@@ -580,7 +609,8 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
           position: 'absolute', top: '12px', right: '12px',
           background: 'transparent', border: 'none', cursor: 'pointer',
           padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+          transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          zIndex: 6
         }}
         className={fav ? 'fav-active' : ''}
       >
@@ -588,7 +618,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
       </button>
 
       {/* Nuevo Botón Agregar al Carrito */}
-      {onAdd && (
+      {(onAdd && product.inStock) && (
         <button
           onClick={(e) => { e.preventDefault(); onAdd(); }}
           className="add-to-cart-btn"
@@ -611,7 +641,8 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
             letterSpacing: '1px',
             transition: 'all 0.3s ease',
             whiteSpace: 'nowrap',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+            boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+            zIndex: 6
           }}
         >
           AGREGAR AL CARRITO
