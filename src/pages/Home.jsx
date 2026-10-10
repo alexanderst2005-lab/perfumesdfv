@@ -248,7 +248,7 @@ const Home = () => {
         </div>
 
         <style>{`
-          .hero-section { height: 100vh; min-height: 100vh; width: 100vw; overflow: hidden; }
+          .hero-section { height: 100vh; height: 100dvh; width: 100%; overflow: hidden; }
           @media (max-width: 768px) {
             .hero-arrow { display: none !important; }
           }
