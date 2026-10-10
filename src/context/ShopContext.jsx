@@ -24,28 +24,43 @@ export const ShopProvider = ({ children }) => {
 
   // Fetch products and categories from Neon DB via API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (retries = 2) => {
       try {
         const [resP, resC] = await Promise.all([
           fetch('/api/products'),
           fetch('/api/categories')
         ]);
+        
         if (resP.ok) {
           const data = await resP.json();
           setProducts(data);
           const uniqueBrands = [...new Set(data.map(p => p.brand))];
           setBrands(uniqueBrands);
+        } else {
+          console.error("Products API returned status:", resP.status);
+          if (retries > 0) {
+            console.log("Retrying fetch...");
+            setTimeout(() => fetchData(retries - 1), 1000);
+            return;
+          }
         }
+        
         if (resC.ok) {
           const data = await resC.json();
           if (data.success) {
             setCategories(data.data);
           }
         }
+        // If we reach here successfully
+        setIsLoadingProducts(false);
       } catch (err) {
         console.error("Failed to fetch data", err);
-      } finally {
-        setIsLoadingProducts(false);
+        if (retries > 0) {
+          console.log("Retrying fetch...");
+          setTimeout(() => fetchData(retries - 1), 1000);
+        } else {
+          setIsLoadingProducts(false);
+        }
       }
     };
     fetchData();
