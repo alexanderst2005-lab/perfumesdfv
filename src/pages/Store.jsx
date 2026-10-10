@@ -9,7 +9,7 @@ const Store = () => {
   const params = new URLSearchParams(search);
   const initCat = params.get('category') || 'Todos';
 
-  const { addToCart, toggleFavorite, isFavorite, products, brands, isLoadingProducts } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, brands, categories: dbCategories, isLoadingProducts } = useShop();
 
   // Filters state
   const [category, setCategory] = useState(initCat);
@@ -18,7 +18,7 @@ const Store = () => {
   const [sortBy, setSortBy] = useState('destacados'); // destacados, recientes, precio_asc, precio_desc, nombre
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const categories = ['Todos', 'Hombre', 'Mujer', 'Unisex', 'Ofertas'];
+  const categories = ['Todos', ...dbCategories.map(c => c.name), 'Ofertas'];
 
   // Apply filters and sorting
   const filteredAndSorted = useMemo(() => {

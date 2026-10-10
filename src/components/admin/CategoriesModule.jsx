@@ -1,36 +1,56 @@
 import React, { useState } from 'react';
 import { Tags, Plus, Edit, Trash2, XCircle } from 'lucide-react';
+import { useShop } from '../../context/ShopContext';
 
 const CategoriesModule = () => {
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Hombre', slug: 'hombre', count: 45 },
-    { id: 2, name: 'Mujer', slug: 'mujer', count: 52 },
-    { id: 3, name: 'Unisex', slug: 'unisex', count: 12 },
-    { id: 4, name: 'Nichos', slug: 'nichos', count: 8 },
-  ]);
-
+  const { categories } = useShop();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCat, setCurrentCat] = useState({ id: null, name: '', slug: '' });
+  const [currentCat, setCurrentCat] = useState({ id: null, name: '' });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!currentCat.name) return alert('Por favor, ingresa el nombre de la categoría');
     
-    // Auto-generate slug from name
-    const generatedSlug = currentCat.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-    
-    if (currentCat.id) {
-      setCategories(categories.map(c => c.id === currentCat.id ? { ...c, name: currentCat.name, slug: generatedSlug } : c));
-    } else {
-      setCategories([...categories, { id: Date.now(), name: currentCat.name, slug: generatedSlug, count: 0 }]);
+    try {
+      const method = currentCat.id ? 'PUT' : 'POST';
+      const res = await fetch('/api/categories', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentCat)
+      });
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        alert('Error al guardar la categoría');
+      }
+    } catch (err) {
+      alert('Error de conexión');
     }
-    setIsModalOpen(false);
+  };
+
+  const handleDelete = async (id) => {
+    if(window.confirm('¿Seguro que deseas eliminar esta categoría?')) {
+      try {
+        const res = await fetch('/api/categories', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          alert('Error al eliminar la categoría');
+        }
+      } catch (err) {
+        alert('Error de conexión');
+      }
+    }
   };
 
   return (
     <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '3rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>Categorías</h2>
-        <button onClick={() => { setCurrentCat({id: null, name: '', slug: ''}); setIsModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '500', cursor: 'pointer' }}>
+        <button onClick={() => { setCurrentCat({id: null, name: ''}); setIsModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '500', cursor: 'pointer' }}>
           <Plus size={16} /> Agregar Categoría
         </button>
       </div>
@@ -52,11 +72,7 @@ const CategoriesModule = () => {
               </td>
               <td style={{ padding: '1rem', textAlign: 'right' }}>
                 <button onClick={() => { setCurrentCat(c); setIsModalOpen(true); }} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '1rem' }}><Edit size={16}/></button>
-                <button onClick={() => {
-                  if(window.confirm('¿Seguro que deseas eliminar esta categoría?')) {
-                    setCategories(categories.filter(x => x.id !== c.id));
-                  }
-                }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                <button onClick={() => handleDelete(c.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                   <Trash2 size={16}/>
                 </button>
               </td>

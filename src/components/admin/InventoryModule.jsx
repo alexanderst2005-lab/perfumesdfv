@@ -3,7 +3,7 @@ import { useShop } from '../../context/ShopContext';
 import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X } from 'lucide-react';
 
 const InventoryModule = () => {
-  const { products, isLoadingProducts } = useShop();
+  const { products, categories, isLoadingProducts } = useShop();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -297,9 +297,10 @@ const InventoryModule = () => {
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <input type="text" placeholder="Marca" value={formData.brand} onChange={e => setFormData({...formData, brand: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
                 <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }}>
-                  <option value="Mujer">Mujer</option>
-                  <option value="Hombre">Hombre</option>
-                  <option value="Unisex">Unisex</option>
+                  <option value="">Selecciona categoría</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
                 </select>
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>

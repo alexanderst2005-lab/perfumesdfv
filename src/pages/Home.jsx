@@ -53,8 +53,11 @@ const HERO_SLIDES = [
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
-  const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, categories, isLoadingProducts } = useShop();
   const [activeCategory, setActiveCategory] = useState('TODOS');
+  
+  const displayCategoryNames = ['TODOS', ...categories.map(c => c.name.toUpperCase())];
+
   const [openFaq, setOpenFaq] = useState(null);
   const featured = products.slice(0, 4);
   const newArrivals = products.slice(0, 4);
@@ -271,7 +274,7 @@ const Home = () => {
           {/* Filtros Editoriales */}
           <div className="catalog-filters-wrapper no-scrollbar" style={{ width: '100%', overflowX: 'auto', marginBottom: '3.5rem', paddingBottom: '0.5rem', WebkitOverflowScrolling: 'touch' }}>
             <div className="catalog-filters" style={{ display: 'flex', gap: '2.5rem', padding: '0 1.5rem' }}>
-              {['TODOS', 'MUJER', 'HOMBRE', 'UNISEX'].map(cat => (
+              {displayCategoryNames.map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}

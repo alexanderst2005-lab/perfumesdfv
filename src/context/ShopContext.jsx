@@ -11,6 +11,7 @@ export const ShopProvider = ({ children }) => {
 
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   // Load from localStorage on mount
@@ -21,26 +22,33 @@ export const ShopProvider = ({ children }) => {
     if (savedFavs) setFavorites(JSON.parse(savedFavs));
   }, []);
 
-  // Fetch products from Neon DB via API
+  // Fetch products and categories from Neon DB via API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/products');
-        if (res.ok) {
-          const data = await res.json();
+        const [resP, resC] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/categories')
+        ]);
+        if (resP.ok) {
+          const data = await resP.json();
           setProducts(data);
           const uniqueBrands = [...new Set(data.map(p => p.brand))];
           setBrands(uniqueBrands);
-        } else {
-          console.error("Error response fetching products");
+        }
+        if (resC.ok) {
+          const data = await resC.json();
+          if (data.success) {
+            setCategories(data.data);
+          }
         }
       } catch (err) {
-        console.error("Failed to fetch products", err);
+        console.error("Failed to fetch data", err);
       } finally {
         setIsLoadingProducts(false);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
   // Save to localStorage when changed
@@ -100,7 +108,7 @@ export const ShopProvider = ({ children }) => {
 
   return (
     <ShopContext.Provider value={{
-      products, brands, isLoadingProducts,
+      products, brands, categories, isLoadingProducts,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite,
       cartTotal, cartCount
