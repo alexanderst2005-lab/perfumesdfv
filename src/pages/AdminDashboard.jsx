@@ -12,7 +12,16 @@ import ContentModule from '../components/admin/ContentModule';
 
 const AdminDashboard = () => {
   const { products, isLoadingProducts } = useShop();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Persist active tab in localStorage so it survives window.location.reload()
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('adminActiveTab') || 'dashboard';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('adminActiveTab', activeTab);
+  }, [activeTab]);
+
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
