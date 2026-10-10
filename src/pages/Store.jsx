@@ -56,7 +56,7 @@ const Store = () => {
     }
 
     return result;
-  }, [category, brand, query, sortBy]);
+  }, [products, category, brand, query, sortBy]);
 
   const clearFilters = () => {
     setCategory('Todos');
