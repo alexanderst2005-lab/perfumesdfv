@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   // Persist active tab in localStorage so it survives window.location.reload()
   const [activeTab, setActiveTab] = useState(() => {
     const saved = localStorage.getItem('adminActiveTab');
-    if (saved === 'settings') return 'dashboard';
+    if (saved === 'settings' || saved === 'sales') return 'dashboard';
     return saved || 'dashboard';
   });
 
@@ -46,7 +46,6 @@ const AdminDashboard = () => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'inventory', label: 'Inventario', icon: Package },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
-    { id: 'sales', label: 'Ventas', icon: BarChart2 },
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'customers', label: 'Clientes', icon: Users }
   ];
@@ -363,7 +362,6 @@ const AdminDashboard = () => {
 
           {activeTab === 'inventory' && <InventoryModule />}
           {activeTab === 'orders' && <OrdersModule />}
-          {activeTab === 'sales' && <SalesModule />}
           {activeTab === 'categories' && <CategoriesModule />}
           {activeTab === 'customers' && <CustomersModule />}
         </main>
