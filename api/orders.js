@@ -240,6 +240,8 @@ export default async function handler(req, res) {
       console.error(error);
       return res.status(500).json({ success: false, error: 'Database error' });
     }
+  }
+
   if (req.method === 'DELETE') {
     try {
       const { id } = req.body;
