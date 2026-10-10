@@ -13,11 +13,15 @@ const CategoriesModule = () => {
   const [currentCat, setCurrentCat] = useState({ id: null, name: '', slug: '' });
 
   const handleSave = () => {
-    if (!currentCat.name || !currentCat.slug) return alert('Llena ambos campos');
+    if (!currentCat.name) return alert('Por favor, ingresa el nombre de la categoría');
+    
+    // Auto-generate slug from name
+    const generatedSlug = currentCat.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    
     if (currentCat.id) {
-      setCategories(categories.map(c => c.id === currentCat.id ? { ...c, name: currentCat.name, slug: currentCat.slug } : c));
+      setCategories(categories.map(c => c.id === currentCat.id ? { ...c, name: currentCat.name, slug: generatedSlug } : c));
     } else {
-      setCategories([...categories, { id: Date.now(), name: currentCat.name, slug: currentCat.slug, count: 0 }]);
+      setCategories([...categories, { id: Date.now(), name: currentCat.name, slug: generatedSlug, count: 0 }]);
     }
     setIsModalOpen(false);
   };
@@ -69,22 +73,12 @@ const CategoriesModule = () => {
             </button>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#111827' }}>{currentCat.id ? 'Editar Categoría' : 'Nueva Categoría'}</h2>
             
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Nombre</label>
               <input 
                 type="text" 
                 value={currentCat.name}
                 onChange={(e) => setCurrentCat({ ...currentCat, name: e.target.value })}
-                style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
-              />
-            </div>
-            
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Slug (URL)</label>
-              <input 
-                type="text" 
-                value={currentCat.slug}
-                onChange={(e) => setCurrentCat({ ...currentCat, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
               />
             </div>
