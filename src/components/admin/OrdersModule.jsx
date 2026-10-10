@@ -210,7 +210,7 @@ const OrdersModule = () => {
               Detalles del Pedido {formatOrderId(selectedOrder.id)}
             </h2>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
               <div>
                 <p style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Cliente</p>
                 <p style={{ fontWeight: '500' }}>{selectedOrder.customer_name}</p>
@@ -228,7 +228,7 @@ const OrdersModule = () => {
 
             <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#eef2ff', borderRadius: '8px', border: '1px solid #c7d2fe' }}>
               <h3 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#3730a3', marginBottom: '0.8rem', textTransform: 'uppercase' }}>Información de Envío (Opcional si es local)</h3>
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <input 
                   type="text" 
                   placeholder="Transportadora (Opcional)" 

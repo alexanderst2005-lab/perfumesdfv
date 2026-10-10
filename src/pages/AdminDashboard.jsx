@@ -116,8 +116,22 @@ const AdminDashboard = () => {
           .admin-grid {
             grid-template-columns: 1fr !important;
           }
+          .admin-content table {
+            min-width: 800px !important;
+          }
+          .admin-content th, .admin-content td {
+            white-space: nowrap;
+          }
           div[style*="overflow: hidden"] {
             overflow-x: auto !important;
+          }
+          /* Custom scrollbar for mobile tables */
+          div[style*="overflow: hidden"]::-webkit-scrollbar {
+            height: 6px;
+          }
+          div[style*="overflow: hidden"]::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
           }
         }
       `}</style>
