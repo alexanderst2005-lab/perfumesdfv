@@ -5,6 +5,14 @@ export default async function handler(req, res) {
     const sql = neon(process.env.DATABASE_URL);
 
     if (req.method === 'GET') {
+      // Ensure table exists
+      await sql`CREATE TABLE IF NOT EXISTS categories (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE, count INTEGER DEFAULT 0)`;
+      
+      const countRes = await sql`SELECT COUNT(*) FROM categories`;
+      if (parseInt(countRes[0].count) === 0) {
+        await sql`INSERT INTO categories (name) VALUES ('Hombre'), ('Mujer'), ('Unisex'), ('Nichos') ON CONFLICT DO NOTHING`;
+      }
+
       const categories = await sql`SELECT * FROM categories ORDER BY id ASC`;
       return res.status(200).json({ success: true, data: categories });
     }
