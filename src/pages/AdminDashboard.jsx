@@ -51,15 +51,89 @@ const AdminDashboard = () => {
   });
   const thisMonthRevenue = thisMonthOrders.reduce((acc, o) => acc + o.total, 0);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#fafafa' }}>
-      
+    <div className="admin-layout" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#fafafa', position: 'relative' }}>
+      <style>{`
+        .admin-sidebar {
+          width: 250px;
+          background-color: #ffffff;
+          border-right: 1px solid #e5e7eb;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease;
+          z-index: 50;
+        }
+        .admin-main {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          overflow-x: hidden;
+        }
+        .admin-hamburger {
+          display: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #111827;
+        }
+        .admin-overlay {
+          display: none;
+        }
+        .admin-content {
+          padding: 3rem;
+          overflow-x: auto;
+        }
+        @media (max-width: 1024px) {
+          .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            transform: translateX(-100%);
+          }
+          .admin-sidebar.open {
+            transform: translateX(0);
+          }
+          .admin-hamburger {
+            display: block;
+          }
+          .admin-overlay.open {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+          }
+          .admin-content {
+            padding: 1rem;
+          }
+          .admin-grid {
+            grid-template-columns: 1fr !important;
+          }
+          div[style*="overflow: hidden"] {
+            overflow-x: auto !important;
+          }
+        }
+      `}</style>
+
+      {/* OVERLAY */}
+      <div className={`admin-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+
       {/* SIDEBAR */}
-      <aside style={{ width: '250px', backgroundColor: '#ffffff', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '2.5rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ color: 'var(--color-black)', fontFamily: 'var(--font-serif)', fontWeight: '400', fontSize: '2.2rem', letterSpacing: '-0.5px', lineHeight: '0.9', textAlign: 'center' }}>
+      <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div style={{ padding: '2.5rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ color: 'var(--color-black)', fontFamily: 'var(--font-serif)', fontWeight: '400', fontSize: '2.2rem', letterSpacing: '-0.5px', lineHeight: '0.9', textAlign: 'center', width: '100%' }}>
             DFV<br/><span style={{ fontSize: '0.6rem', letterSpacing: '4px', textTransform: 'uppercase', display: 'block', textAlign: 'center', fontWeight: '300', marginTop: '4px' }}>PERFUMES</span>
           </div>
+          <button className="admin-hamburger" onClick={() => setIsSidebarOpen(false)} style={{ position: 'absolute', right: '1rem', top: '1rem' }}>
+            <LogOut size={24} style={{ transform: 'rotate(180deg)' }} />
+          </button>
         </div>
         
         <nav style={{ flex: 1, padding: '1rem 0', display: 'flex', flexDirection: 'column' }}>
@@ -98,22 +172,27 @@ const AdminDashboard = () => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="admin-main">
         
         {/* HEADER */}
-        <header style={{ height: '70px', backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 3rem' }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', margin: 0 }}>
-            {menuItems.find(m => m.id === activeTab)?.label || 'Dashboard'}
-          </h1>
+        <header style={{ height: '70px', backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="admin-hamburger" onClick={() => setIsSidebarOpen(true)}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+              {menuItems.find(m => m.id === activeTab)?.label || 'Dashboard'}
+            </h1>
+          </div>
           <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>Administrador</div>
         </header>
 
-        <main style={{ flex: 1, padding: '3rem', overflowY: 'auto' }}>
+        <main className="admin-content" onClick={() => { if(isSidebarOpen) setIsSidebarOpen(false) }}>
           {activeTab === 'dashboard' && (
             <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
               
               {/* TOP CARDS ROW 1 */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
+              <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
                 <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                     <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>INGRESOS DEL MES</p>
@@ -134,7 +213,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* TOP CARDS ROW 2 */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+              <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
                 <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                     <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL PEDIDOS</p>
