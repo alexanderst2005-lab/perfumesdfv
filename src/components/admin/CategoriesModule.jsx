@@ -35,8 +35,6 @@ const CategoriesModule = () => {
         <thead>
           <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
             <th style={{ padding: '1rem', color: '#4b5563', fontWeight: '600' }}>Nombre</th>
-            <th style={{ padding: '1rem', color: '#4b5563', fontWeight: '600' }}>URL (Slug)</th>
-            <th style={{ padding: '1rem', color: '#4b5563', fontWeight: '600' }}>Productos</th>
             <th style={{ padding: '1rem', color: '#4b5563', fontWeight: '600', textAlign: 'right' }}>Acciones</th>
           </tr>
         </thead>
@@ -48,8 +46,6 @@ const CategoriesModule = () => {
                   <Tags size={16} color="#9ca3af" /> {c.name}
                 </div>
               </td>
-              <td style={{ padding: '1rem', color: '#6b7280' }}>/{c.slug}</td>
-              <td style={{ padding: '1rem', color: '#6b7280' }}>{c.count}</td>
               <td style={{ padding: '1rem', textAlign: 'right' }}>
                 <button onClick={() => { setCurrentCat(c); setIsModalOpen(true); }} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginRight: '1rem' }}><Edit size={16}/></button>
                 <button onClick={() => {
