@@ -10,13 +10,21 @@ const InstagramIcon = ({ size = 18, color = 'currentColor' }) => (
   </svg>
 );
 
+// Helper para extraer el ID del Reel desde la URL
+const getInstagramEmbedUrl = (url) => {
+  if (!url) return null;
+  const match = url.match(/\/reel\/([A-Za-z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://www.instagram.com/reel/${match[1]}/embed/`;
+  }
+  return null;
+};
+
 const InstagramReelsSection = () => {
   const reels = INSTAGRAM_REELS_DATA.filter(r => r.active).sort((a, b) => a.order - b.order);
   const [activeModalReel, setActiveModalReel] = useState(null);
 
   const openReel = (reel) => {
-    // Si el usuario da click, abrimos el modal o redirigimos directamente a Instagram
-    // Para dar la mejor experiencia sin romper políticas ni bloquear el sitio:
     setActiveModalReel(reel);
   };
 
@@ -29,8 +37,9 @@ const InstagramReelsSection = () => {
       id="instagram-reels"
       className="section-padding"
       style={{
-        backgroundColor: '#050505', // Negro profundo para alto contraste visual elegante
-        color: '#F7F5F0',
+        backgroundColor: '#FCFBF9', // El mismo color marfil/cálido de la página web
+        borderTop: '1px solid #EAE8E4',
+        borderBottom: '1px solid #EAE8E4',
         position: 'relative',
         overflow: 'hidden'
       }}
@@ -64,7 +73,7 @@ const InstagramReelsSection = () => {
             fontFamily: 'var(--font-serif)',
             fontSize: 'clamp(2rem, 3.8vw, 2.8rem)',
             fontWeight: '400',
-            color: '#F7F5F0',
+            color: '#050505',
             letterSpacing: '0.5px',
             lineHeight: 1.2,
             marginBottom: '0.9rem'
@@ -75,7 +84,7 @@ const InstagramReelsSection = () => {
           <p style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '0.92rem',
-            color: '#A8A39A',
+            color: '#666',
             lineHeight: '1.6',
             fontWeight: '300',
             marginBottom: '2rem'
@@ -91,9 +100,9 @@ const InstagramReelsSection = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '0.9rem 2.2rem',
-              border: '1px solid #B99A5B',
-              color: '#F7F5F0',
+              padding: '0.85rem 2rem',
+              border: '1px solid #111',
+              color: '#111',
               backgroundColor: 'transparent',
               fontSize: '0.75rem',
               letterSpacing: '2px',
@@ -104,12 +113,12 @@ const InstagramReelsSection = () => {
               textDecoration: 'none'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.backgroundColor = '#B99A5B';
-              e.currentTarget.style.color = '#050505';
+              e.currentTarget.style.backgroundColor = '#111';
+              e.currentTarget.style.color = '#fff';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#F7F5F0';
+              e.currentTarget.style.color = '#111';
             }}
           >
             <span>VER MÁS EN INSTAGRAM</span>
@@ -129,14 +138,14 @@ const InstagramReelsSection = () => {
                 borderRadius: '8px',
                 overflow: 'hidden',
                 aspectRatio: '9/16',
-                backgroundColor: '#0D0D0D',
+                backgroundColor: '#F5F2EC',
                 cursor: 'pointer',
-                border: '1px solid rgba(185, 154, 91, 0.2)',
-                boxShadow: '0 8px 25px rgba(0,0,0,0.5)',
+                border: '1px solid #EAE6DF',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.04)',
                 transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)'
               }}
             >
-              {/* Imagen de Portada con lazy loading */}
+              {/* Imagen de Portada */}
               <img 
                 src={reel.thumbnailUrl} 
                 alt={reel.title}
@@ -151,12 +160,12 @@ const InstagramReelsSection = () => {
                 className="reel-img"
               />
 
-              {/* Degradado oscuro para legibilidad */}
+              {/* Degradado para legibilidad del texto */}
               <div 
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'linear-gradient(to top, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.2) 50%, rgba(5,5,5,0.4) 100%)',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 45%, rgba(0,0,0,0.3) 100%)',
                   zIndex: 2,
                   transition: 'opacity 0.3s ease'
                 }}
@@ -169,16 +178,16 @@ const InstagramReelsSection = () => {
                   top: '14px',
                   left: '14px',
                   zIndex: 3,
-                  backgroundColor: 'rgba(5, 5, 5, 0.65)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(185, 154, 91, 0.35)',
+                  border: '1px solid #D1B878',
                   padding: '4px 10px',
                   borderRadius: '12px',
                   fontSize: '0.65rem',
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
-                  color: '#D1B878',
-                  fontWeight: '500'
+                  color: '#111',
+                  fontWeight: '600'
                 }}
               >
                 {reel.category}
@@ -194,14 +203,14 @@ const InstagramReelsSection = () => {
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(5, 5, 5, 0.65)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#F7F5F0'
+                  color: '#111'
                 }}
               >
-                <InstagramIcon size={14} />
+                <InstagramIcon size={14} color="#111" />
               </div>
 
               {/* Icono Central de Reproducción */}
@@ -216,17 +225,17 @@ const InstagramReelsSection = () => {
                   width: '52px',
                   height: '52px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(185, 154, 91, 0.9)',
-                  color: '#050505',
+                  backgroundColor: '#FFFFFF',
+                  color: '#111',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   paddingLeft: '3px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
                   transition: 'transform 0.3s ease, background-color 0.3s ease'
                 }}
               >
-                <Play size={22} fill="#050505" strokeWidth={0} />
+                <Play size={20} fill="#111" strokeWidth={0} />
               </div>
 
               {/* Pie de la tarjeta con título e info */}
@@ -242,7 +251,7 @@ const InstagramReelsSection = () => {
                 <p style={{
                   fontFamily: 'var(--font-serif)',
                   fontSize: '0.95rem',
-                  color: '#F7F5F0',
+                  color: '#FFFFFF',
                   lineHeight: '1.35',
                   marginBottom: '6px',
                   fontWeight: '400',
@@ -253,15 +262,15 @@ const InstagramReelsSection = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{
                     fontSize: '0.7rem',
-                    color: '#B99A5B',
+                    color: '#D1B878',
                     letterSpacing: '1px',
-                    fontWeight: '500'
+                    fontWeight: '600'
                   }}>
                     {INSTAGRAM_ACCOUNT.handle}
                   </span>
                   <span style={{
                     fontSize: '0.65rem',
-                    color: '#A8A39A'
+                    color: '#E8E8E8'
                   }}>
                     {reel.duration}
                   </span>
@@ -272,32 +281,34 @@ const InstagramReelsSection = () => {
         </div>
       </div>
 
-      {/* Modal Popup para Reproducir o Visitar el Reel */}
+      {/* Modal Popup para Reproducir el Video AQUI MISMO sin tener que salir */}
       {activeModalReel && (
         <div 
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(8px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 9999,
-            padding: '1.5rem'
+            padding: '1rem'
           }}
           onClick={closeModal}
         >
           <div 
             style={{
-              backgroundColor: '#0D0D0D',
-              border: '1px solid #B99A5B',
+              backgroundColor: '#FFFFFF',
               borderRadius: '12px',
-              maxWidth: '420px',
+              maxWidth: '460px',
               width: '100%',
               overflow: 'hidden',
               position: 'relative',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: '90vh'
             }}
             onClick={e => e.stopPropagation()}
           >
@@ -306,98 +317,85 @@ const InstagramReelsSection = () => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              padding: '1rem 1.5rem',
-              borderBottom: '1px solid rgba(255,255,255,0.1)'
+              padding: '0.85rem 1.2rem',
+              borderBottom: '1px solid #F0ECE4',
+              backgroundColor: '#FCFBF9'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <InstagramIcon size={18} color="#B99A5B" />
-                <span style={{ color: '#F7F5F0', fontSize: '0.85rem', fontWeight: '500' }}>
-                  {INSTAGRAM_ACCOUNT.handle}
+                <InstagramIcon size={16} color="#B99A5B" />
+                <span style={{ color: '#111', fontSize: '0.85rem', fontWeight: '600' }}>
+                  {activeModalReel.title}
                 </span>
               </div>
               <button 
                 onClick={closeModal}
                 style={{
-                  color: '#A8A39A',
+                  color: '#666',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  padding: '4px'
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Vista previa / Video */}
-            <div style={{ position: 'relative', aspectRatio: '9/14', maxHeight: '55vh', overflow: 'hidden' }}>
-              <img 
-                src={activeModalReel.thumbnailUrl} 
-                alt={activeModalReel.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '1.5rem'
-              }}>
-                <span style={{ color: '#B99A5B', fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  {activeModalReel.category}
-                </span>
-                <h3 style={{ color: '#F7F5F0', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', margin: 0 }}>
-                  {activeModalReel.title}
-                </h3>
-              </div>
+            {/* Reproductor Real Integrado de Instagram */}
+            <div style={{ position: 'relative', width: '100%', height: '560px', backgroundColor: '#000', overflow: 'hidden' }}>
+              {getInstagramEmbedUrl(activeModalReel.reelUrl) ? (
+                <iframe
+                  src={getInstagramEmbedUrl(activeModalReel.reelUrl)}
+                  title={activeModalReel.title}
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  scrolling="no"
+                  allowTransparency="true"
+                  allow="encrypted-media"
+                  style={{ border: 'none', width: '100%', height: '100%' }}
+                />
+              ) : (
+                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                  <img 
+                    src={activeModalReel.thumbnailUrl} 
+                    alt={activeModalReel.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center'
+                  }}>
+                    <p style={{ color: '#fff', fontSize: '0.9rem' }}>Este video está disponible en Instagram.</p>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Acciones */}
-            <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-              <p style={{ color: '#A8A39A', fontSize: '0.82rem', marginBottom: '1.2rem', lineHeight: '1.5' }}>
-                Mira este Reel completo y conoce más fragancias directamente en el Instagram oficial de DFV Perfumes.
-              </p>
-              <div style={{ display: 'flex', gap: '0.8rem' }}>
-                <a 
-                  href={activeModalReel.reelUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    flex: 1,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    padding: '0.85rem 1rem',
-                    backgroundColor: '#B99A5B',
-                    color: '#050505',
-                    fontSize: '0.75rem',
-                    letterSpacing: '1.5px',
-                    textTransform: 'uppercase',
-                    fontWeight: '600',
-                    borderRadius: '4px',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <span>VER EN INSTAGRAM</span>
-                  <ArrowUpRight size={16} />
-                </a>
-                <button
-                  onClick={closeModal}
-                  style={{
-                    padding: '0.85rem 1.2rem',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    color: '#F7F5F0',
-                    fontSize: '0.75rem',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  CERRAR
-                </button>
-              </div>
+            {/* Pie del modal */}
+            <div style={{ padding: '0.8rem 1.2rem', backgroundColor: '#FAF9F6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.75rem', color: '#888' }}>
+                DFV Perfumes Oficial
+              </span>
+              <a 
+                href={activeModalReel.reelUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  color: '#B99A5B',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  textDecoration: 'none'
+                }}
+              >
+                <span>Abrir en app</span>
+                <ArrowUpRight size={14} />
+              </a>
             </div>
           </div>
         </div>
@@ -411,18 +409,23 @@ const InstagramReelsSection = () => {
         }
 
         .reel-card:hover {
-          transform: translateY(-8px);
+          transform: translateY(-6px);
           border-color: #B99A5B !important;
-          box-shadow: 0 15px 35px rgba(185, 154, 91, 0.15) !important;
+          box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important;
         }
 
         .reel-card:hover .reel-img {
-          transform: scale(1.06);
+          transform: scale(1.05);
         }
 
         .reel-card:hover .reel-play-btn {
           transform: translate(-50%, -50%) scale(1.15);
-          background-color: #D1B878;
+          background-color: #B99A5B !important;
+          color: #fff !important;
+        }
+
+        .reel-card:hover .reel-play-btn svg {
+          fill: #fff !important;
         }
 
         @media (max-width: 1024px) {

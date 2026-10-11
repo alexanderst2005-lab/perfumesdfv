@@ -29,12 +29,23 @@ const TestimonialsSection = () => {
   const maxIndex = Math.max(0, testimonials.length - visibleCount);
 
   const prev = () => {
-    setCurrentIndex(prev => Math.max(0, prev - 1));
+    setCurrentIndex(prev => (prev === 0 ? maxIndex : prev - 1));
   };
 
   const next = () => {
-    setCurrentIndex(prev => Math.min(maxIndex, prev + 1));
+    setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
   };
+
+  // Reproducción automática suave de derecha a izquierda (cada 4.5 segundos)
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused || maxIndex === 0) return;
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isPaused, maxIndex]);
 
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -121,6 +132,8 @@ const TestimonialsSection = () => {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
           style={{ position: 'relative', overflow: 'hidden', padding: '0.5rem 0' }}
         >
           <div 
