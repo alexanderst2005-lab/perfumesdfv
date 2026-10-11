@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import TestimonialsSection from '../components/TestimonialsSection';
+import InstagramReelsSection from '../components/InstagramReelsSection';
 
 const HERO_SLIDES = [
   {
@@ -399,6 +401,12 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* ════ NUEVA SECCIÓN: REELS DE INSTAGRAM ════ */}
+      <InstagramReelsSection />
+
+      {/* ════ NUEVA SECCIÓN: LO QUE DICEN NUESTROS CLIENTES ════ */}
+      <TestimonialsSection />
 
       {/* ════ NUESTRAS SEDES ════ */}
       <section id="sedes" className="section-padding container">
