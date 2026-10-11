@@ -4,6 +4,7 @@ import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus
 import { useShop } from '../context/ShopContext';
 import TestimonialsSection from '../components/TestimonialsSection';
 import InstagramReelsSection from '../components/InstagramReelsSection';
+import OffersSection from '../components/OffersSection';
 
 const HERO_SLIDES = [
   {
@@ -257,6 +258,8 @@ const Home = () => {
         `}</style>
       </section>
 
+      {/* ════ SECCIÓN DINÁMICA: FAVORITOS EN OFERTA (SOLO SI HAY OFERTAS) ════ */}
+      <OffersSection />
 
       {/* ════ 2. NUESTROS PRODUCTOS (LA COLECCIÓN) ════ */}
       <section className="section-padding" style={{ backgroundColor: '#FCFBF9' }}>

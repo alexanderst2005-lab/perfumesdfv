@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { SlidersHorizontal, ChevronDown, X, Search, Heart } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, X, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
 
@@ -17,12 +17,20 @@ const Store = () => {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState('destacados'); // destacados, recientes, precio_asc, precio_desc, nombre
   const [filterOpen, setFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PRODUCTS_PER_PAGE = 16; // Entre 15 y 20 productos por página según requerimiento
 
   // Sync state when URL params change
   useEffect(() => {
     const currentCat = params.get('category') || 'Todos';
     setCategory(currentCat);
+    setCurrentPage(1);
   }, [search]);
+
+  // Reset page whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [category, brand, query, sortBy]);
 
   const categories = ['Todos', ...dbCategories.map(c => c.name), 'Ofertas'];
 
@@ -159,17 +167,115 @@ const Store = () => {
             <button onClick={clearFilters} className="btn-primary">Ver todo el catálogo</button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }} className="store-grid">
-            {filteredAndSorted.map(p => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                onFav={() => toggleFavorite(p)}
-                fav={isFavorite(p.id)}
-                onAdd={() => addToCart(p, 1, p.sizes?.[0])}
-              />
-            ))}
-          </div>
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }} className="store-grid">
+              {filteredAndSorted
+                .slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE)
+                .map(p => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    onFav={() => toggleFavorite(p)}
+                    fav={isFavorite(p.id)}
+                    onAdd={() => addToCart(p, 1, p.sizes?.[0])}
+                  />
+                ))}
+            </div>
+
+            {/* Paginación con números y flechitas cuando hay más de una página */}
+            {Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE) > 1 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginTop: '4rem',
+                paddingTop: '2rem',
+                borderTop: '1px solid rgba(0,0,0,0.06)'
+              }}>
+                {/* Flecha Anterior */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1));
+                    window.scrollTo({ top: 180, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === 1}
+                  aria-label="Página anterior"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '4px',
+                    border: '1px solid #EAE8E4',
+                    backgroundColor: '#FFFFFF',
+                    color: currentPage === 1 ? '#D1CCC4' : '#050505',
+                    cursor: currentPage === 1 ? 'default' : 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <ChevronLeft size={18} strokeWidth={1.8} />
+                </button>
+
+                {/* Números de página */}
+                {Array.from({ length: Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE) }).map((_, idx) => {
+                  const pageNum = idx + 1;
+                  const isActive = currentPage === pageNum;
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => {
+                        setCurrentPage(pageNum);
+                        window.scrollTo({ top: 180, behavior: 'smooth' });
+                      }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '4px',
+                        border: isActive ? '1px solid #050505' : '1px solid #EAE8E4',
+                        backgroundColor: isActive ? '#050505' : '#FFFFFF',
+                        color: isActive ? '#FFFFFF' : '#333333',
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.85rem',
+                        fontWeight: isActive ? '600' : '400',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                {/* Flecha Siguiente */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE), prev + 1));
+                    window.scrollTo({ top: 180, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage >= Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE)}
+                  aria-label="Página siguiente"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '4px',
+                    border: '1px solid #EAE8E4',
+                    backgroundColor: '#FFFFFF',
+                    color: currentPage >= Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE) ? '#D1CCC4' : '#050505',
+                    cursor: currentPage >= Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE) ? 'default' : 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <ChevronRight size={18} strokeWidth={1.8} />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
