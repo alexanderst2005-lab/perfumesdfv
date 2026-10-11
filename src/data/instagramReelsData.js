@@ -1,5 +1,5 @@
-// Configuración manual y modular de Instagram Reels para DFV Perfumes
-// Enlaces y contenidos reales de la cuenta oficial: https://www.instagram.com/perfumesdfv
+// Configuración de Instagram Reels para DFV Perfumes
+// Solo los Reels reales proporcionados por el cliente
 
 export const INSTAGRAM_ACCOUNT = {
   handle: '@perfumesdfv',
@@ -27,25 +27,5 @@ export const INSTAGRAM_REELS_DATA = [
     duration: '0:38',
     active: true,
     order: 2
-  },
-  {
-    id: 'reel-3',
-    title: 'Fragancias Árabes & Maderas Exóticas',
-    category: 'Novedades',
-    reelUrl: 'https://www.instagram.com/perfumesdfv/reels/',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=700&auto=format&fit=crop',
-    duration: '0:42',
-    active: true,
-    order: 3
-  },
-  {
-    id: 'reel-4',
-    title: 'Asesoría DFV: Encuentra tu aroma ideal',
-    category: 'Asesoría',
-    reelUrl: 'https://www.instagram.com/perfumesdfv/reels/',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?q=80&w=700&auto=format&fit=crop',
-    duration: '0:50',
-    active: true,
-    order: 4
   }
 ];

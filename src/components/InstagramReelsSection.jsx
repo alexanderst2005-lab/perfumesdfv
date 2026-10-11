@@ -253,22 +253,15 @@ const InstagramReelsSection = () => {
       <style>{`
         .reels-feed-container {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
-          max-width: 1200px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.8rem;
+          max-width: 720px;
           margin: 0 auto;
         }
 
         .reel-feed-card:hover .reel-circle-play {
           transform: scale(1.12);
           background-color: rgba(255, 255, 255, 0.6);
-        }
-
-        @media (max-width: 1024px) {
-          .reels-feed-container {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.2rem;
-          }
         }
 
         @media (max-width: 600px) {
