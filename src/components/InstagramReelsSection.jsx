@@ -28,7 +28,7 @@ const InstagramReelsSection = () => {
     fetch('/api/reels')
       .then(res => res.ok ? res.json() : [])
       .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setDbReels(data.map(r => ({
             id: r.id,
             title: r.title || 'Experiencia DFV Perfumes',
@@ -43,12 +43,8 @@ const InstagramReelsSection = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Combinamos los reels subidos en el panel con los existentes de Instagram
-  // Los subidos en el panel aparecen primero
-  const reels = [
-    ...dbReels,
-    ...INSTAGRAM_REELS_DATA.filter(r => r.active && !dbReels.some(d => d.videoUrl === r.reelUrl))
-  ];
+  // Mostramos EXCLUSIVAMENTE los reels que el usuario suba desde el panel
+  const reels = dbReels.filter(r => r.active);
 
   const openReelModal = (reel) => {
     setActiveModalReel(reel);
@@ -57,6 +53,11 @@ const InstagramReelsSection = () => {
   const closeModal = () => {
     setActiveModalReel(null);
   };
+
+  // Si no hay reels subidos y ya terminó de cargar, no renderizamos la sección
+  if (!isLoading && reels.length === 0) {
+    return null;
+  }
 
   return (
     <section 
@@ -156,158 +157,107 @@ const InstagramReelsSection = () => {
           </a>
         </div>
 
-        {/* Tarjetas Limpias y Elegantes */}
-        <div className="reels-feed-container">
-          {reels.map((reel) => (
-            <div 
-              key={reel.id}
-              className="reel-feed-card"
-              onClick={() => openReelModal(reel)}
-              style={{
-                position: 'relative',
-                borderRadius: '18px',
-                overflow: 'hidden',
-                aspectRatio: '9/16',
-                backgroundColor: '#0D0D0D',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
-                cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)'
-              }}
-            >
-              {/* Imagen o Preview de Video con Portada de Alta Calidad */}
-              {(() => {
-                let thumb = reel.thumbnailUrl;
-                if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
-                  thumb = reel.videoUrl
-                    .replace('/video/upload/', '/video/upload/so_1,w_600,h_1067,c_fill,q_auto,f_jpg/')
-                    .replace(/\.[^/.]+$/, '.jpg');
-                }
-                
-                if (thumb) {
-                  return (
-                    <img 
-                      src={thumb} 
-                      alt={reel.title}
-                      loading="lazy"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        display: 'block',
-                        transition: 'transform 0.6s ease'
-                      }}
-                      className="reel-img-zoom"
-                    />
-                  );
-                }
-
-                if (reel.videoUrl) {
-                  return (
-                    <video 
-                      src={`${reel.videoUrl}#t=0.5`} 
-                      muted
-                      preload="metadata"
-                      playsInline
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        display: 'block'
-                      }}
-                    />
-                  );
-                }
-
-                return <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />;
-              })()}
-
-              {/* Degradado fino solo en los extremos */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 40%, rgba(0,0,0,0.25) 100%)'
-              }} />
-
-              {/* Insignia de Instagram en esquina superior derecha */}
-              <div style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                backdropFilter: 'blur(8px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF'
-              }}>
-                <InstagramIcon size={16} />
-              </div>
-
-              {/* Categoría superior izquierda limpia */}
-              <div style={{
-                position: 'absolute',
-                top: '16px',
-                left: '16px'
-              }}>
-                <span style={{
-                  display: 'inline-block',
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(8px)',
-                  color: '#050505',
-                  fontSize: '0.62rem',
-                  fontWeight: '600',
-                  padding: '4px 10px',
-                  borderRadius: '20px',
-                  letterSpacing: '1px',
-                  textTransform: 'uppercase'
-                }}>
-                  {reel.category}
-                </span>
-              </div>
-
-              {/* Botón Circular de Play Glassmorphic */}
+        {/* Carrusel Deslizable Horizontal de Derecha a Izquierda */}
+        <div className="reels-scroll-wrapper">
+          <div className="reels-feed-container">
+            {reels.map((reel) => (
               <div 
+                key={reel.id}
+                className="reel-feed-card"
+                onClick={() => openReelModal(reel)}
                 style={{
-                  position: 'absolute',
-                  bottom: '18px',
-                  left: '18px',
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.45)',
-                  backdropFilter: 'blur(10px)',
-                  WebkitBackdropFilter: 'blur(10px)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.9)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingLeft: '3px',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
-                  transition: 'all 0.3s ease'
+                  position: 'relative',
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  aspectRatio: '9/16',
+                  backgroundColor: '#0D0D0D',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
+                  cursor: 'pointer',
+                  transition: 'all 0.35s ease'
                 }}
-                className="reel-circle-play"
               >
-                <Play size={20} fill="#ffffff" color="#ffffff" />
-              </div>
+                {/* Imagen o Preview de Video con Portada de Alta Calidad */}
+                {(() => {
+                  let thumb = reel.thumbnailUrl;
+                  if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
+                    thumb = reel.videoUrl
+                      .replace('/video/upload/', '/video/upload/so_1,w_600,h_1067,c_fill,q_auto,f_jpg/')
+                      .replace(/\.[^/.]+$/, '.jpg');
+                  }
+                  
+                  if (thumb) {
+                    return (
+                      <img 
+                        src={thumb} 
+                        alt={reel.title}
+                        loading="lazy"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                          transition: 'transform 0.5s ease'
+                        }}
+                        className="reel-img-zoom"
+                      />
+                    );
+                  }
 
-              {/* Marca @perfumesdfv en esquina inferior derecha */}
-              <div style={{
-                position: 'absolute',
-                bottom: '22px',
-                right: '18px',
-                color: 'rgba(255, 255, 255, 0.95)',
-                fontSize: '0.75rem',
-                fontFamily: 'var(--font-sans)',
-                fontWeight: '500',
-                letterSpacing: '0.5px'
-              }}>
-                @perfumesdfv
+                  if (reel.videoUrl) {
+                    return (
+                      <video 
+                        src={`${reel.videoUrl}#t=0.5`} 
+                        muted
+                        preload="metadata"
+                        playsInline
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                      />
+                    );
+                  }
+
+                  return <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />;
+                })()}
+
+                {/* Sutil viñeta en la base para contraste */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 35%)',
+                  pointerEvents: 'none'
+                }} />
+
+                {/* Botón Circular de Play en la esquina inferior izquierda idéntico a la imagen de referencia */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    bottom: '16px',
+                    left: '16px',
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    border: '1.5px solid rgba(255, 255, 255, 0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingLeft: '3px',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  className="reel-circle-play"
+                >
+                  <Play size={18} fill="#ffffff" color="#ffffff" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -442,35 +392,57 @@ const InstagramReelsSection = () => {
       )}
 
       <style>{`
+        .reels-scroll-wrapper {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 0.5rem 0 1.5rem 0;
+          scrollbar-width: none;
+        }
+        .reels-scroll-wrapper::-webkit-scrollbar {
+          display: none;
+        }
+
         .reels-feed-container {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 2.2rem;
-          max-width: 680px;
+          display: flex;
+          justify-content: ${reels.length <= 2 ? 'center' : 'flex-start'};
+          gap: 1.4rem;
+          width: max-content;
+          min-width: 100%;
+          padding: 0 1rem;
           margin: 0 auto;
         }
 
+        .reel-feed-card {
+          flex: 0 0 260px;
+          max-width: 280px;
+          width: 260px;
+        }
+
         .reel-feed-card:hover {
-          transform: translateY(-8px);
+          transform: translateY(-6px);
           box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
         }
 
         .reel-feed-card:hover .reel-img-zoom {
-          transform: scale(1.05);
+          transform: scale(1.04);
         }
 
         .reel-feed-card:hover .reel-circle-play {
-          transform: scale(1.15);
-          background-color: rgba(255, 255, 255, 0.75);
+          transform: scale(1.1);
+          background-color: rgba(255, 255, 255, 0.5) !important;
         }
 
         @media (max-width: 640px) {
           .reels-feed-container {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.9rem;
+            justify-content: ${reels.length === 1 ? 'center' : 'flex-start'};
+            gap: 1rem;
+            padding: 0 1.25rem;
           }
           .reel-feed-card {
-            border-radius: 14px !important;
+            flex: 0 0 215px;
+            width: 215px;
+            border-radius: 16px !important;
           }
         }
       `}</style>
