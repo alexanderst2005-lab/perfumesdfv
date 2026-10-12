@@ -10,8 +10,8 @@ const InventoryModule = () => {
   
   const [formData, setFormData] = useState({
     id: '', name: '', brand: '', category: 'Mujer', family: '', 
-    price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
-    description: '', occasion: '', concentration: 'Eau de Parfum', 
+    price: '', oldPrice: '', discount: '', sizesText: '', 
+    description: '', occasion: '', concentration: '', 
     stockCount: 10, inStock: true, active: true, image: '', images: []
   });
 
@@ -21,8 +21,8 @@ const InventoryModule = () => {
     setEditingProduct(null);
     setFormData({
       id: '', name: '', brand: '', category: 'Mujer', family: '', 
-      price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
-      description: '', occasion: '', concentration: 'Eau de Parfum', 
+      price: '', oldPrice: '', discount: '', sizesText: '', 
+      description: '', occasion: '', concentration: '', 
       stockCount: 10, inStock: true, active: true, image: '', images: []
     });
     setImagePreviews([]);
@@ -31,10 +31,23 @@ const InventoryModule = () => {
 
   const openEditModal = (p) => {
     setEditingProduct(p.id);
+    let existingSizes = '';
+    if (Array.isArray(p.sizes)) {
+      existingSizes = p.sizes.filter(Boolean).join(', ');
+    } else if (typeof p.sizes === 'string') {
+      try {
+        const parsed = JSON.parse(p.sizes);
+        if (Array.isArray(parsed)) existingSizes = parsed.filter(Boolean).join(', ');
+        else existingSizes = p.sizes;
+      } catch (e) {
+        existingSizes = p.sizes;
+      }
+    }
     setFormData({
       id: p.id, name: p.name, brand: p.brand, category: p.category, family: p.family || '', 
       price: p.price, oldPrice: p.oldPrice || '', discount: p.discount || '', 
-      sizes: JSON.stringify(p.sizes || []), description: p.description || '', 
+      sizesText: existingSizes, 
+      description: p.description || '', 
       occasion: p.occasion || '',
       concentration: p.concentration || '', stockCount: p.stockCount || 10, 
       inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || []
@@ -113,13 +126,18 @@ const InventoryModule = () => {
         finalDiscount = Math.round(((finalOldPrice - finalPrice) / finalOldPrice) * 100);
       }
 
+      let parsedSizes = [];
+      if (formData.sizesText && formData.sizesText.trim()) {
+        parsedSizes = formData.sizesText.split(',').map(s => s.trim()).filter(Boolean);
+      }
+
       const payload = {
         ...formData,
         price: finalPrice,
         oldPrice: finalOldPrice,
         discount: finalDiscount,
         stockCount: 10,
-        sizes: JSON.parse(formData.sizes || '[]'),
+        sizes: parsedSizes,
         image: finalImageUrl,
         images: secondaryImages
       };
@@ -307,6 +325,23 @@ const InventoryModule = () => {
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <input type="number" placeholder="Precio Actual ($)" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
                 <input type="number" placeholder="Precio Anterior (Opcional, para tacharlo)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, saldrá como precio tachado." />
+              </div>
+
+              {/* Presentación / Mililitros (Opcional) */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
+                  Presentación / Mililitros (Opcional - Ej: 100 ml)
+                </label>
+                <input 
+                  type="text" 
+                  placeholder="Ej: 100 ml (dejar vacío si no aplica)" 
+                  value={formData.sizesText} 
+                  onChange={e => setFormData({...formData, sizesText: e.target.value})} 
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} 
+                />
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '0.2rem', display: 'block' }}>
+                  Opcional. Si no se llena, no aparecerá el apartado de presentación en la página del producto. Para varios tamaños, sepáralos por comas (ej: 50 ml, 100 ml).
+                </span>
               </div>
 
               {/* Ocasión de Uso */}

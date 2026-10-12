@@ -35,7 +35,9 @@ const CartDrawer = () => {
                       <img src={item.image} alt={item.name} style={{ width: '80px', height: '100px', objectFit: 'cover' }} />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ fontSize: '0.9rem', marginBottom: '0.2rem' }}>{item.name}</h4>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', marginBottom: '0.5rem' }}>{item.selectedSize}</p>
+                        {item.selectedSize ? (
+                          <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', marginBottom: '0.5rem' }}>{item.selectedSize}</p>
+                        ) : null}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--color-gray-light)' }}>
                             <button onClick={() => updateQuantity(item.id, item.selectedSize, -1)} style={{ padding: '0.2rem 0.5rem' }}>-</button>

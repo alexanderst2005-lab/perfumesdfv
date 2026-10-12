@@ -11,9 +11,17 @@ const ProductDetail = () => {
   const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts } = useShop();
   const product = products.find(p => p.id === id);
 
-  const [size, setSize] = useState(product?.sizes?.[0]);
+  const [size, setSize] = useState(() => (Array.isArray(product?.sizes) ? product.sizes.find(s => s && String(s).trim()) : '') || '');
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
+
+  React.useEffect(() => {
+    if (product) {
+      const firstValidSize = Array.isArray(product.sizes) ? product.sizes.find(s => s && String(s).trim()) || '' : '';
+      setSize(firstValidSize);
+      setImgIdx(0);
+    }
+  }, [product?.id]);
 
   if (!product) return (
     <div style={{ paddingTop: `${TOTAL_HEADER + 40}px`, textAlign: 'center', padding: '5rem 1rem', color: 'var(--color-gray)' }}>
@@ -90,7 +98,7 @@ const ProductDetail = () => {
                 {product.name}
               </h1>
               <p style={{ fontSize: '0.78rem', color: '#666', letterSpacing: '0.5px' }}>
-                {product.category} · {product.concentration} {product.sizes?.[0] ? `· ${product.sizes[0]}` : ''}
+                {product.category}
               </p>
             </div>
 
@@ -105,12 +113,12 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Sizes */}
-            {product.sizes?.length > 0 && (
+            {/* Sizes / Presentación (Opcional - solo se muestra si tiene valores) */}
+            {Boolean(product.sizes && Array.isArray(product.sizes) && product.sizes.some(s => s && String(s).trim())) && (
               <div>
                 <p style={{ fontSize: '0.68rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.4rem', color: 'var(--color-gray)', fontWeight: '500' }}>Presentación</p>
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                  {product.sizes.map(s => (
+                  {product.sizes.filter(s => s && String(s).trim()).map(s => (
                     <button
                       key={s}
                       onClick={() => setSize(s)}
