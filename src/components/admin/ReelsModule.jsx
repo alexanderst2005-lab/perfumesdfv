@@ -98,50 +98,61 @@ const ReelsModule = () => {
       let finalVideoUrl = formData.videoUrlInput;
       let finalThumbUrl = formData.thumbnailPreview;
 
-      // Si subió un archivo de video local, lo convertimos a base64 o lo subimos
+      // Si subió un archivo de video local, lo subimos directamente a Cloudinary para evitar el límite de 4.5MB de Vercel
       if (formData.videoFile) {
-        setUploadProgressText('Subiendo video a Cloudinary CDN (esto puede tardar unos segundos según el tamaño)...');
+        setUploadProgressText('Preparando subida directa a Cloudinary...');
         
-        const videoBase64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(formData.videoFile);
-        });
+        // 1. Obtener firma segura de nuestro backend
+        const signRes = await fetch('/api/admin/cloudinary-sign?folder=dfv_reels');
+        if (!signRes.ok) {
+          throw new Error('Error al conectar con el servicio de subida multimedia');
+        }
+        const signData = await signRes.json();
+        
+        setUploadProgressText('Subiendo video a Cloudinary CDN (esto puede tardar unos segundos según tu conexión)...');
 
-        const uploadRes = await fetch('/api/admin/upload', {
+        // 2. Subir directo desde el navegador a Cloudinary
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', formData.videoFile);
+        uploadFormData.append('api_key', signData.apiKey);
+        uploadFormData.append('timestamp', signData.timestamp);
+        uploadFormData.append('signature', signData.signature);
+        uploadFormData.append('folder', signData.folder);
+
+        const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${signData.cloudName}/video/upload`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            file: videoBase64,
-            resourceType: 'video',
-            folder: 'dfv_reels'
-          })
+          body: uploadFormData
         });
 
-        const uploadData = await uploadRes.json();
-        if (!uploadRes.ok || !uploadData.url) {
-          throw new Error(uploadData.error || 'Error al subir el video a Cloudinary');
+        const cloudData = await cloudRes.json();
+        if (!cloudRes.ok || !cloudData.secure_url) {
+          throw new Error(cloudData.error?.message || 'Error al subir el video a Cloudinary');
         }
 
-        finalVideoUrl = uploadData.url;
+        finalVideoUrl = cloudData.secure_url;
       }
 
       // Si subió portada personalizada opcional
-      if (formData.thumbnailPreview && formData.thumbnailPreview.startsWith('data:image')) {
+      if (formData.thumbnailFile) {
         setUploadProgressText('Subiendo imagen de portada...');
-        const thumbRes = await fetch('/api/admin/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image: formData.thumbnailPreview,
-            resourceType: 'image',
-            folder: 'dfv_reels_thumbs'
-          })
-        });
-        const thumbData = await thumbRes.json();
-        if (thumbData.url) {
-          finalThumbUrl = thumbData.url;
+        const signRes = await fetch('/api/admin/cloudinary-sign?folder=dfv_reels_thumbs');
+        if (signRes.ok) {
+          const signData = await signRes.json();
+          const thumbFormData = new FormData();
+          thumbFormData.append('file', formData.thumbnailFile);
+          thumbFormData.append('api_key', signData.apiKey);
+          thumbFormData.append('timestamp', signData.timestamp);
+          thumbFormData.append('signature', signData.signature);
+          thumbFormData.append('folder', signData.folder);
+
+          const thumbCloudRes = await fetch(`https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`, {
+            method: 'POST',
+            body: thumbFormData
+          });
+          const thumbCloudData = await thumbCloudRes.json();
+          if (thumbCloudData.secure_url) {
+            finalThumbUrl = thumbCloudData.secure_url;
+          }
         }
       }
 
