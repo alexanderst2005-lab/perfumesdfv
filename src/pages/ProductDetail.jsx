@@ -256,51 +256,113 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Delivery Timeline con diseño limpio y proporcionado */}
-            <div style={{ marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
-              <h4 style={{ fontSize: '0.9rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.2rem', color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {/* Delivery Timeline - Diseño estirado a todo el ancho */}
+            <div style={{ marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1.5rem', width: '100%' }}>
+              <h4 style={{ fontSize: '0.9rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.4rem', color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Entrega Estimada
               </h4>
               
-              <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                textAlign: 'center',
-                position: 'relative',
-                padding: '0 0.5rem'
-              }}>
-                {/* Step 1 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, zIndex: 2 }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><polyline points="9 16 11 18 15 14"></polyline></svg>
+              <div style={{ width: '100%' }}>
+                {/* Fila de Iconos y Línea estirada de extremo a extremo */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  position: 'relative',
+                  width: '100%',
+                  marginBottom: '0.75rem'
+                }}>
+                  {/* Línea conectora de fondo */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '20px',
+                    right: '20px',
+                    height: '2px',
+                    backgroundColor: '#e5e7eb',
+                    transform: 'translateY(-50%)',
+                    zIndex: 1
+                  }} />
+
+                  {/* Icono 1 - Extremo Izquierdo */}
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#222',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    zIndex: 2,
+                    flexShrink: 0,
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><polyline points="9 16 11 18 15 14"></polyline></svg>
                   </div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', display: 'block' }}>{formatD(today)}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#666', display: 'block' }}>Compra hoy</span>
+
+                  {/* Icono 2 - Centro */}
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#222',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    zIndex: 2,
+                    flexShrink: 0,
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                  }}>
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle><path d="M7 8h4"></path><path d="M7 11h2"></path></svg>
+                  </div>
+
+                  {/* Icono 3 - Extremo Derecho */}
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#222',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    zIndex: 2,
+                    flexShrink: 0,
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
                 </div>
 
-                {/* Connecting Line 1 */}
-                <div style={{ position: 'absolute', top: '18px', left: '20%', width: '30%', height: '1px', backgroundColor: '#ddd', zIndex: 1 }} />
-
-                {/* Step 2 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, zIndex: 2 }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle><path d="M7 8h4"></path><path d="M7 11h2"></path></svg>
+                {/* Textos alineados correspondientes a cada icono */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  width: '100%'
+                }}>
+                  {/* Texto 1 */}
+                  <div style={{ textAlign: 'left', width: '32%' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#111', display: 'block', lineHeight: '1.2' }}>{formatD(today)}</span>
+                    <span style={{ fontSize: '0.72rem', color: '#666', display: 'block', marginTop: '0.15rem' }}>Compra hoy</span>
                   </div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', display: 'block' }}>{formatD(tomorrow)}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#666', display: 'block' }}>Enviamos mañana</span>
-                </div>
 
-                {/* Connecting Line 2 */}
-                <div style={{ position: 'absolute', top: '18px', left: '50%', width: '30%', height: '1px', backgroundColor: '#ddd', zIndex: 1 }} />
-
-                {/* Step 3 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, zIndex: 2 }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  {/* Texto 2 */}
+                  <div style={{ textAlign: 'center', width: '36%' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#111', display: 'block', lineHeight: '1.2' }}>{formatD(tomorrow)}</span>
+                    <span style={{ fontSize: '0.72rem', color: '#666', display: 'block', marginTop: '0.15rem' }}>Enviamos mañana</span>
                   </div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', display: 'block' }}>{formatD(arrivalStart)} - {formatD(arrivalEnd)}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#666', display: 'block' }}>Recíbelo pronto</span>
+
+                  {/* Texto 3 */}
+                  <div style={{ textAlign: 'right', width: '32%' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#111', display: 'block', lineHeight: '1.2' }}>{formatD(arrivalStart)} - {formatD(arrivalEnd)}</span>
+                    <span style={{ fontSize: '0.72rem', color: '#666', display: 'block', marginTop: '0.15rem' }}>Recíbelo pronto</span>
+                  </div>
                 </div>
               </div>
             </div>
