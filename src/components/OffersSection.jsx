@@ -90,8 +90,8 @@ const OffersSection = () => {
         }}>
           <div>
             <p style={{
-              fontSize: '0.68rem',
-              letterSpacing: '3px',
+              fontSize: '0.64rem',
+              letterSpacing: '2.5px',
               textTransform: 'uppercase',
               color: '#B99A5B',
               fontWeight: '600',
@@ -102,12 +102,12 @@ const OffersSection = () => {
             </p>
             <h2 style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(1.6rem, 3.2vw, 2.2rem)',
+              fontSize: 'clamp(1.25rem, 2.4vw, 1.65rem)',
               fontWeight: '400',
-              color: '#050505',
+              color: '#0A0A0A',
               margin: 0,
-              letterSpacing: '1px',
-              textTransform: 'uppercase'
+              letterSpacing: '0.5px',
+              lineHeight: 1.2
             }}>
               Favoritos en Oferta
             </h2>
@@ -168,12 +168,13 @@ const OffersSection = () => {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          style={{ overflow: 'hidden', paddingBottom: '1rem' }}
+          className="offers-carousel-wrapper"
+          style={{ overflow: 'hidden', paddingBottom: '0.5rem' }}
         >
           <div 
+            className="offers-carousel-track"
             style={{
               display: 'flex',
-              gap: '2rem 1.5rem',
               transition: 'transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)',
               transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`
             }}
@@ -181,8 +182,9 @@ const OffersSection = () => {
             {offerProducts.map((p) => (
               <div 
                 key={p.id}
+                className="offers-slide-card"
                 style={{
-                  flex: `0 0 calc(${100 / visibleCount}% - ${(1.5 * (visibleCount - 1)) / visibleCount}rem)`,
+                  flex: `0 0 calc(${100 / visibleCount}% - ${((visibleCount === 2 ? 0.9 : 1.4) * (visibleCount - 1)) / visibleCount}rem)`,
                   boxSizing: 'border-box'
                 }}
               >
@@ -196,6 +198,17 @@ const OffersSection = () => {
             ))}
           </div>
         </div>
+
+        <style>{`
+          .offers-carousel-track {
+            gap: 1.4rem;
+          }
+          @media (max-width: 640px) {
+            .offers-carousel-track {
+              gap: 0.9rem;
+            }
+          }
+        `}</style>
 
         {/* Botón inferior elegante "DESCÚBRELOS AQUÍ" */}
         <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
