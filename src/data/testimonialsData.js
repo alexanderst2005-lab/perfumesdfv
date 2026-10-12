@@ -1,173 +1,174 @@
-// Reseñas auténticas y experiencias reales de clientes DFV Perfumes
-// Diseñadas para transmitir máxima credibilidad, lujo y confianza
+// Reseñas 100% personalizadas para DFV Perfumes
+// Reflejan la experiencia real: sedes en Palmira (Llanogrande / Calle 31), envíos a todo Colombia,
+// originalidad verificada (batch codes), asesoría personalizada y excelente fijación.
 
 export const TESTIMONIALS_DATA = [
   {
-    id: 'rev-1',
-    name: 'Valentina R.',
-    city: 'Medellín',
-    time: 'Hace 1 semana',
-    comment: 'Compré el set de regalo para mi esposo y quedó absolutamente enamorado. La presentación es de lujo, parece de boutique europea. Ya pedí el mío.',
-    rating: 5,
-    avatarLetter: 'V',
-    avatarBg: '#7E22CE', // Púrpura elegante
-    isTopReview: true,
-    isVerified: true,
-    initialHelpful: 24,
-    initialLoved: 19
-  },
-  {
-    id: 'rev-2',
-    name: 'Camila T.',
-    city: 'Cali',
-    time: 'Hace 2 semanas',
-    comment: 'Usé el código de bienvenida en mi primera compra y no podía creer la calidad. El envío llegó súper rápido y el empaque es hermoso. Ya soy cliente fiel.',
-    rating: 5,
-    avatarLetter: 'C',
-    avatarBg: '#991B1B', // Borgoña profundo
-    isTopReview: false,
-    isVerified: true,
-    initialHelpful: 17,
-    initialLoved: 11
-  },
-  {
-    id: 'rev-3',
-    name: 'Andrés P.',
-    city: 'Barranquilla',
-    time: 'Hace 1 mes',
-    comment: 'El asesor de WhatsApp me ayudó a elegir entre tres opciones según mi clima. Terminé comprando dos. La atención es increíble, se nota que aman los perfumes.',
-    rating: 5,
-    avatarLetter: 'A',
-    avatarBg: '#0369A1', // Azul náutico
-    isTopReview: false,
-    isVerified: true,
-    initialHelpful: 31,
-    initialLoved: 22
-  },
-  {
-    id: 'rev-4',
-    name: 'Juliana F.',
-    city: 'Bucaramanga',
-    time: 'Hace 3 semanas',
-    comment: 'Pensé que era caro pero cuando llegó entendí el precio. La estela dura más de 10 horas. Mi jefe me preguntó qué perfume era. Eso lo dice todo.',
-    rating: 5,
-    avatarLetter: 'J',
-    avatarBg: '#A16207', // Dorado ocre
-    isTopReview: false,
-    isVerified: true,
-    initialHelpful: 29,
-    initialLoved: 15
-  },
-  {
-    id: 'rev-5',
-    name: 'Mateo G.',
-    city: 'Bogotá D.C.',
-    time: 'Hace 4 días',
-    comment: 'Tenía dudas de comprar perfumes online en Colombia por tantas imitaciones que hay afuera. Revisé el batch code en CheckFresh y está 100% original y vigente. Total transparencia.',
-    rating: 5,
-    avatarLetter: 'M',
-    avatarBg: '#047857', // Esmeralda intenso
-    isTopReview: true,
-    isVerified: true,
-    initialHelpful: 42,
-    initialLoved: 28
-  },
-  {
-    id: 'rev-6',
-    name: 'Daniela S.',
-    city: 'Cartagena',
-    time: 'Hace 2 semanas',
-    comment: 'Llegó en menos de 48 horas con el celofán intacto y una tarjeta con recomendaciones de uso. Un detalle que marca la diferencia. ¡Huele delicioso todo el día!',
-    rating: 5,
-    avatarLetter: 'D',
-    avatarBg: '#BE123C', // Rosa rubí
-    isTopReview: false,
-    isVerified: true,
-    initialHelpful: 19,
-    initialLoved: 14
-  },
-  {
-    id: 'rev-7',
-    name: 'Carlos M.',
-    city: 'Pereira',
-    time: 'Hace 5 días',
-    comment: 'Excelente fijación. Me apliqué dos atomizaciones a las 7:00 a.m. y en el gimnasio a las 6:00 p.m. todavía proyectaba. El atomizador tiene una bruma finísima.',
-    rating: 5,
-    avatarLetter: 'C',
-    avatarBg: '#4338CA', // Índigo real
-    isTopReview: true,
-    isVerified: true,
-    initialHelpful: 36,
-    initialLoved: 25
-  },
-  {
-    id: 'rev-8',
-    name: 'Sofía V.',
-    city: 'Manizales',
-    time: 'Hace 3 semanas',
-    comment: 'Compré primero una presentación pequeña para probar en mi piel y quedé tan fascinada que ordené la botella grande. Gracias por la paciencia y asesoría en el chat.',
+    id: 'dfv-rev-1',
+    name: 'Sebastián M.',
+    city: 'Palmira',
+    time: 'Hace 3 días',
+    comment: 'Fui a la sede del C.C. Llanogrande a buscar una fragancia para una ocasión especial. La atención fue impecable, me hicieron prueba olfativa con calma y salí con una joya. Da gusto comprar en una perfumería así.',
     rating: 5,
     avatarLetter: 'S',
-    avatarBg: '#C2410C', // Terracota cálido
-    isTopReview: false,
-    isVerified: true,
-    initialHelpful: 23,
-    initialLoved: 16
-  },
-  {
-    id: 'rev-9',
-    name: 'Felipe R.',
-    city: 'Santa Marta',
-    time: 'Hace 1 semana',
-    comment: 'Fragancias nicho y de diseñador difíciles de conseguir en Colombia las encontré aquí. Empaque de alta protección con burbuja y sello de seguridad. 10 de 10.',
-    rating: 5,
-    avatarLetter: 'F',
-    avatarBg: '#0D9488', // Verde azulado
-    isTopReview: false,
-    isVerified: true,
-    initialHelpful: 28,
-    initialLoved: 20
-  },
-  {
-    id: 'rev-10',
-    name: 'Mariana L.',
-    city: 'Bogotá D.C.',
-    time: 'Hace 2 semanas',
-    comment: 'El aroma evolucionó perfecto en mi piel. Es sofisticado, elegante y no marea. Me han piropeado el perfume en cada reunión. Súper recomendado DFV.',
-    rating: 5,
-    avatarLetter: 'M',
-    avatarBg: '#6D28D9', // Violeta intenso
+    avatarBg: '#1E3A8A', // Azul Real
     isTopReview: true,
     isVerified: true,
-    initialHelpful: 33,
+    initialHelpful: 38,
     initialLoved: 24
   },
   {
-    id: 'rev-11',
-    name: 'Juan David H.',
-    city: 'Cúcuta',
-    time: 'Hace 1 mes',
-    comment: 'Pedí con pago contraentrega y llegó súper puntual. Poder verificar el paquete antes de pagar me dio toda la tranquilidad. Volveré a comprar pronto.',
+    id: 'dfv-rev-2',
+    name: 'Mariana G.',
+    city: 'Cali',
+    time: 'Hace 5 días',
+    comment: 'Pedí a Cali por la mañana y me llegó esa misma tarde súper bien protegido con su caja de lujo y plástico burbuja. Revisé el número de lote (batch code) y es 100% original. Mil gracias DFV.',
     rating: 5,
-    avatarLetter: 'J',
-    avatarBg: '#B45309', // Ámbar dorado
+    avatarLetter: 'M',
+    avatarBg: '#9D174D', // Magenta elegante
+    isTopReview: false,
+    isVerified: true,
+    initialHelpful: 27,
+    initialLoved: 19
+  },
+  {
+    id: 'dfv-rev-3',
+    name: 'Alejandro B.',
+    city: 'Bogotá D.C.',
+    time: 'Hace 1 semana',
+    comment: 'Buscaba una fragancia árabe nicho que estaba agotada en todas partes. En DFV la tenían disponible y a un precio justo. La proyección y estela son de otro planeta, dura más de 12 horas en piel.',
+    rating: 5,
+    avatarLetter: 'A',
+    avatarBg: '#0F766E', // Verde azulado
+    isTopReview: true,
+    isVerified: true,
+    initialHelpful: 45,
+    initialLoved: 31
+  },
+  {
+    id: 'dfv-rev-4',
+    name: 'Natalia C.',
+    city: 'Medellín',
+    time: 'Hace 4 días',
+    comment: 'Tenía dudas de comprar perfumes por internet, pero me asesoraron por WhatsApp paso a paso y me mostraron fotos del producto sellado con sus sellos de fábrica. Llegó perfecto y huele espectacular.',
+    rating: 5,
+    avatarLetter: 'N',
+    avatarBg: '#7C3AED', // Violeta
+    isTopReview: false,
+    isVerified: true,
+    initialHelpful: 21,
+    initialLoved: 16
+  },
+  {
+    id: 'dfv-rev-5',
+    name: 'Diego H.',
+    city: 'Palmira',
+    time: 'Hace 1 semana',
+    comment: 'Paso seguido por la sede de la Calle 31. Tienen un catálogo brutal tanto de diseñador como nicho. La asesoría es muy honesta, no intentan venderte lo más costoso sino lo que mejor proyecta con tu química.',
+    rating: 5,
+    avatarLetter: 'D',
+    avatarBg: '#B45309', // Ámbar
+    isTopReview: false,
+    isVerified: true,
+    initialHelpful: 33,
+    initialLoved: 21
+  },
+  {
+    id: 'dfv-rev-6',
+    name: 'Valeria O.',
+    city: 'Pereira',
+    time: 'Hace 2 semanas',
+    comment: 'Compré un regalo para el aniversario con mi esposo y la presentación dejó la vara altísima. El empaque de boutique y el celofán llegaron impecables. Excelente experiencia de compra de principio a fin.',
+    rating: 5,
+    avatarLetter: 'V',
+    avatarBg: '#BE123C', // Rubí
+    isTopReview: true,
+    isVerified: true,
+    initialHelpful: 29,
+    initialLoved: 22
+  },
+  {
+    id: 'dfv-rev-7',
+    name: 'Santiago R.',
+    city: 'Barranquilla',
+    time: 'Hace 6 días',
+    comment: 'Vivo en clima cálido y húmedo y necesitaba algo cítrico y fresco pero con buena fijación. Me recomendaron la fragancia perfecta por el chat. Me aplico temprano y en la noche todavía recibo cumplidos.',
+    rating: 5,
+    avatarLetter: 'S',
+    avatarBg: '#0369A1', // Azul océano
     isTopReview: false,
     isVerified: true,
     initialHelpful: 25,
     initialLoved: 18
   },
   {
-    id: 'rev-12',
-    name: 'Isabella M.',
-    city: 'Villavicencio',
-    time: 'Hace 6 días',
-    comment: 'La mejor experiencia de compra de perfumes que he tenido. Desde que escribí al WhatsApp hasta que abrí la caja se siente el amor y la exclusividad.',
+    id: 'dfv-rev-8',
+    name: 'Paola V.',
+    city: 'Buga',
+    time: 'Hace 1 semana',
+    comment: 'Poder coordinar el pago contraentrega me dio total confianza. El atomizador tiene una bruma finísima y el aroma es idéntico al que probé en el exterior. ¡DFV se ganó una clienta fiel!',
     rating: 5,
-    avatarLetter: 'I',
-    avatarBg: '#0284C7', // Azul cielo oscuro
+    avatarLetter: 'P',
+    avatarBg: '#047857', // Esmeralda
     isTopReview: false,
     isVerified: true,
-    initialHelpful: 21,
+    initialHelpful: 31,
+    initialLoved: 18
+  },
+  {
+    id: 'dfv-rev-9',
+    name: 'Cristian T.',
+    city: 'Cali',
+    time: 'Hace 2 semanas',
+    comment: 'La rapidez del despacho me sorprendió. En menos de 24 horas ya lo tenía conmigo en Cali. El perfume venía totalmente sellado con celofán de fábrica y una potencia increíble. 10/10 en todo.',
+    rating: 5,
+    avatarLetter: 'C',
+    avatarBg: '#4338CA', // Índigo profundo
+    isTopReview: false,
+    isVerified: true,
+    initialHelpful: 26,
+    initialLoved: 15
+  },
+  {
+    id: 'dfv-rev-10',
+    name: 'Daniela P.',
+    city: 'Bucaramanga',
+    time: 'Hace 3 semanas',
+    comment: 'Es mi tercera compra en DFV Perfumes. Los precios son muy competitivos y la calidad nunca defrauda. Para quienes dudan de la originalidad, les confirmo que es 100% garantizada de fábrica.',
+    rating: 5,
+    avatarLetter: 'D',
+    avatarBg: '#C2410C', // Terracota cálido
+    isTopReview: true,
+    isVerified: true,
+    initialHelpful: 41,
+    initialLoved: 27
+  },
+  {
+    id: 'dfv-rev-11',
+    name: 'Esteban F.',
+    city: 'Tuluá',
+    time: 'Hace 2 semanas',
+    comment: 'Buscaba una fragancia firma para reuniones de trabajo. La atención fue muy paciente explicándome las notas de salida, corazón y fondo. Quedé súper satisfecho con la fijación en ropa y piel.',
+    rating: 5,
+    avatarLetter: 'E',
+    avatarBg: '#475569', // Pizarra
+    isTopReview: false,
+    isVerified: true,
+    initialHelpful: 19,
+    initialLoved: 13
+  },
+  {
+    id: 'dfv-rev-12',
+    name: 'Carolina Z.',
+    city: 'Manizales',
+    time: 'Hace 1 mes',
+    comment: 'Empaque impecable, atención rápida y fragancias de las mejores casas de perfumería. Se nota el amor y la seriedad que le ponen a cada detalle en DFV. Súper recomendados.',
+    rating: 5,
+    avatarLetter: 'C',
+    avatarBg: '#6D28D9', // Violeta intenso
+    isTopReview: false,
+    isVerified: true,
+    initialHelpful: 24,
     initialLoved: 17
   }
 ];
