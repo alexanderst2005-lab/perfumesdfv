@@ -81,15 +81,23 @@ const ProductDetail = () => {
           </div>
 
           {/* Info */}
-          <div className="info-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', paddingTop: '0.5rem' }}>
+          <div className="info-section" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.2rem' }}>
             <div>
-              <h1 className="product-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: '500', marginBottom: '0.8rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.3' }}>
-                {product.brand} {product.name} {product.category} {product.concentration} {product.sizes?.[0]}
+              <p style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: '0.3rem', fontWeight: '500' }}>
+                {product.brand}
+              </p>
+              <h1 className="product-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '0.6rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.25' }}>
+                {product.name}
               </h1>
+              <p style={{ fontSize: '0.78rem', color: '#666', letterSpacing: '0.5px' }}>
+                {product.category} · {product.concentration} {product.sizes?.[0] ? `· ${product.sizes[0]}` : ''}
+              </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
-              <span className="product-price" style={{ fontWeight: '400', fontFamily: 'var(--font-sans)' }}>${product.price.toLocaleString()}</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginTop: '0.2rem' }}>
+              <span className="product-price" style={{ fontWeight: '500', fontFamily: 'var(--font-sans)' }}>
+                ${product.price.toLocaleString()}
+              </span>
               {product.oldPrice && (
                 <span className="product-old-price" style={{ textDecoration: 'line-through', color: 'var(--color-gray)' }}>
                   ${product.oldPrice.toLocaleString()}
@@ -100,18 +108,18 @@ const ProductDetail = () => {
             {/* Sizes */}
             {product.sizes?.length > 0 && (
               <div>
-                <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', color: 'var(--color-gray)' }}>Presentación</p>
+                <p style={{ fontSize: '0.68rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.4rem', color: 'var(--color-gray)', fontWeight: '500' }}>Presentación</p>
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                   {product.sizes.map(s => (
                     <button
                       key={s}
                       onClick={() => setSize(s)}
                       style={{
-                        padding: '0.4rem 0.8rem', fontSize: '0.75rem',
+                        padding: '0.35rem 0.75rem', fontSize: '0.72rem',
                         border: `1px solid ${size === s ? 'var(--color-black)' : 'var(--color-gray-light)'}`,
                         backgroundColor: size === s ? 'var(--color-black)' : 'transparent',
                         color: size === s ? '#fff' : 'var(--color-black)', cursor: 'pointer',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s', borderRadius: '2px'
                       }}
                     >
                       {s}
@@ -123,20 +131,20 @@ const ProductDetail = () => {
 
             {/* Quantity */}
             <div>
-              <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', color: 'var(--color-gray)' }}>Cantidad</p>
-              <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid var(--color-gray-light)' }}>
-                <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ padding: '0.4rem 0.8rem' }}><Minus size={14} /></button>
-                <span style={{ padding: '0.4rem 1rem', minWidth: '2.5rem', textAlign: 'center', fontWeight: '500', fontSize: '0.85rem' }}>{qty}</span>
-                <button onClick={() => setQty(q => q + 1)} style={{ padding: '0.4rem 0.8rem' }}><Plus size={14} /></button>
+              <p style={{ fontSize: '0.68rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.4rem', color: 'var(--color-gray)', fontWeight: '500' }}>Cantidad</p>
+              <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid var(--color-gray-light)', borderRadius: '2px' }}>
+                <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ padding: '0.35rem 0.75rem', cursor: 'pointer' }}><Minus size={13} /></button>
+                <span style={{ padding: '0.35rem 0.9rem', minWidth: '2.2rem', textAlign: 'center', fontWeight: '500', fontSize: '0.82rem' }}>{qty}</span>
+                <button onClick={() => setQty(q => q + 1)} style={{ padding: '0.35rem 0.75rem', cursor: 'pointer' }}><Plus size={13} /></button>
               </div>
             </div>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', gap: '0.8rem', flexDirection: 'column', marginTop: '1rem' }}>
-              <div style={{ display: 'flex', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexDirection: 'column', marginTop: '0.6rem' }}>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
                 <button
                   disabled={!product.inStock}
-                  style={{ flex: 1, padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: product.inStock ? 'pointer' : 'not-allowed', opacity: product.inStock ? 1 : 0.5, transition: 'all 0.2s' }}
+                  style={{ flex: 1, padding: '0.85rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)', fontSize: '0.75rem', fontWeight: '500', letterSpacing: '1px', textTransform: 'uppercase', cursor: product.inStock ? 'pointer' : 'not-allowed', opacity: product.inStock ? 1 : 0.5, transition: 'all 0.2s', borderRadius: '2px' }}
                   onClick={() => product.inStock && addToCart(product, qty, size)}
                 >
                   {product.inStock ? 'AÑADIR AL CARRITO' : 'AGOTADO'}
@@ -144,18 +152,18 @@ const ProductDetail = () => {
                 <button
                   onClick={() => toggleFavorite(product)}
                   style={{
-                    width: '52px', display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    width: '46px', display: 'flex', justifyContent: 'center', alignItems: 'center',
                     backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)',
-                    cursor: 'pointer', transition: 'all 0.2s'
+                    cursor: 'pointer', transition: 'all 0.2s', borderRadius: '2px'
                   }}
                 >
-                  <Heart size={20} fill={isFavorite(product.id) ? 'currentColor' : 'none'} />
+                  <Heart size={18} fill={isFavorite(product.id) ? 'currentColor' : 'none'} />
                 </button>
               </div>
 
               {product.inStock && (
                 <button
-                  style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#1A1A1A', border: 'none', color: '#fff', fontSize: '0.8rem', fontWeight: '500', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}
+                  style={{ width: '100%', padding: '0.85rem', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#111', border: 'none', color: '#fff', fontSize: '0.75rem', fontWeight: '500', letterSpacing: '1.5px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', borderRadius: '2px' }}
                   onClick={() => {
                     addToCart(product, qty, size);
                     window.location.href = '/checkout';
@@ -169,17 +177,17 @@ const ProductDetail = () => {
             {/* Ocasión de Uso (Si está definida) */}
             {product.occasion && (
               <div style={{
-                marginTop: '1.2rem',
-                padding: '1rem 1.2rem',
+                marginTop: '1rem',
+                padding: '0.85rem 1rem',
                 backgroundColor: '#FAF8F5',
                 border: '1px solid #ECE7DE',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.3rem'
+                gap: '0.2rem'
               }}>
                 <span style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.62rem',
                   letterSpacing: '2px',
                   textTransform: 'uppercase',
                   color: '#B99A5B',
@@ -189,7 +197,7 @@ const ProductDetail = () => {
                   ✨ OCASIÓN RECOMENDADA
                 </span>
                 <p style={{
-                  fontSize: '0.9rem',
+                  fontSize: '0.85rem',
                   color: '#1A1A1A',
                   fontWeight: '500',
                   fontFamily: 'var(--font-sans)',
@@ -202,22 +210,22 @@ const ProductDetail = () => {
 
             {/* Descripción del Perfume */}
             {product.description && (
-              <div style={{ marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
+              <div style={{ marginTop: '1.2rem', borderTop: '1px solid #eee', paddingTop: '1.2rem' }}>
                 <h4 style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.7rem',
                   letterSpacing: '2px',
                   textTransform: 'uppercase',
                   color: '#888',
-                  marginBottom: '0.6rem',
+                  marginBottom: '0.5rem',
                   fontFamily: 'var(--font-sans)',
                   fontWeight: '600'
                 }}>
                   Descripción
                 </h4>
                 <p style={{
-                  fontSize: '0.9rem',
+                  fontSize: '0.85rem',
                   color: '#444',
-                  lineHeight: '1.7',
+                  lineHeight: '1.65',
                   fontFamily: 'var(--font-sans)',
                   fontWeight: '300'
                 }}>
@@ -226,49 +234,52 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Delivery Timeline */}
-            <div style={{ marginTop: '2rem', marginBottom: '1.5rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
-              <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.5rem', color: '#000' }}>Entrega Estimada</h4>
+            {/* Delivery Timeline con diseño limpio y proporcionado */}
+            <div style={{ marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
+              <h4 style={{ fontSize: '0.9rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.2rem', color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Entrega Estimada
+              </h4>
               
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', textAlign: 'center' }}>
-                
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                textAlign: 'center',
+                position: 'relative',
+                padding: '0 0.5rem'
+              }}>
                 {/* Step 1 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, gap: '0.6rem' }}>
-                  <div style={{ width: '45px', height: '45px', borderRadius: '50%', backgroundColor: '#4C4C4C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><polyline points="9 16 11 18 15 14"></polyline></svg>
-                    {/* Line connecting to Step 2 */}
-                    <div style={{ position: 'absolute', top: '50%', left: '100%', width: 'calc(100% + 2vw)', height: '2px', backgroundColor: '#4C4C4C', transform: 'translateY(-50%)' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, zIndex: 2 }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><polyline points="9 16 11 18 15 14"></polyline></svg>
                   </div>
-                  <div>
-                    <span style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#000', marginBottom: '0.2rem' }}>{formatD(today)}</span>
-                    <span style={{ display: 'block', fontSize: '0.85rem', color: '#000', fontWeight: '400' }}>Compra hoy</span>
-                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', display: 'block' }}>{formatD(today)}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#666', display: 'block' }}>Compra hoy</span>
                 </div>
+
+                {/* Connecting Line 1 */}
+                <div style={{ position: 'absolute', top: '18px', left: '20%', width: '30%', height: '1px', backgroundColor: '#ddd', zIndex: 1 }} />
 
                 {/* Step 2 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, gap: '0.6rem' }}>
-                  <div style={{ width: '45px', height: '45px', borderRadius: '50%', backgroundColor: '#4C4C4C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle><path d="M7 8h4"></path><path d="M7 11h2"></path></svg>
-                    {/* Line connecting to Step 3 */}
-                    <div style={{ position: 'absolute', top: '50%', left: '100%', width: 'calc(100% + 2vw)', height: '2px', backgroundColor: '#4C4C4C', transform: 'translateY(-50%)' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, zIndex: 2 }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle><path d="M7 8h4"></path><path d="M7 11h2"></path></svg>
                   </div>
-                  <div>
-                    <span style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#000', marginBottom: '0.2rem' }}>{formatD(tomorrow)}</span>
-                    <span style={{ display: 'block', fontSize: '0.85rem', color: '#000', fontWeight: '400' }}>Enviamos mañana</span>
-                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', display: 'block' }}>{formatD(tomorrow)}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#666', display: 'block' }}>Enviamos mañana</span>
                 </div>
+
+                {/* Connecting Line 2 */}
+                <div style={{ position: 'absolute', top: '18px', left: '50%', width: '30%', height: '1px', backgroundColor: '#ddd', zIndex: 1 }} />
 
                 {/* Step 3 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, gap: '0.6rem' }}>
-                  <div style={{ width: '45px', height: '45px', borderRadius: '50%', backgroundColor: '#4C4C4C', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, zIndex: 2 }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                   </div>
-                  <div>
-                    <span style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#000', marginBottom: '0.2rem' }}>{formatD(arrivalStart)} - {formatD(arrivalEnd)}</span>
-                    <span style={{ display: 'block', fontSize: '0.85rem', color: '#000', fontWeight: '400' }}>Recíbelo pronto</span>
-                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#111', display: 'block' }}>{formatD(arrivalStart)} - {formatD(arrivalEnd)}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#666', display: 'block' }}>Recíbelo pronto</span>
                 </div>
-
               </div>
             </div>
 
@@ -281,7 +292,7 @@ const ProductDetail = () => {
         <section style={{ borderTop: '1px solid var(--color-gray-light)', padding: '3.5rem 0' }}>
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-              <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.4rem', fontWeight: '600', color: 'var(--color-black)', letterSpacing: '0.5px' }}>
+              <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '600', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase' }}>
                 Te podría interesar
               </h2>
             </div>
@@ -297,39 +308,56 @@ const ProductDetail = () => {
       <style>{`
         .whatsapp-floating-btn { display: none !important; }
         
-        .product-title { font-size: 1.25rem !important; }
-        .product-price { font-size: 1.5rem !important; }
-        .product-old-price { font-size: 1.1rem !important; }
+        .product-title { font-size: 1.15rem !important; }
+        .product-price { font-size: 1.35rem !important; }
+        .product-old-price { font-size: 0.95rem !important; }
         
         .gallery-slide {
           aspect-ratio: 1/1;
         }
         
         @media (max-width: 768px) {
-          .product-title { font-size: 1.15rem !important; line-height: 1.4 !important; }
-          .product-price { font-size: 1.35rem !important; }
-          .product-old-price { font-size: 1rem !important; }
+          .product-detail-container { 
+            padding-left: 1.25rem !important; 
+            padding-right: 1.25rem !important; 
+            box-sizing: border-box !important;
+          }
           
-          .detail-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
-          .product-detail-container { padding: 0 1.5rem !important; }
+          .product-title { 
+            font-size: 1rem !important; 
+            line-height: 1.35 !important; 
+            letter-spacing: 0.3px !important;
+          }
+          .product-price { font-size: 1.2rem !important; }
+          .product-old-price { font-size: 0.88rem !important; }
+          
+          .detail-grid { 
+            grid-template-columns: 100% !important; 
+            gap: 1.2rem !important; 
+            width: 100% !important;
+          }
           
           .gallery-section { 
             width: 100vw !important; 
-            margin-left: -1.5rem !important; 
-            margin-bottom: 1.5rem !important; 
+            margin-left: -1.25rem !important; 
+            margin-bottom: 0.5rem !important; 
           }
           .gallery-slide {
             aspect-ratio: 1/1 !important;
-            flex: 0 0 92% !important;
-            border-radius: 4px !important;
-            box-shadow: none !important;
+            flex: 0 0 90% !important;
+            border-radius: 6px !important;
           }
           .gallery-scroll-container {
-            padding: 0 0 0 1.5rem !important;
-            gap: 0.5rem !important;
+            padding: 0 0 0 1.25rem !important;
+            gap: 0.6rem !important;
           }
           
-          .info-section { padding: 0.5rem 0 !important; gap: 1rem !important; }
+          .info-section { 
+            padding: 0 !important; 
+            gap: 0.9rem !important; 
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
           .related-grid { grid-template-columns: repeat(2,1fr) !important; gap: 1rem !important; }
         }
       `}</style>
