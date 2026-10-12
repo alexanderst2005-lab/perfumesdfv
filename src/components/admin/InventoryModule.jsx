@@ -11,7 +11,7 @@ const InventoryModule = () => {
   const [formData, setFormData] = useState({
     id: '', name: '', brand: '', category: 'Mujer', family: '', 
     price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
-    description: '', concentration: 'Eau de Parfum', 
+    description: '', occasion: '', concentration: 'Eau de Parfum', 
     stockCount: 10, inStock: true, active: true, image: '', images: []
   });
 
@@ -22,7 +22,7 @@ const InventoryModule = () => {
     setFormData({
       id: '', name: '', brand: '', category: 'Mujer', family: '', 
       price: '', oldPrice: '', discount: '', sizes: '["100ml"]', 
-      description: '', concentration: 'Eau de Parfum', 
+      description: '', occasion: '', concentration: 'Eau de Parfum', 
       stockCount: 10, inStock: true, active: true, image: '', images: []
     });
     setImagePreviews([]);
@@ -35,6 +35,7 @@ const InventoryModule = () => {
       id: p.id, name: p.name, brand: p.brand, category: p.category, family: p.family || '', 
       price: p.price, oldPrice: p.oldPrice || '', discount: p.discount || '', 
       sizes: JSON.stringify(p.sizes || []), description: p.description || '', 
+      occasion: p.occasion || '',
       concentration: p.concentration || '', stockCount: p.stockCount || 10, 
       inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || []
     });
@@ -307,7 +308,36 @@ const InventoryModule = () => {
                 <input type="number" placeholder="Precio Actual ($)" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} />
                 <input type="number" placeholder="Precio Anterior (Opcional, para tacharlo)" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', flex: 1 }} title="Opcional. Si lo llenas, saldrá como precio tachado." />
               </div>
-              <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+
+              {/* Ocasión de Uso */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
+                  Ocasión de Uso (Ej: Noche, Citas especiales, Diario, Oficina, Eventos de gala)
+                </label>
+                <input 
+                  type="text" 
+                  placeholder="Ej: Citas románticas, Eventos nocturnos, Uso diario..." 
+                  value={formData.occasion} 
+                  onChange={e => setFormData({...formData, occasion: e.target.value})} 
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} 
+                />
+              </div>
+
+              {/* Descripción Detallada */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
+                  Descripción del Perfume
+                </label>
+                <textarea 
+                  rows={3}
+                  placeholder="Escribe la historia o descripción de las notas, proyección y sensaciones de la fragancia..." 
+                  value={formData.description} 
+                  onChange={e => setFormData({...formData, description: e.target.value})} 
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem', fontFamily: 'inherit', resize: 'vertical' }} 
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '2rem', marginTop: '0.5rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
                   <input type="checkbox" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} style={{ width: '18px', height: '18px' }} />
                   Visible en la Tienda

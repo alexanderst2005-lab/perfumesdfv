@@ -164,8 +164,70 @@ const ProductDetail = () => {
                   COMPRAR AHORA
                 </button>
               )}
-            </div>            {/* Delivery Timeline */}
-            <div style={{ marginTop: '2.5rem', marginBottom: '1.5rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
+            </div>
+
+            {/* Ocasión de Uso (Si está definida) */}
+            {product.occasion && (
+              <div style={{
+                marginTop: '1.2rem',
+                padding: '1rem 1.2rem',
+                backgroundColor: '#FAF8F5',
+                border: '1px solid #ECE7DE',
+                borderRadius: '8px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.3rem'
+              }}>
+                <span style={{
+                  fontSize: '0.68rem',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  color: '#B99A5B',
+                  fontWeight: '600',
+                  fontFamily: 'var(--font-sans)'
+                }}>
+                  ✨ OCASIÓN RECOMENDADA
+                </span>
+                <p style={{
+                  fontSize: '0.9rem',
+                  color: '#1A1A1A',
+                  fontWeight: '500',
+                  fontFamily: 'var(--font-sans)',
+                  margin: 0
+                }}>
+                  {product.occasion}
+                </p>
+              </div>
+            )}
+
+            {/* Descripción del Perfume */}
+            {product.description && (
+              <div style={{ marginTop: '1.5rem', borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
+                <h4 style={{
+                  fontSize: '0.75rem',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  color: '#888',
+                  marginBottom: '0.6rem',
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: '600'
+                }}>
+                  Descripción
+                </h4>
+                <p style={{
+                  fontSize: '0.9rem',
+                  color: '#444',
+                  lineHeight: '1.7',
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: '300'
+                }}>
+                  {product.description}
+                </p>
+              </div>
+            )}
+
+            {/* Delivery Timeline */}
+            <div style={{ marginTop: '2rem', marginBottom: '1.5rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
               <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.5rem', color: '#000' }}>Entrega Estimada</h4>
               
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', textAlign: 'center' }}>

@@ -25,6 +25,7 @@ export default async function handler(req, res) {
       image: row.image,
       images: row.images || [],
       description: row.description,
+      occasion: row.occasion,
       notes: row.notes,
       concentration: row.concentration,
       inStock: row.in_stock,
