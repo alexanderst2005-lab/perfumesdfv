@@ -43,10 +43,12 @@ const InstagramReelsSection = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Si hay reels subidos en DB, usamos esos. Si aún no ha subido ninguno, muestra los iniciales de Instagram
-  const reels = dbReels.length > 0 
-    ? dbReels 
-    : INSTAGRAM_REELS_DATA.filter(r => r.active).sort((a, b) => a.order - b.order);
+  // Combinamos los reels subidos en el panel con los existentes de Instagram
+  // Los subidos en el panel aparecen primero
+  const reels = [
+    ...dbReels,
+    ...INSTAGRAM_REELS_DATA.filter(r => r.active && !dbReels.some(d => d.videoUrl === r.reelUrl))
+  ];
 
   const openReelModal = (reel) => {
     setActiveModalReel(reel);
@@ -172,36 +174,52 @@ const InstagramReelsSection = () => {
                 transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)'
               }}
             >
-              {/* Imagen o Preview de Video limpio sin textos tapando el perfume */}
-              {reel.thumbnailUrl ? (
-                <img 
-                  src={reel.thumbnailUrl} 
-                  alt={reel.title}
-                  loading="lazy"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                    transition: 'transform 0.6s ease'
-                  }}
-                  className="reel-img-zoom"
-                />
-              ) : reel.videoUrl ? (
-                <video 
-                  src={reel.videoUrl} 
-                  muted
-                  playsInline
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
-              ) : (
-                <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />
-              )}
+              {/* Imagen o Preview de Video con Portada de Alta Calidad */}
+              {(() => {
+                let thumb = reel.thumbnailUrl;
+                if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
+                  thumb = reel.videoUrl
+                    .replace('/video/upload/', '/video/upload/so_1,w_600,h_1067,c_fill,q_auto,f_jpg/')
+                    .replace(/\.[^/.]+$/, '.jpg');
+                }
+                
+                if (thumb) {
+                  return (
+                    <img 
+                      src={thumb} 
+                      alt={reel.title}
+                      loading="lazy"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                        transition: 'transform 0.6s ease'
+                      }}
+                      className="reel-img-zoom"
+                    />
+                  );
+                }
+
+                if (reel.videoUrl) {
+                  return (
+                    <video 
+                      src={`${reel.videoUrl}#t=0.5`} 
+                      muted
+                      preload="metadata"
+                      playsInline
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                      }}
+                    />
+                  );
+                }
+
+                return <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />;
+              })()}
 
               {/* Degradado fino solo en los extremos */}
               <div style={{

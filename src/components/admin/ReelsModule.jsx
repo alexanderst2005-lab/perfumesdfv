@@ -130,6 +130,13 @@ const ReelsModule = () => {
         }
 
         finalVideoUrl = cloudData.secure_url;
+
+        // Auto-generar portada / póster de alta calidad desde Cloudinary si el usuario no subió una portada manual
+        if (!finalThumbUrl && finalVideoUrl.includes('/video/upload/')) {
+          finalThumbUrl = finalVideoUrl
+            .replace('/video/upload/', '/video/upload/so_1,w_600,h_1067,c_fill,q_auto,f_jpg/')
+            .replace(/\.[^/.]+$/, '.jpg');
+        }
       }
 
       // Si subió portada personalizada opcional
@@ -154,6 +161,13 @@ const ReelsModule = () => {
             finalThumbUrl = thumbCloudData.secure_url;
           }
         }
+      }
+
+      // Si el video era una URL directa sin portada y es de cloudinary, auto-generar thumbnail
+      if (!finalThumbUrl && finalVideoUrl && finalVideoUrl.includes('/video/upload/')) {
+        finalThumbUrl = finalVideoUrl
+          .replace('/video/upload/', '/video/upload/so_1,w_600,h_1067,c_fill,q_auto,f_jpg/')
+          .replace(/\.[^/.]+$/, '.jpg');
       }
 
       setUploadProgressText('Guardando en la base de datos...');
