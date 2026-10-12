@@ -32,11 +32,13 @@ const Contacto = () => {
                 <MapPin size={20} strokeWidth={1.5} color="var(--color-black)" style={{ marginTop: '0.2rem' }} />
                 <div>
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
-                    Ubicación & Envíos
+                    Nuestras Sedes (Palmira, Valle)
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>Centro Comercial Llanogrande, Palmira</p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.2rem' }}>Calle 31 #27-44</p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.2rem' }}>Envíos 100% seguros a todo el país.</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>📍 <strong>Sede Calle 31 · Centro:</strong> Calle 31 #27-44</p>
+                  <p style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.2rem' }}>WA: +57 320 697 0036</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.6rem' }}>📍 <strong>Sede C.C. Llanogrande:</strong> Local Palmira</p>
+                  <p style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.2rem' }}>WA: +57 320 862 7036</p>
+                  <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.6rem' }}>Envíos 100% seguros a todo el país.</p>
                 </div>
               </div>
 
@@ -78,31 +80,59 @@ const Contacto = () => {
               La forma más rápida de comunicarte con nuestros asesores es a través de WhatsApp. 
               Estamos disponibles de Lunes a Sábado para responder todas tus dudas.
             </p>
-            <a 
-              href="https://wa.me/573027642208" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.8rem',
-                backgroundColor: 'var(--color-black)',
-                color: '#fff',
-                padding: '1.2rem 2rem',
-                textDecoration: 'none',
-                fontSize: '0.75rem',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                fontWeight: '500',
-                transition: 'opacity 0.3s ease'
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <MessageCircle size={18} />
-              Contactar por WhatsApp
-            </a>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <a 
+                href="https://wa.me/573206970036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Calle%2031" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.8rem',
+                  backgroundColor: 'var(--color-black)',
+                  color: '#fff',
+                  padding: '1rem 1.5rem',
+                  textDecoration: 'none',
+                  fontSize: '0.75rem',
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  fontWeight: '500',
+                  transition: 'opacity 0.3s ease'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              >
+                <MessageCircle size={18} />
+                WhatsApp Sede Calle 31
+              </a>
+
+              <a 
+                href="https://wa.me/573208627036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Llanogrande" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.8rem',
+                  backgroundColor: '#B99A5B',
+                  color: '#fff',
+                  padding: '1rem 1.5rem',
+                  textDecoration: 'none',
+                  fontSize: '0.75rem',
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  fontWeight: '500',
+                  transition: 'opacity 0.3s ease'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              >
+                <MessageCircle size={18} />
+                WhatsApp Sede Llanogrande
+              </a>
+            </div>
           </div>
 
         </div>

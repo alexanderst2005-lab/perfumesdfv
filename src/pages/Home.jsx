@@ -435,44 +435,81 @@ const Home = () => {
       {/* ════ NUESTRAS SEDES ════ */}
       <section id="sedes" className="section-padding container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
+          <span style={{
+            fontSize: '0.72rem',
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+            color: '#B99A5B',
+            fontWeight: '600',
+            fontFamily: 'var(--font-sans)',
+            display: 'block',
+            marginBottom: '0.4rem'
+          }}>
+            PALMIRA, VALLE DEL CAUCA
+          </span>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
             Nuestras Sedes
           </h2>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#777', letterSpacing: '0.5px' }}>
-            Visítanos y encuentra tu fragancia ideal.
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.92rem', color: '#777', letterSpacing: '0.3px', maxWidth: '620px', margin: '0 auto' }}>
+            Visítanos en nuestras dos ubicaciones físicas en Palmira o escríbenos directamente a la línea de WhatsApp de cada sede.
           </p>
         </div>
 
         <div className="sedes-container no-scrollbar">
           {[
             {
-              name: 'Sede Palmira',
-              address: 'Calle 31 #27-44, Palmira',
+              name: 'Sede Calle 31 · Centro',
+              tag: 'Palmira · Centro',
+              address: 'Calle 31 #27-44, Palmira, Valle',
               hours: 'Lunes a sábado: 9:00 a. m. – 12:30 p. m. y 2:30 p. m. – 7:00 p. m.',
+              phoneFormatted: '+57 320 697 0036',
               img: 'https://images.unsplash.com/photo-1606159068539-43f36b99d1b2?q=80&w=700&auto=format&fit=crop',
-              maps: '#',
-              wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Sede%20Palmira',
+              maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca',
+              wa: 'https://wa.me/573206970036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Calle%2031%20Palmira',
             },
             {
-              name: 'C.C. Llanogrande',
-              address: 'Centro Comercial Llanogrande, Palmira',
-              hours: 'L–J: 10:30 a. m. – 8 p. m. | V–S: 10:30 a. m. – 8:30 p. m. | D–F: 11 a. m. – 7:30 p. m.',
+              name: 'Sede C.C. Llanogrande',
+              tag: 'Palmira · C.C. Llanogrande',
+              address: 'Centro Comercial Llanogrande, Palmira, Valle',
+              hours: 'L–J: 10:30 a. m. – 8:00 p. m. | V–S: 10:30 a. m. – 8:30 p. m. | D–F: 11:00 a. m. – 7:30 p. m.',
+              phoneFormatted: '+57 320 862 7036',
               img: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=700&auto=format&fit=crop',
-              maps: '#',
-              wa: 'https://wa.me/573000000000?text=Hola%20DFV%20Perfumes%20Llanogrande',
+              maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira',
+              wa: 'https://wa.me/573208627036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Llanogrande%20Palmira',
             },
           ].map(s => (
-            <div key={s.name} className="sede-card" style={{ border: '1px solid rgba(0,0,0,0.06)', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ aspectRatio: '16/9', overflow: 'hidden' }}>
+            <div key={s.name} className="sede-card" style={{ border: '1px solid rgba(0,0,0,0.06)', background: '#fff', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <div style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative' }}>
                 <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <span style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  backgroundColor: 'rgba(0,0,0,0.65)',
+                  backdropFilter: 'blur(6px)',
+                  color: '#fff',
+                  fontSize: '0.68rem',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  fontWeight: '600'
+                }}>
+                  {s.tag}
+                </span>
               </div>
-              <div style={{ padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem', color: '#222' }}>{s.name}</h3>
-                <p style={{ fontSize: '0.8rem', color: '#555', marginBottom: '0.2rem', letterSpacing: '0.5px' }}>{s.address}</p>
-                <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.5rem', lineHeight: '1.6' }}>{s.hours}</p>
+              <div style={{ padding: '1.6rem', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem', color: '#111' }}>{s.name}</h3>
+                  <p style={{ fontSize: '0.85rem', color: '#444', marginBottom: '0.3rem', letterSpacing: '0.3px' }}>📍 {s.address}</p>
+                  <p style={{ fontSize: '0.78rem', color: '#777', marginBottom: '0.5rem', lineHeight: '1.5' }}>🕒 {s.hours}</p>
+                  <p style={{ fontSize: '0.84rem', color: '#059669', marginBottom: '1.4rem', fontWeight: '600' }}>
+                    💬 WhatsApp: {s.phoneFormatted}
+                  </p>
+                </div>
                 <div style={{ display: 'flex', gap: '0.8rem' }}>
-                  <a href={s.maps} style={{ flex: 1, padding: '0.6rem', fontSize: '0.65rem', textAlign: 'center', border: '1px solid #ddd', color: '#333', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>CÓMO LLEGAR</a>
-                  <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.6rem', fontSize: '0.65rem', textAlign: 'center', background: '#111', color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>WHATSAPP</a>
+                  <a href={s.maps} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.7rem', fontSize: '0.68rem', textAlign: 'center', border: '1px solid #ddd', color: '#333', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontWeight: '600', borderRadius: '4px' }}>CÓMO LLEGAR</a>
+                  <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.7rem', fontSize: '0.68rem', textAlign: 'center', background: '#111', color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontWeight: '600', borderRadius: '4px' }}>WHATSAPP</a>
                 </div>
               </div>
             </div>

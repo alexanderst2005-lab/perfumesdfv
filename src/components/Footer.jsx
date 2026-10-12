@@ -94,14 +94,19 @@ const Footer = () => (
 
         {/* 4. Nuestras Tiendas */}
         <div>
-          <h4 style={sectionTitleStyle}>Nuestras Tiendas</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', fontFamily: 'var(--font-sans)', fontWeight: '300' }}>
-              Centro Comercial Llanogrande
-            </p>
+          <h4 style={sectionTitleStyle}>Nuestras Tiendas (Palmira)</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
             <div>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', fontFamily: 'var(--font-sans)', fontWeight: '300' }}>Palmira</p>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', marginTop: '0.2rem' }}>Calle 31 #27-44</p>
+              <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>
+                Sede Calle 31 · Centro
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', marginTop: '0.1rem' }}>Calle 31 #27-44 · WA: +57 320 697 0036</p>
+            </div>
+            <div>
+              <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', fontFamily: 'var(--font-sans)', fontWeight: '500' }}>
+                Sede C.C. Llanogrande
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', marginTop: '0.1rem' }}>Palmira, Valle · WA: +57 320 862 7036</p>
             </div>
             
             <a href="/#sedes" style={{ 
