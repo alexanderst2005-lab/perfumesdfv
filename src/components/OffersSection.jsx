@@ -37,15 +37,18 @@ const OffersSection = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const totalPages = Math.ceil(offerProducts.length / visibleCount);
+  const totalPages = Math.max(1, Math.ceil(offerProducts.length / visibleCount));
   const maxIndex = Math.max(0, offerProducts.length - visibleCount);
 
   const prev = () => {
-    setCurrentIndex(prev => Math.max(0, prev - 1));
+    setCurrentIndex(prev => Math.max(0, prev - visibleCount));
   };
 
   const next = () => {
-    setCurrentIndex(prev => Math.min(maxIndex, prev + 1));
+    setCurrentIndex(prev => {
+      const target = prev + visibleCount;
+      return target > maxIndex ? maxIndex : target;
+    });
   };
 
   const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
@@ -59,7 +62,10 @@ const OffersSection = () => {
     setTouchEnd(0);
   };
 
-  const currentPageNumber = Math.min(totalPages, Math.floor(currentIndex / visibleCount) + 1);
+  const currentPageNumber = Math.min(
+    totalPages,
+    Math.floor(currentIndex / visibleCount) + (currentIndex % visibleCount > 0 && Math.floor(currentIndex / visibleCount) + 1 < totalPages ? 2 : 1)
+  );
 
   return (
     <section 
