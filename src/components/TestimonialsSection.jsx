@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Star, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Star, Check, Pause, Play } from 'lucide-react';
 import { TESTIMONIALS_DATA } from '../data/testimonialsData';
 
 const ReviewCard = ({ item }) => {
@@ -8,7 +8,6 @@ const ReviewCard = ({ item }) => {
   const [hasVotedHelpful, setHasVotedHelpful] = useState(false);
   const [hasVotedLoved, setHasVotedLoved] = useState(false);
 
-  // Cargar votos previos de localStorage si existen
   useEffect(() => {
     try {
       const stored = localStorage.getItem(`review_react_${item.id}`);
@@ -66,7 +65,8 @@ const ReviewCard = ({ item }) => {
         boxShadow: '0 6px 22px rgba(0, 0, 0, 0.04)',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
         flexShrink: 0,
-        position: 'relative'
+        position: 'relative',
+        userSelect: 'none'
       }}
     >
       <div>
@@ -182,7 +182,7 @@ const ReviewCard = ({ item }) => {
             </div>
           </div>
 
-          {/* Badge Verificada verde como en la imagen */}
+          {/* Badge Verificada verde */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -256,31 +256,10 @@ const ReviewCard = ({ item }) => {
 };
 
 const TestimonialsSection = () => {
-  const scrollContainerRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const checkScroll = () => {
-    if (!scrollContainerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    setCanScrollLeft(scrollLeft > 20);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 20);
-  };
-
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener('resize', checkScroll);
-    return () => window.removeEventListener('resize', checkScroll);
-  }, []);
-
-  const handleScroll = (direction) => {
-    if (!scrollContainerRef.current) return;
-    const cardWidth = 370;
-    scrollContainerRef.current.scrollBy({
-      left: direction === 'left' ? -cardWidth : cardWidth,
-      behavior: 'smooth'
-    });
-  };
+  // Duplicamos la lista para crear un bucle infinito continuo
+  const infiniteReviews = [...TESTIMONIALS_DATA, ...TESTIMONIALS_DATA];
 
   return (
     <section 
@@ -295,11 +274,11 @@ const TestimonialsSection = () => {
       }}
     >
       <div className="container" style={{ position: 'relative' }}>
-        {/* Encabezado idéntico al estilo solicitado */}
+        {/* Encabezado elegante */}
         <div style={{
           textAlign: 'center',
           maxWidth: '750px',
-          margin: '0 auto 2.5rem auto'
+          margin: '0 auto 2.2rem auto'
         }}>
           <p style={{
             fontSize: '0.74rem',
@@ -325,7 +304,7 @@ const TestimonialsSection = () => {
             display: 'inline-block'
           }}>
             Experiencias que enamoran
-            {/* Detalle de subrayado curvo de acento dorado como en la imagen */}
+            {/* Detalle de subrayado curvo de acento dorado */}
             <svg 
               style={{
                 position: 'absolute',
@@ -353,87 +332,59 @@ const TestimonialsSection = () => {
             color: '#666',
             lineHeight: '1.6',
             fontWeight: '300',
-            marginTop: '1.2rem'
+            marginTop: '1.2rem',
+            marginBottom: '1rem'
           }}>
             Opiniones verificadas de clientes que ya disfrutan de sus fragancias favoritas en toda Colombia.
           </p>
+
+          {/* Indicador interactivo de pausa al pasar cursor / tocar */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            backgroundColor: '#F5F2EB',
+            border: '1px solid #E6E1D6',
+            padding: '4px 12px',
+            borderRadius: '999px',
+            fontSize: '0.72rem',
+            color: '#7A756D',
+            fontFamily: 'var(--font-sans)'
+          }}>
+            {isPaused ? <Pause size={12} color="#B99A5B" /> : <Play size={12} color="#B99A5B" />}
+            <span>{isPaused ? 'Pausado (continúa al retirar el cursor)' : 'Desplazamiento automático continuo · Toca o pasa el cursor para pausar'}</span>
+          </div>
         </div>
+      </div>
 
-        {/* Controles de Navegación Flechas Izq / Der */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          gap: '10px',
-          marginBottom: '1rem',
-          paddingRight: '0.5rem'
-        }}>
-          <button
-            type="button"
-            onClick={() => handleScroll('left')}
-            disabled={!canScrollLeft}
-            aria-label="Ver reseñas anteriores"
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              border: '1px solid #ECE7DE',
-              backgroundColor: canScrollLeft ? '#FFFFFF' : '#F5F3EF',
-              color: canScrollLeft ? '#111111' : '#B5B1AA',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: canScrollLeft ? 'pointer' : 'default',
-              boxShadow: canScrollLeft ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <ChevronLeft size={20} />
-          </button>
+      {/* Contenedor Marquee de Movimiento Continuo Automático de Derecha a Izquierda */}
+      <div 
+        className="reviews-marquee-wrapper"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        style={{
+          width: '100%',
+          overflow: 'hidden',
+          position: 'relative',
+          padding: '1rem 0'
+        }}
+      >
+        {/* Difuminados sutiles en los extremos para una sensación de infinito */}
+        <div className="marquee-fade-left" />
+        <div className="marquee-fade-right" />
 
-          <button
-            type="button"
-            onClick={() => handleScroll('right')}
-            disabled={!canScrollRight}
-            aria-label="Ver siguientes reseñas"
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              border: '1px solid #ECE7DE',
-              backgroundColor: canScrollRight ? '#FFFFFF' : '#F5F3EF',
-              color: canScrollRight ? '#111111' : '#B5B1AA',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: canScrollRight ? 'pointer' : 'default',
-              boxShadow: canScrollRight ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-
-        {/* Contenedor Carrusel Horizontal Deslizable con Scroll Snap */}
-        <div
-          ref={scrollContainerRef}
-          onScroll={checkScroll}
-          className="reviews-scroll-container"
+        <div 
+          className={`reviews-marquee-track ${isPaused ? 'marquee-paused' : ''}`}
           style={{
             display: 'flex',
             gap: '1.4rem',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            paddingBottom: '1.5rem',
-            paddingTop: '0.5rem',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch'
+            width: 'max-content'
           }}
         >
-          {TESTIMONIALS_DATA.map((item) => (
-            <div key={item.id} style={{ scrollSnapAlign: 'start' }}>
+          {infiniteReviews.map((item, index) => (
+            <div key={`${item.id}-${index}`} style={{ flexShrink: 0 }}>
               <ReviewCard item={item} />
             </div>
           ))}
@@ -441,8 +392,45 @@ const TestimonialsSection = () => {
       </div>
 
       <style>{`
-        .reviews-scroll-container::-webkit-scrollbar {
-          display: none;
+        @keyframes autoScrollReviews {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
+        .reviews-marquee-track {
+          animation: autoScrollReviews 50s linear infinite;
+          will-change: transform;
+        }
+
+        .reviews-marquee-track:hover,
+        .marquee-paused {
+          animation-play-state: paused !important;
+        }
+
+        .marquee-fade-left {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 80px;
+          background: linear-gradient(to right, #FCFBF9, transparent);
+          z-index: 3;
+          pointer-events: none;
+        }
+
+        .marquee-fade-right {
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          width: 80px;
+          background: linear-gradient(to left, #FCFBF9, transparent);
+          z-index: 3;
+          pointer-events: none;
         }
 
         .review-customer-card:hover {
@@ -451,7 +439,13 @@ const TestimonialsSection = () => {
           border-color: #D6C29A !important;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+          .reviews-marquee-track {
+            animation-duration: 38s;
+          }
+          .marquee-fade-left, .marquee-fade-right {
+            width: 25px;
+          }
           .review-customer-card {
             width: 300px !important;
             min-width: 300px !important;
