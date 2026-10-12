@@ -13,14 +13,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { image, folder = 'dfv_perfumes' } = req.body;
+    const { image, file, resourceType = 'auto', folder = 'dfv_perfumes' } = req.body;
+    const uploadPayload = file || image;
 
-    if (!image) {
-      return res.status(400).json({ error: 'Image data is required' });
+    if (!uploadPayload) {
+      return res.status(400).json({ error: 'File or image data is required' });
     }
 
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(image, {
+    // Upload to Cloudinary with auto resource_type (supports video and image)
+    const result = await cloudinary.uploader.upload(uploadPayload, {
+      resource_type: resourceType,
       folder: folder,
     });
 

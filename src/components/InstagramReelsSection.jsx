@@ -20,8 +20,33 @@ const getEmbedUrl = (url) => {
 };
 
 const InstagramReelsSection = () => {
-  const reels = INSTAGRAM_REELS_DATA.filter(r => r.active).sort((a, b) => a.order - b.order);
+  const [dbReels, setDbReels] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeModalReel, setActiveModalReel] = useState(null);
+
+  React.useEffect(() => {
+    fetch('/api/reels')
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setDbReels(data.map(r => ({
+            id: r.id,
+            title: r.title || 'Experiencia DFV Perfumes',
+            thumbnailUrl: r.thumbnail_url || '',
+            videoUrl: r.video_url,
+            isUploadedVideo: true,
+            active: r.active
+          })));
+        }
+      })
+      .catch(e => console.error('Error fetching reels:', e))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  // Si hay reels subidos en DB, usamos esos. Si aún no ha subido ninguno, muestra los iniciales de Instagram
+  const reels = dbReels.length > 0 
+    ? dbReels 
+    : INSTAGRAM_REELS_DATA.filter(r => r.active).sort((a, b) => a.order - b.order);
 
   const openReelModal = (reel) => {
     setActiveModalReel(reel);
@@ -147,20 +172,36 @@ const InstagramReelsSection = () => {
                 transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)'
               }}
             >
-              {/* Imagen limpia sin textos tapando el perfume */}
-              <img 
-                src={reel.thumbnailUrl} 
-                alt={reel.title}
-                loading="lazy"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  transition: 'transform 0.6s ease'
-                }}
-                className="reel-img-zoom"
-              />
+              {/* Imagen o Preview de Video limpio sin textos tapando el perfume */}
+              {reel.thumbnailUrl ? (
+                <img 
+                  src={reel.thumbnailUrl} 
+                  alt={reel.title}
+                  loading="lazy"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    transition: 'transform 0.6s ease'
+                  }}
+                  className="reel-img-zoom"
+                />
+              ) : reel.videoUrl ? (
+                <video 
+                  src={reel.videoUrl} 
+                  muted
+                  playsInline
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block'
+                  }}
+                />
+              ) : (
+                <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />
+              )}
 
               {/* Degradado fino solo en los extremos */}
               <div style={{
@@ -317,18 +358,33 @@ const InstagramReelsSection = () => {
             </div>
 
             {/* Reproductor Real en Pantalla GRANDE */}
-            <div style={{ flex: 1, width: '100%', backgroundColor: '#000', overflow: 'hidden', position: 'relative' }}>
-              <iframe
-                src={getEmbedUrl(activeModalReel.reelUrl)}
-                title={activeModalReel.title}
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                scrolling="no"
-                allowTransparency="true"
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                style={{ border: 'none', width: '100%', height: '100%' }}
-              />
+            <div style={{ flex: 1, width: '100%', backgroundColor: '#000', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {activeModalReel.isUploadedVideo || activeModalReel.videoUrl?.endsWith('.mp4') || activeModalReel.videoUrl?.includes('/video/upload/') ? (
+                <video
+                  src={activeModalReel.videoUrl}
+                  controls
+                  autoPlay
+                  playsInline
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    backgroundColor: '#000'
+                  }}
+                />
+              ) : (
+                <iframe
+                  src={getEmbedUrl(activeModalReel.reelUrl)}
+                  title={activeModalReel.title}
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  scrolling="no"
+                  allowTransparency="true"
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  style={{ border: 'none', width: '100%', height: '100%' }}
+                />
+              )}
             </div>
 
             {/* Pie del modal */}
@@ -343,23 +399,25 @@ const InstagramReelsSection = () => {
               <span style={{ fontSize: '0.78rem', color: '#666' }}>
                 DFV Perfumes Oficial
               </span>
-              <a 
-                href={activeModalReel.reelUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  color: '#B99A5B',
-                  fontSize: '0.78rem',
-                  fontWeight: '600',
-                  textDecoration: 'none'
-                }}
-              >
-                <span>Ver en Instagram</span>
-                <ArrowUpRight size={14} />
-              </a>
+              {activeModalReel.reelUrl && (
+                <a 
+                  href={activeModalReel.reelUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    color: '#B99A5B',
+                    fontSize: '0.78rem',
+                    fontWeight: '600',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Ver en Instagram</span>
+                  <ArrowUpRight size={14} />
+                </a>
+              )}
             </div>
           </div>
         </div>
