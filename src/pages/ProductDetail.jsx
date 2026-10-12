@@ -23,6 +23,20 @@ const ProductDetail = () => {
     }
   }, [product?.id]);
 
+  // If products are still loading or empty, show smooth luxury loading spinner instead of flashing "not found"
+  if (isLoadingProducts || (products.length === 0 && !product)) {
+    return (
+      <div style={{ paddingTop: `${TOTAL_HEADER + 40}px`, minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#888' }}>
+        <div style={{
+          width: '32px', height: '32px', border: '2px solid #eaeaea', borderTopColor: '#000',
+          borderRadius: '50%', animation: 'spinProduct 0.7s linear infinite'
+        }} />
+        <span style={{ fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#999' }}>Cargando fragancia...</span>
+        <style>{`@keyframes spinProduct { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
   if (!product) return (
     <div style={{ paddingTop: `${TOTAL_HEADER + 40}px`, textAlign: 'center', padding: '5rem 1rem', color: 'var(--color-gray)' }}>
       Producto no encontrado. <Link to="/tienda" style={{ borderBottom: '1px solid' }}>Volver a la tienda</Link>
