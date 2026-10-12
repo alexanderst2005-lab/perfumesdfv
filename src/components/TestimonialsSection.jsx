@@ -1,14 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { TESTIMONIALS_DATA } from '../data/testimonialsData';
 
 const TestimonialsSection = () => {
-  const testimonials = TESTIMONIALS_DATA.filter(t => t.isPublished);
+  const [realReviews, setRealReviews] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/reviews')
+      .then(res => (res.ok ? res.json() : []))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setRealReviews(data.map(r => ({
+            id: `real-${r.id}`,
+            name: r.name,
+            city: r.city,
+            comment: r.comment,
+            rating: r.rating || 5,
+            imageUrl: r.image_url,
+            avatarLetter: (r.name || '?').trim().charAt(0).toUpperCase(),
+            date: new Date(r.created_at).toLocaleDateString('es-CO', { month: 'short', year: 'numeric' })
+          })));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const hasRealReviews = realReviews.length > 0;
+  // Si hay reseñas reales cargadas desde el panel, se muestran SOLO esas.
+  const testimonials = hasRealReviews
+    ? realReviews
+    : TESTIMONIALS_DATA.filter(t => t.isPublished);
 
   // Duplicamos la lista para crear un loop infinito sin interrupciones visuales
   const infiniteList = [...testimonials, ...testimonials, ...testimonials];
 
   const [isPaused, setIsPaused] = useState(false);
+
+  if (!loaded && !hasRealReviews) {
+    // Evita mostrar primero las de ejemplo y que luego cambien por las reales
+    return null;
+  }
 
   return (
     <section 
@@ -118,7 +151,18 @@ const TestimonialsSection = () => {
                   ))}
                 </div>
 
+                {/* Captura real del mensaje del cliente */}
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={`Reseña de ${item.name}`}
+                    loading="lazy"
+                    style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }}
+                  />
+                )}
+
                 {/* Comentario */}
+                {item.comment && (
                 <p style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '0.88rem',
@@ -130,6 +174,7 @@ const TestimonialsSection = () => {
                 }}>
                   «{item.comment}»
                 </p>
+                )}
               </div>
 
               {/* Autor y Avatar */}
@@ -197,7 +242,8 @@ const TestimonialsSection = () => {
         </div>
       </div>
 
-      {/* Nota discreta */}
+      {/* Nota discreta: solo aparece mientras se muestran reseñas de ejemplo */}
+      {!hasRealReviews && (
       <div style={{ textAlign: 'center', marginTop: '2rem' }}>
         <p style={{
           fontSize: '0.65rem',
@@ -209,6 +255,7 @@ const TestimonialsSection = () => {
           * Testimonios ilustrativos de demostración correspondientes a la experiencia de atención DFV Perfumes
         </p>
       </div>
+      )}
 
       <style>{`
         @keyframes marqueeScroll {

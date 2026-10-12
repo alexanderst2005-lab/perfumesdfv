@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote } from 'lucide-react';
 import InventoryModule from '../components/admin/InventoryModule';
 import OrdersModule from '../components/admin/OrdersModule';
 import SettingsModule from '../components/admin/SettingsModule';
@@ -10,6 +10,7 @@ import SalesModule from '../components/admin/SalesModule';
 import CategoriesModule from '../components/admin/CategoriesModule';
 import ContentModule from '../components/admin/ContentModule';
 import ReelsModule from '../components/admin/ReelsModule';
+import ReviewsModule from '../components/admin/ReviewsModule';
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -49,6 +50,7 @@ const AdminDashboard = () => {
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'reels', label: 'Reels / Videos', icon: Video },
+    { id: 'reviews', label: 'Reseñas', icon: MessageSquareQuote },
     { id: 'customers', label: 'Clientes', icon: Users }
   ];
 
@@ -366,6 +368,7 @@ const AdminDashboard = () => {
           {activeTab === 'orders' && <OrdersModule />}
           {activeTab === 'categories' && <CategoriesModule />}
           {activeTab === 'reels' && <ReelsModule />}
+          {activeTab === 'reviews' && <ReviewsModule />}
           {activeTab === 'customers' && <CustomersModule />}
         </main>
       </div>

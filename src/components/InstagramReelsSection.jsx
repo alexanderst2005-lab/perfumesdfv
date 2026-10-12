@@ -109,7 +109,7 @@ const InstagramReelsSection = () => {
             lineHeight: 1.2,
             marginBottom: '0.8rem'
           }}>
-            DFV en primera persona
+            Momentos que se quedan en la piel
           </h2>
 
           <p style={{
@@ -120,7 +120,7 @@ const InstagramReelsSection = () => {
             fontWeight: '300',
             marginBottom: '1.8rem'
           }}>
-            Descubre reseñas, recomendaciones y la experiencia directa de nuestra comunidad.
+            Mira cómo nuestra comunidad vive, usa y recomienda sus fragancias favoritas.
           </p>
 
           <a 
