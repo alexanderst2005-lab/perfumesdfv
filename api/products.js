@@ -8,6 +8,9 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     
+    // Cache on Vercel Edge CDN for 60 seconds, and serve stale while revalidating for up to 10 minutes
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+
     // Fetch all products from the database
     const rows = await sql`SELECT * FROM products ORDER BY id ASC`;
     

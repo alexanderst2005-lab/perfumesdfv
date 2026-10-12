@@ -299,13 +299,34 @@ const Home = () => {
           </div>
 
           <div className="featured-grid">
-            {displayProducts.map(p => (
-              <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
-            ))}
+            {isLoadingProducts && displayProducts.length === 0 ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div style={{
+                    aspectRatio: '4/5',
+                    backgroundColor: '#f3f4f6',
+                    borderRadius: '6px',
+                    marginBottom: '1.2rem',
+                    animation: 'pulseSkeleton 1.5s ease-in-out infinite'
+                  }} />
+                  <div style={{ height: '12px', width: '40%', backgroundColor: '#f3f4f6', marginBottom: '8px', borderRadius: '4px' }} />
+                  <div style={{ height: '16px', width: '80%', backgroundColor: '#f3f4f6', marginBottom: '10px', borderRadius: '4px' }} />
+                  <div style={{ height: '14px', width: '50%', backgroundColor: '#f3f4f6', borderRadius: '4px' }} />
+                </div>
+              ))
+            ) : (
+              displayProducts.map(p => (
+                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
+              ))
+            )}
           </div>
         </div>
 
         <style>{`
+          @keyframes pulseSkeleton {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
           .catalog-filters { justify-content: center; min-width: max-content; }
           .featured-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem 2rem; }
           @media (max-width: 1024px) {
@@ -556,9 +577,15 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
     >
       <Link to={`/producto/${product.id}`} style={{ display: 'block', width: '100%', height: '100%' }}>
         <img 
-          src={product.image} 
+          src={
+            product.image && product.image.includes('/image/upload/') && !product.image.includes('w_')
+              ? product.image.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/')
+              : product.image
+          } 
           alt={product.name} 
           className="product-img"
+          loading="lazy"
+          decoding="async"
           style={{ 
             width: '100%', 
             height: '100%', 

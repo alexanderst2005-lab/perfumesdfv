@@ -9,10 +9,45 @@ export const ShopProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const [products, setProducts] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [products, setProducts] = useState(() => {
+    try {
+      const cached = localStorage.getItem('perfume_products_cache');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [brands, setBrands] = useState(() => {
+    try {
+      const cached = localStorage.getItem('perfume_products_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return [...new Set(parsed.map(p => p.brand))];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [categories, setCategories] = useState(() => {
+    try {
+      const cached = localStorage.getItem('perfume_categories_cache');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [isLoadingProducts, setIsLoadingProducts] = useState(() => {
+    try {
+      const cached = localStorage.getItem('perfume_products_cache');
+      return !cached;
+    } catch (e) {
+      return true;
+    }
+  });
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -34,6 +69,9 @@ export const ShopProvider = ({ children }) => {
         if (resP.ok) {
           const data = await resP.json();
           setProducts(data);
+          try {
+            localStorage.setItem('perfume_products_cache', JSON.stringify(data));
+          } catch (e) {}
           const uniqueBrands = [...new Set(data.map(p => p.brand))];
           setBrands(uniqueBrands);
         } else {
@@ -49,6 +87,9 @@ export const ShopProvider = ({ children }) => {
           const data = await resC.json();
           if (data.success) {
             setCategories(data.data);
+            try {
+              localStorage.setItem('perfume_categories_cache', JSON.stringify(data.data));
+            } catch (e) {}
           }
         }
         // If we reach here successfully
