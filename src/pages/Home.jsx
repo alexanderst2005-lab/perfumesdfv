@@ -964,27 +964,15 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
     </div>
     
     <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0 0.1rem' }}>
-      <p style={{ 
-        fontFamily: 'var(--font-sans)', 
-        fontSize: '0.58rem', 
-        fontWeight: '600', 
-        letterSpacing: '1.5px',
-        textTransform: 'uppercase', 
-        color: '#8A857D', 
-        marginBottom: '0.25rem' 
-      }}>
-        {product.brand}
-      </p>
-      
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
         <h3 style={{ 
           fontFamily: 'var(--font-serif)', 
-          fontSize: 'clamp(0.82rem, 1.3vw, 0.92rem)', 
-          fontWeight: '400', 
+          fontSize: 'clamp(0.9rem, 1.4vw, 1rem)', 
+          fontWeight: '500', 
           color: '#1A1A1A', 
           lineHeight: '1.3', 
-          marginBottom: '0.45rem',
-          height: '2.6em',
+          marginBottom: '0.3rem',
+          minHeight: '2.6em',
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 2,
@@ -993,6 +981,30 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
           {product.name}
         </h3>
       </Link>
+
+      <p style={{ 
+        fontFamily: 'var(--font-sans)', 
+        fontSize: '0.62rem', 
+        fontWeight: '600', 
+        letterSpacing: '1.5px',
+        textTransform: 'uppercase', 
+        color: '#8A857D', 
+        margin: '0 0 0.2rem 0' 
+      }}>
+        {product.brand}
+      </p>
+
+      <p style={{ 
+        fontFamily: 'var(--font-sans)', 
+        fontSize: '0.58rem', 
+        fontWeight: '400', 
+        letterSpacing: '1px',
+        textTransform: 'uppercase', 
+        color: '#B0AAA0', 
+        margin: '0 0 0.5rem 0' 
+      }}>
+        {product.category}
+      </p>
       
       <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'baseline', marginBottom: '0.5rem' }}>
         <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#0A0A0A', fontWeight: '600', letterSpacing: '-0.2px' }}>

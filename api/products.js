@@ -8,8 +8,8 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     
-    // Cache on Vercel Edge CDN for 60 seconds, and serve stale while revalidating for up to 10 minutes
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+    // No caching: admin edits must be reflected immediately
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
 
     // Fetch all products from the database
     const rows = await sql`SELECT * FROM products ORDER BY id ASC`;
@@ -32,6 +32,8 @@ export default async function handler(req, res) {
       notes: row.notes,
       concentration: row.concentration,
       inStock: row.in_stock,
+      stockCount: row.stock_count,
+      active: row.active !== false,
       isNew: row.is_new,
       isBestSeller: row.is_best_seller
     }));

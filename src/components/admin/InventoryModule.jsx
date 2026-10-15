@@ -3,7 +3,7 @@ import { useShop } from '../../context/ShopContext';
 import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X } from 'lucide-react';
 
 const InventoryModule = () => {
-  const { products, categories, isLoadingProducts } = useShop();
+  const { allProducts: products, refreshProducts, categories, isLoadingProducts } = useShop();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -50,7 +50,8 @@ const InventoryModule = () => {
       description: p.description || '', 
       occasion: p.occasion || '',
       concentration: p.concentration || '', stockCount: p.stockCount || 10, 
-      inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || []
+      inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || [],
+      notes: p.notes || {}, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller
     });
     const existingImages = [];
     if (p.image) existingImages.push(p.image);
@@ -104,6 +105,18 @@ const InventoryModule = () => {
   };
 
   const handleSave = async () => {
+    if (!formData.name?.trim() || !formData.brand?.trim()) {
+      alert('El nombre y la marca son obligatorios');
+      return;
+    }
+    if (!formData.category) {
+      alert('Selecciona una categoría');
+      return;
+    }
+    if (!formData.price || isNaN(parseInt(formData.price))) {
+      alert('Ingresa un precio válido');
+      return;
+    }
     setIsSaving(true);
     try {
       let finalImagesList = [...imagePreviews];
@@ -136,7 +149,10 @@ const InventoryModule = () => {
         price: finalPrice,
         oldPrice: finalOldPrice,
         discount: finalDiscount,
-        stockCount: 10,
+        stockCount: formData.stockCount || 10,
+        notes: formData.notes || {},
+        isNew: !!formData.isNew,
+        isBestSeller: !!formData.isBestSeller,
         sizes: parsedSizes,
         image: finalImageUrl,
         images: secondaryImages
@@ -148,11 +164,13 @@ const InventoryModule = () => {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
-      if (data.success) {
-        window.location.reload();
+      let data = {};
+      try { data = await res.json(); } catch (e) { /* non-JSON response */ }
+      if (res.ok && data.success) {
+        await refreshProducts();
+        setIsModalOpen(false);
       } else {
-        alert('Error: ' + data.error);
+        alert('Error: ' + (data.details || data.error || `HTTP ${res.status}`));
       }
 
     } catch (error) {
@@ -212,7 +230,7 @@ const InventoryModule = () => {
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify(updatedProduct)
                         });
-                        if (res.ok) window.location.reload();
+                        if (res.ok) await refreshProducts();
                         else alert('Error al actualizar el estado');
                       } catch(err) { alert('Error de red'); }
                     }}
@@ -251,7 +269,7 @@ const InventoryModule = () => {
                     if(window.confirm('¿Seguro que deseas eliminar definitivamente este producto?')) {
                       try {
                         const res = await fetch('/api/admin/products', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: p.id}) });
-                        if(res.ok) window.location.reload();
+                        if(res.ok) await refreshProducts();
                         else alert('Error al eliminar');
                       } catch(e) { alert('Error de red'); }
                     }

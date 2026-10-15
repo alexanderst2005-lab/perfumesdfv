@@ -9,7 +9,7 @@ export const ShopProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const [products, setProducts] = useState(() => {
+  const [allProducts, setProducts] = useState(() => {
     try {
       const cached = localStorage.getItem('perfume_products_cache');
       return cached ? JSON.parse(cached) : [];
@@ -17,6 +17,19 @@ export const ShopProvider = ({ children }) => {
       return [];
     }
   });
+
+  // Storefront only shows active products; admin uses allProducts
+  const products = allProducts.filter(p => p.active !== false);
+
+  const refreshProducts = async () => {
+    const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo recargar los productos');
+    const data = await res.json();
+    setProducts(data);
+    setBrands([...new Set(data.map(p => p.brand))]);
+    try { localStorage.setItem('perfume_products_cache', JSON.stringify(data)); } catch (e) {}
+    return data;
+  };
 
   const [brands, setBrands] = useState(() => {
     try {
@@ -62,7 +75,7 @@ export const ShopProvider = ({ children }) => {
     const fetchData = async (retries = 2) => {
       try {
         const [resP, resC] = await Promise.all([
-          fetch('/api/products'),
+          fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' }),
           fetch('/api/categories')
         ]);
         
@@ -166,7 +179,7 @@ export const ShopProvider = ({ children }) => {
 
   return (
     <ShopContext.Provider value={{
-      products, brands, categories, isLoadingProducts,
+      products, allProducts, refreshProducts, brands, categories, isLoadingProducts,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,
       cartTotal, cartCount
