@@ -76,8 +76,8 @@ const ProductDetail = () => {
               }}
             >
               {images.map((img, idx) => (
-                <div key={idx} className="gallery-slide" style={{ flex: '0 0 88%', scrollSnapAlign: 'center', position: 'relative', overflow: 'hidden', borderRadius: '4px', backgroundColor: 'var(--color-cream)' }}>
-                  <img src={img} alt={`${product.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div key={idx} className="gallery-slide" style={{ flex: '0 0 88%', scrollSnapAlign: 'center', position: 'relative', overflow: 'hidden', borderRadius: '4px', backgroundColor: '#FFFFFF', aspectRatio: '4/5' }}>
+                  <img src={img} alt={`${product.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
               ))}
             </div>
@@ -105,13 +105,13 @@ const ProductDetail = () => {
           {/* Info */}
           <div className="info-section" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.2rem' }}>
             <div>
-              <p style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: '0.3rem', fontWeight: '500' }}>
-                {product.brand}
-              </p>
-              <h1 className="product-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '0.6rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.25' }}>
+              <h1 className="product-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '0.4rem', color: 'var(--color-black)', textTransform: 'uppercase', lineHeight: '1.25' }}>
                 {product.name}
               </h1>
-              <p style={{ fontSize: '0.78rem', color: '#666', letterSpacing: '0.5px' }}>
+              <p style={{ fontSize: '0.78rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: '0.25rem', fontWeight: '600' }}>
+                {product.brand}
+              </p>
+              <p style={{ fontSize: '0.72rem', color: '#A8A29A', letterSpacing: '1px', textTransform: 'uppercase' }}>
                 {product.category}
               </p>
             </div>

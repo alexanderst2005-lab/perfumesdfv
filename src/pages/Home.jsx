@@ -831,7 +831,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
         position: 'relative', 
         aspectRatio: '4/5', 
         overflow: 'hidden', 
-        backgroundColor: '#F7F6F3', 
+        backgroundColor: '#FFFFFF', 
         borderRadius: '8px',
         marginBottom: '0.75rem'
       }}
@@ -850,7 +850,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
           style={{ 
             width: '100%', 
             height: '100%', 
-            objectFit: 'cover',
+            objectFit: 'contain',
             transition: 'transform 0.5s ease'
           }} 
         />
