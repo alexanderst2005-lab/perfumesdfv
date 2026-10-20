@@ -5,6 +5,10 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import WhatsAppButton from './components/WhatsAppButton';
+import Maintenance from './components/Maintenance';
+
+// Pon en false para volver a mostrar la página
+const MAINTENANCE_MODE = true;
 
 import Home from './pages/Home';
 import Store from './pages/Store';
@@ -50,6 +54,7 @@ function AppInner() {
 }
 
 function App() {
+  if (MAINTENANCE_MODE) return <Maintenance />;
   return (
     <ShopProvider>
       <Router>
