@@ -20,11 +20,7 @@ export default function Maintenance() {
         </div>
 
         <h1 className="mnt-title">Página no disponible temporalmente</h1>
-        <p className="mnt-text">
-          Estamos haciendo mejoras para ofrecerte una mejor experiencia.
-          <br />
-          Volveremos muy pronto.
-        </p>
+        <p className="mnt-text">Volveremos muy pronto</p>
 
         <div className="mnt-dots" aria-hidden="true">
           <span /><span /><span />

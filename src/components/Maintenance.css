@@ -89,9 +89,17 @@
 
 .mnt-text {
   margin: 0;
-  font-size: clamp(0.95rem, 3.4vw, 1.1rem);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.78);
+  font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #e8c874;
+  text-shadow: 0 0 18px rgba(232, 200, 116, 0.6);
+  animation: mntGlow 2.5s ease-in-out infinite;
+}
+@keyframes mntGlow {
+  0%, 100% { opacity: 0.65; text-shadow: 0 0 8px rgba(232, 200, 116, 0.3); }
+  50% { opacity: 1; text-shadow: 0 0 24px rgba(232, 200, 116, 0.9); }
 }
 
 .mnt-dots {
