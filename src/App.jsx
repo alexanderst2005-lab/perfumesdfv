@@ -8,7 +8,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import Maintenance from './components/Maintenance';
 
 // Pon en false para volver a mostrar la página
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 import Home from './pages/Home';
 import Store from './pages/Store';
