@@ -44,7 +44,10 @@ const ProductDetail = () => {
   );
 
   const images = [product.image, ...(product.images || [])];
-  let related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
+  const fam = (product.family || '').trim().toLowerCase();
+  const sameFamily = fam ? products.filter(p => p.id !== product.id && (p.family || '').trim().toLowerCase() === fam) : [];
+  const sameCategory = products.filter(p => p.id !== product.id && p.category === product.category && !sameFamily.includes(p));
+  let related = [...sameFamily, ...sameCategory].slice(0, 4);
   if (related.length === 0) {
     related = products.filter(p => p.id !== product.id).slice(0, 4);
   }

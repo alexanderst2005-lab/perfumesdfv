@@ -14,6 +14,8 @@ const Store = () => {
   // Filters state
   const [category, setCategory] = useState(initCat);
   const [brand, setBrand] = useState('Todas');
+  const [family, setFamily] = useState(params.get('family') || 'Todas');
+  const [priceRange, setPriceRange] = useState('Todos');
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState('destacados'); // destacados, recientes, precio_asc, precio_desc, nombre
   const [filterOpen, setFilterOpen] = useState(false);
@@ -30,7 +32,24 @@ const Store = () => {
   // Reset page whenever filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [category, brand, query, sortBy]);
+  }, [category, brand, family, priceRange, query, sortBy]);
+
+  const PRICE_RANGES = [
+    { label: 'Todos', min: 0, max: Infinity },
+    { label: 'Hasta $100.000', min: 0, max: 100000 },
+    { label: '$100.000 - $200.000', min: 100000, max: 200000 },
+    { label: '$200.000 - $300.000', min: 200000, max: 300000 },
+    { label: 'Más de $300.000', min: 300000, max: Infinity },
+  ];
+
+  const families = useMemo(() => {
+    const set = new Map();
+    products.forEach(p => {
+      const f = (p.family || '').trim();
+      if (f && !set.has(f.toLowerCase())) set.set(f.toLowerCase(), f);
+    });
+    return [...set.values()].sort((a, b) => a.localeCompare(b));
+  }, [products]);
 
   const categories = ['Todos', ...dbCategories.map(c => c.name), 'Ofertas'];
 
@@ -42,10 +61,15 @@ const Store = () => {
                        (category === 'Ofertas' && p.discount);
       const matchBrand = brand === 'Todas' || 
                          (p.brand && p.brand.toLowerCase() === brand.toLowerCase());
+      const matchFamily = family === 'Todas' ||
+                          ((p.family || '').trim().toLowerCase() === family.toLowerCase());
+      const range = PRICE_RANGES.find(r => r.label === priceRange) || PRICE_RANGES[0];
+      const price = Number(p.price) || 0;
+      const matchPrice = price >= range.min && price <= range.max;
       const matchQ = !query || 
                      (p.name && p.name.toLowerCase().includes(query.toLowerCase())) || 
                      (p.brand && p.brand.toLowerCase().includes(query.toLowerCase()));
-      return matchCat && matchBrand && matchQ;
+      return matchCat && matchBrand && matchFamily && matchPrice && matchQ;
     });
 
     switch (sortBy) {
@@ -64,11 +88,13 @@ const Store = () => {
     }
 
     return result;
-  }, [products, category, brand, query, sortBy]);
+  }, [products, category, brand, family, priceRange, query, sortBy]);
 
   const clearFilters = () => {
     setCategory('Todos');
     setBrand('Todas');
+    setFamily('Todas');
+    setPriceRange('Todos');
     setQuery('');
     setSortBy('destacados');
     setFilterOpen(false);
@@ -92,7 +118,7 @@ const Store = () => {
             <input
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Buscar por nombre o marca…"
+              placeholder="Buscar por nombre o casa…"
               style={{
                 width: '100%',
                 padding: '0.85rem 1rem 0.85rem 2.8rem',
@@ -145,7 +171,7 @@ const Store = () => {
           <span style={{ fontSize: '0.8rem', color: 'var(--color-gray)', letterSpacing: '0.5px' }}>
             {filteredAndSorted.length} {filteredAndSorted.length === 1 ? 'producto encontrado' : 'productos encontrados'}
           </span>
-          {(category !== 'Todos' || brand !== 'Todas' || query !== '') && (
+          {(category !== 'Todos' || brand !== 'Todas' || family !== 'Todas' || priceRange !== 'Todos' || query !== '') && (
             <button onClick={clearFilters} style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-black)', borderBottom: '1px solid', paddingBottom: '2px', cursor: 'pointer', background: 'transparent' }}>
               Limpiar filtros
             </button>
@@ -327,12 +353,42 @@ const Store = () => {
               </div>
             </div>
 
+            <div style={{ marginBottom: '2rem' }}>
+              <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Precio</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                {PRICE_RANGES.map(r => (
+                  <label key={r.label} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
+                    <input type="radio" name="price" checked={priceRange === r.label} onChange={() => setPriceRange(r.label)} style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }} />
+                    <span style={{ fontSize: '0.9rem', color: priceRange === r.label ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: priceRange === r.label ? '500' : '400' }}>{r.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {families.length > 0 && (
+              <div style={{ marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Línea olfativa (similares)</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
+                    <input type="radio" name="family" checked={family === 'Todas'} onChange={() => setFamily('Todas')} style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }} />
+                    <span style={{ fontSize: '0.9rem', color: family === 'Todas' ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: family === 'Todas' ? '500' : '400' }}>Todas las líneas</span>
+                  </label>
+                  {families.map(f => (
+                    <label key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
+                      <input type="radio" name="family" checked={family.toLowerCase() === f.toLowerCase()} onChange={() => setFamily(f)} style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }} />
+                      <span style={{ fontSize: '0.9rem', color: family.toLowerCase() === f.toLowerCase() ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: family.toLowerCase() === f.toLowerCase() ? '500' : '400' }}>{f}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div style={{ marginBottom: '3rem' }}>
-              <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Marcas</p>
+              <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Casa</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
                   <input type="radio" name="brand" checked={brand === 'Todas'} onChange={() => setBrand('Todas')} style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }} />
-                  <span style={{ fontSize: '0.9rem', color: brand === 'Todas' ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: brand === 'Todas' ? '500' : '400' }}>Todas las marcas</span>
+                  <span style={{ fontSize: '0.9rem', color: brand === 'Todas' ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: brand === 'Todas' ? '500' : '400' }}>Todas las casas</span>
                 </label>
                 {brands.map(b => (
                   <label key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
