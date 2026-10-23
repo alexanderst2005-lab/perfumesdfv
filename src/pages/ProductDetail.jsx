@@ -387,7 +387,7 @@ const ProductDetail = () => {
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
               <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '600', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                Perfumes similares
+                Te podría interesar
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.5rem' }} className="related-grid">
