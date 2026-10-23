@@ -44,10 +44,17 @@ const ProductDetail = () => {
   );
 
   const images = [product.image, ...(product.images || [])];
-  const fam = (product.family || '').trim().toLowerCase();
-  const sameFamily = fam ? products.filter(p => p.id !== product.id && (p.family || '').trim().toLowerCase() === fam) : [];
-  const sameCategory = products.filter(p => p.id !== product.id && p.category === product.category && !sameFamily.includes(p));
-  let related = [...sameFamily, ...sameCategory].slice(0, 4);
+  const tokens = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z]+/).filter(w => w.length > 2);
+  const myWords = new Set(tokens(product.family));
+  const scored = products
+    .filter(p => p.id !== product.id)
+    .map(p => {
+      const shared = tokens(p.family).filter(w => myWords.has(w)).length;
+      return { p, score: shared * 10 + (p.category === product.category ? 1 : 0) };
+    })
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score);
+  let related = scored.slice(0, 4).map(x => x.p);
   if (related.length === 0) {
     related = products.filter(p => p.id !== product.id).slice(0, 4);
   }
@@ -380,7 +387,7 @@ const ProductDetail = () => {
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
               <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '600', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                Te podría interesar
+                Perfumes similares
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.5rem' }} className="related-grid">

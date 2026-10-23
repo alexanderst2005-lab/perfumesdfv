@@ -109,7 +109,7 @@ const InventoryModule = () => {
 
   const handleSave = async () => {
     if (!formData.name?.trim() || !formData.brand?.trim()) {
-      alert('El nombre y la marca son obligatorios');
+      alert('El nombre y la casa son obligatorios');
       return;
     }
     if (!formData.category) {
@@ -343,7 +343,7 @@ const InventoryModule = () => {
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
-                    Marca
+                    Casa
                   </label>
                   <input type="text" placeholder="Ej: Lattafa, Armaf, Dior..." value={formData.brand} onChange={e => setFormData({...formData, brand: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
                 </div>

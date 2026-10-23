@@ -365,24 +365,6 @@ const Store = () => {
               </div>
             </div>
 
-            {families.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Línea olfativa (similares)</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
-                    <input type="radio" name="family" checked={family === 'Todas'} onChange={() => setFamily('Todas')} style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }} />
-                    <span style={{ fontSize: '0.9rem', color: family === 'Todas' ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: family === 'Todas' ? '500' : '400' }}>Todas las líneas</span>
-                  </label>
-                  {families.map(f => (
-                    <label key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
-                      <input type="radio" name="family" checked={family.toLowerCase() === f.toLowerCase()} onChange={() => setFamily(f)} style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }} />
-                      <span style={{ fontSize: '0.9rem', color: family.toLowerCase() === f.toLowerCase() ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: family.toLowerCase() === f.toLowerCase() ? '500' : '400' }}>{f}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div style={{ marginBottom: '3rem' }}>
               <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Casa</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
