@@ -201,7 +201,7 @@ const ProductDetail = () => {
               <div style={{
                 marginTop: '1rem',
                 padding: '0.85rem 1rem',
-                backgroundColor: '#FAF8F5',
+                backgroundColor: '#FFFFFF',
                 border: '1px solid #ECE7DE',
                 borderRadius: '6px',
                 display: 'flex',
