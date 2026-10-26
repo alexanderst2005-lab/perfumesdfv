@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ShopProvider } from './context/ShopContext';
 import Header from './components/Header';
@@ -12,12 +12,12 @@ const MAINTENANCE_MODE = false;
 
 import Home from './pages/Home';
 import Store from './pages/Store';
-import ProductDetail from './pages/ProductDetail';
-import Favorites from './pages/Favorites';
-import Checkout from './pages/Checkout';
-import Account from './pages/Account';
-import AdminDashboard from './pages/AdminDashboard';
-import Contacto from './pages/Contacto';
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Favorites = lazy(() => import('./pages/Favorites'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Account = lazy(() => import('./pages/Account'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Contacto = lazy(() => import('./pages/Contacto'));
 
 // Home handles its own marginTop via negative hero offset
 // Other pages handle their own paddingTop
@@ -36,6 +36,7 @@ function AppInner() {
       {!isAdmin && <Header />}
       {!isAdmin && <CartDrawer />}
       <main style={{ flex: 1, marginTop: isHome || isAdmin ? 0 : '106px' }}>
+        <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tienda" element={<Store />} />
@@ -46,6 +47,7 @@ function AppInner() {
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
+        </Suspense>
       </main>
       {!isAdmin && <Footer />}
       {!isAdmin && <WhatsAppButton />}

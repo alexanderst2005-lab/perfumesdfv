@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
 import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote } from 'lucide-react';
-import InventoryModule from '../components/admin/InventoryModule';
-import OrdersModule from '../components/admin/OrdersModule';
-import SettingsModule from '../components/admin/SettingsModule';
-import CampaignsModule from '../components/admin/CampaignsModule';
-import CustomersModule from '../components/admin/CustomersModule';
-import SalesModule from '../components/admin/SalesModule';
-import CategoriesModule from '../components/admin/CategoriesModule';
-import ContentModule from '../components/admin/ContentModule';
-import ReelsModule from '../components/admin/ReelsModule';
-import ReviewsModule from '../components/admin/ReviewsModule';
+const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
+const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
+const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
+const ReelsModule = lazy(() => import('../components/admin/ReelsModule'));
+const ReviewsModule = lazy(() => import('../components/admin/ReviewsModule'));
+const CustomersModule = lazy(() => import('../components/admin/CustomersModule'));
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -364,12 +360,14 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {activeTab === 'inventory' && <InventoryModule />}
-          {activeTab === 'orders' && <OrdersModule />}
-          {activeTab === 'categories' && <CategoriesModule />}
-          {activeTab === 'reels' && <ReelsModule />}
-          {activeTab === 'reviews' && <ReviewsModule />}
-          {activeTab === 'customers' && <CustomersModule />}
+          <Suspense fallback={<p style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Cargando…</p>}>
+            {activeTab === 'inventory' && <InventoryModule />}
+            {activeTab === 'orders' && <OrdersModule />}
+            {activeTab === 'categories' && <CategoriesModule />}
+            {activeTab === 'reels' && <ReelsModule />}
+            {activeTab === 'reviews' && <ReviewsModule />}
+            {activeTab === 'customers' && <CustomersModule />}
+          </Suspense>
         </main>
       </div>
     </div>

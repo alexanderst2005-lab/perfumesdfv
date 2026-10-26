@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SlidersHorizontal, ChevronDown, X, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
@@ -21,6 +21,19 @@ const Store = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const PRODUCTS_PER_PAGE = 16; // Entre 15 y 20 productos por página según requerimiento
+  const gridTopRef = useRef(null);
+
+  // Cambia de página y deja la vista al inicio del catálogo (nunca en el footer)
+  const goToPage = (page) => {
+    setCurrentPage(page);
+    requestAnimationFrame(() => {
+      const el = gridTopRef.current;
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 130;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+      }
+    });
+  };
 
   // Sync state when URL params change
   useEffect(() => {
@@ -167,7 +180,7 @@ const Store = () => {
         </div>
 
         {/* Results Info */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '1rem' }}>
+        <div ref={gridTopRef} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '1rem' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--color-gray)', letterSpacing: '0.5px' }}>
             {filteredAndSorted.length} {filteredAndSorted.length === 1 ? 'producto encontrado' : 'productos encontrados'}
           </span>
@@ -194,7 +207,7 @@ const Store = () => {
           </div>
         ) : (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }} className="store-grid">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
               {filteredAndSorted
                 .slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE)
                 .map(p => (
@@ -221,10 +234,7 @@ const Store = () => {
               }}>
                 {/* Flecha Anterior */}
                 <button
-                  onClick={() => {
-                    setCurrentPage(prev => Math.max(1, prev - 1));
-                    window.scrollTo({ top: 180, behavior: 'smooth' });
-                  }}
+                  onClick={() => goToPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
                   aria-label="Página anterior"
                   style={{
@@ -252,10 +262,7 @@ const Store = () => {
                   return (
                     <button
                       key={pageNum}
-                      onClick={() => {
-                        setCurrentPage(pageNum);
-                        window.scrollTo({ top: 180, behavior: 'smooth' });
-                      }}
+                      onClick={() => goToPage(pageNum)}
                       style={{
                         width: '40px',
                         height: '40px',
@@ -277,10 +284,7 @@ const Store = () => {
 
                 {/* Flecha Siguiente */}
                 <button
-                  onClick={() => {
-                    setCurrentPage(prev => Math.min(Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE), prev + 1));
-                    window.scrollTo({ top: 180, behavior: 'smooth' });
-                  }}
+                  onClick={() => goToPage(Math.min(Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE), currentPage + 1))}
                   disabled={currentPage >= Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE)}
                   aria-label="Página siguiente"
                   style={{
