@@ -9,12 +9,12 @@ const TOTAL_HEADER = 106;
 
 // Shows the small (already cached from the product card) version instantly and fades the
 // large one in on top once it loads, so a previous product's image never lingers.
-const ProgressiveImg = ({ src, alt }) => {
+const ProgressiveImg = ({ src, alt, placeholderWidth = 500 }) => {
   const [loaded, setLoaded] = useState(false);
   const layer = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem' };
   return (
     <>
-      <img src={optimizeImg(src, 500)} alt="" aria-hidden="true" style={layer} />
+      <img src={optimizeImg(src, placeholderWidth)} alt="" aria-hidden="true" style={layer} />
       <img
         src={optimizeImg(src, 900)}
         alt={alt}
@@ -25,6 +25,22 @@ const ProgressiveImg = ({ src, alt }) => {
       />
     </>
   );
+};
+
+// Downloads every gallery image in the background as soon as a product opens,
+// so switching between photos is instant.
+const GalleryPreloader = ({ images }) => {
+  React.useEffect(() => {
+    const loaders = images.map(src => {
+      const big = new Image();
+      big.src = optimizeImg(src, 900);
+      const thumb = new Image();
+      thumb.src = optimizeImg(src, 150);
+      return [big, thumb];
+    });
+    return () => { loaders.length = 0; };
+  }, [images]);
+  return null;
 };
 
 const ProductDetail = () => {
@@ -158,6 +174,7 @@ const ProductDetail = () => {
 
   return (
     <div className="product-page-wrapper" style={{ paddingTop: '0.8rem' }}>
+      <GalleryPreloader images={images} />
 
       {/* Main Grid */}
       <div className="container product-detail-container" style={{ paddingBottom: '4rem' }}>
@@ -190,6 +207,7 @@ const ProductDetail = () => {
                   key={`${product.id}-${imgIdx}`}
                   src={images[imgIdx] || images[0]}
                   alt={`${product.name} ${imgIdx + 1}`}
+                  placeholderWidth={imgIdx === 0 ? 500 : 150}
                 />
               ) : (
                 <div style={{ color: '#999', fontSize: '0.85rem' }}>Sin imagen</div>
