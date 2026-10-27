@@ -90,9 +90,13 @@ export const ShopProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async (retries = 2) => {
       try {
+        // Reuse the request started in index.html (if any); otherwise fetch normally.
+        const early = window.__early;
+        window.__early = null;
+        const [earlyP, earlyC] = early ? await Promise.all([early.products, early.categories]) : [null, null];
         const [resP, resC] = await Promise.all([
-          fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' }),
-          fetch(`/api/categories?t=${Date.now()}`, { cache: 'no-store' })
+          earlyP || fetch('/api/products'),
+          earlyC || fetch('/api/categories')
         ]);
         
         if (resP.ok) {

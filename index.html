@@ -1,10 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>perfumeria</title>
+    <title>DFV Perfumes</title>
+    <meta name="description" content="DFV Perfumes - Fragancias árabes y de nicho con envíos a todo el país." />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    <link rel="preload" as="image" href="/hero_campaign_1.jpg" fetchpriority="high" />
+    <script>
+      // Start downloading products & categories right away, in parallel with the JS bundle.
+      // ShopContext picks these promises up so the catalog doesn't wait for React to boot.
+      (function () {
+        try {
+          window.__early = {
+            products: fetch('/api/products').catch(function () { return null; }),
+            categories: fetch('/api/categories').catch(function () { return null; })
+          };
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

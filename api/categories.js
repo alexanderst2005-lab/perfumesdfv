@@ -1,8 +1,13 @@
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
-  // Always prevent caching on categories API so admin changes reflect immediately
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  // GET is cached at the CDN (admin refreshes bypass it with a unique ?t= query).
+  // Any write method is never cached so admin changes reflect immediately.
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=600');
+  } else {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  }
 
   try {
     const sql = neon(process.env.DATABASE_URL);

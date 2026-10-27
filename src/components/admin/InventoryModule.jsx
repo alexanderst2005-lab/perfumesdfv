@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useShop } from '../../context/ShopContext';
 import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X } from 'lucide-react';
+import { optimizeImg } from '../../utils/img';
 
 const InventoryModule = () => {
   const { allProducts: products, refreshProducts, categories, isLoadingProducts } = useShop();
@@ -287,7 +288,7 @@ const InventoryModule = () => {
             ) : products.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <img src={p.image} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                  <img src={optimizeImg(p.image, 100)} alt={p.name} loading="lazy" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
                   <div>
                     <p style={{ fontWeight: '600', color: '#111827' }}>{p.name}</p>
                     <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{p.brand} | {p.category}</p>

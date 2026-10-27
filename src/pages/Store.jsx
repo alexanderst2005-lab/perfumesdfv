@@ -197,10 +197,16 @@ const Store = () => {
 
         {/* Grid */}
         {isLoadingProducts ? (
-          <div style={{ textAlign: 'center', padding: '6rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ width: '40px', height: '40px', border: '3px solid #f3f4f6', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '1.5rem' }}></div>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--color-black)' }}>Cargando catálogo...</h3>
-            <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem' }}>Preparando las mejores fragancias para ti.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ aspectRatio: '4/5', backgroundColor: '#f3f4f6', borderRadius: '8px', marginBottom: '0.75rem', animation: 'pulseSkeleton 1.5s ease-in-out infinite' }} />
+                <div style={{ height: '12px', width: '40%', backgroundColor: '#f3f4f6', marginBottom: '8px', borderRadius: '4px' }} />
+                <div style={{ height: '16px', width: '80%', backgroundColor: '#f3f4f6', marginBottom: '10px', borderRadius: '4px' }} />
+                <div style={{ height: '14px', width: '50%', backgroundColor: '#f3f4f6', borderRadius: '4px' }} />
+              </div>
+            ))}
+            <style>{`@keyframes pulseSkeleton { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
           </div>
         ) : filteredAndSorted.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '6rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

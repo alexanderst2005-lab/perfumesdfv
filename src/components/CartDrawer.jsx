@@ -3,6 +3,7 @@ import { X, Trash2 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { optimizeImg } from '../utils/img';
 
 const CartDrawer = () => {
   const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal } = useShop();
@@ -32,7 +33,7 @@ const CartDrawer = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {cart.map(item => (
                     <div key={`${item.id}-${item.selectedSize}`} style={{ display: 'flex', gap: '1rem' }}>
-                      <img src={item.image} alt={item.name} style={{ width: '80px', height: '100px', objectFit: 'cover' }} />
+                      <img src={optimizeImg(item.image, 200)} alt={item.name} loading="lazy" style={{ width: '80px', height: '100px', objectFit: 'cover' }} />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ fontSize: '0.9rem', marginBottom: '0.2rem' }}>{item.name}</h4>
                         {item.selectedSize ? (

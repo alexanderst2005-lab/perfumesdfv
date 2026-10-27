@@ -5,6 +5,7 @@ import { useShop } from '../context/ShopContext';
 import TestimonialsSection from '../components/TestimonialsSection';
 import InstagramReelsSection from '../components/InstagramReelsSection';
 import OffersSection from '../components/OffersSection';
+import { optimizeImg } from '../utils/img';
 
 const HERO_SLIDES = [
   {
@@ -844,11 +845,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
     >
       <Link to={`/producto/${product.id}`} style={{ display: 'block', width: '100%', height: '100%' }}>
         <img 
-          src={
-            product.image && product.image.includes('/image/upload/') && !product.image.includes('w_')
-              ? product.image.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/')
-              : product.image
-          } 
+          src={optimizeImg(product.image, 500)} 
           alt={product.name} 
           className="product-img"
           loading="lazy"

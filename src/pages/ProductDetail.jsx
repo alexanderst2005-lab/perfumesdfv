@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Heart, Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
+import { optimizeImg } from '../utils/img';
 
 const TOTAL_HEADER = 106;
 
@@ -167,8 +168,10 @@ const ProductDetail = () => {
               {images.length > 0 ? (
                 <img 
                   key={imgIdx} 
-                  src={images[imgIdx] || images[0]} 
+                  src={optimizeImg(images[imgIdx] || images[0], 900)} 
                   alt={`${product.name} ${imgIdx + 1}`} 
+                  fetchPriority="high"
+                  decoding="async"
                   className="gallery-main-img"
                   style={{ 
                     width: '100%', 
