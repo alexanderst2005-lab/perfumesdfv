@@ -14,6 +14,7 @@ const ProductDetail = () => {
   const [size, setSize] = useState(() => (Array.isArray(product?.sizes) ? product.sizes.find(s => s && String(s).trim()) : '') || '');
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
 
   React.useEffect(() => {
     if (product) {
@@ -43,7 +44,75 @@ const ProductDetail = () => {
     </div>
   );
 
-  const images = [product.image, ...(product.images || [])];
+  // Deduplicate and sanitize images preserving strict insertion order
+  const images = React.useMemo(() => {
+    if (!product) return [];
+    const list = [];
+    if (product.image && typeof product.image === 'string' && product.image.trim()) {
+      list.push(product.image.trim());
+    }
+    if (product.images) {
+      let extra = [];
+      if (Array.isArray(product.images)) {
+        extra = product.images;
+      } else if (typeof product.images === 'string') {
+        try {
+          const parsed = JSON.parse(product.images);
+          if (Array.isArray(parsed)) extra = parsed;
+          else if (typeof parsed === 'string' && parsed.trim()) extra = [parsed.trim()];
+        } catch {
+          if (product.images.trim()) extra = [product.images.trim()];
+        }
+      }
+      extra.forEach(img => {
+        if (img && typeof img === 'string' && img.trim()) {
+          list.push(img.trim());
+        }
+      });
+    }
+    return Array.from(new Set(list));
+  }, [product?.id, product?.image, product?.images]);
+
+  // Keep imgIdx within bounds if images change
+  React.useEffect(() => {
+    if (imgIdx >= images.length && images.length > 0) {
+      setImgIdx(0);
+    }
+  }, [images.length, imgIdx]);
+
+  const handlePrevImg = (e) => {
+    if (e) e.stopPropagation();
+    if (images.length <= 1) return;
+    setImgIdx(prev => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleNextImg = (e) => {
+    if (e) e.stopPropagation();
+    if (images.length <= 1) return;
+    setImgIdx(prev => (prev + 1) % images.length);
+  };
+
+  const handleTouchStart = (e) => {
+    if (images.length > 1 && e.touches?.[0]) {
+      setTouchStartX(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX === null || images.length <= 1) return;
+    const touchEndX = e.changedTouches?.[0]?.clientX;
+    if (touchEndX !== undefined) {
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) {
+          handleNextImg();
+        } else {
+          handlePrevImg();
+        }
+      }
+    }
+    setTouchStartX(null);
+  };
   const tokens = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z]+/).filter(w => w.length > 2);
   const myWords = new Set(tokens(product.family));
   const scored = products
@@ -75,39 +144,175 @@ const ProductDetail = () => {
 
           {/* Gallery */}
           <div className="gallery-section">
+            {/* Main Stage Image Frame */}
             <div 
-              className="gallery-scroll-container no-scrollbar"
-              style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', gap: '1rem', padding: '0 1rem' }}
-              onScroll={(e) => {
-                const scrollLeft = e.target.scrollLeft;
-                const width = e.target.offsetWidth;
-                const newIdx = Math.round(scrollLeft / width);
-                if (newIdx !== imgIdx) setImgIdx(newIdx);
+              className="gallery-main-frame"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '1 / 1',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '12px',
+                border: '1px solid #ECE7DE',
+                boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.04)',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                userSelect: 'none'
               }}
             >
-              {images.map((img, idx) => (
-                <div key={idx} className="gallery-slide" style={{ flex: '0 0 88%', scrollSnapAlign: 'center', position: 'relative', overflow: 'hidden', borderRadius: '4px', backgroundColor: '#FFFFFF', aspectRatio: '4/5' }}>
-                  <img src={img} alt={`${product.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              {images.length > 0 ? (
+                <img 
+                  key={imgIdx} 
+                  src={images[imgIdx] || images[0]} 
+                  alt={`${product.name} ${imgIdx + 1}`} 
+                  className="gallery-main-img"
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'contain', 
+                    padding: '1.25rem',
+                    transition: 'opacity 0.25s ease'
+                  }} 
+                />
+              ) : (
+                <div style={{ color: '#999', fontSize: '0.85rem' }}>Sin imagen</div>
+              )}
+
+              {/* Prev / Next Circular Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePrevImg}
+                    aria-label="Imagen anterior"
+                    className="gallery-nav-btn gallery-nav-prev"
+                    style={{
+                      position: 'absolute',
+                      left: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 3,
+                      transition: 'all 0.2s ease',
+                      color: '#111'
+                    }}
+                  >
+                    <ChevronLeft size={20} strokeWidth={2.2} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleNextImg}
+                    aria-label="Imagen siguiente"
+                    className="gallery-nav-btn gallery-nav-next"
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid rgba(0, 0, 0, 0.08)',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 3,
+                      transition: 'all 0.2s ease',
+                      color: '#111'
+                    }}
+                  >
+                    <ChevronRight size={20} strokeWidth={2.2} />
+                  </button>
+                </>
+              )}
+
+              {/* Counter Badge */}
+              {images.length > 1 && (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    backgroundColor: 'rgba(17, 17, 17, 0.75)',
+                    color: '#FFFFFF',
+                    fontSize: '0.72rem',
+                    fontWeight: '600',
+                    letterSpacing: '1.5px',
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: '20px',
+                    backdropFilter: 'blur(6px)',
+                    zIndex: 2
+                  }}
+                >
+                  {imgIdx + 1} / {images.length}
                 </div>
-              ))}
+              )}
             </div>
-            
-            {/* Gallery Indicator */}
+
+            {/* Thumbnails Row */}
             {images.length > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem', color: 'var(--color-gray)' }}>
-                <button onClick={() => {
-                  const container = document.querySelector('.gallery-scroll-container');
-                  if(container) container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
-                }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
-                  <ChevronLeft size={16} />
-                </button>
-                <span style={{ fontSize: '0.85rem', letterSpacing: '2px' }}>{imgIdx + 1} / {images.length}</span>
-                <button onClick={() => {
-                  const container = document.querySelector('.gallery-scroll-container');
-                  if(container) container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
-                }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'transparent', border: 'none', color: 'var(--color-gray)' }}>
-                  <ChevronRight size={16} />
-                </button>
+              <div 
+                className="gallery-thumbnails no-scrollbar"
+                style={{
+                  display: 'flex',
+                  gap: '0.65rem',
+                  marginTop: '0.85rem',
+                  overflowX: 'auto',
+                  padding: '4px 2px',
+                  justifyContent: images.length <= 5 ? 'center' : 'flex-start'
+                }}
+              >
+                {images.map((img, idx) => {
+                  const isActive = idx === imgIdx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setImgIdx(idx)}
+                      aria-label={`Ver imagen ${idx + 1}`}
+                      className="gallery-thumb-btn"
+                      style={{
+                        position: 'relative',
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: '8px',
+                        backgroundColor: '#FFFFFF',
+                        border: isActive ? '2px solid #111111' : '1px solid #E5E7EB',
+                        boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.18)' : 'none',
+                        transform: isActive ? 'scale(1.04)' : 'scale(1)',
+                        opacity: isActive ? 1 : 0.65,
+                        cursor: 'pointer',
+                        padding: '4px',
+                        flexShrink: 0,
+                        transition: 'all 0.2s ease',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${product.name} miniatura ${idx + 1}`} 
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                      />
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -406,8 +611,24 @@ const ProductDetail = () => {
         .product-price { font-size: 1.35rem !important; }
         .product-old-price { font-size: 0.95rem !important; }
         
-        .gallery-slide {
-          aspect-ratio: 1/1;
+        .gallery-nav-btn:hover {
+          background-color: #111 !important;
+          color: #fff !important;
+          transform: translateY(-50%) scale(1.08) !important;
+        }
+
+        .gallery-thumb-btn:hover {
+          opacity: 1 !important;
+          border-color: #555 !important;
+        }
+
+        .gallery-main-img {
+          animation: fadeGalleryImg 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeGalleryImg {
+          from { opacity: 0.4; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
         }
         
         @media (max-width: 768px) {
@@ -427,23 +648,27 @@ const ProductDetail = () => {
           
           .detail-grid { 
             grid-template-columns: 100% !important; 
-            gap: 1.2rem !important; 
+            gap: 1.5rem !important; 
             width: 100% !important;
           }
           
           .gallery-section { 
-            width: 100vw !important; 
-            margin-left: -1.25rem !important; 
-            margin-bottom: 0.5rem !important; 
+            width: 100% !important; 
+            margin: 0 auto 0.5rem auto !important; 
           }
-          .gallery-slide {
-            aspect-ratio: 1/1 !important;
-            flex: 0 0 90% !important;
-            border-radius: 6px !important;
+
+          .gallery-thumbnails {
+            justify-content: flex-start !important;
           }
-          .gallery-scroll-container {
-            padding: 0 0 0 1.25rem !important;
-            gap: 0.6rem !important;
+          
+          .gallery-thumb-btn {
+            width: 58px !important;
+            height: 58px !important;
+          }
+
+          .gallery-nav-btn {
+            width: 34px !important;
+            height: 34px !important;
           }
           
           .info-section { 

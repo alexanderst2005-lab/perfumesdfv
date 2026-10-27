@@ -53,11 +53,39 @@ const InventoryModule = () => {
       inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || [],
       notes: p.notes || {}, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller
     });
-    const existingImages = [];
-    if (p.image) existingImages.push(p.image);
-    if (p.images && p.images.length > 0) existingImages.push(...p.images);
+    const rawExisting = [];
+    if (p.image && typeof p.image === 'string' && p.image.trim()) {
+      rawExisting.push(p.image.trim());
+    }
+    let secondary = [];
+    if (Array.isArray(p.images)) {
+      secondary = p.images;
+    } else if (typeof p.images === 'string') {
+      try {
+        const parsed = JSON.parse(p.images);
+        if (Array.isArray(parsed)) secondary = parsed;
+        else if (typeof parsed === 'string' && parsed.trim()) secondary = [parsed.trim()];
+      } catch (e) {
+        if (p.images.trim()) secondary = [p.images.trim()];
+      }
+    }
+    secondary.forEach(img => {
+      if (img && typeof img === 'string' && img.trim()) {
+        rawExisting.push(img.trim());
+      }
+    });
+    const existingImages = Array.from(new Set(rawExisting));
     setImagePreviews(existingImages);
     setIsModalOpen(true);
+  };
+
+  const setAsPrimary = (index) => {
+    if (index === 0) return;
+    setImagePreviews(prev => {
+      const copy = [...prev];
+      const [selected] = copy.splice(index, 1);
+      return [selected, ...copy];
+    });
   };
 
   const handleImagesChange = (e) => {
@@ -122,7 +150,7 @@ const InventoryModule = () => {
     }
     setIsSaving(true);
     try {
-      let finalImagesList = [...imagePreviews];
+      let finalImagesList = Array.from(new Set(imagePreviews.filter(Boolean)));
 
       // Subir imágenes nuevas
       for (let i = 0; i < finalImagesList.length; i++) {
@@ -131,8 +159,10 @@ const InventoryModule = () => {
         }
       }
 
+      finalImagesList = Array.from(new Set(finalImagesList.filter(Boolean)));
+
       const finalImageUrl = finalImagesList.length > 0 ? finalImagesList[0] : '';
-      const secondaryImages = finalImagesList.length > 1 ? finalImagesList.slice(1) : [];
+      const secondaryImages = finalImagesList.length > 1 ? finalImagesList.slice(1).filter(img => img !== finalImageUrl) : [];
 
       let finalPrice = parseInt(formData.price);
       let finalOldPrice = formData.oldPrice ? parseInt(formData.oldPrice) : null;
@@ -320,10 +350,30 @@ const InventoryModule = () => {
                   {imagePreviews.map((src, index) => (
                     <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: index === 0 ? '2px solid #3b82f6' : '1px solid #d1d5db' }}>
                       <img src={src} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      {index === 0 && (
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#3b82f6', color: 'white', fontSize: '0.65rem', textAlign: 'center', padding: '2px 0' }}>
+                      {index === 0 ? (
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#3b82f6', color: 'white', fontSize: '0.65rem', textAlign: 'center', padding: '2px 0', fontWeight: '600' }}>
                           Principal
                         </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setAsPrimary(index)}
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            backgroundColor: 'rgba(17, 24, 39, 0.85)',
+                            color: 'white',
+                            fontSize: '0.6rem',
+                            textAlign: 'center',
+                            padding: '3px 0',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Hacer Principal
+                        </button>
                       )}
                       <button onClick={() => removeImage(index)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
                         <X size={14} />
