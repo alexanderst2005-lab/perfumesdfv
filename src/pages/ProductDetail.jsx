@@ -34,9 +34,9 @@ const GalleryPreloader = ({ images }) => {
     const loaders = images.map(src => {
       const big = new Image();
       big.src = optimizeImg(src, 900);
-      const thumb = new Image();
-      thumb.src = optimizeImg(src, 150);
-      return [big, thumb];
+      const mid = new Image();
+      mid.src = optimizeImg(src, 500);
+      return [big, mid];
     });
     return () => { loaders.length = 0; };
   }, [images]);
@@ -207,7 +207,7 @@ const ProductDetail = () => {
                   key={`${product.id}-${imgIdx}`}
                   src={images[imgIdx] || images[0]}
                   alt={`${product.name} ${imgIdx + 1}`}
-                  placeholderWidth={imgIdx === 0 ? 500 : 150}
+                  placeholderWidth={500}
                 />
               ) : (
                 <div style={{ color: '#999', fontSize: '0.85rem' }}>Sin imagen</div>
@@ -337,8 +337,9 @@ const ProductDetail = () => {
                       }}
                     >
                       <img 
-                        src={optimizeImg(img, 150)} 
-                        loading="lazy"
+                        src={optimizeImg(img, 500)} 
+                        loading="eager"
+                        decoding="async"
                         alt={`${product.name} miniatura ${idx + 1}`} 
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                       />
