@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   // GET is cached at the CDN (admin refreshes bypass it with a unique ?t= query).
   // Any write method is never cached so admin changes reflect immediately.
   if (req.method === 'GET') {
-    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=86400');
   } else {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   }

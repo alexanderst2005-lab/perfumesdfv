@@ -15,8 +15,8 @@ const HERO_SLIDES = [
     subtitle: 'Descubre el poder de una joya embotellada.',
     buttonText: 'DESCUBRIR',
     buttonLink: '/tienda',
-    imageDesktop: '/hero_campaign_1.jpg',
-    imageMobile: '/hero_campaign_1.jpg',
+    imageDesktop: '/hero_campaign_1.webp',
+    imageMobile: '/hero_campaign_1_m.webp',
     alignment: 'center'
   },
   {
@@ -26,8 +26,8 @@ const HERO_SLIDES = [
     subtitle: 'Fragancias para destacar en cualquier ocasión.',
     buttonText: 'VER COLECCIÓN',
     buttonLink: '/tienda',
-    imageDesktop: '/hero_campaign_2.jpg',
-    imageMobile: '/hero_campaign_2.jpg',
+    imageDesktop: '/hero_campaign_2.webp',
+    imageMobile: '/hero_campaign_2_m.webp',
     alignment: 'center'
   },
   {
@@ -37,8 +37,8 @@ const HERO_SLIDES = [
     subtitle: 'Aromas dulces y florales que enamoran.',
     buttonText: 'VER CATÁLOGO',
     buttonLink: '/tienda?cat=Mujer',
-    imageDesktop: '/hero_campaign_3.jpg',
-    imageMobile: '/hero_campaign_3.jpg',
+    imageDesktop: '/hero_campaign_3.webp',
+    imageMobile: '/hero_campaign_3_m.webp',
     alignment: 'center'
   },
   {
@@ -48,8 +48,8 @@ const HERO_SLIDES = [
     subtitle: 'Notas intensas y maderas exóticas.',
     buttonText: 'EXPLORAR',
     buttonLink: '/tienda',
-    imageDesktop: '/hero_campaign_4.jpg',
-    imageMobile: '/hero_campaign_4.jpg',
+    imageDesktop: '/hero_campaign_4.webp',
+    imageMobile: '/hero_campaign_4_m.webp',
     alignment: 'center'
   }
 ];
