@@ -31,6 +31,22 @@ export const ShopProvider = ({ children }) => {
     return data;
   };
 
+  const refreshCategories = async () => {
+    try {
+      const res = await fetch(`/api/categories?t=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) throw new Error('No se pudo recargar las categorías');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setCategories(data.data);
+        try { localStorage.setItem('perfume_categories_cache', JSON.stringify(data.data)); } catch (e) {}
+        return data.data;
+      }
+    } catch (e) {
+      console.error('Error al refrescar categorías:', e);
+    }
+    return [];
+  };
+
   const [brands, setBrands] = useState(() => {
     try {
       const cached = localStorage.getItem('perfume_products_cache');
@@ -76,7 +92,7 @@ export const ShopProvider = ({ children }) => {
       try {
         const [resP, resC] = await Promise.all([
           fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' }),
-          fetch('/api/categories')
+          fetch(`/api/categories?t=${Date.now()}`, { cache: 'no-store' })
         ]);
         
         if (resP.ok) {
@@ -179,7 +195,7 @@ export const ShopProvider = ({ children }) => {
 
   return (
     <ShopContext.Provider value={{
-      products, allProducts, refreshProducts, brands, categories, isLoadingProducts,
+      products, allProducts, refreshProducts, brands, categories, refreshCategories, isLoadingProducts,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,
       cartTotal, cartCount
