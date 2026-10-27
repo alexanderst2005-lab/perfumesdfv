@@ -71,7 +71,13 @@ const Home = () => {
     if (activeCategory === 'OFERTAS') {
       displayProducts = products.filter(p => p.discount);
     } else {
-      displayProducts = products.filter(p => p.category?.toUpperCase() === activeCategory);
+      const activeCatLower = activeCategory.toLowerCase();
+      displayProducts = products.filter(p => {
+        const pCat = (p.category || '').toLowerCase();
+        return pCat === activeCatLower ||
+          (activeCatLower === 'hombre' && (pCat.includes('masc') || pCat.includes('homb'))) ||
+          (activeCatLower === 'mujer' && (pCat.includes('fem') || pCat.includes('muj')));
+      });
     }
   }
   displayProducts = displayProducts.slice(0, 8);

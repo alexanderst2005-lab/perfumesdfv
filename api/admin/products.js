@@ -8,12 +8,29 @@ export default async function handler(req, res) {
     try {
       const p = req.body;
       p.id = p.id || `p-${Date.now()}`;
+
+      let categoryId = p.categoryId ? parseInt(p.categoryId, 10) : null;
+      let categoryName = p.category || '';
+
+      if (categoryId) {
+        const catRow = await sql`SELECT id, name FROM categories WHERE id = ${categoryId}`;
+        if (catRow.length > 0) {
+          categoryName = catRow[0].name;
+        }
+      } else if (categoryName) {
+        const catRow = await sql`SELECT id, name FROM categories WHERE LOWER(TRIM(name)) = LOWER(TRIM(${categoryName}))`;
+        if (catRow.length > 0) {
+          categoryId = catRow[0].id;
+          categoryName = catRow[0].name;
+        }
+      }
+
       const result = await sql`
         INSERT INTO products (
-          id, name, brand, category, family, price, old_price, discount, sizes,
+          id, name, brand, category, category_id, family, price, old_price, discount, sizes,
           image, images, description, occasion, notes, concentration, in_stock, stock_count, is_new, is_best_seller, active
         ) VALUES (
-          ${p.id}, ${p.name}, ${p.brand}, ${p.category}, ${p.family}, ${p.price},
+          ${p.id}, ${p.name}, ${p.brand}, ${categoryName}, ${categoryId}, ${p.family}, ${p.price},
           ${p.oldPrice || null}, ${p.discount || null}, ${JSON.stringify(p.sizes || [])},
           ${p.image}, ${JSON.stringify(p.images || [])}, ${p.description}, ${p.occasion || null}, ${JSON.stringify(p.notes || {})}, ${p.concentration},
           ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.active}
@@ -32,11 +49,28 @@ export default async function handler(req, res) {
       const p = req.body;
       if (!p.id) return res.status(400).json({ error: 'Product ID is required' });
 
+      let categoryId = p.categoryId ? parseInt(p.categoryId, 10) : null;
+      let categoryName = p.category || '';
+
+      if (categoryId) {
+        const catRow = await sql`SELECT id, name FROM categories WHERE id = ${categoryId}`;
+        if (catRow.length > 0) {
+          categoryName = catRow[0].name;
+        }
+      } else if (categoryName) {
+        const catRow = await sql`SELECT id, name FROM categories WHERE LOWER(TRIM(name)) = LOWER(TRIM(${categoryName}))`;
+        if (catRow.length > 0) {
+          categoryId = catRow[0].id;
+          categoryName = catRow[0].name;
+        }
+      }
+
       const result = await sql`
         UPDATE products SET 
           name = ${p.name},
           brand = ${p.brand},
-          category = ${p.category},
+          category = ${categoryName},
+          category_id = ${categoryId},
           family = ${p.family},
           price = ${p.price},
           old_price = ${p.oldPrice || null},

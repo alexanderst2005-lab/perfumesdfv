@@ -75,10 +75,15 @@ export default async function handler(req, res) {
         RETURNING *
       `;
 
-      // If category name was renamed, update all products referencing old category name
+      // If category name was renamed, update all products referencing old category name or linked by category_id
       if (oldName && oldName !== name) {
         try {
-          await sql`UPDATE products SET category = ${name} WHERE category = ${oldName}`;
+          await sql`
+            UPDATE products 
+            SET category = ${name} 
+            WHERE category_id = ${id} 
+               OR LOWER(TRIM(category)) = LOWER(TRIM(${oldName}))
+          `;
         } catch (cascadeErr) {
           console.error('Cascade Category Update Error:', cascadeErr);
         }

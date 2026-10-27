@@ -11,15 +11,24 @@ export default async function handler(req, res) {
     // No caching: admin edits must be reflected immediately
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
 
-    // Fetch all products from the database
-    const rows = await sql`SELECT * FROM products ORDER BY id ASC`;
+    // Fetch all products joined with categories table so visible category name is always in sync
+    const rows = await sql`
+      SELECT 
+        p.*,
+        c.name AS category_table_name,
+        c.id AS category_table_id
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      ORDER BY p.id ASC
+    `;
     
     // Map the snake_case database columns back to camelCase for the frontend
     const products = rows.map(row => ({
       id: row.id,
       name: row.name,
       brand: row.brand,
-      category: row.category,
+      category: row.category_table_name || row.category,
+      categoryId: row.category_id || row.category_table_id || null,
       family: row.family,
       price: row.price,
       oldPrice: row.old_price,

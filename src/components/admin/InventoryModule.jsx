@@ -9,7 +9,7 @@ const InventoryModule = () => {
   const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState({
-    id: '', name: '', brand: '', category: 'Mujer', family: '', 
+    id: '', name: '', brand: '', category: '', categoryId: null, family: '', 
     price: '', oldPrice: '', discount: '', sizesText: '', 
     description: '', occasion: '', concentration: '', 
     stockCount: 10, inStock: true, active: true, image: '', images: []
@@ -19,8 +19,12 @@ const InventoryModule = () => {
 
   const openCreateModal = () => {
     setEditingProduct(null);
+    const defaultCat = categories.length > 0 ? categories[0] : null;
     setFormData({
-      id: '', name: '', brand: '', category: 'Mujer', family: '', 
+      id: '', name: '', brand: '', 
+      category: defaultCat ? defaultCat.name : '', 
+      categoryId: defaultCat ? defaultCat.id : null,
+      family: '', 
       price: '', oldPrice: '', discount: '', sizesText: '', 
       description: '', occasion: '', concentration: '', 
       stockCount: 10, inStock: true, active: true, image: '', images: []
@@ -43,8 +47,32 @@ const InventoryModule = () => {
         existingSizes = p.sizes;
       }
     }
+    // Helper to find category by id or name or legacy name (e.g. Mujer -> Femenino, Hombre -> Masculino)
+    let matchedCat = null;
+    if (p.categoryId) {
+      matchedCat = categories.find(c => c.id === p.categoryId);
+    }
+    if (!matchedCat && p.category) {
+      const pCatLower = String(p.category).trim().toLowerCase();
+      matchedCat = categories.find(c => c.name.trim().toLowerCase() === pCatLower);
+      if (!matchedCat) {
+        if (pCatLower.includes('muj') || pCatLower.includes('fem') || pCatLower.includes('dama')) {
+          matchedCat = categories.find(c => c.name.toLowerCase().includes('fem') || c.name.toLowerCase().includes('muj'));
+        } else if (pCatLower.includes('homb') || pCatLower.includes('masc') || pCatLower.includes('caba')) {
+          matchedCat = categories.find(c => c.name.toLowerCase().includes('masc') || c.name.toLowerCase().includes('homb'));
+        } else if (pCatLower.includes('uni')) {
+          matchedCat = categories.find(c => c.name.toLowerCase().includes('uni'));
+        }
+      }
+    }
+
     setFormData({
-      id: p.id, name: p.name, brand: p.brand, category: p.category, family: p.family || '', 
+      id: p.id, 
+      name: p.name, 
+      brand: p.brand, 
+      category: matchedCat ? matchedCat.name : (p.category || ''), 
+      categoryId: matchedCat ? matchedCat.id : (p.categoryId || null),
+      family: p.family || '', 
       price: p.price, oldPrice: p.oldPrice || '', discount: p.discount || '', 
       sizesText: existingSizes, 
       description: p.description || '', 
@@ -136,11 +164,24 @@ const InventoryModule = () => {
   };
 
   const handleSave = async () => {
+    // Resolve valid category
+    const matchedCat = (formData.categoryId && categories.find(c => c.id === formData.categoryId)) ||
+                       (formData.category && categories.find(c => c.name.toLowerCase() === formData.category.toLowerCase())) ||
+                       (categories.length > 0 ? categories[0] : null);
+
+    if (!matchedCat && !formData.category) {
+      alert('Selecciona una categoría');
+      return;
+    }
+
+    const finalCategoryName = matchedCat ? matchedCat.name : formData.category;
+    const finalCategoryId = matchedCat ? matchedCat.id : (formData.categoryId || null);
+
     if (!formData.name?.trim() || !formData.brand?.trim()) {
       alert('El nombre y la casa son obligatorios');
       return;
     }
-    if (!formData.category) {
+    if (!finalCategoryName) {
       alert('Selecciona una categoría');
       return;
     }
@@ -179,6 +220,8 @@ const InventoryModule = () => {
 
       const payload = {
         ...formData,
+        categoryId: finalCategoryId,
+        category: finalCategoryName,
         price: finalPrice,
         oldPrice: finalOldPrice,
         discount: finalDiscount,
@@ -401,10 +444,26 @@ const InventoryModule = () => {
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                     Categoría
                   </label>
-                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}>
+                  <select 
+                    value={
+                      formData.categoryId || 
+                      categories.find(c => c.name.toLowerCase() === formData.category?.toLowerCase())?.id || 
+                      ''
+                    } 
+                    onChange={e => {
+                      const selectedId = parseInt(e.target.value, 10);
+                      const catObj = categories.find(c => c.id === selectedId);
+                      setFormData({
+                        ...formData, 
+                        categoryId: selectedId || null,
+                        category: catObj ? catObj.name : ''
+                      });
+                    }} 
+                    style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
+                  >
                     <option value="">Selecciona categoría</option>
                     {categories.map(c => (
-                      <option key={c.id} value={c.name}>{c.name}</option>
+                      <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
                 </div>

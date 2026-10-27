@@ -69,8 +69,12 @@ const Store = () => {
   // Apply filters and sorting
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => {
-      const matchCat = category === 'Todos' || 
-                       (p.category && p.category.toLowerCase() === category.toLowerCase()) || 
+      const pCat = (p.category || '').toLowerCase();
+      const selCat = (category || '').toLowerCase();
+      const matchCat = selCat === 'todos' || 
+                       (pCat && pCat === selCat) || 
+                       (selCat === 'hombre' && (pCat.includes('masc') || pCat.includes('homb'))) ||
+                       (selCat === 'mujer' && (pCat.includes('fem') || pCat.includes('muj'))) ||
                        (category === 'Ofertas' && p.discount);
       const matchBrand = brand === 'Todas' || 
                          (p.brand && p.brand.toLowerCase() === brand.toLowerCase());
