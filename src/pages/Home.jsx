@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import TestimonialsSection from '../components/TestimonialsSection';
-import InstagramReelsSection from '../components/InstagramReelsSection';
 import OffersSection from '../components/OffersSection';
-import { optimizeImg } from '../utils/img';
+import LazyOnView from '../components/LazyOnView';
+import { optimizeImg, prefetchImg } from '../utils/img';
+
+const TestimonialsSection = lazy(() => import('../components/TestimonialsSection'));
+const InstagramReelsSection = lazy(() => import('../components/InstagramReelsSection'));
 
 const HERO_SLIDES = [
   {
@@ -454,10 +456,14 @@ const Home = () => {
       </section>
 
       {/* ════ NUEVA SECCIÓN: REELS DE INSTAGRAM ════ */}
-      <InstagramReelsSection />
+      <LazyOnView minHeight={520}>
+        <Suspense fallback={null}><InstagramReelsSection /></Suspense>
+      </LazyOnView>
 
       {/* ════ NUEVA SECCIÓN: LO QUE DICEN NUESTROS CLIENTES ════ */}
-      <TestimonialsSection />
+      <LazyOnView minHeight={420}>
+        <Suspense fallback={null}><TestimonialsSection /></Suspense>
+      </LazyOnView>
 
       {/* ════ NUESTRAS SEDES ════ */}
       <section id="sedes" className="section-padding container">
@@ -843,7 +849,12 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
         marginBottom: '0.75rem'
       }}
     >
-      <Link to={`/producto/${product.id}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+      <Link
+        to={`/producto/${product.id}`}
+        onMouseEnter={() => prefetchImg(product.image)}
+        onTouchStart={() => prefetchImg(product.image)}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+      >
         <img 
           src={optimizeImg(product.image, 500)} 
           alt={product.name} 

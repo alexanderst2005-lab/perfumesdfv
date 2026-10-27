@@ -7,6 +7,26 @@ import { optimizeImg } from '../utils/img';
 
 const TOTAL_HEADER = 106;
 
+// Shows the small (already cached from the product card) version instantly and fades the
+// large one in on top once it loads, so a previous product's image never lingers.
+const ProgressiveImg = ({ src, alt }) => {
+  const [loaded, setLoaded] = useState(false);
+  const layer = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem' };
+  return (
+    <>
+      <img src={optimizeImg(src, 500)} alt="" aria-hidden="true" style={layer} />
+      <img
+        src={optimizeImg(src, 900)}
+        alt={alt}
+        fetchPriority="high"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        style={{ ...layer, opacity: loaded ? 1 : 0, transition: 'opacity 0.2s ease' }}
+      />
+    </>
+  );
+};
+
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts } = useShop();
@@ -166,20 +186,10 @@ const ProductDetail = () => {
               }}
             >
               {images.length > 0 ? (
-                <img 
-                  key={imgIdx} 
-                  src={optimizeImg(images[imgIdx] || images[0], 900)} 
-                  alt={`${product.name} ${imgIdx + 1}`} 
-                  fetchPriority="high"
-                  decoding="async"
-                  className="gallery-main-img"
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'contain', 
-                    padding: '1.25rem',
-                    transition: 'opacity 0.25s ease'
-                  }} 
+                <ProgressiveImg
+                  key={`${product.id}-${imgIdx}`}
+                  src={images[imgIdx] || images[0]}
+                  alt={`${product.name} ${imgIdx + 1}`}
                 />
               ) : (
                 <div style={{ color: '#999', fontSize: '0.85rem' }}>Sin imagen</div>
@@ -309,7 +319,8 @@ const ProductDetail = () => {
                       }}
                     >
                       <img 
-                        src={img} 
+                        src={optimizeImg(img, 150)} 
+                        loading="lazy"
                         alt={`${product.name} miniatura ${idx + 1}`} 
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                       />
