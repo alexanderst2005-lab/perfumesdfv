@@ -1,22 +1,14 @@
 import { neon } from '@neondatabase/serverless';
 
-// Pre-calienta en Cloudinary las imágenes optimizadas para que el primer cliente las reciba de inmediato
-async function warmProductImages(images) {
+// Pre-calienta en Cloudinary las imágenes optimizadas en segundo plano (sin frenar la respuesta al admin)
+function warmProductImages(images) {
   if (!images || !Array.isArray(images) || images.length === 0) return;
-  const accepts = ['image/avif,image/webp,image/*', 'image/webp,image/*', 'image/*'];
-  const jobs = [];
   for (const raw of images) {
-    if (!raw || typeof raw !== 'string') continue;
-    if (!raw.includes('/image/upload/')) continue;
-    for (const w of [500, 900]) {
-      const url = raw.replace('/image/upload/', `/image/upload/w_${w},f_auto,q_auto/`);
-      for (const accept of accepts) {
-        jobs.push(fetch(url, { headers: { Accept: accept } }).then(r => r.arrayBuffer()).catch(() => null));
-      }
-    }
-  }
-  if (jobs.length > 0) {
-    await Promise.allSettled(jobs);
+    if (!raw || typeof raw !== 'string' || !raw.includes('/image/upload/')) continue;
+    const u500 = raw.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/');
+    const u900 = raw.replace('/image/upload/', '/image/upload/w_900,f_auto,q_auto/');
+    fetch(u500).catch(() => {});
+    fetch(u900).catch(() => {});
   }
 }
 
@@ -62,7 +54,7 @@ export default async function handler(req, res) {
       else if (typeof p.images === 'string') {
         try { const parsed = JSON.parse(p.images); if (Array.isArray(parsed)) allImgs.push(...parsed); } catch {}
       }
-      await warmProductImages(allImgs);
+      warmProductImages(allImgs);
 
       return res.status(201).json({ success: true, product: result[0] });
     } catch (error) {
@@ -125,7 +117,7 @@ export default async function handler(req, res) {
       else if (typeof p.images === 'string') {
         try { const parsed = JSON.parse(p.images); if (Array.isArray(parsed)) allImgs.push(...parsed); } catch {}
       }
-      await warmProductImages(allImgs);
+      warmProductImages(allImgs);
 
       return res.status(200).json({ success: true, product: result[0] });
     } catch (error) {

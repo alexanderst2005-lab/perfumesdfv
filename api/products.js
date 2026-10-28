@@ -8,9 +8,12 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     
-    // CDN cache: storefront gets an instant response (served from the edge) and it is
-    // refreshed in the background. Admin refreshes use a unique ?t= query so they bypass it.
-    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=86400');
+    // Caché ultracorta (1-5s) para que los productos nuevos aparezcan de inmediato en la tienda
+    if (req.query && req.query.t) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=1, stale-while-revalidate=5');
+    }
 
     // Fetch all products joined with categories table so visible category name is always in sync
     const rows = await sql`

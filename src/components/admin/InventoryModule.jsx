@@ -134,7 +134,7 @@ const InventoryModule = () => {
     setImagePreviews(newPreviews);
   };
 
-  const compressImage = (dataUrl, maxSize = 1600, quality = 0.85) => new Promise((resolve) => {
+  const compressImage = (dataUrl, maxSize = 1200, quality = 0.8) => new Promise((resolve) => {
     const img = new window.Image();
     img.onload = () => {
       const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
@@ -194,12 +194,15 @@ const InventoryModule = () => {
     try {
       let finalImagesList = Array.from(new Set(imagePreviews.filter(Boolean)));
 
-      // Subir imágenes nuevas
-      for (let i = 0; i < finalImagesList.length; i++) {
-        if (finalImagesList[i].startsWith('data:')) {
-          finalImagesList[i] = await uploadToCloudinary(finalImagesList[i]);
-        }
-      }
+      // Subir todas las imágenes nuevas EN PARALELO (hasta 5x más rápido)
+      finalImagesList = await Promise.all(
+        finalImagesList.map(async (img) => {
+          if (img && img.startsWith('data:')) {
+            return await uploadToCloudinary(img);
+          }
+          return img;
+        })
+      );
 
       finalImagesList = Array.from(new Set(finalImagesList.filter(Boolean)));
 
