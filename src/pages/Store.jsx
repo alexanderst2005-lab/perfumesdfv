@@ -19,32 +19,65 @@ const Store = () => {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState('destacados'); // destacados, recientes, precio_asc, precio_desc, nombre
   const [filterOpen, setFilterOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const pageInUrl = params.get('page');
+    if (pageInUrl && !isNaN(parseInt(pageInUrl, 10))) {
+      return parseInt(pageInUrl, 10);
+    }
+    try {
+      const savedPage = sessionStorage.getItem('perfume_store_page');
+      if (savedPage && !isNaN(parseInt(savedPage, 10))) {
+        return parseInt(savedPage, 10);
+      }
+    } catch {}
+    return 1;
+  });
   const PRODUCTS_PER_PAGE = 16; // Entre 15 y 20 productos por página según requerimiento
   const gridTopRef = useRef(null);
+  const isFilterMounted = useRef(false);
+  const prevSearchRef = useRef(search);
 
   // Cambia de página y deja la vista al inicio del catálogo (nunca en el footer)
   const goToPage = (page) => {
     setCurrentPage(page);
+    try {
+      sessionStorage.setItem('perfume_store_page', String(page));
+    } catch {}
     requestAnimationFrame(() => {
       const el = gridTopRef.current;
       if (el) {
         const top = el.getBoundingClientRect().top + window.scrollY - 130;
-        window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
       }
     });
   };
 
-  // Sync state when URL params change
+  // Sync state when URL params change (e.g. user clicked /tienda?category=Mujer)
   useEffect(() => {
-    const currentCat = params.get('category') || 'Todos';
-    setCategory(currentCat);
-    setCurrentPage(1);
+    if (prevSearchRef.current !== search) {
+      prevSearchRef.current = search;
+      const currentCat = params.get('category') || 'Todos';
+      const pageInUrl = params.get('page');
+      setCategory(currentCat);
+      if (pageInUrl && !isNaN(parseInt(pageInUrl, 10))) {
+        setCurrentPage(parseInt(pageInUrl, 10));
+      } else {
+        setCurrentPage(1);
+        try { sessionStorage.setItem('perfume_store_page', '1'); } catch {}
+      }
+    }
   }, [search]);
 
-  // Reset page whenever filters change
+  // Reset page ONLY when user interactively changes filters (NOT on initial mount)
   useEffect(() => {
+    if (!isFilterMounted.current) {
+      isFilterMounted.current = true;
+      return;
+    }
     setCurrentPage(1);
+    try {
+      sessionStorage.setItem('perfume_store_page', '1');
+    } catch {}
   }, [category, brand, family, priceRange, query, sortBy]);
 
   const PRICE_RANGES = [
@@ -114,6 +147,10 @@ const Store = () => {
     setPriceRange('Todos');
     setQuery('');
     setSortBy('destacados');
+    setCurrentPage(1);
+    try {
+      sessionStorage.setItem('perfume_store_page', '1');
+    } catch {}
     setFilterOpen(false);
   };
 

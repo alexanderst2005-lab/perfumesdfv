@@ -268,6 +268,31 @@ const ProductDetail = () => {
 
       {/* Main Grid */}
       <div className="container product-detail-container" style={{ paddingBottom: '4rem' }}>
+        <div style={{ marginBottom: '1.2rem' }}>
+          <button
+            type="button"
+            onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/tienda')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#666',
+              fontSize: '0.82rem',
+              letterSpacing: '0.5px',
+              cursor: 'pointer',
+              padding: '0.35rem 0',
+              fontWeight: '500',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#000'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#666'}
+          >
+            <ArrowLeft size={16} /> Volver
+          </button>
+        </div>
+
         <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '3rem', alignItems: 'start' }}>
 
           {/* Gallery */}

@@ -38,22 +38,19 @@ function AppInner() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Navegar hacia adelante: arriba del todo. Volver atrás: restaurar donde estaba.
+  // Navegar hacia adelante: arriba del todo. Volver atrás: restaurar donde estaba sin lag ni bucles
   useEffect(() => {
     if (navType !== 'POP') {
       window.scrollTo(0, 0);
-      return;
+    } else {
+      const target = positions.current.get(key);
+      if (typeof target === 'number' && target > 0) {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: target, behavior: 'instant' });
+        });
+      }
     }
-    const target = positions.current.get(key) || 0;
-    let tries = 0;
-    let timer;
-    const tick = () => {
-      window.scrollTo(0, target);
-      if (Math.abs(window.scrollY - target) > 2 && tries++ < 40) timer = setTimeout(tick, 50);
-    };
-    tick();
-    return () => clearTimeout(timer);
-  }, [key]);
+  }, [key, navType]);
 
   // Precarga las demás pantallas en segundo plano para que navegar sea instantáneo
   useEffect(() => {
