@@ -7,36 +7,125 @@ import { optimizeImg } from '../utils/img';
 
 const TOTAL_HEADER = 106;
 
-// Shows the small (already cached from the product card) version instantly and fades the
-// large one in on top once it loads, so a previous product's image never lingers.
-const ProgressiveImg = ({ src, alt, placeholderWidth = 500 }) => {
+// Renders the main product image with a clean neutral skeleton while loading.
+// Completely unmounts on product change so an old product image NEVER lingers.
+const ProductMainImg = ({ src, alt }) => {
   const [loaded, setLoaded] = useState(false);
-  const layer = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem' };
+  const layer = {
+    position: 'absolute',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    padding: '1.25rem'
+  };
+
   return (
-    <>
-      <img src={optimizeImg(src, placeholderWidth)} alt="" aria-hidden="true" style={layer} />
+    <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#FFFFFF' }}>
+      {!loaded && (
+        <div 
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: '#FAFAFA',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1
+          }}
+        >
+          <div style={{
+            width: '26px',
+            height: '26px',
+            border: '2px solid #EAEAEA',
+            borderTopColor: '#111111',
+            borderRadius: '50%',
+            animation: 'spinMainImg 0.6s linear infinite'
+          }} />
+        </div>
+      )}
       <img
         src={optimizeImg(src, 900)}
         alt={alt}
         fetchPriority="high"
         decoding="async"
         onLoad={() => setLoaded(true)}
-        style={{ ...layer, opacity: loaded ? 1 : 0, transition: 'opacity 0.2s ease' }}
+        style={{
+          ...layer,
+          opacity: loaded ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+          zIndex: 2
+        }}
       />
-    </>
+    </div>
   );
 };
 
-// Downloads every gallery image in the background as soon as a product opens,
-// so switching between photos is instant.
+// Renders an individual thumbnail with isolated loaded state and unique key per product/img.
+// Uses fast 180px thumbnails (~4KB) so all boxes load instantly without keeping the previous product's image.
+const GalleryThumb = ({ src, alt, isActive, onClick }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={alt}
+      className="gallery-thumb-btn"
+      style={{
+        position: 'relative',
+        width: '64px',
+        height: '64px',
+        borderRadius: '8px',
+        backgroundColor: '#FFFFFF',
+        border: isActive ? '2px solid #111111' : '1px solid #E5E7EB',
+        boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.18)' : 'none',
+        transform: isActive ? 'scale(1.04)' : 'scale(1)',
+        opacity: isActive ? 1 : 0.65,
+        cursor: 'pointer',
+        padding: '4px',
+        flexShrink: 0,
+        transition: 'all 0.2s ease',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {!loaded && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: '#F3F4F6'
+        }} />
+      )}
+      <img 
+        src={optimizeImg(src, 180)} 
+        loading="eager"
+        decoding="async"
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'contain',
+          opacity: loaded ? 1 : 0,
+          transition: 'opacity 0.15s ease'
+        }} 
+      />
+    </button>
+  );
+};
+
+// Downloads every gallery image and thumbnail in the background as soon as a product opens
 const GalleryPreloader = ({ images }) => {
   React.useEffect(() => {
     const loaders = images.map(src => {
       const big = new Image();
       big.src = optimizeImg(src, 900);
-      const mid = new Image();
-      mid.src = optimizeImg(src, 500);
-      return [big, mid];
+      const thumb = new Image();
+      thumb.src = optimizeImg(src, 180);
+      return [big, thumb];
     });
     return () => { loaders.length = 0; };
   }, [images]);
@@ -58,6 +147,7 @@ const ProductDetail = () => {
       const firstValidSize = Array.isArray(product.sizes) ? product.sizes.find(s => s && String(s).trim()) || '' : '';
       setSize(firstValidSize);
       setImgIdx(0);
+      window.scrollTo(0, 0);
     }
   }, [product?.id]);
 
@@ -173,7 +263,7 @@ const ProductDetail = () => {
   const formatD = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
 
   return (
-    <div className="product-page-wrapper" style={{ paddingTop: '0.8rem' }}>
+    <div className="product-page-wrapper" key={product.id} style={{ paddingTop: '0.8rem' }}>
       <GalleryPreloader images={images} />
 
       {/* Main Grid */}
@@ -181,7 +271,7 @@ const ProductDetail = () => {
         <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '55% 1fr', gap: '3rem', alignItems: 'start' }}>
 
           {/* Gallery */}
-          <div className="gallery-section">
+          <div className="gallery-section" key={product.id}>
             {/* Main Stage Image Frame */}
             <div 
               className="gallery-main-frame"
@@ -203,11 +293,10 @@ const ProductDetail = () => {
               }}
             >
               {images.length > 0 ? (
-                <ProgressiveImg
-                  key={`${product.id}-${imgIdx}`}
+                <ProductMainImg
+                  key={`${product.id}-main-${imgIdx}-${images[imgIdx] || images[0]}`}
                   src={images[imgIdx] || images[0]}
                   alt={`${product.name} ${imgIdx + 1}`}
-                  placeholderWidth={500}
                 />
               ) : (
                 <div style={{ color: '#999', fontSize: '0.85rem' }}>Sin imagen</div>
@@ -301,6 +390,7 @@ const ProductDetail = () => {
             {images.length > 1 && (
               <div 
                 className="gallery-thumbnails no-scrollbar"
+                key={`${product.id}-thumbs`}
                 style={{
                   display: 'flex',
                   gap: '0.65rem',
@@ -310,42 +400,15 @@ const ProductDetail = () => {
                   justifyContent: images.length <= 5 ? 'center' : 'flex-start'
                 }}
               >
-                {images.map((img, idx) => {
-                  const isActive = idx === imgIdx;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setImgIdx(idx)}
-                      aria-label={`Ver imagen ${idx + 1}`}
-                      className="gallery-thumb-btn"
-                      style={{
-                        position: 'relative',
-                        width: '64px',
-                        height: '64px',
-                        borderRadius: '8px',
-                        backgroundColor: '#FFFFFF',
-                        border: isActive ? '2px solid #111111' : '1px solid #E5E7EB',
-                        boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.18)' : 'none',
-                        transform: isActive ? 'scale(1.04)' : 'scale(1)',
-                        opacity: isActive ? 1 : 0.65,
-                        cursor: 'pointer',
-                        padding: '4px',
-                        flexShrink: 0,
-                        transition: 'all 0.2s ease',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      <img 
-                        src={optimizeImg(img, 500)} 
-                        loading="eager"
-                        decoding="async"
-                        alt={`${product.name} miniatura ${idx + 1}`} 
-                        style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-                      />
-                    </button>
-                  );
-                })}
+                {images.map((img, idx) => (
+                  <GalleryThumb
+                    key={`${product.id}-thumb-${idx}-${img}`}
+                    src={img}
+                    alt={`${product.name} miniatura ${idx + 1}`}
+                    isActive={idx === imgIdx}
+                    onClick={() => setImgIdx(idx)}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -662,6 +725,10 @@ const ProductDetail = () => {
         @keyframes fadeGalleryImg {
           from { opacity: 0.4; transform: scale(0.98); }
           to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes spinMainImg {
+          to { transform: rotate(360deg); }
         }
         
         @media (max-width: 768px) {
