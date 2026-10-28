@@ -17,6 +17,8 @@ const InventoryModule = () => {
   });
 
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [thumbs, setThumbs] = useState({});
+  const [uploadedKeys, setUploadedKeys] = useState({});
   // Subidas en curso/terminadas por preview (blob:/data:) para no esperar al pulsar Guardar
   const uploadsRef = useRef(new Map());
 
@@ -125,8 +127,17 @@ const InventoryModule = () => {
       // Preview instantáneo (sin leer el archivo a base64) y subida inmediata en segundo plano
       const url = URL.createObjectURL(file);
       setImagePreviews(prev => [...prev, url]);
+      // Miniatura liviana: evita decodificar una foto de varios MB en una cajita de 100px
+      if (window.createImageBitmap) {
+        createImageBitmap(file, { resizeWidth: 240, resizeQuality: 'low' }).then(bmp => {
+          const c = document.createElement('canvas');
+          c.width = bmp.width; c.height = bmp.height;
+          c.getContext('2d').drawImage(bmp, 0, 0);
+          setThumbs(prev => ({ ...prev, [url]: c.toDataURL('image/jpeg', 0.7) }));
+        }).catch(() => {});
+      }
       const p = uploadToCloudinary(url);
-      p.catch(() => {});
+      p.then(() => setUploadedKeys(prev => ({ ...prev, [url]: true }))).catch(() => {});
       uploadsRef.current.set(url, p);
     });
     e.target.value = '';
@@ -138,22 +149,26 @@ const InventoryModule = () => {
     setImagePreviews(newPreviews);
   };
 
-  const compressImage = (dataUrl, maxSize = 1200, quality = 0.8) => new Promise((resolve) => {
-    const img = new window.Image();
-    img.onload = () => {
-      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+  const compressImage = async (src, maxSize = 1200, quality = 0.8) => {
+    try {
+      const blob = await (await fetch(src)).blob();
+      const probe = await createImageBitmap(blob);
+      const scale = Math.min(1, maxSize / Math.max(probe.width, probe.height));
+      const w = Math.round(probe.width * scale);
+      const h = Math.round(probe.height * scale);
+      probe.close && probe.close();
+      const bmp = await createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
       const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
+      canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    };
-    img.onerror = () => resolve(dataUrl);
-    img.src = dataUrl;
-  });
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(bmp, 0, 0);
+      return canvas.toDataURL('image/jpeg', quality);
+    } catch (e) {
+      return src;
+    }
+  };
 
   const uploadToCloudinary = async (base64) => {
     const compressed = await compressImage(base64);
@@ -418,7 +433,10 @@ const InventoryModule = () => {
                   )}
                   {imagePreviews.map((src, index) => (
                     <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: index === 0 ? '2px solid #3b82f6' : '1px solid #d1d5db' }}>
-                      <img src={optimizeImg(src, 200)} alt="preview" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={thumbs[src] || optimizeImg(src, 200)} alt="preview" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {src.startsWith('blob:') && !uploadedKeys[src] && (
+                        <div style={{ position: 'absolute', top: '4px', left: '4px', backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: '0.6rem', padding: '2px 6px', borderRadius: '10px' }}>Subiendo…</div>
+                      )}
                       {index === 0 ? (
                         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#3b82f6', color: 'white', fontSize: '0.65rem', textAlign: 'center', padding: '2px 0', fontWeight: '600' }}>
                           Principal
