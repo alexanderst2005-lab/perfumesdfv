@@ -26,6 +26,24 @@ export default async function handler(req, res) {
       folder: folder,
     });
 
+    // Pre-generate the optimized versions the storefront uses (500px cards/thumbs, 900px detail)
+    // in every format the browsers may request, so the first visitor never waits for Cloudinary.
+    if (result.resource_type === 'image' && result.secure_url.includes('/image/upload/')) {
+      const accepts = ['image/avif,image/webp,image/*', 'image/webp,image/*', 'image/*'];
+      const jobs = [];
+      for (const w of [500, 900]) {
+        const url = result.secure_url.replace('/image/upload/', `/image/upload/w_${w},f_auto,q_auto/`);
+        for (const accept of accepts) {
+          jobs.push(
+            fetch(url, { headers: { Accept: accept } })
+              .then(r => r.arrayBuffer())
+              .catch(() => null)
+          );
+        }
+      }
+      await Promise.allSettled(jobs);
+    }
+
     // Save reference in our Neon database Media Library
     const sql = neon(process.env.DATABASE_URL);
     const media = await sql`
