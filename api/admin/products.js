@@ -1,5 +1,25 @@
 import { neon } from '@neondatabase/serverless';
 
+// Pre-calienta en Cloudinary las imágenes optimizadas para que el primer cliente las reciba de inmediato
+async function warmProductImages(images) {
+  if (!images || !Array.isArray(images) || images.length === 0) return;
+  const accepts = ['image/avif,image/webp,image/*', 'image/webp,image/*', 'image/*'];
+  const jobs = [];
+  for (const raw of images) {
+    if (!raw || typeof raw !== 'string') continue;
+    if (!raw.includes('/image/upload/')) continue;
+    for (const w of [500, 900]) {
+      const url = raw.replace('/image/upload/', `/image/upload/w_${w},f_auto,q_auto/`);
+      for (const accept of accepts) {
+        jobs.push(fetch(url, { headers: { Accept: accept } }).then(r => r.arrayBuffer()).catch(() => null));
+      }
+    }
+  }
+  if (jobs.length > 0) {
+    await Promise.allSettled(jobs);
+  }
+}
+
 export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
@@ -36,6 +56,14 @@ export default async function handler(req, res) {
           ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.active}
         ) RETURNING *
       `;
+      // Calentar las fotos en Cloudinary para que el primer visitante las reciba al instante
+      const allImgs = [p.image];
+      if (Array.isArray(p.images)) allImgs.push(...p.images);
+      else if (typeof p.images === 'string') {
+        try { const parsed = JSON.parse(p.images); if (Array.isArray(parsed)) allImgs.push(...parsed); } catch {}
+      }
+      await warmProductImages(allImgs);
+
       return res.status(201).json({ success: true, product: result[0] });
     } catch (error) {
       console.error('Create Product Error:', error);
@@ -90,6 +118,15 @@ export default async function handler(req, res) {
         WHERE id = ${p.id}
         RETURNING *
       `;
+
+      // Calentar las fotos en Cloudinary para que el primer visitante las reciba al instante
+      const allImgs = [p.image];
+      if (Array.isArray(p.images)) allImgs.push(...p.images);
+      else if (typeof p.images === 'string') {
+        try { const parsed = JSON.parse(p.images); if (Array.isArray(parsed)) allImgs.push(...parsed); } catch {}
+      }
+      await warmProductImages(allImgs);
+
       return res.status(200).json({ success: true, product: result[0] });
     } catch (error) {
       console.error('Update Product Error:', error);

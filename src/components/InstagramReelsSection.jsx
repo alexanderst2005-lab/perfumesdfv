@@ -23,12 +23,20 @@ const getEmbedUrl = (url) => {
 const ReelFeedCard = ({ reel, onOpenModal }) => {
   const videoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  // Versión liviana de video para móvil y web (comprimido y tamaño justo)
+  const fastVideoUrl = reel.videoUrl && reel.videoUrl.includes('/video/upload/') && !reel.videoUrl.includes('w_')
+    ? reel.videoUrl.replace('/video/upload/', '/video/upload/q_auto:eco,vc_auto,w_540/')
+    : reel.videoUrl;
 
   // Auto-generación de póster/thumbnail si es video de Cloudinary
   let thumb = reel.thumbnailUrl;
-  if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
+  if (thumb && thumb.includes('/image/upload/') && !thumb.includes('w_')) {
+    thumb = thumb.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/');
+  } else if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
     thumb = reel.videoUrl
-      .replace('/video/upload/', '/video/upload/so_1,w_600,h_1067,c_fill,q_auto,f_jpg/')
+      .replace('/video/upload/', '/video/upload/so_0,w_500,q_auto,f_auto/')
       .replace(/\.[^/.]+$/, '.jpg');
   }
 
@@ -57,51 +65,64 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
         borderRadius: '20px',
         overflow: 'hidden',
         aspectRatio: '9/16',
-        backgroundColor: '#0D0D0D',
+        backgroundColor: '#1c1917',
         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
         cursor: 'pointer',
         transition: 'all 0.35s ease'
       }}
     >
-      {/* Video reproduciéndose en bucle directamente en la tarjeta */}
-      {reel.videoUrl ? (
+      {/* 1. Póster / Imagen SIEMPRE visible debajo para que nunca se vea cuadro negro */}
+      {thumb ? (
+        <img 
+          src={thumb} 
+          alt={reel.title}
+          loading="eager"
+          decoding="async"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            zIndex: 1,
+            opacity: videoLoaded ? 0 : 1,
+            transition: 'opacity 0.4s ease',
+            pointerEvents: 'none'
+          }}
+        />
+      ) : (
+        <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#262626', zIndex: 1 }} />
+      )}
+
+      {/* 2. Video reproduciéndose en bucle optimizado */}
+      {fastVideoUrl && (
         <video 
           ref={videoRef}
-          src={reel.videoUrl} 
+          src={fastVideoUrl} 
           poster={thumb || undefined}
           autoPlay
           loop
           muted={isMuted}
           playsInline
           webkit-playsinline="true"
-          preload="auto"
+          preload="metadata"
+          onCanPlay={() => setVideoLoaded(true)}
+          onPlaying={() => setVideoLoaded(true)}
+          onLoadedData={() => setVideoLoaded(true)}
           style={{
+            position: 'absolute',
+            inset: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
             display: 'block',
-            transition: 'transform 0.5s ease'
+            zIndex: 2,
+            opacity: videoLoaded ? 1 : 0,
+            transition: 'opacity 0.4s ease transform 0.5s ease'
           }}
           className="reel-video-preview"
-          onLoadedMetadata={(e) => {
-            e.currentTarget.muted = isMuted;
-            e.currentTarget.play().catch(() => {});
-          }}
         />
-      ) : thumb ? (
-        <img 
-          src={thumb} 
-          alt={reel.title}
-          loading="lazy"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block'
-          }}
-        />
-      ) : (
-        <div style={{ width: '100%', height: '100%', backgroundColor: '#111' }} />
       )}
 
       {/* Sutil viñeta en la base y arriba para contraste */}
@@ -177,8 +198,12 @@ const InstagramReelsSection = () => {
   const [activeModalReel, setActiveModalReel] = useState(null);
 
   useEffect(() => {
-    fetch('/api/reels')
-      .then(res => res.ok ? res.json() : [])
+    const early = window.__early?.reels;
+    if (window.__early) window.__early.reels = null;
+    const fetchPromise = early ? Promise.resolve(early) : fetch('/api/reels');
+
+    fetchPromise
+      .then(res => (res && res.ok ? res.json() : []))
       .then(data => {
         if (Array.isArray(data)) {
           setDbReels(data.map(r => ({

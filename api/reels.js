@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
   if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400');
     try {
       const rows = await sql`
         SELECT * FROM reels 

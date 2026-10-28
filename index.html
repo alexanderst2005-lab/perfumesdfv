@@ -10,14 +10,16 @@
     <link rel="dns-prefetch" href="https://res.cloudinary.com" />
     <link rel="preload" as="image" type="image/webp" href="/hero_campaign_1_m.webp" media="(max-width: 768px)" fetchpriority="high" />
     <link rel="preload" as="image" type="image/webp" href="/hero_campaign_1.webp" media="(min-width: 769px)" fetchpriority="high" />
+    <link rel="preload" as="image" type="image/webp" href="/hero_campaign_2_m.webp" media="(max-width: 768px)" />
+    <link rel="preload" as="image" type="image/webp" href="/hero_campaign_2.webp" media="(min-width: 769px)" />
     <script>
-      // Start downloading products & categories right away, in parallel with the JS bundle.
-      // ShopContext picks these promises up so the catalog doesn't wait for React to boot.
+      // Inicia la descarga inmediata de productos, categorías y reels al mismo tiempo que el HTML
       (function () {
         try {
           window.__early = {
             products: fetch('/api/products').catch(function () { return null; }),
-            categories: fetch('/api/categories').catch(function () { return null; })
+            categories: fetch('/api/categories').catch(function () { return null; }),
+            reels: fetch('/api/reels').catch(function () { return null; })
           };
         } catch (e) {}
       })();

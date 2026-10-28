@@ -109,6 +109,14 @@ const Home = () => {
     }
   };
 
+  // Pre-cargar todos los slides del hero en memoria para transición instantánea sin parpadeo negro
+  useEffect(() => {
+    HERO_SLIDES.forEach(s => {
+      const d = new Image(); d.src = s.imageDesktop;
+      const m = new Image(); m.src = s.imageMobile;
+    });
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
@@ -140,45 +148,48 @@ const Home = () => {
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          backgroundColor: '#000'
+          backgroundColor: '#121212'
         }}
       >
-        {HERO_SLIDES.map((slide, index) => (
-          <div
-            key={slide.id}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              opacity: index === currentSlide ? 1 : 0,
-              visibility: index === currentSlide ? 'visible' : 'hidden',
-              transition: 'opacity 1.2s ease-in-out, visibility 1.2s ease-in-out',
-              zIndex: index === currentSlide ? 1 : 0,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: slide.alignment === 'left' ? 'flex-start' : slide.alignment === 'right' ? 'flex-end' : 'center',
-              textAlign: slide.alignment,
-              padding: '0 5%',
-            }}
-          >
-            <picture>
-              <source media="(max-width: 768px)" srcSet={slide.imageMobile} />
-              <img 
-                src={slide.imageDesktop} 
-                alt={slide.title} 
-                loading={index === 0 ? "eager" : "lazy"}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  zIndex: -2,
-                  transform: index === currentSlide ? 'scale(1.05)' : 'scale(1)',
-                  transition: 'transform 7s ease-out'
-                }}
-              />
-            </picture>
+        {HERO_SLIDES.map((slide, index) => {
+          const isActive = index === currentSlide;
+          return (
+            <div
+              key={slide.id}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                opacity: isActive ? 1 : 0,
+                pointerEvents: isActive ? 'auto' : 'none',
+                transition: 'opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
+                zIndex: isActive ? 2 : 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: slide.alignment === 'left' ? 'flex-start' : slide.alignment === 'right' ? 'flex-end' : 'center',
+                textAlign: slide.alignment,
+                padding: '0 5%',
+              }}
+            >
+              <picture>
+                <source media="(max-width: 768px)" srcSet={slide.imageMobile} />
+                <img 
+                  src={slide.imageDesktop} 
+                  alt={slide.title} 
+                  loading="eager"
+                  decoding="async"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    zIndex: -2,
+                    transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 7s ease-out'
+                  }}
+                />
+              </picture>
             
             {/* Overlay sutil adaptado a la alineación */}
             <div style={{
@@ -236,7 +247,8 @@ const Home = () => {
               </Link>
             </div>
           </div>
-        ))}
+        );
+      })}
 
         {/* Flechas Desktop */}
         <button 
