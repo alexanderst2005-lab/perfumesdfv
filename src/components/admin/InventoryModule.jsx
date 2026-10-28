@@ -24,11 +24,10 @@ const InventoryModule = () => {
 
   const openCreateModal = () => {
     setEditingProduct(null);
-    const defaultCat = categories.length > 0 ? categories[0] : null;
     setFormData({
       id: '', name: '', brand: '', 
-      category: defaultCat ? defaultCat.name : '', 
-      categoryId: defaultCat ? defaultCat.id : null,
+      category: '', 
+      categoryId: null,
       family: '', 
       price: '', oldPrice: '', discount: '', sizesText: '', 
       description: '', occasion: '', concentration: '', 
@@ -187,7 +186,7 @@ const InventoryModule = () => {
     // Resolve valid category
     const matchedCat = (formData.categoryId && categories.find(c => c.id === formData.categoryId)) ||
                        (formData.category && categories.find(c => c.name.toLowerCase() === formData.category.toLowerCase())) ||
-                       (categories.length > 0 ? categories[0] : null);
+                       null;
 
     if (!matchedCat && !formData.category) {
       alert('Selecciona una categoría');
