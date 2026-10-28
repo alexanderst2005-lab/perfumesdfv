@@ -1,5 +1,5 @@
-import React, { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useEffect, useRef, lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { ShopProvider } from './context/ShopContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -22,14 +22,38 @@ const Contacto = lazy(() => import('./pages/Contacto'));
 // Home handles its own marginTop via negative hero offset
 // Other pages handle their own paddingTop
 function AppInner() {
-  const { pathname } = useLocation();
+  const { pathname, key } = useLocation();
+  const navType = useNavigationType();
   const isHome = pathname === '/';
   const isAdmin = pathname.startsWith('/admin');
 
-  // SCROLL AL INICIO CADA VEZ QUE CAMBIA LA RUTA
+  // Guarda la posición de scroll de cada entrada del historial
+  const positions = useRef(new Map());
+  const keyRef = useRef(key);
+  keyRef.current = key;
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+    const onScroll = () => positions.current.set(keyRef.current, window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Navegar hacia adelante: arriba del todo. Volver atrás: restaurar donde estaba.
+  useEffect(() => {
+    if (navType !== 'POP') {
+      window.scrollTo(0, 0);
+      return;
+    }
+    const target = positions.current.get(key) || 0;
+    let tries = 0;
+    let timer;
+    const tick = () => {
+      window.scrollTo(0, target);
+      if (Math.abs(window.scrollY - target) > 2 && tries++ < 40) timer = setTimeout(tick, 50);
+    };
+    tick();
+    return () => clearTimeout(timer);
+  }, [key]);
 
   // Precarga las demás pantallas en segundo plano para que navegar sea instantáneo
   useEffect(() => {

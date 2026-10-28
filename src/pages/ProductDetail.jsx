@@ -147,7 +147,6 @@ const ProductDetail = () => {
       const firstValidSize = Array.isArray(product.sizes) ? product.sizes.find(s => s && String(s).trim()) || '' : '';
       setSize(firstValidSize);
       setImgIdx(0);
-      window.scrollTo(0, 0);
     }
   }, [product?.id]);
 
