@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useShop } from '../../context/ShopContext';
 import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X } from 'lucide-react';
 import { optimizeImg } from '../../utils/img';
@@ -17,6 +17,8 @@ const InventoryModule = () => {
   });
 
   const [imagePreviews, setImagePreviews] = useState([]);
+  // Subidas en curso/terminadas por preview (blob:/data:) para no esperar al pulsar Guardar
+  const uploadsRef = useRef(new Map());
 
   const openCreateModal = () => {
     setEditingProduct(null);
@@ -120,12 +122,14 @@ const InventoryModule = () => {
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
     files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreviews(prev => [...prev, reader.result]);
-      };
-      reader.readAsDataURL(file);
+      // Preview instantáneo (sin leer el archivo a base64) y subida inmediata en segundo plano
+      const url = URL.createObjectURL(file);
+      setImagePreviews(prev => [...prev, url]);
+      const p = uploadToCloudinary(url);
+      p.catch(() => {});
+      uploadsRef.current.set(url, p);
     });
+    e.target.value = '';
   };
 
   const removeImage = (index) => {
@@ -194,15 +198,20 @@ const InventoryModule = () => {
     try {
       let finalImagesList = Array.from(new Set(imagePreviews.filter(Boolean)));
 
-      // Subir todas las imágenes nuevas EN PARALELO (hasta 5x más rápido)
+      // Las imágenes nuevas ya se están subiendo desde que se eligieron; solo esperamos el resultado
       finalImagesList = await Promise.all(
         finalImagesList.map(async (img) => {
-          if (img && img.startsWith('data:')) {
+          if (img && (img.startsWith('blob:') || img.startsWith('data:'))) {
+            const pending = uploadsRef.current.get(img);
+            if (pending) {
+              try { return await pending; } catch (e) { /* reintentar abajo */ }
+            }
             return await uploadToCloudinary(img);
           }
           return img;
         })
       );
+      uploadsRef.current.clear();
 
       finalImagesList = Array.from(new Set(finalImagesList.filter(Boolean)));
 
@@ -247,8 +256,8 @@ const InventoryModule = () => {
       let data = {};
       try { data = await res.json(); } catch (e) { /* non-JSON response */ }
       if (res.ok && data.success) {
-        await refreshProducts();
         setIsModalOpen(false);
+        refreshProducts().catch(() => {});
       } else {
         alert('Error: ' + (data.details || data.error || `HTTP ${res.status}`));
       }
@@ -291,7 +300,7 @@ const InventoryModule = () => {
             ) : products.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <img src={optimizeImg(p.image, 100)} alt={p.name} loading="lazy" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                  <img src={optimizeImg(p.image, 200)} alt={p.name} decoding="async" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
                   <div>
                     <p style={{ fontWeight: '600', color: '#111827' }}>{p.name}</p>
                     <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{p.brand} | {p.category}</p>
@@ -396,7 +405,7 @@ const InventoryModule = () => {
                   )}
                   {imagePreviews.map((src, index) => (
                     <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: index === 0 ? '2px solid #3b82f6' : '1px solid #d1d5db' }}>
-                      <img src={src} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={optimizeImg(src, 200)} alt="preview" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       {index === 0 ? (
                         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#3b82f6', color: 'white', fontSize: '0.65rem', textAlign: 'center', padding: '2px 0', fontWeight: '600' }}>
                           Principal
