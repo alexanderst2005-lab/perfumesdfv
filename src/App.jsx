@@ -31,6 +31,17 @@ function AppInner() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  // Precarga las demás pantallas en segundo plano para que navegar sea instantáneo
+  useEffect(() => {
+    const idle = window.requestIdleCallback || (cb => setTimeout(cb, 800));
+    idle(() => {
+      import('./pages/ProductDetail');
+      import('./pages/Favorites');
+      import('./pages/Checkout');
+      import('./pages/Contacto');
+    });
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {!isAdmin && <Header />}

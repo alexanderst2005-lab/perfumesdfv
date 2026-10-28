@@ -143,6 +143,26 @@ export const ShopProvider = ({ children }) => {
     fetchData();
   }, []);
 
+  // Precarga en segundo plano la foto grande de cada producto (en lotes) para que al abrirlo ya esté lista
+  useEffect(() => {
+    if (!allProducts.length) return;
+    const urls = allProducts
+      .filter(p => p.active !== false && typeof p.image === 'string' && p.image.includes('/image/upload/'))
+      .map(p => p.image.replace('/image/upload/', '/image/upload/w_900,f_auto,q_auto/'));
+    let cancelled = false;
+    const keep = [];
+    const idle = window.requestIdleCallback || (cb => setTimeout(cb, 500));
+    let i = 0;
+    const next = () => {
+      if (cancelled || i >= urls.length) return;
+      urls.slice(i, i + 4).forEach(u => { const im = new Image(); im.src = u; keep.push(im); });
+      i += 4;
+      idle(next);
+    };
+    idle(next);
+    return () => { cancelled = true; };
+  }, [allProducts]);
+
   // Save to localStorage when changed
   useEffect(() => {
     localStorage.setItem('perfume_cart', JSON.stringify(cart));

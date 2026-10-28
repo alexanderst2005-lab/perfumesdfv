@@ -386,32 +386,6 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
-
-            {/* Thumbnails Row */}
-            {images.length > 1 && (
-              <div 
-                className="gallery-thumbnails no-scrollbar"
-                key={`${product.id}-thumbs`}
-                style={{
-                  display: 'flex',
-                  gap: '0.65rem',
-                  marginTop: '0.85rem',
-                  overflowX: 'auto',
-                  padding: '4px 2px',
-                  justifyContent: images.length <= 5 ? 'center' : 'flex-start'
-                }}
-              >
-                {images.map((img, idx) => (
-                  <GalleryThumb
-                    key={`${product.id}-thumb-${idx}-${img}`}
-                    src={img}
-                    alt={`${product.name} miniatura ${idx + 1}`}
-                    isActive={idx === imgIdx}
-                    onClick={() => setImgIdx(idx)}
-                  />
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Info */}
