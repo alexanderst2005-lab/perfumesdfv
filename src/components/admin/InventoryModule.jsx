@@ -273,7 +273,20 @@ const InventoryModule = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#111827' }}>Inventario de Productos</h1>
+        <div>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#111827' }}>Inventario de Productos</h1>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', backgroundColor: '#111827', color: '#fff', fontSize: '0.8rem', fontWeight: '600' }}>
+              {products.length} {products.length === 1 ? 'producto' : 'productos'} subidos
+            </span>
+            <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', backgroundColor: '#d1fae5', color: '#065f46', fontSize: '0.8rem', fontWeight: '600' }}>
+              {products.filter(p => p.active !== false).length} visibles
+            </span>
+            <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', backgroundColor: '#fee2e2', color: '#991b1b', fontSize: '0.8rem', fontWeight: '600' }}>
+              {products.filter(p => !p.inStock).length} agotados
+            </span>
+          </div>
+        </div>
         <button 
           onClick={openCreateModal}
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#000', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
