@@ -77,6 +77,7 @@ export const ShopProvider = ({ children }) => {
       return true;
     }
   });
+  const [isFresh, setIsFresh] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -127,6 +128,7 @@ export const ShopProvider = ({ children }) => {
         }
         // If we reach here successfully
         setIsLoadingProducts(false);
+        setIsFresh(true);
       } catch (err) {
         console.error("Failed to fetch data", err);
         if (retries > 0) {
@@ -134,6 +136,7 @@ export const ShopProvider = ({ children }) => {
           setTimeout(() => fetchData(retries - 1), 1000);
         } else {
           setIsLoadingProducts(false);
+          setIsFresh(true);
         }
       }
     };
@@ -199,7 +202,7 @@ export const ShopProvider = ({ children }) => {
 
   return (
     <ShopContext.Provider value={{
-      products, allProducts, refreshProducts, brands, categories, refreshCategories, isLoadingProducts,
+      products, allProducts, refreshProducts, brands, categories, refreshCategories, isLoadingProducts, isFresh,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,
       cartTotal, cartCount
