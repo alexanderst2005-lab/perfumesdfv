@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
-import { ProductCard } from './Home';
+import ProductCard from '../components/ProductCard';
 
 const Favorites = () => {
   const { favorites, toggleFavorite, addToCart, isFavorite } = useShop();

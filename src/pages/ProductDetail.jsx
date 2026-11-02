@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import { ProductCard } from './Home';
+import ProductCard from '../components/ProductCard';
 import { optimizeImg } from '../utils/img';
 
 const TOTAL_HEADER = 106;

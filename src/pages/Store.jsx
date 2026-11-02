@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SlidersHorizontal, ChevronDown, X, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import { ProductCard } from './Home';
+import ProductCard from '../components/ProductCard';
 
 const Store = () => {
   const { search } = useLocation();
