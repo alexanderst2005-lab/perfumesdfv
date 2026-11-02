@@ -176,7 +176,7 @@ const Home = () => {
                 <img 
                   src={slide.imageDesktop} 
                   alt={slide.title} 
-                  loading="eager"
+                  loading={idx === 0 ? "eager" : "lazy"}
                   decoding="async"
                   style={{
                     position: 'absolute',
@@ -613,7 +613,7 @@ const Home = () => {
                   }}
                 >
                   <div style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative' }}>
-                    <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={s.img} alt={s.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <span style={{
                       position: 'absolute',
                       top: '12px',
@@ -828,9 +828,9 @@ const Home = () => {
               NUESTROS ALIADOS
             </h4>
             <div className="allies-logos" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', opacity: 0.85 }}>
-              <img src="/addi.png" alt="Addi" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
-              <img src="/sistecredito.png" alt="Sistecrédito" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
-              <img src="/bold.png" alt="Bold" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/addi.png" alt="Addi" loading="lazy" decoding="async" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/sistecredito.png" alt="Sistecrédito" loading="lazy" decoding="async" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/bold.png" alt="Bold" loading="lazy" decoding="async" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
             </div>
           </div>
 

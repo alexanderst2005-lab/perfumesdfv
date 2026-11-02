@@ -75,8 +75,8 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
       {thumb ? (
         <img 
           src={thumb} 
-          alt={reel.title}
-          loading="eager"
+          alt={reel.title} 
+          loading="lazy"
           decoding="async"
           style={{
             position: 'absolute',
@@ -106,7 +106,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
           muted={isMuted}
           playsInline
           webkit-playsinline="true"
-          preload="metadata"
+          preload="none"
           onCanPlay={() => setVideoLoaded(true)}
           onPlaying={() => setVideoLoaded(true)}
           onLoadedData={() => setVideoLoaded(true)}
