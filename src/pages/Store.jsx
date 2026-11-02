@@ -257,10 +257,11 @@ const Store = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
               {filteredAndSorted
                 .slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE)
-                .map(p => (
+                .map((p, idx) => (
                   <ProductCard
                     key={p.id}
                     product={p}
+                    priority={idx < 4}
                     onFav={() => toggleFavorite(p)}
                     fav={isFavorite(p.id)}
                     onAdd={() => addToCart(p, 1, p.sizes?.[0])}

@@ -176,7 +176,8 @@ const Home = () => {
                 <img 
                   src={slide.imageDesktop} 
                   alt={slide.title} 
-                  loading="eager"
+                  loading={idx === 0 ? "eager" : "lazy"}
+                  fetchPriority={idx === 0 ? "high" : "low"}
                   decoding="async"
                   style={{
                     position: 'absolute',
@@ -356,8 +357,8 @@ const Home = () => {
                 </div>
               ))
             ) : (
-              displayProducts.map(p => (
-                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
+              displayProducts.map((p, idx) => (
+                <ProductCard key={p.id} product={p} priority={idx < 4} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
               ))
             )}
           </div>
@@ -573,7 +574,7 @@ const Home = () => {
                 address: 'Calle 31 #27-44, Palmira, Valle',
                 hours: 'Lunes a sábado: 9:00 a. m. – 12:30 p. m. y 2:30 p. m. – 7:00 p. m.',
                 phoneFormatted: '+57 320 697 0036',
-                img: '/sede_calle31.jpg',
+                img: '/sede_calle31.webp',
                 maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca',
                 wa: 'https://wa.me/573206970036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Calle%2031%20Palmira',
               },
@@ -583,7 +584,7 @@ const Home = () => {
                 address: 'Centro Comercial Llanogrande, Palmira, Valle',
                 hours: 'L–J: 10:30 a. m. – 8:00 p. m. | V–S: 10:30 a. m. – 8:30 p. m. | D–F: 11:00 a. m. – 7:30 p. m.',
                 phoneFormatted: '+57 320 862 7036',
-                img: '/sede_llanogrande.jpg',
+                img: '/sede_llanogrande.webp',
                 maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira',
                 wa: 'https://wa.me/573208627036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Llanogrande%20Palmira',
               },
@@ -613,7 +614,7 @@ const Home = () => {
                   }}
                 >
                   <div style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative' }}>
-                    <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={s.img} alt={s.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <span style={{
                       position: 'absolute',
                       top: '12px',
@@ -828,9 +829,9 @@ const Home = () => {
               NUESTROS ALIADOS
             </h4>
             <div className="allies-logos" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', opacity: 0.85 }}>
-              <img src="/addi.png" alt="Addi" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
-              <img src="/sistecredito.png" alt="Sistecrédito" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
-              <img src="/bold.png" alt="Bold" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/addi.webp" alt="Addi" loading="lazy" decoding="async" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/sistecredito.webp" alt="Sistecrédito" loading="lazy" decoding="async" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/bold.webp" alt="Bold" loading="lazy" decoding="async" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
             </div>
           </div>
 
@@ -848,39 +849,59 @@ const Home = () => {
 };
 
 /* ── Shared Product Card Component ── */
-export const ProductCard = ({ product, onFav, fav, onAdd }) => (
-  <div className="product-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'left', backgroundColor: 'transparent' }}>
-    <div 
-      className="product-card__image-wrap" 
-      style={{ 
-        position: 'relative', 
-        aspectRatio: '4/5', 
-        overflow: 'hidden', 
-        backgroundColor: '#FFFFFF', 
-        borderRadius: '8px',
-        marginBottom: '0.75rem'
-      }}
-    >
-      <Link
-        to={`/producto/${product.id}`}
-        onMouseEnter={() => prefetchImg(product.image)}
-        onTouchStart={() => prefetchImg(product.image)}
-        style={{ display: 'block', width: '100%', height: '100%' }}
+export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <div className="product-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'left', backgroundColor: 'transparent' }}>
+      <div 
+        className="product-card__image-wrap" 
+        style={{ 
+          position: 'relative', 
+          aspectRatio: '4/5', 
+          overflow: 'hidden', 
+          backgroundColor: '#F8F7F5', 
+          borderRadius: '8px',
+          marginBottom: '0.75rem'
+        }}
       >
-        <img 
-          src={optimizeImg(product.image, 500)} 
-          alt={product.name} 
-          className="product-img"
-          loading="lazy"
-          decoding="async"
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'contain',
-            transition: 'transform 0.5s ease'
-          }} 
-        />
-      </Link>
+        {/* Shimmer de lujo mientras descarga la imagen */}
+        {!loaded && (
+          <div 
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(90deg, #F5F4F0 25%, #EBE8E1 50%, #F5F4F0 75%)',
+              backgroundSize: '200% 100%',
+              animation: 'luxuryShimmer 1.4s infinite ease-in-out',
+              zIndex: 1
+            }}
+          />
+        )}
+
+        <Link
+          to={`/producto/${product.id}`}
+          onMouseEnter={() => prefetchImg(product.image, 750)}
+          onTouchStart={() => prefetchImg(product.image, 750)}
+          style={{ display: 'block', width: '100%', height: '100%', position: 'relative', zIndex: 2 }}
+        >
+          <img 
+            src={optimizeImg(product.image, 380)} 
+            alt={product.name} 
+            className="product-img"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            decoding="async"
+            onLoad={() => setLoaded(true)}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'contain',
+              opacity: loaded ? 1 : 0,
+              transition: 'opacity 0.28s ease, transform 0.5s ease'
+            }} 
+          />
+        </Link>
       
       {/* Etiqueta de Descuento Discreta */}
       {product.discount && (
@@ -1118,8 +1139,13 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
         50% { transform: scale(1.3); }
         100% { transform: scale(1); }
       }
+      @keyframes luxuryShimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
     `}</style>
   </div>
-);
+  );
+};
 
 export default Home;

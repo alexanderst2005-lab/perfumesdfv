@@ -21,31 +21,59 @@ const getEmbedUrl = (url) => {
 
 // Tarjeta individual con reproducción directa en vivo ("afuerita")
 const ReelFeedCard = ({ reel, onOpenModal }) => {
+  const cardRef = useRef(null);
   const videoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Versión liviana de video para móvil y web (comprimido y tamaño justo)
   const fastVideoUrl = reel.videoUrl && reel.videoUrl.includes('/video/upload/') && !reel.videoUrl.includes('w_')
     ? reel.videoUrl.replace('/video/upload/', '/video/upload/q_auto:eco,vc_auto,w_540/')
     : reel.videoUrl;
 
-  // Auto-generación de póster/thumbnail si es video de Cloudinary
+  // Auto-generación de póster/thumbnail si es video de Cloudinary o Unsplash
   let thumb = reel.thumbnailUrl;
   if (thumb && thumb.includes('/image/upload/') && !thumb.includes('w_')) {
-    thumb = thumb.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/');
+    thumb = thumb.replace('/image/upload/', '/image/upload/f_auto,q_auto:good,w_400,c_limit/');
   } else if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
     thumb = reel.videoUrl
-      .replace('/video/upload/', '/video/upload/so_0,w_500,q_auto,f_auto/')
+      .replace('/video/upload/', '/video/upload/so_0,f_auto,q_auto:good,w_400,c_limit/')
       .replace(/\.[^/.]+$/, '.jpg');
+  } else if (thumb && thumb.includes('images.unsplash.com')) {
+    try {
+      const u = new URL(thumb);
+      u.searchParams.set('w', '400');
+      u.searchParams.set('auto', 'format');
+      u.searchParams.set('q', '75');
+      thumb = u.toString();
+    } catch (e) {}
   }
+
+  // IntersectionObserver: solo reproduce y descarga video si la tarjeta entra en pantalla
+  useEffect(() => {
+    if (!cardRef.current || typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsVisible(entry.isIntersecting);
+    }, { rootMargin: '120px 0px', threshold: 0.15 });
+
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      videoRef.current.play().catch(() => {});
+      if (isVisible) {
+        videoRef.current.muted = isMuted;
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
     }
-  }, [isMuted]);
+  }, [isVisible, isMuted]);
 
   const toggleSound = (e) => {
     e.stopPropagation();
@@ -58,6 +86,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
 
   return (
     <div 
+      ref={cardRef}
       className="reel-feed-card"
       onClick={() => onOpenModal(reel)}
       style={{
@@ -71,12 +100,12 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
         transition: 'all 0.35s ease'
       }}
     >
-      {/* 1. Póster / Imagen SIEMPRE visible debajo para que nunca se vea cuadro negro */}
+      {/* 1. Póster / Imagen visible para carga inmediata y cero cuadros negros */}
       {thumb ? (
         <img 
           src={thumb} 
           alt={reel.title}
-          loading="eager"
+          loading="lazy"
           decoding="async"
           style={{
             position: 'absolute',
@@ -95,8 +124,8 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
         <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#262626', zIndex: 1 }} />
       )}
 
-      {/* 2. Video reproduciéndose en bucle optimizado */}
-      {fastVideoUrl && (
+      {/* 2. Video reproduciéndose solo cuando entra en viewport */}
+      {fastVideoUrl && isVisible && (
         <video 
           ref={videoRef}
           src={fastVideoUrl} 
@@ -119,7 +148,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
             display: 'block',
             zIndex: 2,
             opacity: videoLoaded ? 1 : 0,
-            transition: 'opacity 0.4s ease transform 0.5s ease'
+            transition: 'opacity 0.4s ease'
           }}
           className="reel-video-preview"
         />
