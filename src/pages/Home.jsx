@@ -176,7 +176,7 @@ const Home = () => {
                 <img 
                   src={slide.imageDesktop} 
                   alt={slide.title} 
-                  loading={idx === 0 ? "eager" : "lazy"}
+                  loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
                   style={{
                     position: 'absolute',
