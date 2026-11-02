@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import ProductCard from './ProductCard';
+import { ProductCard } from '../pages/Home';
 
 const OffersSection = () => {
   const { products, addToCart, isFavorite, toggleFavorite } = useShop();

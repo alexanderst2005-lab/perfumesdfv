@@ -4,7 +4,6 @@ import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus
 import { useShop } from '../context/ShopContext';
 import OffersSection from '../components/OffersSection';
 import LazyOnView from '../components/LazyOnView';
-import ProductCard from '../components/ProductCard';
 import { optimizeImg, prefetchImg } from '../utils/img';
 
 const TestimonialsSection = lazy(() => import('../components/TestimonialsSection'));
@@ -177,8 +176,7 @@ const Home = () => {
                 <img 
                   src={slide.imageDesktop} 
                   alt={slide.title} 
-                  loading={idx === 0 ? "eager" : "lazy"}
-                  fetchPriority={idx === 0 ? "high" : "low"}
+                  loading="eager"
                   decoding="async"
                   style={{
                     position: 'absolute',
@@ -358,8 +356,8 @@ const Home = () => {
                 </div>
               ))
             ) : (
-              displayProducts.map((p, idx) => (
-                <ProductCard key={p.id} product={p} priority={idx < 4} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
+              displayProducts.map(p => (
+                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
               ))
             )}
           </div>
@@ -575,7 +573,7 @@ const Home = () => {
                 address: 'Calle 31 #27-44, Palmira, Valle',
                 hours: 'Lunes a sábado: 9:00 a. m. – 12:30 p. m. y 2:30 p. m. – 7:00 p. m.',
                 phoneFormatted: '+57 320 697 0036',
-                img: '/sede_calle31.webp',
+                img: '/sede_calle31.jpg',
                 maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca',
                 wa: 'https://wa.me/573206970036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Calle%2031%20Palmira',
               },
@@ -585,7 +583,7 @@ const Home = () => {
                 address: 'Centro Comercial Llanogrande, Palmira, Valle',
                 hours: 'L–J: 10:30 a. m. – 8:00 p. m. | V–S: 10:30 a. m. – 8:30 p. m. | D–F: 11:00 a. m. – 7:30 p. m.',
                 phoneFormatted: '+57 320 862 7036',
-                img: '/sede_llanogrande.webp',
+                img: '/sede_llanogrande.jpg',
                 maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira',
                 wa: 'https://wa.me/573208627036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Llanogrande%20Palmira',
               },
@@ -615,7 +613,7 @@ const Home = () => {
                   }}
                 >
                   <div style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative' }}>
-                    <img src={s.img} alt={s.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <span style={{
                       position: 'absolute',
                       top: '12px',
@@ -830,9 +828,9 @@ const Home = () => {
               NUESTROS ALIADOS
             </h4>
             <div className="allies-logos" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', opacity: 0.85 }}>
-              <img src="/addi.webp" alt="Addi" loading="lazy" decoding="async" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
-              <img src="/sistecredito.webp" alt="Sistecrédito" loading="lazy" decoding="async" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
-              <img src="/bold.webp" alt="Bold" loading="lazy" decoding="async" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/addi.png" alt="Addi" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/sistecredito.png" alt="Sistecrédito" style={{ height: '18px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/bold.png" alt="Bold" style={{ height: '26px', width: 'auto', objectFit: 'contain' }} />
             </div>
           </div>
 
@@ -844,10 +842,284 @@ const Home = () => {
         `}</style>
       </section>
 
+
     </div>
   );
 };
 
-export { ProductCard };
-export default Home;
+/* ── Shared Product Card Component ── */
+export const ProductCard = ({ product, onFav, fav, onAdd }) => (
+  <div className="product-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'left', backgroundColor: 'transparent' }}>
+    <div 
+      className="product-card__image-wrap" 
+      style={{ 
+        position: 'relative', 
+        aspectRatio: '4/5', 
+        overflow: 'hidden', 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: '8px',
+        marginBottom: '0.75rem'
+      }}
+    >
+      <Link
+        to={`/producto/${product.id}`}
+        onMouseEnter={() => prefetchImg(product.image)}
+        onTouchStart={() => prefetchImg(product.image)}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+      >
+        <img 
+          src={optimizeImg(product.image, 500)} 
+          alt={product.name} 
+          className="product-img"
+          loading="lazy"
+          decoding="async"
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'contain',
+            transition: 'transform 0.5s ease'
+          }} 
+        />
+      </Link>
+      
+      {/* Etiqueta de Descuento Discreta */}
+      {product.discount && (
+        <span style={{ 
+          position: 'absolute', 
+          top: '10px', 
+          left: '10px', 
+          background: 'rgba(10, 10, 10, 0.9)', 
+          backdropFilter: 'blur(4px)',
+          color: '#fff', 
+          padding: '3px 7px', 
+          fontSize: '0.58rem', 
+          letterSpacing: '0.5px', 
+          fontWeight: '600', 
+          textTransform: 'uppercase',
+          borderRadius: '3px',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+        }}>
+          -{product.discount}%
+        </span>
+      )}
 
+      {/* Overlay AGOTADO */}
+      {!product.inStock && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(2px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 5,
+          pointerEvents: 'none'
+        }}>
+          <span style={{
+            background: '#111',
+            color: '#fff',
+            padding: '6px 14px',
+            fontSize: '0.75rem',
+            letterSpacing: '2px',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            borderRadius: '2px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            fontFamily: 'var(--font-sans)'
+          }}>
+            AGOTADO
+          </span>
+        </div>
+      )}
+
+      {/* Botón Favorito Minimalista con fondo suave */}
+      <button
+        onClick={(e) => { e.preventDefault(); onFav(); }}
+        style={{
+          position: 'absolute', top: '10px', right: '10px',
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(4px)',
+          border: 'none', cursor: 'pointer',
+          width: '30px', height: '30px',
+          borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          zIndex: 6,
+          boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+        }}
+        className={fav ? 'fav-active' : ''}
+        aria-label="Guardar en favoritos"
+      >
+        <Heart size={15} strokeWidth={1.8} color={fav ? '#E11D48' : '#222'} fill={fav ? '#E11D48' : 'none'} />
+      </button>
+
+      {/* Botón Flotante Desktop en Hover */}
+      {(onAdd && product.inStock) && (
+        <button
+          onClick={(e) => { e.preventDefault(); onAdd(); }}
+          className="add-to-cart-btn-desktop"
+          style={{ 
+            position: 'absolute', 
+            bottom: '10px', 
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: '0.55rem 1.1rem',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+            backdropFilter: 'blur(4px)',
+            border: '1px solid #111',
+            borderRadius: '3px',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            cursor: 'pointer', 
+            color: '#111',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.62rem',
+            fontWeight: '600',
+            letterSpacing: '1px',
+            transition: 'all 0.25s ease',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            zIndex: 6
+          }}
+        >
+          + AGREGAR AL CARRITO
+        </button>
+      )}
+    </div>
+    
+    <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0 0.1rem' }}>
+      <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
+        <h3 style={{ 
+          fontFamily: 'var(--font-serif)', 
+          fontSize: 'clamp(0.9rem, 1.4vw, 1rem)', 
+          fontWeight: '500', 
+          color: '#1A1A1A', 
+          lineHeight: '1.3', 
+          marginBottom: '0.3rem',
+          minHeight: '2.6em',
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical'
+        }}>
+          {product.name}
+        </h3>
+      </Link>
+
+      <p style={{ 
+        fontFamily: 'var(--font-sans)', 
+        fontSize: '0.62rem', 
+        fontWeight: '600', 
+        letterSpacing: '1.5px',
+        textTransform: 'uppercase', 
+        color: '#8A857D', 
+        margin: '0 0 0.2rem 0' 
+      }}>
+        {product.brand}
+      </p>
+
+      <p style={{ 
+        fontFamily: 'var(--font-sans)', 
+        fontSize: '0.58rem', 
+        fontWeight: '400', 
+        letterSpacing: '1px',
+        textTransform: 'uppercase', 
+        color: '#B0AAA0', 
+        margin: '0 0 0.5rem 0' 
+      }}>
+        {product.category}
+      </p>
+      
+      <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'baseline', marginBottom: '0.5rem' }}>
+        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#0A0A0A', fontWeight: '600', letterSpacing: '-0.2px' }}>
+          ${product.price.toLocaleString()}
+        </span>
+        {product.oldPrice && (
+          <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.72rem', fontWeight: '400' }}>
+            ${product.oldPrice.toLocaleString()}
+          </span>
+        )}
+      </div>
+
+      {/* Botón Agregar al Carrito para Móvil y Tablet (debajo del precio, sin tapar la botella) */}
+      {(onAdd && product.inStock) && (
+        <button
+          onClick={(e) => { e.preventDefault(); onAdd(); }}
+          className="add-to-cart-btn-mobile"
+          style={{
+            width: '100%',
+            padding: '0.48rem 0.6rem',
+            backgroundColor: '#FAF9F6',
+            border: '1px solid #D5D0C6',
+            borderRadius: '4px',
+            color: '#1A1A1A',
+            fontSize: '0.64rem',
+            fontWeight: '600',
+            letterSpacing: '0.8px',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-sans)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            marginTop: '0.2rem'
+          }}
+        >
+          <span>+ AGREGAR</span>
+        </button>
+      )}
+    </div>
+
+    <style>{`
+      .product-card:hover .product-img {
+        transform: scale(1.03);
+      }
+      
+      .add-to-cart-btn-desktop {
+        opacity: 0;
+        transform: translate(-50%, 8px) !important;
+      }
+      .product-card:hover .add-to-cart-btn-desktop {
+        opacity: 1;
+        transform: translate(-50%, 0) !important;
+      }
+      .add-to-cart-btn-desktop:hover {
+        background-color: #0A0A0A !important;
+        color: #fff !important;
+      }
+
+      .add-to-cart-btn-mobile {
+        display: none !important;
+      }
+      .add-to-cart-btn-mobile:hover {
+        background-color: #0A0A0A !important;
+        color: #fff !important;
+        border-color: #0A0A0A !important;
+      }
+      
+      @media (max-width: 1024px) {
+        .add-to-cart-btn-desktop {
+          display: none !important;
+        }
+        .add-to-cart-btn-mobile {
+          display: flex !important;
+        }
+      }
+
+      .fav-active {
+        animation: heartBeat 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      @keyframes heartBeat {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+      }
+    `}</style>
+  </div>
+);
+
+export default Home;

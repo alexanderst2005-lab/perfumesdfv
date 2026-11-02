@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SlidersHorizontal, ChevronDown, X, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import ProductCard from '../components/ProductCard';
+import { ProductCard } from './Home';
 
 const Store = () => {
   const { search } = useLocation();
@@ -257,11 +257,10 @@ const Store = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
               {filteredAndSorted
                 .slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE)
-                .map((p, idx) => (
+                .map(p => (
                   <ProductCard
                     key={p.id}
                     product={p}
-                    priority={idx < 4}
                     onFav={() => toggleFavorite(p)}
                     fav={isFavorite(p.id)}
                     onAdd={() => addToCart(p, 1, p.sizes?.[0])}

@@ -8,11 +8,11 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     
-    // Caché en Edge CDN (60s) con stale-while-revalidate para respuesta en ~15ms
+    // Caché ultracorta (1-5s) para que los productos nuevos aparezcan de inmediato en la tienda
     if (req.query && req.query.t) {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     } else {
-      res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400');
+      res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=1, stale-while-revalidate=5');
     }
 
     // Fetch all products joined with categories table so visible category name is always in sync
