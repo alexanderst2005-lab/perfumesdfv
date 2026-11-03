@@ -356,8 +356,8 @@ const Home = () => {
                 </div>
               ))
             ) : (
-              displayProducts.map(p => (
-                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} />
+              displayProducts.map((p, pIdx) => (
+                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} priority={pIdx < 4} />
               ))
             )}
           </div>
@@ -848,7 +848,7 @@ const Home = () => {
 };
 
 /* ── Shared Product Card Component ── */
-export const ProductCard = ({ product, onFav, fav, onAdd }) => (
+export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) => (
   <div className="product-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'left', backgroundColor: 'transparent' }}>
     <div 
       className="product-card__image-wrap" 
@@ -868,10 +868,11 @@ export const ProductCard = ({ product, onFav, fav, onAdd }) => (
         style={{ display: 'block', width: '100%', height: '100%' }}
       >
         <img 
-          src={optimizeImg(product.image, 500)} 
+          src={optimizeImg(product.image, 400)} 
           alt={product.name} 
           className="product-img"
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           decoding="async"
           style={{ 
             width: '100%', 

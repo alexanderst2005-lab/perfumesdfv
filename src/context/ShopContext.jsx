@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { optimizeImg } from '../utils/img';
 
 const ShopContext = createContext();
 
@@ -143,23 +144,30 @@ export const ShopProvider = ({ children }) => {
     fetchData();
   }, []);
 
-  // Precarga en segundo plano la foto grande de cada producto (en lotes) para que al abrirlo ya esté lista
+  // Precarga en segundo plano las fotos de las tarjetas del catálogo
+  // para que al hacer scroll, navegar o cambiar de página carguen instantáneamente desde la caché
   useEffect(() => {
     if (!allProducts.length) return;
     const urls = allProducts
       .filter(p => p.active !== false && typeof p.image === 'string' && p.image.includes('/image/upload/'))
-      .map(p => p.image.replace('/image/upload/', '/image/upload/w_900,f_auto,q_auto/'));
+      .map(p => optimizeImg(p.image, 400));
     let cancelled = false;
     const keep = [];
-    const idle = window.requestIdleCallback || (cb => setTimeout(cb, 500));
     let i = 0;
     const next = () => {
       if (cancelled || i >= urls.length) return;
-      urls.slice(i, i + 4).forEach(u => { const im = new Image(); im.src = u; keep.push(im); });
-      i += 4;
-      idle(next);
+      urls.slice(i, i + 8).forEach(u => {
+        const im = new Image();
+        im.decoding = 'async';
+        im.src = u;
+        keep.push(im);
+      });
+      i += 8;
+      if (i < urls.length) {
+        setTimeout(next, 80);
+      }
     };
-    idle(next);
+    next();
     return () => { cancelled = true; };
   }, [allProducts]);
 

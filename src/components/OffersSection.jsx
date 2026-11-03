@@ -179,7 +179,7 @@ const OffersSection = () => {
               transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`
             }}
           >
-            {offerProducts.map((p) => (
+            {offerProducts.map((p, idx) => (
               <div 
                 key={p.id}
                 className="offers-slide-card"
@@ -193,6 +193,7 @@ const OffersSection = () => {
                   onFav={() => toggleFavorite(p)}
                   fav={isFavorite(p.id)}
                   onAdd={() => addToCart(p, 1, p.sizes?.[0])}
+                  priority={idx < 4}
                 />
               </div>
             ))}
