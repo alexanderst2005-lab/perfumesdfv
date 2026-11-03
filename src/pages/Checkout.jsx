@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { optimizeImg } from '../utils/img';
 
 const Checkout = () => {
   const { cart, cartTotal, clearCart } = useShop();
@@ -281,7 +282,7 @@ const Checkout = () => {
                 {cart.map((item, idx) => (
                   <div key={`${item.id}-${item.selectedSize}-${idx}`} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div style={{ width: '50px', height: '50px', backgroundColor: '#F9F8F6', borderRadius: '4px', overflow: 'hidden' }}>
-                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      <img src={optimizeImg(item.image, 400)} alt={item.name} loading="eager" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                     <div style={{ flex: 1 }}>
                       <h4 style={{ fontSize: '0.75rem', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#111' }}>{item.name}</h4>

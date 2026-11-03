@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, Edit, CheckCircle, Package, Truck, XCircle, Clock, Trash2 } from 'lucide-react';
+import { optimizeImg } from '../../utils/img';
 
 const OrdersModule = () => {
   const [orders, setOrders] = useState([]);
@@ -292,7 +293,7 @@ const OrdersModule = () => {
                   {selectedOrder.items?.map((item, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
                       <div style={{ width: '60px', height: '60px', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <img src={optimizeImg(item.image, 400)} alt={item.name} decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                       </div>
                       <div style={{ flex: 1 }}>
                         <p style={{ fontWeight: '600', fontSize: '0.95rem', color: '#111', margin: '0 0 0.2rem 0' }}>{item.name}</p>

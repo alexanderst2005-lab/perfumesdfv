@@ -33,7 +33,7 @@ const CartDrawer = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {cart.map(item => (
                     <div key={`${item.id}-${item.selectedSize}`} style={{ display: 'flex', gap: '1rem' }}>
-                      <img src={optimizeImg(item.image, 200)} alt={item.name} loading="lazy" style={{ width: '80px', height: '100px', objectFit: 'cover' }} />
+                      <img src={optimizeImg(item.image, 400)} alt={item.name} loading="eager" decoding="async" style={{ width: '80px', height: '100px', objectFit: 'contain' }} />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ fontSize: '0.9rem', marginBottom: '0.2rem' }}>{item.name}</h4>
                         {item.selectedSize ? (
