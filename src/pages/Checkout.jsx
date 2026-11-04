@@ -18,7 +18,7 @@ const Checkout = () => {
     notas: ''
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('contra_entrega');
+  const [paymentMethod, setPaymentMethod] = useState('transferencia');
   const [acceptTerms, setAcceptTerms] = useState(false);
 
   const handleChange = (e) => {
@@ -220,15 +220,6 @@ const Checkout = () => {
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 
-                {/* Contra Entrega */}
-                <label style={{ display: 'flex', gap: '1rem', padding: '1.2rem', border: paymentMethod === 'contra_entrega' ? '1px solid #111' : '1px solid #EAE8E4', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#fff', alignItems: 'flex-start' }}>
-                  <input type="radio" name="paymentMethod" value="contra_entrega" checked={paymentMethod === 'contra_entrega'} onChange={() => setPaymentMethod('contra_entrega')} style={{ marginTop: '0.2rem' }} />
-                  <div>
-                    <span style={{ display: 'block', fontWeight: '500', fontSize: '0.9rem', color: '#111', marginBottom: '0.2rem' }}>Pago Contra Entrega</span>
-                    <span style={{ fontSize: '0.8rem', color: '#666' }}>Paga en efectivo al recibir tu pedido en casa.</span>
-                  </div>
-                </label>
-
                 {/* Transferencia */}
                 <label style={{ display: 'flex', gap: '1rem', padding: '1.2rem', border: paymentMethod === 'transferencia' ? '1px solid #111' : '1px solid #EAE8E4', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#fff', alignItems: 'flex-start' }}>
                   <input type="radio" name="paymentMethod" value="transferencia" checked={paymentMethod === 'transferencia'} onChange={() => setPaymentMethod('transferencia')} style={{ marginTop: '0.2rem' }} />
@@ -250,7 +241,7 @@ const Checkout = () => {
               </div>
 
               {/* Info Box */}
-              {(paymentMethod === 'contra_entrega' || paymentMethod === 'transferencia') && (
+              {paymentMethod === 'transferencia' && (
                 <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '4px', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                   <div style={{ color: '#16a34a', marginTop: '2px' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
