@@ -172,6 +172,15 @@ async function sendOrderEmail(type, order) {
 export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      body = {};
+    }
+  }
+
   if (req.method === 'POST') {
     try {
       const {
@@ -186,7 +195,7 @@ export default async function handler(req, res) {
         metodoPago,
         total,
         cart
-      } = req.body;
+      } = body || {};
 
       // Validación de seguridad de precios en servidor (Requisito 8: Integración con Carrito y Pedidos)
       let verifiedCart = cart;
@@ -266,7 +275,11 @@ export default async function handler(req, res) {
 
   if (req.method === 'PUT') {
     try {
-      const { id, status, shipping_carrier, tracking_number } = req.body;
+      const { id, status, shipping_carrier, tracking_number } = body || {};
+
+      if (!id) {
+        return res.status(400).json({ success: false, error: 'Missing order ID' });
+      }
 
       let updatedOrder = null;
       if (shipping_carrier !== undefined && tracking_number !== undefined) {
@@ -280,6 +293,12 @@ export default async function handler(req, res) {
       } else {
         const result = await sql`UPDATE orders SET status = ${status} WHERE id = ${id} RETURNING *`;
         updatedOrder = result[0];
+      }
+
+      // Si por alguna razón RETURNING no vino completo, consultamos el pedido
+      if (!updatedOrder) {
+        const check = await sql`SELECT * FROM orders WHERE id = ${id}`;
+        updatedOrder = check[0];
       }
 
       // AWAIT ES OBLIGATORIO
@@ -296,7 +315,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'DELETE') {
     try {
-      const { id } = req.body;
+      const { id } = body || {};
       await sql`DELETE FROM orders WHERE id = ${id}`;
       return res.status(200).json({ success: true });
     } catch (error) {
