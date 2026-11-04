@@ -385,7 +385,7 @@ const CampaignPopup = ({ campaigns }) => {
                 fontWeight: '600'
               }}
             >
-              DFV LUXURY
+              DFV PERFUMES
             </span>
             <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
           </div>

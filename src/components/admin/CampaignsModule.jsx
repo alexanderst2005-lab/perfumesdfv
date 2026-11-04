@@ -403,7 +403,7 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                         color: '#B99A5B',
                         fontWeight: '600'
                       }}>
-                        DFV LUXURY
+                        DFV PERFUMES
                       </span>
                       <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
                     </div>
