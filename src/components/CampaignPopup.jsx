@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // ─── Lógica de frecuencia (localStorage / sessionStorage) ────────────────────
@@ -38,7 +38,7 @@ function markCampaignSeen(campaign) {
   }
 }
 
-// ─── Componente Popup ─────────────────────────────────────────────────────────
+// ─── Componente Popup de Campaña (Estilo Alta Perfumería) ─────────────────────
 
 const CampaignPopup = ({ campaigns }) => {
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ const CampaignPopup = ({ campaigns }) => {
       setVisible(true);
       setMounted(true);
       markCampaignSeen(toShow);
-    }, 1800);
+    }, 1500);
     return () => clearTimeout(timer);
   }, [campaigns]);
 
@@ -66,13 +66,13 @@ const CampaignPopup = ({ campaigns }) => {
     setTimeout(() => {
       setVisible(false);
       setCurrentCampaign(null);
-    }, 420);
+    }, 380);
   }, []);
 
   const handleVerOfertas = useCallback(() => {
     if (!currentCampaign) return;
     handleClose();
-    setTimeout(() => navigate(`/campana/${currentCampaign.id}`), 300);
+    setTimeout(() => navigate(`/campana/${currentCampaign.id}`), 250);
   }, [currentCampaign, navigate, handleClose]);
 
   if (!currentCampaign || !visible) return null;
@@ -83,248 +83,311 @@ const CampaignPopup = ({ campaigns }) => {
   return (
     <>
       <style>{`
-        @keyframes dfv-overlay-in {
+        @keyframes dfv-overlay-fadein {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
-        @keyframes dfv-overlay-out {
+        @keyframes dfv-overlay-fadeout {
           from { opacity: 1; }
           to   { opacity: 0; }
         }
-        @keyframes dfv-popup-in {
-          from { opacity: 0; transform: translate(-50%, -46%) scale(0.94); }
-          to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        @keyframes dfv-card-enter {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -46%) scale(0.92);
+          }
+          100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
         }
-        @keyframes dfv-popup-out {
-          from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          to   { opacity: 0; transform: translate(-50%, -53%) scale(0.95); }
+        @keyframes dfv-card-exit {
+          0% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -52%) scale(0.94);
+          }
         }
-        @keyframes dfv-badge-in {
-          0%   { opacity: 0; transform: translateY(-6px); }
-          100% { opacity: 1; transform: translateY(0); }
+        @keyframes dfv-gold-shimmer {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
-        @keyframes dfv-shimmer {
-          0%   { background-position: -400px 0; }
-          100% { background-position: 400px 0; }
-        }
-        .dfv-popup-btn-primary {
+
+        .dfv-promo-btn {
+          position: relative;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
-          padding: 0.9rem 2rem;
-          background-color: var(--color-black, #050505);
-          color: #fff;
-          border: 1px solid var(--color-black, #050505);
+          gap: 0.65rem;
+          width: 100%;
+          max-width: 440px;
+          padding: 1.05rem 2rem;
+          background: linear-gradient(135deg, #B99A5B 0%, #E2CE93 50%, #B99A5B 100%);
+          background-size: 200% 200%;
+          color: #0a0a0a;
+          border: none;
+          border-radius: 12px;
           font-family: var(--font-sans, 'Montserrat', sans-serif);
-          font-size: 0.72rem;
-          font-weight: 600;
+          font-size: 0.82rem;
+          font-weight: 700;
           letter-spacing: 2px;
           text-transform: uppercase;
           cursor: pointer;
-          transition: all 0.3s ease;
-          width: 100%;
+          box-shadow: 0 10px 30px rgba(185, 154, 91, 0.35);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .dfv-popup-btn-primary:hover {
-          background-color: var(--color-gold, #B99A5B);
-          border-color: var(--color-gold, #B99A5B);
-          color: #fff;
-          letter-spacing: 2.5px;
+        .dfv-promo-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 16px 40px rgba(185, 154, 91, 0.55);
+          background-position: 100% 50%;
         }
-        .dfv-popup-close:hover {
-          background: rgba(255,255,255,0.15) !important;
-          border-color: rgba(255,255,255,0.4) !important;
+        .dfv-promo-btn:active {
+          transform: translateY(1px);
         }
-        @media (min-width: 600px) {
-          .dfv-popup-layout { flex-direction: row !important; }
-          .dfv-popup-img-col { width: 260px !important; min-height: 100% !important; height: auto !important; flex-shrink: 0; }
+
+        .dfv-close-btn {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          z-index: 30;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: rgba(10, 10, 10, 0.65);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          color: rgba(255, 255, 255, 0.75);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+        .dfv-close-btn:hover {
+          background: rgba(185, 154, 91, 0.3);
+          border-color: #B99A5B;
+          color: #ffffff;
+          transform: rotate(90deg);
+        }
+
+        @media (max-width: 640px) {
+          .dfv-modal-box {
+            width: 94% !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+          }
+          .dfv-modal-img {
+            max-height: 240px !important;
+          }
+          .dfv-modal-body {
+            padding: 1.5rem 1.25rem 2rem !important;
+          }
         }
       `}</style>
 
-      {/* Overlay */}
+      {/* Backdrop con desenfoque de fondo */}
       <div
         onClick={handleClose}
         style={{
-          position: 'fixed', inset: 0, zIndex: 9000,
-          backgroundColor: 'rgba(5,5,5,0.78)',
-          backdropFilter: 'blur(3px)',
-          animation: `${mounted ? 'dfv-overlay-in' : 'dfv-overlay-out'} 0.4s ease forwards`
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9000,
+          backgroundColor: 'rgba(5, 5, 5, 0.82)',
+          backdropFilter: 'blur(6px)',
+          animation: `${mounted ? 'dfv-overlay-fadein' : 'dfv-overlay-fadeout'} 0.35s ease forwards`
         }}
       />
 
-      {/* Popup */}
-      <div style={{
-        position: 'fixed',
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 9001,
-        width: '92%',
-        maxWidth: hasImage ? '720px' : '500px',
-        animation: `${mounted ? 'dfv-popup-in' : 'dfv-popup-out'} 0.42s cubic-bezier(0.34, 1.4, 0.64, 1) forwards`,
-        overflow: 'hidden',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(185,154,91,0.15)',
-        borderRadius: '2px',
-      }}>
+      {/* Tarjeta del Popup */}
+      <div
+        className="dfv-modal-box"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 9001,
+          width: '92%',
+          maxWidth: '560px',
+          backgroundColor: '#0a0a0a',
+          borderRadius: '20px',
+          border: '1px solid rgba(185, 154, 91, 0.3)',
+          boxShadow: '0 30px 100px rgba(0, 0, 0, 0.85), 0 0 50px rgba(185, 154, 91, 0.15)',
+          overflow: 'hidden',
+          animation: `${mounted ? 'dfv-card-enter' : 'dfv-card-exit'} 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards`
+        }}
+      >
+        {/* Botón flotante para cerrar (✕) */}
+        <button
+          onClick={handleClose}
+          className="dfv-close-btn"
+          aria-label="Cerrar anuncio"
+        >
+          <X size={17} />
+        </button>
 
-        {/* Layout flex: imagen (izquierda en desktop) + contenido (derecha) */}
-        <div className="dfv-popup-layout" style={{ display: 'flex', flexDirection: 'column', minHeight: '0' }}>
+        {/* ── SECCIÓN SUPERIOR: FOTO COMPLETA (Si existe) ── */}
+        {hasImage ? (
+          <div
+            className="dfv-modal-img"
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '320px',
+              backgroundColor: '#121212',
+              overflow: 'hidden'
+            }}
+          >
+            <img
+              src={image}
+              alt={title}
+              onError={() => setImgError(true)}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                backgroundColor: '#111',
+                display: 'block'
+              }}
+            />
+            {/* Sombra de degradado para fusionar imagen con el cuerpo */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 40%, rgba(10,10,10,0.95) 100%)',
+                pointerEvents: 'none'
+              }}
+            />
+          </div>
+        ) : (
+          /* Encabezado alternativo con corona/emblema dorado si no hay foto */
+          <div style={{ paddingTop: '2.5rem', textAlign: 'center' }}>
+            <div
+              style={{
+                width: '54px',
+                height: '54px',
+                margin: '0 auto',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(185, 154, 91, 0.12)',
+                border: '1px solid rgba(185, 154, 91, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#B99A5B'
+              }}
+            >
+              <Sparkles size={24} />
+            </div>
+          </div>
+        )}
 
-          {/* ── Columna imagen ── */}
-          {hasImage && (
-            <div className="dfv-popup-img-col" style={{
-              width: '100%', height: '220px',
-              flexShrink: 0, overflow: 'hidden',
-              backgroundColor: '#0d0d0d', position: 'relative'
-            }}>
-              <img
-                src={image}
-                alt={title}
-                onError={() => setImgError(true)}
+        {/* ── CUERPO: INFORMACIÓN DE LA CAMPAÑA ── */}
+        <div
+          className="dfv-modal-body"
+          style={{
+            padding: hasImage ? '1.5rem 2rem 2.25rem' : '1rem 2rem 2.5rem',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: 'relative',
+            zIndex: 10
+          }}
+        >
+          {/* Badge dorado metalizado */}
+          {badge && (
+            <div style={{ marginBottom: '1.1rem' }}>
+              <span
                 style={{
-                  width: '100%', height: '100%',
-                  objectFit: 'cover', display: 'block',
-                  opacity: 0.92
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.45rem 1.4rem',
+                  borderRadius: '999px',
+                  background: 'linear-gradient(135deg, #B99A5B 0%, #E6D39E 50%, #B99A5B 100%)',
+                  color: '#0a0a0a',
+                  fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
+                  fontSize: '0.72rem',
+                  fontWeight: '800',
+                  letterSpacing: '2.5px',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 4px 18px rgba(185, 154, 91, 0.45)'
                 }}
-              />
-              {/* Degradado sobre la imagen para suavizar la unión con el contenido */}
-              <div style={{
-                position: 'absolute', bottom: 0, left: 0, right: 0,
-                height: '60px',
-                background: 'linear-gradient(to bottom, transparent, rgba(5,5,5,0.5))'
-              }} />
+              >
+                ✦ {badge} ✦
+              </span>
             </div>
           )}
 
-          {/* ── Columna contenido (fondo negro de lujo) ── */}
-          <div style={{
-            flex: 1,
-            backgroundColor: '#050505',
-            color: '#fff',
-            padding: hasImage ? '2rem 2rem 2.25rem' : '2.5rem 2rem 2.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            position: 'relative',
-            minWidth: 0
-          }}>
-            {/* Botón cerrar — esquina superior derecha, estilo fantasma */}
-            <button
-              onClick={handleClose}
-              className="dfv-popup-close"
-              aria-label="Cerrar anuncio"
+          {/* Título de Campaña en Playfair Display */}
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
+              fontSize: 'clamp(1.5rem, 4vw, 2.15rem)',
+              fontWeight: '500',
+              color: '#ffffff',
+              lineHeight: 1.22,
+              margin: '0 0 0.85rem',
+              letterSpacing: '0.3px',
+              maxWidth: '480px'
+            }}
+          >
+            {title}
+          </h2>
+
+          {/* Mensaje o Descripción */}
+          {description && (
+            <p
               style={{
-                position: 'absolute', top: '1rem', right: '1rem',
-                width: '34px', height: '34px',
-                border: '1px solid rgba(255,255,255,0.18)',
-                borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.06)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: 'rgba(255,255,255,0.65)',
-                transition: 'all 0.25s ease', flexShrink: 0
+                fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
+                fontSize: '0.92rem',
+                color: '#a1a1aa',
+                lineHeight: 1.6,
+                margin: '0 0 1.85rem',
+                maxWidth: '440px',
+                fontWeight: '400'
               }}
             >
-              <X size={15} />
-            </button>
+              {description}
+            </p>
+          )}
 
-            {/* Línea decorativa dorada superior */}
-            <div style={{
-              width: '32px', height: '1px',
-              backgroundColor: 'var(--color-gold, #B99A5B)',
-              marginBottom: '1.25rem',
-              animation: 'dfv-badge-in 0.5s ease 0.2s both'
-            }} />
+          {/* Botón Principal de Acción (CTA) */}
+          <button onClick={handleVerOfertas} className="dfv-promo-btn">
+            Ver ofertas exclusivas
+          </button>
 
-            {/* Badge */}
-            {badge && (
-              <div style={{
-                marginBottom: '0.9rem',
-                animation: 'dfv-badge-in 0.5s ease 0.3s both'
-              }}>
-                <span style={{
-                  display: 'inline-block',
-                  color: 'var(--color-gold, #B99A5B)',
-                  fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
-                  fontSize: '0.62rem',
-                  fontWeight: '600',
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  borderBottom: '1px solid var(--color-gold, #B99A5B)',
-                  paddingBottom: '2px'
-                }}>
-                  {badge}
-                </span>
-              </div>
-            )}
-
-            {/* Título */}
-            <h2 style={{
-              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(1.3rem, 3.5vw, 1.9rem)',
-              fontWeight: '400',
-              color: '#fff',
-              lineHeight: 1.25,
-              marginBottom: description ? '0.85rem' : '1.5rem',
-              paddingRight: '2.5rem',
-              animation: 'dfv-badge-in 0.5s ease 0.4s both'
-            }}>
-              {title}
-            </h2>
-
-            {/* Descripción */}
-            {description && (
-              <p style={{
-                fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
-                fontSize: '0.82rem',
-                color: 'rgba(255,255,255,0.58)',
-                lineHeight: 1.65,
-                marginBottom: '1.75rem',
-                animation: 'dfv-badge-in 0.5s ease 0.5s both'
-              }}>
-                {description}
-              </p>
-            )}
-
-            {/* Botones */}
-            <div style={{
-              display: 'flex', flexDirection: 'column', gap: '0.65rem',
-              animation: 'dfv-badge-in 0.5s ease 0.6s both'
-            }}>
-              <button onClick={handleVerOfertas} className="dfv-popup-btn-primary">
-                Ver ofertas exclusivas
-              </button>
-              <button
-                onClick={handleClose}
-                style={{
-                  background: 'none', border: 'none',
-                  fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
-                  fontSize: '0.68rem',
-                  color: 'rgba(255,255,255,0.35)',
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  padding: '0.4rem 0',
-                  textAlign: 'center',
-                  transition: 'color 0.2s'
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.65)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
-              >
-                No, gracias
-              </button>
-            </div>
-
-            {/* Ornamento inferior */}
-            <div style={{
-              marginTop: '1.5rem',
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-              opacity: 0.2
-            }}>
-              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.4)' }} />
-              <span style={{
+          {/* Sello de marca DFV al pie */}
+          <div
+            style={{
+              marginTop: '1.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              opacity: 0.35,
+              width: '100%',
+              maxWidth: '280px'
+            }}
+          >
+            <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
+            <span
+              style={{
                 fontFamily: 'var(--font-serif, "Playfair Display")',
-                fontSize: '0.65rem', letterSpacing: '2px', color: '#fff'
-              }}>DFV</span>
-              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.4)' }} />
-            </div>
+                fontSize: '0.68rem',
+                letterSpacing: '3px',
+                color: '#B99A5B',
+                fontWeight: '600'
+              }}
+            >
+              DFV LUXURY
+            </span>
+            <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
           </div>
         </div>
       </div>

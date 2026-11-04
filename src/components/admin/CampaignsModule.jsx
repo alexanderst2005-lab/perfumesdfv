@@ -226,162 +226,186 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
 
           {/* ── TAB: Popup del anuncio ── */}
           {tab === 'popup' && (
-            <div style={{ padding: '2rem', backgroundColor: '#0f0f0f', minHeight: '100%' }}>
+            <div style={{ padding: '2.5rem 1rem', backgroundColor: '#0a0a0a', minHeight: '100%' }}>
               {/* Contenedor simulador de tienda */}
               <div style={{
                 position: 'relative',
-                padding: '2.5rem 1rem',
                 display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
-                {/* Popup de lujo DFV */}
+                {/* Popup de lujo DFV vertical */}
                 <div style={{
                   width: '100%',
-                  maxWidth: hasImage ? '700px' : '480px',
-                  backgroundColor: '#050505',
-                  boxShadow: '0 30px 90px rgba(0,0,0,0.8), 0 0 0 1px rgba(185,154,91,0.25)',
+                  maxWidth: '560px',
+                  backgroundColor: '#0a0a0a',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(185, 154, 91, 0.35)',
+                  boxShadow: '0 30px 100px rgba(0,0,0,0.85), 0 0 50px rgba(185,154,91,0.15)',
                   overflow: 'hidden',
                   position: 'relative',
                   display: 'flex',
                   flexDirection: 'column'
                 }}>
-                  <div style={{ display: 'flex', flexDirection: hasImage ? 'row' : 'column', flexWrap: 'wrap' }}>
-                    {/* Imagen promocional */}
-                    {hasImage && (
+                  {/* Botón cerrar flotante simulado */}
+                  <div style={{
+                    position: 'absolute', top: '14px', right: '14px', zIndex: 30,
+                    width: '36px', height: '36px', borderRadius: '50%',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    backgroundColor: 'rgba(10,10,10,0.65)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'rgba(255,255,255,0.75)', fontSize: '0.85rem', cursor: 'default'
+                  }}>
+                    ✕
+                  </div>
+
+                  {/* FOTO COMPLETA EN LA PARTE SUPERIOR */}
+                  {hasImage ? (
+                    <div style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '320px',
+                      backgroundColor: '#121212',
+                      overflow: 'hidden'
+                    }}>
+                      <img
+                        src={form.image}
+                        alt="Imagen de campaña"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                          backgroundColor: '#111',
+                          display: 'block'
+                        }}
+                      />
+                      {/* Sombra de degradado para fusionar con el fondo */}
                       <div style={{
-                        flex: '1 1 260px',
-                        minHeight: '260px',
-                        maxHeight: '340px',
-                        backgroundColor: '#111',
-                        position: 'relative',
-                        overflow: 'hidden'
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 40%, rgba(10,10,10,0.95) 100%)',
+                        pointerEvents: 'none'
+                      }} />
+                    </div>
+                  ) : (
+                    <div style={{ paddingTop: '2.5rem', textAlign: 'center' }}>
+                      <div style={{
+                        width: '54px', height: '54px', margin: '0 auto', borderRadius: '50%',
+                        backgroundColor: 'rgba(185, 154, 91, 0.12)',
+                        border: '1px solid rgba(185, 154, 91, 0.35)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#B99A5B', fontSize: '1.2rem'
                       }}>
-                        <img
-                          src={form.image}
-                          alt="Imagen de campaña"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        />
-                        <div style={{
-                          position: 'absolute', inset: 0,
-                          background: 'linear-gradient(to right, transparent 70%, rgba(5,5,5,0.8) 100%)'
-                        }} />
+                        ✦
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CUERPO CENTRADO ELEGANTE */}
+                  <div style={{
+                    padding: hasImage ? '1.5rem 2rem 2.25rem' : '1rem 2rem 2.5rem',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    position: 'relative',
+                    zIndex: 10
+                  }}>
+                    {/* Badge dorado metalizado */}
+                    {form.badge && (
+                      <div style={{ marginBottom: '1.1rem' }}>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          padding: '0.45rem 1.4rem',
+                          borderRadius: '999px',
+                          background: 'linear-gradient(135deg, #B99A5B 0%, #E6D39E 50%, #B99A5B 100%)',
+                          color: '#0a0a0a',
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '0.72rem',
+                          fontWeight: '800',
+                          letterSpacing: '2.5px',
+                          textTransform: 'uppercase',
+                          boxShadow: '0 4px 18px rgba(185, 154, 91, 0.45)'
+                        }}>
+                          ✦ {form.badge} ✦
+                        </span>
                       </div>
                     )}
 
-                    {/* Contenido textual de lujo */}
-                    <div style={{
-                      flex: '1 1 300px',
-                      padding: '2rem 2.25rem',
-                      display: 'flex', flexDirection: 'column',
-                      justifyContent: 'center',
-                      position: 'relative',
-                      backgroundColor: '#050505'
+                    {/* Título de la campaña en Playfair Display */}
+                    <h2 style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: form.title ? 'clamp(1.5rem, 4vw, 2.15rem)' : '1.3rem',
+                      fontWeight: '500',
+                      color: form.title ? '#ffffff' : '#6b7280',
+                      lineHeight: 1.22,
+                      margin: '0 0 0.85rem',
+                      letterSpacing: '0.3px',
+                      maxWidth: '480px',
+                      fontStyle: form.title ? 'normal' : 'italic'
                     }}>
-                      {/* Botón cerrar simulado */}
-                      <div style={{
-                        position: 'absolute', top: '1rem', right: '1rem',
-                        width: '30px', height: '30px', borderRadius: '50%',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        backgroundColor: 'rgba(255,255,255,0.05)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', cursor: 'default'
-                      }}>
-                        ✕
-                      </div>
+                      {form.title || '(Aquí aparecerá el título del anuncio)'}
+                    </h2>
 
-                      {/* Línea dorada DFV */}
-                      <div style={{
-                        width: '36px', height: '1.5px',
-                        backgroundColor: '#B99A5B',
-                        marginBottom: '1rem'
-                      }} />
-
-                      {/* Badge destacado */}
-                      {form.badge && (
-                        <div style={{ marginBottom: '0.75rem' }}>
-                          <span style={{
-                            display: 'inline-block',
-                            color: '#B99A5B',
-                            fontFamily: 'var(--font-sans)',
-                            fontSize: '0.65rem',
-                            fontWeight: '600',
-                            letterSpacing: '3px',
-                            textTransform: 'uppercase',
-                            borderBottom: '1px solid #B99A5B',
-                            paddingBottom: '2px'
-                          }}>
-                            {form.badge}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Título de la campaña */}
-                      <h2 style={{
-                        fontFamily: 'var(--font-serif)',
-                        fontSize: form.title ? '1.4rem' : '1.1rem',
-                        fontWeight: '400',
-                        color: form.title ? '#ffffff' : '#6b7280',
-                        lineHeight: 1.25,
-                        margin: '0 0 0.75rem',
-                        fontStyle: form.title ? 'normal' : 'italic'
-                      }}>
-                        {form.title || '(Aquí aparecerá el título del anuncio)'}
-                      </h2>
-
-                      {/* Mensaje o descripción */}
-                      {(form.description || !form.title) && (
-                        <p style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '0.82rem',
-                          color: form.description ? 'rgba(255,255,255,0.65)' : '#4b5563',
-                          lineHeight: 1.6,
-                          margin: '0 0 1.5rem',
-                          fontStyle: form.description ? 'normal' : 'italic'
-                        }}>
-                          {form.description || '(Aquí aparecerá la descripción o mensaje promocional)'}
-                        </p>
-                      )}
-
-                      {/* Botón de acción principal de la tienda */}
-                      <div style={{
-                        padding: '0.9rem 1.5rem',
-                        backgroundColor: '#000000',
-                        color: '#ffffff',
-                        border: '1px solid #B99A5B',
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '0.72rem',
-                        fontWeight: '600',
-                        letterSpacing: '2px',
-                        textTransform: 'uppercase',
-                        textAlign: 'center',
-                        cursor: 'default',
-                        boxShadow: '0 4px 15px rgba(185,154,91,0.2)'
-                      }}>
-                        Ver ofertas exclusivas
-                      </div>
-
-                      {/* Botón cerrar secundario */}
+                    {/* Mensaje o descripción */}
+                    {(form.description || !form.title) && (
                       <p style={{
                         fontFamily: 'var(--font-sans)',
-                        fontSize: '0.68rem',
-                        color: 'rgba(255,255,255,0.35)',
-                        letterSpacing: '1.5px',
-                        textTransform: 'uppercase',
-                        textAlign: 'center',
-                        margin: '0.75rem 0 0'
+                        fontSize: '0.92rem',
+                        color: form.description ? '#a1a1aa' : '#4b5563',
+                        lineHeight: 1.6,
+                        margin: '0 0 1.85rem',
+                        maxWidth: '440px',
+                        fontWeight: '400',
+                        fontStyle: form.description ? 'normal' : 'italic'
                       }}>
-                        No, gracias
+                        {form.description || '(Aquí aparecerá la descripción o mensaje promocional)'}
                       </p>
+                    )}
 
-                      {/* Detalle DFV */}
-                      <div style={{
-                        marginTop: '1.25rem',
-                        display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        opacity: 0.25
+                    {/* Botón de acción principal de lujo */}
+                    <div style={{
+                      width: '100%',
+                      maxWidth: '440px',
+                      padding: '1.05rem 2rem',
+                      background: 'linear-gradient(135deg, #B99A5B 0%, #E2CE93 50%, #B99A5B 100%)',
+                      color: '#0a0a0a',
+                      borderRadius: '12px',
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
+                      textAlign: 'center',
+                      cursor: 'default',
+                      boxShadow: '0 10px 30px rgba(185, 154, 91, 0.35)'
+                    }}>
+                      Ver ofertas exclusivas
+                    </div>
+
+                    {/* Sello de marca DFV al pie */}
+                    <div style={{
+                      marginTop: '1.75rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.75rem',
+                      opacity: 0.35,
+                      width: '100%',
+                      maxWidth: '280px'
+                    }}>
+                      <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
+                      <span style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: '0.68rem',
+                        letterSpacing: '3px',
+                        color: '#B99A5B',
+                        fontWeight: '600'
                       }}>
-                        <div style={{ flex: 1, height: '1px', backgroundColor: '#fff' }} />
-                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.62rem', letterSpacing: '2px', color: '#fff' }}>DFV</span>
-                        <div style={{ flex: 1, height: '1px', backgroundColor: '#fff' }} />
-                      </div>
+                        DFV LUXURY
+                      </span>
+                      <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
                     </div>
                   </div>
                 </div>
@@ -392,7 +416,7 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                 backgroundColor: '#18181b', borderRadius: '10px',
                 padding: '1rem 1.25rem', border: '1px solid #27272a',
                 display: 'flex', gap: '0.75rem', alignItems: 'flex-start',
-                marginTop: '1.5rem'
+                maxWidth: '560px', margin: '1.5rem auto 0'
               }}>
                 <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>✨</span>
                 <div>
@@ -400,7 +424,7 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                     Diseño de alta perfumería DFV
                   </p>
                   <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#a1a1aa', margin: 0, lineHeight: 1.5 }}>
-                    El anuncio se presenta con la misma paleta de lujo (negro profundo, acentos dorados y tipografía Playfair) de la tienda. Los visitantes podrán hacer clic en «Ver ofertas exclusivas» para ir directo a la colección de campaña.
+                    La foto se luce completa en la parte superior sin recortes forzados, el botón resalta en dorado y la tipografía Playfair realza la elegancia de la marca.
                   </p>
                 </div>
               </div>
