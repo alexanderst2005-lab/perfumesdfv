@@ -329,7 +329,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
         }))
       };
 
-      const url = isEdit ? `/api/admin/promo-campaigns?id=${form.id}` : '/api/admin/promo-campaigns';
+      const url = isEdit ? `/api/promo-campaigns?admin=true&id=${form.id}` : '/api/promo-campaigns?admin=true';
       const method = isEdit ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -352,7 +352,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
       const campaignId = data.data.id;
 
       if (activateAfterSave) {
-        const actRes = await fetch(`/api/admin/promo-campaigns?id=${campaignId}`, {
+        const actRes = await fetch(`/api/promo-campaigns?admin=true&id=${campaignId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: campaignId, action: 'activate' })
@@ -1030,7 +1030,7 @@ const CampaignsModule = () => {
   const loadCampaigns = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/admin/promo-campaigns');
+      const res = await fetch('/api/promo-campaigns?admin=true');
       const data = await res.json();
       if (data.success) setCampaigns(data.data);
     } catch (e) {
@@ -1044,7 +1044,7 @@ const CampaignsModule = () => {
 
   const handleEdit = async (id) => {
     try {
-      const res = await fetch(`/api/admin/promo-campaigns?id=${id}`);
+      const res = await fetch(`/api/promo-campaigns?admin=true&id=${id}`);
       const data = await res.json();
       if (data.success) {
         setEditData(data.data);
@@ -1057,7 +1057,7 @@ const CampaignsModule = () => {
 
   const handleActivate = async (id) => {
     try {
-      const res = await fetch(`/api/admin/promo-campaigns?id=${id}`, {
+      const res = await fetch(`/api/promo-campaigns?admin=true&id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, action: 'activate' })
@@ -1079,7 +1079,7 @@ const CampaignsModule = () => {
 
   const handleDeactivate = async (id) => {
     try {
-      const res = await fetch(`/api/admin/promo-campaigns?id=${id}`, {
+      const res = await fetch(`/api/promo-campaigns?admin=true&id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, action: 'deactivate' })
@@ -1098,7 +1098,7 @@ const CampaignsModule = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch('/api/admin/promo-campaigns', {
+      const res = await fetch('/api/promo-campaigns?admin=true', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
