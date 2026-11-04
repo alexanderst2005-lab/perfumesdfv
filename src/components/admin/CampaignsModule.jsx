@@ -132,6 +132,445 @@ function ConfirmModal({ title, message, onConfirm, onCancel }) {
   );
 }
 
+// ─── Modal de previsualización del popup ─────────────────────────────────────
+
+function CampaignPreviewModal({ form, selectedProducts, onClose }) {
+  const [tab, setTab] = useState('popup'); // 'popup' | 'products'
+
+  // Simula cómo se verá el popup en la tienda
+  const hasImage = !!form.image;
+  const hasProducts = selectedProducts.length > 0;
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 10000,
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '1rem',
+      backdropFilter: 'blur(4px)'
+    }}>
+      {/* Contenedor del modal */}
+      <div style={{
+        backgroundColor: '#fff', borderRadius: '20px',
+        width: '100%', maxWidth: '860px', maxHeight: '92vh',
+        overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        boxShadow: '0 32px 80px rgba(0,0,0,0.4)',
+        animation: 'fadeIn 0.25s ease'
+      }}>
+        <style>{`
+          @keyframes fadeIn { from { opacity:0; transform:scale(0.96) } to { opacity:1; transform:scale(1) } }
+          @keyframes badgePop { 0%{transform:scale(0.8) rotate(-3deg);opacity:0} 70%{transform:scale(1.08) rotate(1deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+          @keyframes productSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        `}</style>
+
+        {/* Header del modal de previsualización */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '1.25rem 1.75rem',
+          borderBottom: '1px solid #f1f2f5',
+          backgroundColor: '#fafafa',
+          flexShrink: 0
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '8px',
+              backgroundColor: '#fce7f3', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <Eye size={16} color="#e11d48" />
+            </div>
+            <div>
+              <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: '700', color: '#111827', margin: 0 }}>
+                Vista previa de la campaña
+              </h3>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: '#9ca3af', margin: 0 }}>
+                Así se verá tu anuncio en la tienda
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Tabs */}
+            <div style={{ display: 'flex', backgroundColor: '#f3f4f6', borderRadius: '8px', padding: '3px', gap: '2px' }}>
+              {[
+                { id: 'popup', label: '📢 Popup del anuncio' },
+                { id: 'products', label: `🛍️ Productos (${selectedProducts.length})` }
+              ].map(t => (
+                <button key={t.id} onClick={() => setTab(t.id)} style={{
+                  padding: '0.4rem 0.9rem', borderRadius: '6px', border: 'none',
+                  backgroundColor: tab === t.id ? '#fff' : 'transparent',
+                  color: tab === t.id ? '#111827' : '#6b7280',
+                  fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: tab === t.id ? '600' : '400',
+                  cursor: 'pointer',
+                  boxShadow: tab === t.id ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'all 0.15s'
+                }}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <button onClick={onClose} style={{
+              width: '32px', height: '32px', borderRadius: '8px', border: 'none',
+              backgroundColor: '#f3f4f6', cursor: 'pointer', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', color: '#6b7280',
+              transition: 'background-color 0.15s'
+            }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e5e7eb'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Contenido scrollable */}
+        <div style={{ overflow: 'auto', flex: 1 }}>
+
+          {/* ── TAB: Popup del anuncio ── */}
+          {tab === 'popup' && (
+            <div style={{ padding: '2rem', backgroundColor: '#f8f8f8', minHeight: '100%' }}>
+              {/* Fondo simulado de la tienda */}
+              <div style={{
+                backgroundColor: '#1a1a1a',
+                borderRadius: '14px',
+                padding: '2.5rem 1.5rem',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: '1.5rem',
+                position: 'relative',
+                minHeight: '220px'
+              }}>
+                <div style={{
+                  position: 'absolute', top: '12px', left: '16px',
+                  fontFamily: 'var(--font-sans)', fontSize: '0.68rem',
+                  color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px'
+                }}>
+                  FONDO DE LA TIENDA (SIMULADO)
+                </div>
+                {/* Overlay del popup */}
+                <div style={{
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  borderRadius: '10px',
+                  padding: '1rem',
+                  width: '100%',
+                  maxWidth: '480px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  {/* El Popup real */}
+                  <div style={{
+                    backgroundColor: '#fff',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    width: '100%',
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+                    position: 'relative'
+                  }}>
+                    {/* Badge */}
+                    {form.badge && (
+                      <div style={{
+                        position: 'absolute', top: '14px', left: '14px', zIndex: 10,
+                        backgroundColor: '#e11d48', color: '#fff',
+                        padding: '0.3rem 0.85rem', borderRadius: '99px',
+                        fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: '800',
+                        letterSpacing: '1px', textTransform: 'uppercase',
+                        boxShadow: '0 4px 12px rgba(225,29,72,0.4)',
+                        animation: 'badgePop 0.4s ease 0.1s both'
+                      }}>
+                        {form.badge}
+                      </div>
+                    )}
+
+                    {/* Botón cerrar (simulado) */}
+                    <div style={{
+                      position: 'absolute', top: '12px', right: '12px', zIndex: 10,
+                      width: '28px', height: '28px', borderRadius: '50%',
+                      backgroundColor: 'rgba(0,0,0,0.25)', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center',
+                      color: '#fff', fontSize: '0.75rem', fontWeight: '700', cursor: 'default'
+                    }}>
+                      ✕
+                    </div>
+
+                    {/* Imagen promocional */}
+                    {hasImage && (
+                      <div style={{
+                        width: '100%', maxHeight: '220px', overflow: 'hidden',
+                        backgroundColor: '#f3f4f6'
+                      }}>
+                        <img
+                          src={form.image}
+                          alt="Imagen del popup"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Contenido textual */}
+                    <div style={{ padding: '1.5rem 1.5rem 1.75rem' }}>
+                      {/* Título */}
+                      <h2 style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: form.title ? '1.3rem' : '1rem',
+                        fontWeight: '600',
+                        color: form.title ? '#111827' : '#9ca3af',
+                        margin: '0 0 0.65rem',
+                        lineHeight: 1.3,
+                        fontStyle: form.title ? 'normal' : 'italic'
+                      }}>
+                        {form.title || '(El título del anuncio aparecerá aquí)'}
+                      </h2>
+
+                      {/* Descripción */}
+                      {(form.description || !form.title) && (
+                        <p style={{
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '0.85rem',
+                          color: form.description ? '#6b7280' : '#d1d5db',
+                          margin: '0 0 1.25rem',
+                          lineHeight: 1.6,
+                          fontStyle: form.description ? 'normal' : 'italic'
+                        }}>
+                          {form.description || '(La descripción o mensaje del anuncio aparecerá aquí)'}
+                        </p>
+                      )}
+
+                      {/* Resumen de productos con descuentos */}
+                      {hasProducts && (
+                        <div style={{
+                          backgroundColor: '#fafafa',
+                          borderRadius: '10px',
+                          padding: '0.75rem 1rem',
+                          marginBottom: '1.25rem',
+                          border: '1px solid #f3f4f6'
+                        }}>
+                          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', fontWeight: '600', color: '#6b7280', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Perfumes en oferta
+                          </p>
+                          {selectedProducts.slice(0, 3).map(item => {
+                            const ref = item.ref_price || item.refPrice;
+                            const promo = ref ? Math.round(ref * (1 - item.discount_pct / 100)) : 0;
+                            return (
+                              <div key={item.product_id} style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                marginBottom: '0.4rem'
+                              }}>
+                                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', color: '#374151' }}>
+                                  {item.product_name || item.name}
+                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                  <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                                    {fmt(ref)}
+                                  </span>
+                                  <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '700', color: '#059669' }}>
+                                    {fmt(promo)}
+                                  </span>
+                                  <span style={{
+                                    fontSize: '0.6rem', fontWeight: '800', color: '#fff',
+                                    backgroundColor: '#e11d48', padding: '1px 5px', borderRadius: '4px'
+                                  }}>
+                                    -{item.discount_pct}%
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {selectedProducts.length > 3 && (
+                            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: '#9ca3af', margin: '0.25rem 0 0' }}>
+                              +{selectedProducts.length - 3} perfumes más con descuento
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Botón "Ver ofertas" */}
+                      <button style={{
+                        width: '100%', padding: '0.85rem',
+                        backgroundColor: '#111827', color: '#fff',
+                        border: 'none', borderRadius: '10px',
+                        fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '700',
+                        cursor: 'default', letterSpacing: '0.3px'
+                      }}>
+                        {hasProducts ? '🛍️ Ver todas las ofertas' : '🛍️ Ver ofertas'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Nota informativa */}
+              <div style={{
+                backgroundColor: '#eff6ff', borderRadius: '10px',
+                padding: '1rem 1.25rem', border: '1px solid #bfdbfe',
+                display: 'flex', gap: '0.75rem', alignItems: 'flex-start'
+              }}>
+                <span style={{ fontSize: '1rem', flexShrink: 0 }}>💡</span>
+                <div>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '600', color: '#1e40af', margin: '0 0 0.2rem' }}>
+                    Nota sobre la visualización real
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#3b82f6', margin: 0, lineHeight: 1.5 }}>
+                    El popup aparece centrado sobre la tienda con un fondo oscuro semitransparente. El botón «Ver ofertas» lleva a la página exclusiva de la campaña con todos los productos y sus descuentos.
+                    La frecuencia configurada controla cuándo se muestra a cada visitante.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB: Productos ── */}
+          {tab === 'products' && (
+            <div style={{ padding: '2rem' }}>
+              {selectedProducts.length === 0 ? (
+                <div style={{
+                  textAlign: 'center', padding: '4rem 2rem',
+                  color: '#9ca3af', fontFamily: 'var(--font-sans)'
+                }}>
+                  <div style={{
+                    width: '56px', height: '56px', borderRadius: '50%',
+                    backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 1rem'
+                  }}>
+                    <Tag size={22} color="#d1d5db" />
+                  </div>
+                  <p style={{ fontSize: '0.9rem', fontWeight: '600', color: '#6b7280', marginBottom: '0.4rem' }}>
+                    No has seleccionado productos
+                  </p>
+                  <p style={{ fontSize: '0.78rem' }}>
+                    Cierra esta vista previa y agrega perfumes a la campaña para verlos aquí.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                    gap: '1rem', marginBottom: '1.5rem'
+                  }}>
+                    {selectedProducts.map((item, i) => {
+                      const ref = item.ref_price || item.refPrice;
+                      const promo = ref ? Math.round(ref * (1 - item.discount_pct / 100)) : 0;
+                      const imgSrc = item.product_image || item.image;
+                      const optImg = imgSrc && imgSrc.includes('/image/upload/')
+                        ? imgSrc.replace('/image/upload/', '/image/upload/w_300,f_auto,q_auto/')
+                        : imgSrc;
+
+                      return (
+                        <div key={item.product_id} style={{
+                          backgroundColor: '#fff',
+                          borderRadius: '14px',
+                          border: '1px solid #e5e7eb',
+                          overflow: 'hidden',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                          animation: `productSlideIn 0.3s ease ${i * 0.06}s both`
+                        }}>
+                          {/* Imagen del producto */}
+                          <div style={{ position: 'relative', backgroundColor: '#f9fafb', height: '180px', overflow: 'hidden' }}>
+                            {optImg
+                              ? <img src={optImg} alt={item.product_name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                              : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                <ImageIcon size={32} color="#d1d5db" />
+                              </div>
+                            }
+                            {/* Badge de descuento */}
+                            <div style={{
+                              position: 'absolute', top: '10px', left: '10px',
+                              backgroundColor: '#e11d48', color: '#fff',
+                              padding: '0.2rem 0.6rem', borderRadius: '99px',
+                              fontFamily: 'var(--font-sans)', fontSize: '0.7rem', fontWeight: '800',
+                              boxShadow: '0 2px 6px rgba(225,29,72,0.4)'
+                            }}>
+                              -{item.discount_pct}% OFF
+                            </div>
+                          </div>
+
+                          {/* Info */}
+                          <div style={{ padding: '1rem' }}>
+                            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.68rem', color: '#9ca3af', margin: '0 0 0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              {item.product_brand || item.brand || 'Sin marca'}
+                            </p>
+                            <p style={{
+                              fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: '500',
+                              color: '#111827', margin: '0 0 0.65rem', lineHeight: 1.3
+                            }}>
+                              {item.product_name || item.name}
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{
+                                fontFamily: 'var(--font-sans)', fontSize: '0.78rem',
+                                color: '#9ca3af', textDecoration: 'line-through'
+                              }}>
+                                {fmt(ref)}
+                              </span>
+                              <span style={{
+                                fontFamily: 'var(--font-sans)', fontSize: '1.05rem',
+                                fontWeight: '800', color: '#059669'
+                              }}>
+                                {fmt(promo)}
+                              </span>
+                            </div>
+                            <p style={{
+                              fontFamily: 'var(--font-sans)', fontSize: '0.68rem',
+                              color: '#6b7280', margin: '0.25rem 0 0'
+                            }}>
+                              Ahorrás {fmt(ref - promo)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Resumen total */}
+                  <div style={{
+                    backgroundColor: '#f0fdf4', borderRadius: '12px',
+                    padding: '1rem 1.25rem', border: '1px solid #bbf7d0',
+                    display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center'
+                  }}>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: '#6b7280', margin: '0 0 0.1rem', textTransform: 'uppercase' }}>Total de productos</p>
+                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: '600', color: '#059669', margin: 0 }}>
+                        {selectedProducts.length} perfume{selectedProducts.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: '#6b7280', margin: '0 0 0.1rem', textTransform: 'uppercase' }}>Descuento promedio</p>
+                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: '600', color: '#059669', margin: 0 }}>
+                        {Math.round(selectedProducts.reduce((s, p) => s + p.discount_pct, 0) / selectedProducts.length)}%
+                      </p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: '#6b7280', margin: '0 0 0.1rem', textTransform: 'uppercase' }}>Ahorro máximo</p>
+                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: '600', color: '#059669', margin: 0 }}>
+                        {Math.max(...selectedProducts.map(p => p.discount_pct))}% OFF
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer del preview */}
+        <div style={{
+          padding: '1rem 1.75rem',
+          borderTop: '1px solid #f1f2f5',
+          backgroundColor: '#fafafa',
+          display: 'flex', justifyContent: 'flex-end',
+          flexShrink: 0
+        }}>
+          <button onClick={onClose} style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.65rem 1.5rem', borderRadius: '8px', border: 'none',
+            backgroundColor: '#111827', color: '#fff',
+            fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: '600',
+            cursor: 'pointer'
+          }}>
+            ← Volver al formulario
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Producto seleccionado en la campaña ────────────────────────────────────
 
 function SelectedProductCard({ item, onChange, onRemove }) {
@@ -261,7 +700,9 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
 
   const [imagePreview, setImagePreview] = useState(initialData?.image || '');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const fileInputRef = useRef(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const [selectedProducts, setSelectedProducts] = useState(
     (initialData?.products || []).map(p => ({
@@ -521,6 +962,15 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
     <div style={{ maxWidth: '820px', margin: '0 auto' }}>
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
 
+      {/* Modal de previsualización */}
+      {showPreview && (
+        <CampaignPreviewModal
+          form={form}
+          selectedProducts={selectedProducts}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
+
       {/* Header con botón para regresar a "Ver campañas" */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -685,7 +1135,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
                 Imagen promocional (opcional)
               </label>
 
-              {/* Input de archivo oculto para el selector nativo del dispositivo */}
+              {/* Input de archivo oculto */}
               <input
                 type="file"
                 ref={fileInputRef}
@@ -759,13 +1209,13 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
                   </div>
                 </div>
               ) : (
-                /* Zona interactiva para subir imagen directamente desde el dispositivo */
+                /* Zona interactiva para subir desde el dispositivo */
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   style={{
                     border: '2px dashed #d1d5db',
                     borderRadius: '12px',
-                    padding: '2.25rem 1.5rem',
+                    padding: '2rem 1.5rem',
                     textAlign: 'center',
                     cursor: 'pointer',
                     backgroundColor: '#fafafa',
@@ -776,21 +1226,57 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
                   onMouseLeave={e => { e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.backgroundColor = '#fafafa'; }}
                 >
                   <div style={{
-                    width: '52px', height: '52px', borderRadius: '50%',
+                    width: '48px', height: '48px', borderRadius: '50%',
                     backgroundColor: '#fce7f3', color: '#e11d48',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 0.75rem'
                   }}>
-                    <Upload size={24} />
+                    <Upload size={22} />
                   </div>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: '600', color: '#111827', margin: '0 0 0.35rem' }}>
-                    Subir imagen desde el dispositivo
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: '600', color: '#111827', margin: '0 0 0.25rem' }}>
+                    Haz clic para subir una imagen desde tu dispositivo
                   </p>
                   <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>
-                    Formatos: JPG, PNG, WEBP. Se optimiza y adapta automáticamente a móviles y computadores.
+                    Formatos soportados: JPG, PNG, WEBP (se optimiza y aloja en Cloudinary automáticamente)
                   </p>
                 </div>
               )}
+
+              {/* Opción secundaria: URL directa */}
+              <div style={{ marginTop: '0.75rem' }}>
+                {!showUrlInput ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowUrlInput(true)}
+                    style={{
+                      background: 'none', border: 'none', color: '#6b7280',
+                      fontSize: '0.72rem', textDecoration: 'underline', cursor: 'pointer', padding: 0
+                    }}
+                  >
+                    O introduce una URL directa de imagen si lo prefieres
+                  </button>
+                ) : (
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                    <input
+                      type="text"
+                      value={form.image}
+                      onChange={e => { setField('image', e.target.value); setImagePreview(e.target.value); }}
+                      placeholder="https://... URL directa de imagen"
+                      style={{
+                        flex: 1, padding: '0.5rem 0.85rem', borderRadius: '6px',
+                        border: '1px solid #e5e7eb', fontSize: '0.8rem', fontFamily: 'var(--font-sans)', outline: 'none'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowUrlInput(false)}
+                      style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -978,8 +1464,29 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
       {/* ── Botones de acción ── */}
       <div style={{
         display: 'flex', gap: '0.75rem', flexWrap: 'wrap',
-        paddingBottom: '3rem'
+        paddingBottom: '3rem', alignItems: 'center'
       }}>
+        {/* Botón de Vista previa — destacado con borde fucsia */}
+        <button
+          type="button"
+          onClick={() => setShowPreview(true)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.85rem 1.75rem', borderRadius: '8px',
+            border: '2px solid #e11d48', backgroundColor: '#fff',
+            color: '#e11d48', cursor: 'pointer',
+            fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '700',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#fff0f3'; }}
+          onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#fff'; }}
+        >
+          <Eye size={16} /> Vista previa
+        </button>
+
+        {/* Separador visual */}
+        <div style={{ width: '1px', height: '36px', backgroundColor: '#e5e7eb', flexShrink: 0 }} />
+
         <button
           type="button"
           onClick={() => handleSave(false)}
