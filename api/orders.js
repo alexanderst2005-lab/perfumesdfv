@@ -41,6 +41,27 @@ async function sendOrderEmail(type, order) {
         <p style="margin: 0; font-size: 12px; color: #888888; letter-spacing: 1px;">© ${new Date().getFullYear()} DFV PERFUMES. TODOS LOS DERECHOS RESERVADOS.</p>
       </div>
     </div>`;
+  } else if (type === 'CONFIRMADO') {
+    subject = `¡Tu pedido ${orderIdFormat} ha sido confirmado! - DFV Perfumes`;
+    html = `
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; overflow: hidden; color: #333333; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+      <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">DFV PERFUMES</h1>
+      </div>
+      <div style="padding: 40px 30px;">
+        <h2 style="color: #000000; font-size: 22px; margin-bottom: 20px; font-weight: 400;">¡Buenas noticias, ${order.customer_name}!</h2>
+        <p style="font-size: 16px; line-height: 1.6; color: #555555;">Tu pedido <strong>${orderIdFormat}</strong> ha sido confirmado exitosamente por nuestro equipo.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="display: inline-block; padding: 12px 28px; background-color: #d1fae5; color: #065f46; border-radius: 30px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; font-size: 13px;">Pedido Confirmado</div>
+        </div>
+
+        <p style="font-size: 16px; line-height: 1.6; color: #555555;">El siguiente paso es la preparación y embalaje de tus perfumes. Te notificaremos en cada etapa de la entrega.</p>
+      </div>
+      <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eaeaea;">
+        <p style="margin: 0; font-size: 12px; color: #888888; letter-spacing: 1px;">© ${new Date().getFullYear()} DFV PERFUMES. TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
+    </div>`;
   } else if (type === 'EN PREPARACIÓN') {
     subject = `Tu pedido ${orderIdFormat} está en preparación - DFV Perfumes`;
     html = `
@@ -255,7 +276,7 @@ export default async function handler(req, res) {
       }
 
       // AWAIT ES OBLIGATORIO
-      if (updatedOrder && (status === 'EN PREPARACIÓN' || status === 'ENVIADO' || status === 'CANCELADO')) {
+      if (updatedOrder && (status === 'CONFIRMADO' || status === 'EN PREPARACIÓN' || status === 'ENVIADO' || status === 'CANCELADO')) {
         await sendOrderEmail(status, updatedOrder);
       }
 
