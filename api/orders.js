@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless';
 // Configuración del remitente para Brevo (Sendinblue)
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 // Debes tener un remitente verificado en Brevo
-const FROM_EMAIL = process.env.BREVO_FROM_EMAIL || 'ventas@perfumesdfv.com'; 
+const FROM_EMAIL = process.env.BREVO_FROM_EMAIL || 'ventas@perfumesdfv.com';
 const FROM_NAME = 'DFV Perfumes';
 
 async function sendOrderEmail(type, order) {
@@ -160,6 +160,30 @@ export default async function handler(req, res) {
         cart
       } = req.body;
 
+      // Validación de seguridad de precios en servidor (Requisito 8: Integración con Carrito y Pedidos)
+      let verifiedCart = cart;
+      let calculatedTotal = 0;
+      if (Array.isArray(cart) && cart.length > 0) {
+        const productIds = cart.map(item => item.id).filter(Boolean);
+        if (productIds.length > 0) {
+          const dbProducts = await sql`
+            SELECT id, price, in_stock FROM products WHERE id = ANY(${productIds})
+          `;
+          const priceMap = new Map(dbProducts.map(p => [p.id, p.price]));
+
+          verifiedCart = cart.map(item => {
+            const dbPrice = priceMap.get(item.id);
+            const validPrice = typeof dbPrice === 'number' ? dbPrice : item.price;
+            return {
+              ...item,
+              price: validPrice
+            };
+          });
+          calculatedTotal = verifiedCart.reduce((acc, it) => acc + (it.price * (it.quantity || 1)), 0);
+        }
+      }
+      const finalTotal = calculatedTotal > 0 ? calculatedTotal : total;
+
       const result = await sql`
         INSERT INTO orders (
           customer_name,
@@ -184,13 +208,13 @@ export default async function handler(req, res) {
           ${direccion},
           ${notas || null},
           ${metodoPago},
-          ${total},
-          ${JSON.stringify(cart)},
+          ${finalTotal},
+          ${JSON.stringify(verifiedCart)},
           'NUEVO'
         )
         RETURNING *
       `;
-      
+
       const newOrder = result[0];
       // AWAIT ES OBLIGATORIO EN VERCEL SERVERLESS
       await sendOrderEmail('NUEVO', newOrder);
@@ -215,7 +239,7 @@ export default async function handler(req, res) {
   if (req.method === 'PUT') {
     try {
       const { id, status, shipping_carrier, tracking_number } = req.body;
-      
+
       let updatedOrder = null;
       if (shipping_carrier !== undefined && tracking_number !== undefined) {
         const result = await sql`
@@ -229,7 +253,7 @@ export default async function handler(req, res) {
         const result = await sql`UPDATE orders SET status = ${status} WHERE id = ${id} RETURNING *`;
         updatedOrder = result[0];
       }
-      
+
       // AWAIT ES OBLIGATORIO
       if (updatedOrder && (status === 'EN PREPARACIÓN' || status === 'ENVIADO' || status === 'CANCELADO')) {
         await sendOrderEmail(status, updatedOrder);

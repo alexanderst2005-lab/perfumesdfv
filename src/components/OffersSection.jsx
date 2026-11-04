@@ -5,15 +5,36 @@ import { useShop } from '../context/ShopContext';
 import { ProductCard } from '../pages/Home';
 
 const OffersSection = () => {
-  const { products, addToCart, isFavorite, toggleFavorite } = useShop();
+  const { products, activeCampaigns, addToCart, isFavorite, toggleFavorite } = useShop();
 
-  // Filtrar exclusivamente los perfumes con descuento activo
-  const offerProducts = products.filter(p => p.discount && p.discount > 0);
+  // 1. Productos con descuento del inventario normal
+  const inventoryOffers = products.filter(p => p.discount && p.discount > 0);
 
-  // Si no hay perfumes en oferta, NO renderizar nada
-  if (offerProducts.length === 0) {
-    return null;
-  }
+  // 2. Productos de campañas activas que no estén ya en inventoryOffers
+  const shownIds = new Set(inventoryOffers.map(p => p.id));
+  const campaignProducts = [];
+  (activeCampaigns || []).forEach(campaign => {
+    (campaign.products || []).forEach(cp => {
+      if (!shownIds.has(cp.product_id) && cp.name) {
+        campaignProducts.push({
+          id: cp.product_id,
+          name: cp.name,
+          brand: cp.brand,
+          image: cp.image,
+          images: cp.images || [],
+          price: cp.promo_price,
+          oldPrice: cp.ref_price,
+          discount: cp.discount_pct,
+          inStock: true,
+          active: true
+        });
+        shownIds.add(cp.product_id);
+      }
+    });
+  });
+
+  // Lista final: primero campaña, luego inventario normal
+  const offerProducts = [...campaignProducts, ...inventoryOffers];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
@@ -36,6 +57,11 @@ const OffersSection = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Si no hay perfumes en oferta, NO renderizar nada
+  if (offerProducts.length === 0) {
+    return null;
+  }
 
   const totalPages = Math.max(1, Math.ceil(offerProducts.length / visibleCount));
   const maxIndex = Math.max(0, offerProducts.length - visibleCount);
@@ -68,7 +94,7 @@ const OffersSection = () => {
   );
 
   return (
-    <section 
+    <section
       id="ofertas"
       className="section-padding"
       style={{
@@ -164,14 +190,14 @@ const OffersSection = () => {
         </div>
 
         {/* Carrusel Contenedor con las MISMAS tarjetas oficiales de DFV Perfumes */}
-        <div 
+        <div
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           className="offers-carousel-wrapper"
           style={{ overflow: 'hidden', paddingBottom: '0.5rem' }}
         >
-          <div 
+          <div
             className="offers-carousel-track"
             style={{
               display: 'flex',
@@ -180,7 +206,7 @@ const OffersSection = () => {
             }}
           >
             {offerProducts.map((p, idx) => (
-              <div 
+              <div
                 key={p.id}
                 className="offers-slide-card"
                 style={{

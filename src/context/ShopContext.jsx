@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { optimizeImg } from '../utils/img';
 
 const ShopContext = createContext();
@@ -80,6 +80,30 @@ export const ShopProvider = ({ children }) => {
   });
   const [isFresh, setIsFresh] = useState(false);
 
+  // ── Campañas promocionales activas ──────────────────────────────────────
+  const [activeCampaigns, setActiveCampaigns] = useState(() => {
+    try {
+      const cached = localStorage.getItem('dfv_active_campaigns');
+      return cached ? JSON.parse(cached) : [];
+    } catch { return []; }
+  });
+
+  const refreshCampaigns = useCallback(async () => {
+    try {
+      const res = await fetch('/api/promo-campaigns', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success) {
+        setActiveCampaigns(data.data);
+        try { localStorage.setItem('dfv_active_campaigns', JSON.stringify(data.data)); } catch {}
+        return data.data;
+      }
+    } catch (e) {
+      console.error('Error al cargar campañas:', e);
+    }
+    return [];
+  }, []);
+
   // Load from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('perfume_cart');
@@ -130,6 +154,8 @@ export const ShopProvider = ({ children }) => {
         // If we reach here successfully
         setIsLoadingProducts(false);
         setIsFresh(true);
+        // Cargar campañas activas en paralelo
+        refreshCampaigns();
       } catch (err) {
         console.error("Failed to fetch data", err);
         if (retries > 0) {
@@ -231,6 +257,7 @@ export const ShopProvider = ({ children }) => {
   return (
     <ShopContext.Provider value={{
       products, allProducts, refreshProducts, brands, categories, refreshCategories, isLoadingProducts, isFresh,
+      activeCampaigns, refreshCampaigns,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,
       cartTotal, cartCount

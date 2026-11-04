@@ -6,6 +6,8 @@ import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import WhatsAppButton from './components/WhatsAppButton';
 import Maintenance from './components/Maintenance';
+import CampaignPopup from './components/CampaignPopup';
+import { useShop } from './context/ShopContext';
 
 // Pon en false para volver a mostrar la página
 const MAINTENANCE_MODE = false;
@@ -18,6 +20,7 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const Account = lazy(() => import('./pages/Account'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Contacto = lazy(() => import('./pages/Contacto'));
+const CampaignPage = lazy(() => import('./pages/CampaignPage'));
 
 // Home handles its own marginTop via negative hero offset
 // Other pages handle their own paddingTop
@@ -26,6 +29,9 @@ function AppInner() {
   const navType = useNavigationType();
   const isHome = pathname === '/';
   const isAdmin = pathname.startsWith('/admin');
+
+  // Campañas activas del contexto
+  const { activeCampaigns } = useShop();
 
   // Guarda la posición de scroll de cada entrada del historial
   const positions = useRef(new Map());
@@ -60,6 +66,7 @@ function AppInner() {
       import('./pages/Favorites');
       import('./pages/Checkout');
       import('./pages/Contacto');
+      import('./pages/CampaignPage');
     });
   }, []);
 
@@ -67,6 +74,10 @@ function AppInner() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {!isAdmin && <Header />}
       {!isAdmin && <CartDrawer />}
+      {/* Popup de campañas: solo en tienda pública */}
+      {!isAdmin && activeCampaigns && activeCampaigns.length > 0 && (
+        <CampaignPopup campaigns={activeCampaigns} />
+      )}
       <main style={{ flex: 1, marginTop: isHome || isAdmin ? 0 : '106px' }}>
         <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
         <Routes>
@@ -77,6 +88,7 @@ function AppInner() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/mi-cuenta" element={<Account />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/campana/:id" element={<CampaignPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
         </Suspense>
