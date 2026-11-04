@@ -156,17 +156,27 @@ async function sendOrderEmail(type, order) {
         })
       });
 
+      const responseText = await response.text();
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch {
+        responseData = responseText;
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('[Brevo] API Error Response:', JSON.stringify(errorData));
+        console.error('[Brevo] API Error Response:', responseData);
+        return { success: false, status: response.status, error: responseData };
       } else {
-        const successData = await response.json();
-        console.log('[Brevo] Email sent successfully:', JSON.stringify(successData));
+        console.log('[Brevo] Email sent successfully:', responseData);
+        return { success: true, status: response.status, data: responseData };
       }
     } catch (e) {
       console.error('[Brevo] Exception while sending email:', e);
+      return { success: false, exception: e.message };
     }
   }
+  return { success: false, reason: 'No subject or html generated' };
 }
 
 export default async function handler(req, res) {
@@ -254,9 +264,9 @@ export default async function handler(req, res) {
 
       const newOrder = result[0];
       // AWAIT ES OBLIGATORIO EN VERCEL SERVERLESS
-      await sendOrderEmail('NUEVO', newOrder);
+      const emailResult = await sendOrderEmail('NUEVO', newOrder);
 
-      return res.status(201).json({ success: true, orderId: newOrder.id });
+      return res.status(201).json({ success: true, orderId: newOrder.id, emailResult });
     } catch (error) {
       console.error('Error creating order:', error);
       return res.status(500).json({ success: false, error: 'Database error' });
@@ -302,11 +312,12 @@ export default async function handler(req, res) {
       }
 
       // AWAIT ES OBLIGATORIO
+      let emailResult = null;
       if (updatedOrder && (status === 'CONFIRMADO' || status === 'EN PREPARACIÓN' || status === 'ENVIADO' || status === 'CANCELADO')) {
-        await sendOrderEmail(status, updatedOrder);
+        emailResult = await sendOrderEmail(status, updatedOrder);
       }
 
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, emailResult });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ success: false, error: 'Database error' });
