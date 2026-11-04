@@ -362,33 +362,7 @@ const CampaignPopup = ({ campaigns }) => {
             Ver ofertas exclusivas
           </button>
 
-          {/* Sello de marca DFV al pie */}
-          <div
-            style={{
-              marginTop: '1.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.75rem',
-              opacity: 0.35,
-              width: '100%',
-              maxWidth: '280px'
-            }}
-          >
-            <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
-            <span
-              style={{
-                fontFamily: 'var(--font-serif, "Playfair Display")',
-                fontSize: '0.68rem',
-                letterSpacing: '3px',
-                color: '#B99A5B',
-                fontWeight: '600'
-              }}
-            >
-              DFV PERFUMES
-            </span>
-            <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(185, 154, 91, 0.6)' }} />
-          </div>
+
         </div>
       </div>
     </>

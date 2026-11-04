@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tags, Plus, Edit, Trash2, XCircle, Loader2, AlertCircle } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
@@ -105,18 +106,18 @@ const CategoriesModule = () => {
             Gestiona las categorías de perfumes disponibles en tu tienda
           </p>
         </div>
-        <button 
-          onClick={openCreateModal} 
-          style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            padding: '0.6rem 1.2rem', 
-            backgroundColor: '#111827', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '6px', 
-            fontWeight: '500', 
+        <button
+          onClick={openCreateModal}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.6rem 1.2rem',
+            backgroundColor: '#111827',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: '500',
             cursor: 'pointer',
             fontSize: '0.88rem',
             transition: 'background-color 0.2s'
@@ -151,35 +152,35 @@ const CategoriesModule = () => {
                     </div>
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button 
-                      onClick={() => openEditModal(c)} 
+                    <button
+                      onClick={() => openEditModal(c)}
                       title="Editar categoría"
-                      style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        color: '#2563eb', 
-                        cursor: 'pointer', 
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#2563eb',
+                        cursor: 'pointer',
                         marginRight: '0.75rem',
                         padding: '0.4rem',
                         borderRadius: '4px'
                       }}
                     >
-                      <Edit size={17}/>
+                      <Edit size={17} />
                     </button>
-                    <button 
+                    <button
                       disabled={deletingId === c.id}
-                      onClick={() => handleDelete(c.id, c.name)} 
+                      onClick={() => handleDelete(c.id, c.name)}
                       title="Eliminar categoría"
-                      style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        color: deletingId === c.id ? '#9ca3af' : '#dc2626', 
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: deletingId === c.id ? '#9ca3af' : '#dc2626',
                         cursor: deletingId === c.id ? 'not-allowed' : 'pointer',
                         padding: '0.4rem',
                         borderRadius: '4px'
                       }}
                     >
-                      {deletingId === c.id ? <Loader2 size={17} className="animate-spin" /> : <Trash2 size={17}/>}
+                      {deletingId === c.id ? <Loader2 size={17} className="animate-spin" /> : <Trash2 size={17} />}
                     </button>
                   </td>
                 </tr>
@@ -192,9 +193,9 @@ const CategoriesModule = () => {
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '420px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
-            <button 
+            <button
               type="button"
-              onClick={() => !isSaving && setIsModalOpen(false)} 
+              onClick={() => !isSaving && setIsModalOpen(false)}
               style={{ position: 'absolute', top: '1.2rem', right: '1.2rem', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}
             >
               <XCircle size={22} />
@@ -210,14 +211,14 @@ const CategoriesModule = () => {
                 <span>{errorMsg}</span>
               </div>
             )}
-            
+
             <form onSubmit={handleSave}>
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
                   Nombre de la categoría
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   autoFocus
                   placeholder="Ej: Hombre, Mujer, Árabes, Nicho..."
                   value={currentCat.name}
@@ -231,30 +232,30 @@ const CategoriesModule = () => {
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isSaving}
                   style={{ flex: 1, padding: '0.75rem', backgroundColor: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '0.88rem' }}
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSaving}
-                  style={{ 
-                    flex: 1, 
+                  style={{
+                    flex: 1,
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    padding: '0.75rem', 
-                    backgroundColor: '#111827', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '6px', 
-                    cursor: isSaving ? 'not-allowed' : 'pointer', 
-                    fontWeight: '500', 
+                    padding: '0.75rem',
+                    backgroundColor: '#111827',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: isSaving ? 'not-allowed' : 'pointer',
+                    fontWeight: '500',
                     fontSize: '0.88rem',
                     opacity: isSaving ? 0.7 : 1
                   }}
