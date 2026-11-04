@@ -226,169 +226,162 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
 
           {/* ── TAB: Popup del anuncio ── */}
           {tab === 'popup' && (
-            <div style={{ padding: '2rem', backgroundColor: '#f8f8f8', minHeight: '100%' }}>
-              {/* Fondo simulado de la tienda */}
+            <div style={{ padding: '2rem', backgroundColor: '#0f0f0f', minHeight: '100%' }}>
+              {/* Contenedor simulador de tienda */}
               <div style={{
-                backgroundColor: '#1a1a1a',
-                borderRadius: '14px',
-                padding: '2.5rem 1.5rem',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '1.5rem',
                 position: 'relative',
-                minHeight: '220px'
+                padding: '2.5rem 1rem',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
+                {/* Popup de lujo DFV */}
                 <div style={{
-                  position: 'absolute', top: '12px', left: '16px',
-                  fontFamily: 'var(--font-sans)', fontSize: '0.68rem',
-                  color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px'
-                }}>
-                  FONDO DE LA TIENDA (SIMULADO)
-                </div>
-                {/* Overlay del popup */}
-                <div style={{
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                  borderRadius: '10px',
-                  padding: '1rem',
                   width: '100%',
-                  maxWidth: '480px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  maxWidth: hasImage ? '700px' : '480px',
+                  backgroundColor: '#050505',
+                  boxShadow: '0 30px 90px rgba(0,0,0,0.8), 0 0 0 1px rgba(185,154,91,0.25)',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}>
-                  {/* El Popup real */}
-                  <div style={{
-                    backgroundColor: '#fff',
-                    borderRadius: '20px',
-                    overflow: 'hidden',
-                    width: '100%',
-                    boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
-                    position: 'relative'
-                  }}>
-                    {/* Badge */}
-                    {form.badge && (
-                      <div style={{
-                        position: 'absolute', top: '14px', left: '14px', zIndex: 10,
-                        backgroundColor: '#e11d48', color: '#fff',
-                        padding: '0.3rem 0.85rem', borderRadius: '99px',
-                        fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: '800',
-                        letterSpacing: '1px', textTransform: 'uppercase',
-                        boxShadow: '0 4px 12px rgba(225,29,72,0.4)',
-                        animation: 'badgePop 0.4s ease 0.1s both'
-                      }}>
-                        {form.badge}
-                      </div>
-                    )}
-
-                    {/* Botón cerrar (simulado) */}
-                    <div style={{
-                      position: 'absolute', top: '12px', right: '12px', zIndex: 10,
-                      width: '28px', height: '28px', borderRadius: '50%',
-                      backgroundColor: 'rgba(0,0,0,0.25)', display: 'flex',
-                      alignItems: 'center', justifyContent: 'center',
-                      color: '#fff', fontSize: '0.75rem', fontWeight: '700', cursor: 'default'
-                    }}>
-                      ✕
-                    </div>
-
+                  <div style={{ display: 'flex', flexDirection: hasImage ? 'row' : 'column', flexWrap: 'wrap' }}>
                     {/* Imagen promocional */}
                     {hasImage && (
                       <div style={{
-                        width: '100%', maxHeight: '220px', overflow: 'hidden',
-                        backgroundColor: '#f3f4f6'
+                        flex: '1 1 260px',
+                        minHeight: '260px',
+                        maxHeight: '340px',
+                        backgroundColor: '#111',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}>
                         <img
                           src={form.image}
-                          alt="Imagen del popup"
+                          alt="Imagen de campaña"
                           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                         />
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'linear-gradient(to right, transparent 70%, rgba(5,5,5,0.8) 100%)'
+                        }} />
                       </div>
                     )}
 
-                    {/* Contenido textual */}
-                    <div style={{ padding: '1.5rem 1.5rem 1.75rem' }}>
-                      {/* Título */}
-                      <h2 style={{
-                        fontFamily: 'var(--font-serif)',
-                        fontSize: form.title ? '1.3rem' : '1rem',
-                        fontWeight: '600',
-                        color: form.title ? '#111827' : '#9ca3af',
-                        margin: '0 0 0.65rem',
-                        lineHeight: 1.3,
-                        fontStyle: form.title ? 'normal' : 'italic'
+                    {/* Contenido textual de lujo */}
+                    <div style={{
+                      flex: '1 1 300px',
+                      padding: '2rem 2.25rem',
+                      display: 'flex', flexDirection: 'column',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      backgroundColor: '#050505'
+                    }}>
+                      {/* Botón cerrar simulado */}
+                      <div style={{
+                        position: 'absolute', top: '1rem', right: '1rem',
+                        width: '30px', height: '30px', borderRadius: '50%',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', cursor: 'default'
                       }}>
-                        {form.title || '(El título del anuncio aparecerá aquí)'}
-                      </h2>
+                        ✕
+                      </div>
 
-                      {/* Descripción */}
-                      {(form.description || !form.title) && (
-                        <p style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '0.85rem',
-                          color: form.description ? '#6b7280' : '#d1d5db',
-                          margin: '0 0 1.25rem',
-                          lineHeight: 1.6,
-                          fontStyle: form.description ? 'normal' : 'italic'
-                        }}>
-                          {form.description || '(La descripción o mensaje del anuncio aparecerá aquí)'}
-                        </p>
-                      )}
+                      {/* Línea dorada DFV */}
+                      <div style={{
+                        width: '36px', height: '1.5px',
+                        backgroundColor: '#B99A5B',
+                        marginBottom: '1rem'
+                      }} />
 
-                      {/* Resumen de productos con descuentos */}
-                      {hasProducts && (
-                        <div style={{
-                          backgroundColor: '#fafafa',
-                          borderRadius: '10px',
-                          padding: '0.75rem 1rem',
-                          marginBottom: '1.25rem',
-                          border: '1px solid #f3f4f6'
-                        }}>
-                          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', fontWeight: '600', color: '#6b7280', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Perfumes en oferta
-                          </p>
-                          {selectedProducts.slice(0, 3).map(item => {
-                            const ref = item.ref_price || item.refPrice;
-                            const promo = ref ? Math.round(ref * (1 - item.discount_pct / 100)) : 0;
-                            return (
-                              <div key={item.product_id} style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                marginBottom: '0.4rem'
-                              }}>
-                                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', color: '#374151' }}>
-                                  {item.product_name || item.name}
-                                </span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                  <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: '#9ca3af', textDecoration: 'line-through' }}>
-                                    {fmt(ref)}
-                                  </span>
-                                  <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '700', color: '#059669' }}>
-                                    {fmt(promo)}
-                                  </span>
-                                  <span style={{
-                                    fontSize: '0.6rem', fontWeight: '800', color: '#fff',
-                                    backgroundColor: '#e11d48', padding: '1px 5px', borderRadius: '4px'
-                                  }}>
-                                    -{item.discount_pct}%
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                          {selectedProducts.length > 3 && (
-                            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: '#9ca3af', margin: '0.25rem 0 0' }}>
-                              +{selectedProducts.length - 3} perfumes más con descuento
-                            </p>
-                          )}
+                      {/* Badge destacado */}
+                      {form.badge && (
+                        <div style={{ marginBottom: '0.75rem' }}>
+                          <span style={{
+                            display: 'inline-block',
+                            color: '#B99A5B',
+                            fontFamily: 'var(--font-sans)',
+                            fontSize: '0.65rem',
+                            fontWeight: '600',
+                            letterSpacing: '3px',
+                            textTransform: 'uppercase',
+                            borderBottom: '1px solid #B99A5B',
+                            paddingBottom: '2px'
+                          }}>
+                            {form.badge}
+                          </span>
                         </div>
                       )}
 
-                      {/* Botón "Ver ofertas" */}
-                      <button style={{
-                        width: '100%', padding: '0.85rem',
-                        backgroundColor: '#111827', color: '#fff',
-                        border: 'none', borderRadius: '10px',
-                        fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '700',
-                        cursor: 'default', letterSpacing: '0.3px'
+                      {/* Título de la campaña */}
+                      <h2 style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: form.title ? '1.4rem' : '1.1rem',
+                        fontWeight: '400',
+                        color: form.title ? '#ffffff' : '#6b7280',
+                        lineHeight: 1.25,
+                        margin: '0 0 0.75rem',
+                        fontStyle: form.title ? 'normal' : 'italic'
                       }}>
-                        {hasProducts ? '🛍️ Ver todas las ofertas' : '🛍️ Ver ofertas'}
-                      </button>
+                        {form.title || '(Aquí aparecerá el título del anuncio)'}
+                      </h2>
+
+                      {/* Mensaje o descripción */}
+                      {(form.description || !form.title) && (
+                        <p style={{
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '0.82rem',
+                          color: form.description ? 'rgba(255,255,255,0.65)' : '#4b5563',
+                          lineHeight: 1.6,
+                          margin: '0 0 1.5rem',
+                          fontStyle: form.description ? 'normal' : 'italic'
+                        }}>
+                          {form.description || '(Aquí aparecerá la descripción o mensaje promocional)'}
+                        </p>
+                      )}
+
+                      {/* Botón de acción principal de la tienda */}
+                      <div style={{
+                        padding: '0.9rem 1.5rem',
+                        backgroundColor: '#000000',
+                        color: '#ffffff',
+                        border: '1px solid #B99A5B',
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.72rem',
+                        fontWeight: '600',
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                        textAlign: 'center',
+                        cursor: 'default',
+                        boxShadow: '0 4px 15px rgba(185,154,91,0.2)'
+                      }}>
+                        Ver ofertas exclusivas
+                      </div>
+
+                      {/* Botón cerrar secundario */}
+                      <p style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.68rem',
+                        color: 'rgba(255,255,255,0.35)',
+                        letterSpacing: '1.5px',
+                        textTransform: 'uppercase',
+                        textAlign: 'center',
+                        margin: '0.75rem 0 0'
+                      }}>
+                        No, gracias
+                      </p>
+
+                      {/* Detalle DFV */}
+                      <div style={{
+                        marginTop: '1.25rem',
+                        display: 'flex', alignItems: 'center', gap: '0.5rem',
+                        opacity: 0.25
+                      }}>
+                        <div style={{ flex: 1, height: '1px', backgroundColor: '#fff' }} />
+                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.62rem', letterSpacing: '2px', color: '#fff' }}>DFV</span>
+                        <div style={{ flex: 1, height: '1px', backgroundColor: '#fff' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -396,18 +389,18 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
 
               {/* Nota informativa */}
               <div style={{
-                backgroundColor: '#eff6ff', borderRadius: '10px',
-                padding: '1rem 1.25rem', border: '1px solid #bfdbfe',
-                display: 'flex', gap: '0.75rem', alignItems: 'flex-start'
+                backgroundColor: '#18181b', borderRadius: '10px',
+                padding: '1rem 1.25rem', border: '1px solid #27272a',
+                display: 'flex', gap: '0.75rem', alignItems: 'flex-start',
+                marginTop: '1.5rem'
               }}>
-                <span style={{ fontSize: '1rem', flexShrink: 0 }}>💡</span>
+                <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>✨</span>
                 <div>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '600', color: '#1e40af', margin: '0 0 0.2rem' }}>
-                    Nota sobre la visualización real
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '600', color: '#B99A5B', margin: '0 0 0.2rem' }}>
+                    Diseño de alta perfumería DFV
                   </p>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#3b82f6', margin: 0, lineHeight: 1.5 }}>
-                    El popup aparece centrado sobre la tienda con un fondo oscuro semitransparente. El botón «Ver ofertas» lleva a la página exclusiva de la campaña con todos los productos y sus descuentos.
-                    La frecuencia configurada controla cuándo se muestra a cada visitante.
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#a1a1aa', margin: 0, lineHeight: 1.5 }}>
+                    El anuncio se presenta con la misma paleta de lujo (negro profundo, acentos dorados y tipografía Playfair) de la tienda. Los visitantes podrán hacer clic en «Ver ofertas exclusivas» para ir directo a la colección de campaña.
                   </p>
                 </div>
               </div>
