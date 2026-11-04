@@ -858,7 +858,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
           const names = data.conflicts.map(c => `"${c.product_id}" (en campaña "${c.campaign_name}")`).join(', ');
           showToast(`⚠️ Conflicto: los siguientes productos ya están en otra campaña activa: ${names}`, 'error');
         } else {
-          showToast(data.error || 'Error al guardar', 'error');
+          showToast(data.details || data.error || 'Error al guardar', 'error');
         }
         return;
       }
@@ -873,7 +873,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
         });
         const actData = await actRes.json();
         if (!actRes.ok) {
-          showToast(actData.error || 'Guardada pero no se pudo activar', 'warning');
+          showToast(actData.details || actData.error || 'Guardada pero no se pudo activar', 'warning');
         } else {
           showToast('✅ Campaña guardada y activada correctamente');
         }

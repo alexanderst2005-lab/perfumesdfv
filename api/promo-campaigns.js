@@ -108,16 +108,26 @@ async function applyProductDiscounts(sql, campaignId) {
 async function checkConflicts(sql, productIds, excludeCampaignId = null) {
   if (!productIds || productIds.length === 0) return [];
 
-  const conflictingRows = await sql`
+  const excId = excludeCampaignId ? parseInt(excludeCampaignId, 10) : null;
+
+  if (excId) {
+    return await sql`
+      SELECT DISTINCT cpp.product_id, pc.id AS campaign_id, pc.name AS campaign_name
+      FROM promo_campaign_products cpp
+      JOIN promo_campaigns pc ON pc.id = cpp.campaign_id
+      WHERE cpp.product_id = ANY(${productIds}::varchar[])
+        AND pc.status IN ('active', 'scheduled')
+        AND pc.id != ${excId}
+    `;
+  }
+
+  return await sql`
     SELECT DISTINCT cpp.product_id, pc.id AS campaign_id, pc.name AS campaign_name
     FROM promo_campaign_products cpp
     JOIN promo_campaigns pc ON pc.id = cpp.campaign_id
-    WHERE cpp.product_id = ANY(${productIds})
+    WHERE cpp.product_id = ANY(${productIds}::varchar[])
       AND pc.status IN ('active', 'scheduled')
-      AND (${excludeCampaignId} IS NULL OR pc.id != ${excludeCampaignId})
   `;
-
-  return conflictingRows;
 }
 
 // ─── HANDLER PRINCIPAL (PÚBLICO Y ADMIN) ──────────────────────────────────
@@ -247,7 +257,11 @@ export default async function handler(req, res) {
   // ── POST (crear campaña - Admin) ─────────────────────────────────────────
   if (method === 'POST') {
     try {
-      const body = req.body;
+      let body = req.body;
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Formato JSON inválido' }); }
+      }
+      body = body || {};
 
       if (!body.name || !body.title) {
         return res.status(400).json({ error: 'name y title son obligatorios' });
@@ -329,7 +343,11 @@ export default async function handler(req, res) {
   // ── PUT (actualizar / activar / desactivar - Admin) ────────────────────────
   if (method === 'PUT') {
     try {
-      const body = req.body;
+      let body = req.body;
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Formato JSON inválido' }); }
+      }
+      body = body || {};
       const id = parseInt(body.id || query.id, 10);
       if (!id) return res.status(400).json({ error: 'id es obligatorio' });
 
@@ -475,7 +493,12 @@ export default async function handler(req, res) {
   // ── DELETE (eliminar campaña - Admin) ─────────────────────────────────────
   if (method === 'DELETE') {
     try {
-      const { id } = req.body;
+      let body = req.body;
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch { body = {}; }
+      }
+      body = body || {};
+      const id = body.id || query.id;
       if (!id) return res.status(400).json({ error: 'id es obligatorio' });
 
       const campaignId = parseInt(id, 10);
