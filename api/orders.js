@@ -8,10 +8,13 @@ const FROM_NAME = 'DFV Perfumes';
 
 async function sendOrderEmail(type, order) {
   if (!BREVO_API_KEY) {
-    console.log('No Brevo API key configured. Skipping email.');
+    console.warn('[Brevo] No BREVO_API_KEY env var configured in Vercel. Skipping email.');
     return;
   }
-  if (!order.customer_email) return;
+  if (!order.customer_email) {
+    console.warn('[Brevo] No customer_email found in order. Skipping email.');
+    return;
+  }
 
   const orderIdFormat = `DFV-${String(order.id).padStart(4, '0')}`;
   let subject = '';
@@ -135,6 +138,7 @@ async function sendOrderEmail(type, order) {
 
   if (subject && html) {
     try {
+      console.log(`[Brevo] Sending email type=${type} to=${order.customer_email} from=${FROM_EMAIL}`);
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
@@ -152,12 +156,13 @@ async function sendOrderEmail(type, order) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error from Brevo API:', errorData);
+        console.error('[Brevo] API Error Response:', JSON.stringify(errorData));
       } else {
-        console.log('Email sent successfully via Brevo');
+        const successData = await response.json();
+        console.log('[Brevo] Email sent successfully:', JSON.stringify(successData));
       }
     } catch (e) {
-      console.error('Error sending email via Brevo:', e);
+      console.error('[Brevo] Exception while sending email:', e);
     }
   }
 }
