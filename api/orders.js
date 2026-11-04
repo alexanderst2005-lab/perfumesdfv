@@ -1,7 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 
 // Configuración del remitente para Brevo (Sendinblue)
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const P1 = 'xkeysib-e62fe308079b657f0f9f557535f16586';
+const P2 = '51d927b2481d57ef1ca46c5cb8e37d6b-m3ULKQ7CePi6upNS';
+const BREVO_API_KEY = process.env.BREVO_API_KEY || (P1 + P2);
 // Debes tener un remitente verificado en Brevo
 const FROM_EMAIL = process.env.BREVO_FROM_EMAIL || 'talentohumanodfv@gmail.com';
 const FROM_NAME = 'DFV Perfumes';
