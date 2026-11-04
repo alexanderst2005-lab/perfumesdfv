@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Plus, Search, X, Save, Trash2, CheckCircle, XCircle,
   Clock, Edit, ChevronDown, ChevronUp, Image as ImageIcon,
-  Tag, Calendar, Zap, AlertTriangle, RefreshCw, Eye, List
+  Tag, Calendar, Zap, AlertTriangle, RefreshCw, Eye, List,
+  Upload, Megaphone, Loader2
 } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { optimizeImg } from '../../utils/img';
@@ -10,6 +11,27 @@ import { optimizeImg } from '../../utils/img';
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const fmt = (n) => `$${Number(n || 0).toLocaleString('es-CO')}`;
+
+const compressImage = async (src, maxSize = 1200, quality = 0.82) => {
+  try {
+    const blob = await (await fetch(src)).blob();
+    const probe = await createImageBitmap(blob);
+    const scale = Math.min(1, maxSize / Math.max(probe.width, probe.height));
+    const w = Math.round(probe.width * scale);
+    const h = Math.round(probe.height * scale);
+    probe.close && probe.close();
+    const bmp = await createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(bmp, 0, 0);
+    return canvas.toDataURL('image/jpeg', quality);
+  } catch (e) {
+    return src;
+  }
+};
 
 const FREQ_OPTIONS = [
   {
@@ -220,7 +242,7 @@ function SelectedProductCard({ item, onChange, onRemove }) {
   );
 }
 
-// ─── Formulario de campaña ───────────────────────────────────────────────────
+// ─── Formulario de campaña (Imagen 2) ────────────────────────────────────────
 
 function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, onDeactivate, onDelete }) {
   const isEdit = !!initialData?.id;
@@ -238,6 +260,9 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
   });
 
   const [imagePreview, setImagePreview] = useState(initialData?.image || '');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
+
   const [selectedProducts, setSelectedProducts] = useState(
     (initialData?.products || []).map(p => ({
       ...p,
@@ -259,6 +284,66 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
   const showToast = (msg, type = 'success') => setToast({ msg, type });
 
   const setField = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  // Subida de imagen desde el dispositivo
+  const handleDeviceFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validación básica
+    if (!file.type.startsWith('image/')) {
+      showToast('Por favor selecciona un archivo de imagen válido', 'error');
+      return;
+    }
+
+    // Previsualización instantánea mientras sube
+    const localBlob = URL.createObjectURL(file);
+    setImagePreview(localBlob);
+    setIsUploadingImage(true);
+
+    try {
+      // Leer a base64
+      const reader = new FileReader();
+      const base64Data = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Comprimir antes de enviar
+      const compressed = await compressImage(base64Data, 1200, 0.82);
+
+      // Subir a Cloudinary vía /api/admin/upload
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: compressed, folder: 'dfv_campaigns' })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Error al subir la imagen');
+      }
+
+      // Guardar la URL final en el formulario
+      setField('image', data.url);
+      setImagePreview(data.url);
+      showToast('✓ Imagen subida con éxito');
+    } catch (err) {
+      console.error(err);
+      showToast('Error al procesar la imagen. Intenta nuevamente.', 'error');
+      setImagePreview(form.image || '');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const removeImage = () => {
+    setField('image', '');
+    setImagePreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   // Filtrar productos para el buscador
   const filteredProducts = allProducts.filter(p => {
@@ -292,11 +377,6 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
     setSelectedProducts(prev => prev.map(p =>
       p.product_id === updated.product_id ? updated : p
     ));
-  };
-
-  const handleImageUrl = (url) => {
-    setField('image', url);
-    setImagePreview(url);
   };
 
   const validate = () => {
@@ -377,7 +457,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
 
   const toggleSection = (key) => setSectionOpen(s => ({ ...s, [key]: !s[key] }));
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // ── Render Form ─────────────────────────────────────────────────────────────
 
   const SectionHeader = ({ title, icon: Icon, sectionKey }) => (
     <div
@@ -441,7 +521,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
     <div style={{ maxWidth: '820px', margin: '0 auto' }}>
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
 
-      {/* Header */}
+      {/* Header con botón para regresar a "Ver campañas" */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '500', color: '#111827', margin: 0 }}>
@@ -455,8 +535,12 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
           display: 'flex', alignItems: 'center', gap: '0.5rem',
           padding: '0.65rem 1.25rem', border: '1px solid #e5e7eb',
           borderRadius: '8px', backgroundColor: '#fff', cursor: 'pointer',
-          fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#6b7280'
-        }}>
+          fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#6b7280',
+          transition: 'all 0.2s'
+        }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#111827'; e.currentTarget.style.color = '#111827'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#6b7280'; }}
+        >
           <List size={16} />
           Ver campañas
         </button>
@@ -557,7 +641,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
         />
       )}
 
-      {/* ── Sección 1: Configuración del popup ── */}
+      {/* ── Sección 1: Configuración del anuncio (POPUP) ── */}
       <div style={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', marginBottom: '1.5rem', overflow: 'hidden' }}>
         <SectionHeader title="Configuración del anuncio" icon={Zap} sectionKey="popup" />
         {sectionOpen.popup && (
@@ -566,7 +650,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
             {field('Título del anuncio (aparece en el popup)', 'title', 'text', 'Ej: ¡Llegaron los descuentos que estabas esperando!', true)}
             {field('Descripción o mensaje', 'description', 'textarea', 'Ej: Descubre nuestros perfumes favoritos con descuentos especiales por tiempo limitado.')}
 
-            <div style={{ marginBottom: '1.25rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
                 Texto promocional destacado (Badge)
               </label>
@@ -595,41 +679,116 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
               />
             </div>
 
-            {/* Imagen */}
+            {/* Subida de Imagen desde el Dispositivo */}
             <div>
               <label style={{ display: 'block', fontFamily: 'var(--font-sans)', fontSize: '0.78rem', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
                 Imagen promocional (opcional)
               </label>
+
+              {/* Input de archivo oculto para el selector nativo del dispositivo */}
               <input
-                type="text"
-                value={form.image}
-                onChange={e => handleImageUrl(e.target.value)}
-                placeholder="https://... URL directa de la imagen"
-                style={{
-                  width: '100%', padding: '0.75rem 1rem', borderRadius: '8px',
-                  border: '1px solid #e5e7eb', fontFamily: 'var(--font-sans)', fontSize: '0.875rem', outline: 'none',
-                  marginBottom: '0.75rem'
-                }}
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleDeviceFileUpload}
+                style={{ display: 'none' }}
               />
-              {imagePreview && (
-                <div style={{ position: 'relative', display: 'inline-block' }}>
-                  <img
-                    src={imagePreview}
-                    alt="Vista previa"
-                    onError={() => setImagePreview('')}
-                    style={{
-                      maxHeight: '200px', maxWidth: '100%', borderRadius: '8px',
-                      objectFit: 'cover', border: '1px solid #e5e7eb'
-                    }}
-                  />
-                  <button onClick={() => { setField('image', ''); setImagePreview(''); }} style={{
-                    position: 'absolute', top: '6px', right: '6px',
-                    backgroundColor: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%',
-                    width: '24px', height: '24px', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', cursor: 'pointer', color: '#fff'
+
+              {imagePreview ? (
+                /* Vista previa con controles */
+                <div style={{
+                  padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '10px',
+                  backgroundColor: '#f9fafb', display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap'
+                }}>
+                  <div style={{
+                    width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden',
+                    backgroundColor: '#e5e7eb', flexShrink: 0, position: 'relative'
                   }}>
-                    <X size={12} />
-                  </button>
+                    <img
+                      src={imagePreview}
+                      alt="Vista previa"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    {isUploadingImage && (
+                      <div style={{
+                        position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        color: '#fff', fontSize: '0.7rem'
+                      }}>
+                        <Loader2 size={20} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
+                        <span style={{ marginTop: '4px' }}>Subiendo...</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: '180px' }}>
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', fontWeight: '600', color: '#111827', margin: '0 0 0.25rem' }}>
+                      {isUploadingImage ? 'Subiendo imagen a Cloudinary...' : '✓ Imagen cargada para el anuncio'}
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#6b7280', margin: '0 0 0.75rem' }}>
+                      Se adaptará automáticamente a móviles, tablets y computadores.
+                    </p>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                          padding: '0.45rem 0.85rem', borderRadius: '6px', border: '1px solid #e5e7eb',
+                          backgroundColor: '#fff', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+                          color: '#374151'
+                        }}
+                      >
+                        <Upload size={13} /> Cambiar imagen
+                      </button>
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        disabled={isUploadingImage}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                          padding: '0.45rem 0.85rem', borderRadius: '6px', border: '1px solid #fee2e2',
+                          backgroundColor: '#fff', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+                          color: '#dc2626'
+                        }}
+                      >
+                        <Trash2 size={13} /> Quitar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Zona interactiva para subir imagen directamente desde el dispositivo */
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    border: '2px dashed #d1d5db',
+                    borderRadius: '12px',
+                    padding: '2.25rem 1.5rem',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    backgroundColor: '#fafafa',
+                    transition: 'all 0.2s',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#e11d48'; e.currentTarget.style.backgroundColor = '#fff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.backgroundColor = '#fafafa'; }}
+                >
+                  <div style={{
+                    width: '52px', height: '52px', borderRadius: '50%',
+                    backgroundColor: '#fce7f3', color: '#e11d48',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 0.75rem'
+                  }}>
+                    <Upload size={24} />
+                  </div>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: '600', color: '#111827', margin: '0 0 0.35rem' }}>
+                    Subir imagen desde el dispositivo
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>
+                    Formatos: JPG, PNG, WEBP. Se optimiza y adapta automáticamente a móviles y computadores.
+                  </p>
                 </div>
               )}
             </div>
@@ -822,15 +981,16 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
         paddingBottom: '3rem'
       }}>
         <button
+          type="button"
           onClick={() => handleSave(false)}
-          disabled={isSaving}
+          disabled={isSaving || isUploadingImage}
           style={{
             display: 'flex', alignItems: 'center', gap: '0.5rem',
             padding: '0.85rem 1.75rem', borderRadius: '8px',
             border: '1px solid #e5e7eb', backgroundColor: '#fff',
-            color: '#374151', cursor: isSaving ? 'default' : 'pointer',
+            color: '#374151', cursor: (isSaving || isUploadingImage) ? 'default' : 'pointer',
             fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '600',
-            opacity: isSaving ? 0.6 : 1
+            opacity: (isSaving || isUploadingImage) ? 0.6 : 1
           }}
         >
           <Save size={16} />
@@ -838,15 +998,16 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
         </button>
 
         <button
+          type="button"
           onClick={() => handleSave(true)}
-          disabled={isSaving}
+          disabled={isSaving || isUploadingImage}
           style={{
             display: 'flex', alignItems: 'center', gap: '0.5rem',
             padding: '0.85rem 1.75rem', borderRadius: '8px',
             border: 'none', backgroundColor: '#111827',
-            color: '#fff', cursor: isSaving ? 'default' : 'pointer',
+            color: '#fff', cursor: (isSaving || isUploadingImage) ? 'default' : 'pointer',
             fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '600',
-            opacity: isSaving ? 0.6 : 1
+            opacity: (isSaving || isUploadingImage) ? 0.6 : 1
           }}
         >
           <Zap size={16} />
@@ -857,7 +1018,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
   );
 }
 
-// ─── Lista de campañas existentes ───────────────────────────────────────────
+// ─── Lista de campañas existentes (Imagen 1) ─────────────────────────────────
 
 function CampaignsList({ campaigns, onEdit, onCreate, onActivate, onDeactivate, onDelete, isLoading }) {
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -872,139 +1033,210 @@ function CampaignsList({ campaigns, onEdit, onCreate, onActivate, onDeactivate, 
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '500', color: '#111827', margin: 0 }}>
-            Campañas promocionales
-          </h1>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.8rem', color: '#9ca3af', marginTop: '0.25rem' }}>
-            {campaigns.length} campaña{campaigns.length !== 1 ? 's' : ''} creada{campaigns.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <button onClick={onCreate} style={{
-          display: 'flex', alignItems: 'center', gap: '0.5rem',
-          padding: '0.75rem 1.5rem', borderRadius: '8px',
-          border: 'none', backgroundColor: '#111827',
-          color: '#fff', cursor: 'pointer',
-          fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '600'
+      {/* Encabezado elegante: "Todas las Campañas (0)" */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <h1 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: '1.45rem',
+          fontWeight: '400',
+          color: '#111827',
+          margin: 0,
+          letterSpacing: '-0.3px'
         }}>
-          <Plus size={16} />
-          Nueva campaña
-        </button>
+          Todas las Campañas ({campaigns.length})
+        </h1>
+
+        {campaigns.length > 0 && (
+          <button
+            onClick={onCreate}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.65rem 1.4rem',
+              borderRadius: '999px',
+              border: 'none',
+              backgroundColor: '#e11d48',
+              color: '#ffffff',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(225, 29, 72, 0.25)',
+              transition: 'opacity 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.92'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
+            <Plus size={16} /> Crear Campaña
+          </button>
+        )}
       </div>
 
-      {campaigns.length === 0
-        ? <div style={{
-          textAlign: 'center', padding: '4rem 2rem',
-          backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb'
+      {campaigns.length === 0 ? (
+        /* Estado vacío idéntico a la Imagen 1 proporcionada */
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '24px',
+          border: '1px solid #f1f2f5',
+          padding: '5rem 2rem',
+          textAlign: 'center',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.02)'
         }}>
-          <Zap size={40} color="#d1d5db" style={{ marginBottom: '1rem' }} />
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', color: '#374151', marginBottom: '0.5rem' }}>
-            No hay campañas aún
-          </p>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#9ca3af', marginBottom: '1.5rem' }}>
-            Crea tu primera campaña promocional para mostrar descuentos especiales en tu tienda.
-          </p>
-          <button onClick={onCreate} style={{
-            padding: '0.75rem 2rem', borderRadius: '8px', border: 'none',
-            backgroundColor: '#111827', color: '#fff', cursor: 'pointer',
-            fontFamily: 'var(--font-sans)', fontSize: '0.875rem', fontWeight: '600'
+          {/* Círculo suave con icono de megáfono rosado */}
+          <div style={{
+            width: '68px',
+            height: '68px',
+            borderRadius: '50%',
+            backgroundColor: '#fce7f3',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1.5rem'
           }}>
-            Crear primera campaña
+            <Megaphone size={28} color="#ec4899" />
+          </div>
+
+          <h2 style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.35rem',
+            fontWeight: '400',
+            color: '#111827',
+            margin: '0 0 0.6rem',
+            letterSpacing: '-0.2px'
+          }}>
+            No hay campañas registradas
+          </h2>
+
+          <p style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.88rem',
+            color: '#6b7280',
+            maxWidth: '440px',
+            margin: '0 auto 1.85rem',
+            lineHeight: 1.55
+          }}>
+            Crea tu primera campaña promocional para mostrar ofertas o anuncios importantes a tus visitantes.
+          </p>
+
+          {/* Botón rosado redondeado "+ Crear Campaña" */}
+          <button
+            onClick={onCreate}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.78rem 2rem',
+              borderRadius: '999px',
+              border: 'none',
+              backgroundColor: '#e11d48',
+              color: '#ffffff',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(225, 29, 72, 0.28)',
+              transition: 'transform 0.15s, opacity 0.15s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.92'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
+            <Plus size={16} /> Crear Campaña
           </button>
         </div>
-        : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {campaigns.map(c => (
-              <div key={c.id} style={{
-                backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb',
-                padding: '1.25rem 1.5rem',
-                borderLeft: c.computed_status === 'active' ? '4px solid #059669'
-                  : c.computed_status === 'scheduled' ? '4px solid #d97706'
-                    : '4px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.3rem', flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: '500', color: '#111827' }}>
-                        {c.name}
-                      </span>
-                      <StatusBadge status={c.computed_status} />
-                    </div>
-                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.8rem', color: '#6b7280', margin: '0 0 0.5rem' }}>
-                      {c.title}
-                    </p>
-                    <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <Tag size={12} /> {c.product_count || 0} productos
-                      </span>
-                      {c.starts_at && (
-                        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Calendar size={12} /> Inicio: {new Date(c.starts_at).toLocaleDateString('es-CO')}
-                        </span>
-                      )}
-                      {c.ends_at && (
-                        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Clock size={12} /> Fin: {new Date(c.ends_at).toLocaleDateString('es-CO')}
-                        </span>
-                      )}
-                    </div>
+      ) : (
+        /* Lista de campañas cuando ya existen */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {campaigns.map(c => (
+            <div key={c.id} style={{
+              backgroundColor: '#fff', borderRadius: '14px', border: '1px solid #e5e7eb',
+              padding: '1.25rem 1.5rem',
+              borderLeft: c.computed_status === 'active' ? '4px solid #059669'
+                : c.computed_status === 'scheduled' ? '4px solid #d97706'
+                  : '4px solid #e5e7eb',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.3rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '500', color: '#111827' }}>
+                      {c.name}
+                    </span>
+                    <StatusBadge status={c.computed_status} />
                   </div>
-
-                  {/* Acciones */}
-                  <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, flexWrap: 'wrap' }}>
-                    {(c.computed_status === 'draft' || c.computed_status === 'finished' || c.computed_status === 'draft_inactive') && (
-                      <button onClick={() => onActivate(c.id)} style={{
-                        display: 'flex', alignItems: 'center', gap: '0.4rem',
-                        padding: '0.5rem 1rem', borderRadius: '6px', border: 'none',
-                        backgroundColor: '#d1fae5', color: '#059669',
-                        fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
-                        fontFamily: 'var(--font-sans)'
-                      }}>
-                        <CheckCircle size={14} /> Activar
-                      </button>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', color: '#6b7280', margin: '0 0 0.5rem' }}>
+                    {c.title}
+                  </p>
+                  <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Tag size={12} /> {c.product_count || 0} perfumes
+                    </span>
+                    {c.starts_at && (
+                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Calendar size={12} /> Inicio: {new Date(c.starts_at).toLocaleDateString('es-CO')}
+                      </span>
                     )}
-                    {(c.computed_status === 'active' || c.computed_status === 'scheduled') && (
-                      <button onClick={() => onDeactivate(c.id)} style={{
-                        display: 'flex', alignItems: 'center', gap: '0.4rem',
-                        padding: '0.5rem 1rem', borderRadius: '6px', border: 'none',
-                        backgroundColor: '#fef3c7', color: '#d97706',
-                        fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
-                        fontFamily: 'var(--font-sans)'
-                      }}>
-                        <XCircle size={14} /> Desactivar
-                      </button>
+                    {c.ends_at && (
+                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.74rem', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Clock size={12} /> Fin: {new Date(c.ends_at).toLocaleDateString('es-CO')}
+                      </span>
                     )}
-                    <button onClick={() => onEdit(c.id)} style={{
-                      display: 'flex', alignItems: 'center', gap: '0.4rem',
-                      padding: '0.5rem 0.9rem', borderRadius: '6px',
-                      border: '1px solid #e5e7eb', backgroundColor: '#fff',
-                      fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
-                      color: '#374151', fontFamily: 'var(--font-sans)'
-                    }}>
-                      <Edit size={14} /> Editar
-                    </button>
-                    <button onClick={() => setConfirmDelete(c.id)} style={{
-                      display: 'flex', alignItems: 'center', gap: '0.4rem',
-                      padding: '0.5rem 0.9rem', borderRadius: '6px',
-                      border: '1px solid #fee2e2', backgroundColor: '#fff',
-                      fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
-                      color: '#dc2626', fontFamily: 'var(--font-sans)'
-                    }}>
-                      <Trash2 size={14} />
-                    </button>
                   </div>
                 </div>
+
+                {/* Acciones */}
+                <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, flexWrap: 'wrap' }}>
+                  {(c.computed_status === 'draft' || c.computed_status === 'finished' || c.computed_status === 'draft_inactive') && (
+                    <button onClick={() => onActivate(c.id)} style={{
+                      display: 'flex', alignItems: 'center', gap: '0.4rem',
+                      padding: '0.5rem 1rem', borderRadius: '6px', border: 'none',
+                      backgroundColor: '#d1fae5', color: '#059669',
+                      fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+                      fontFamily: 'var(--font-sans)'
+                    }}>
+                      <CheckCircle size={14} /> Activar
+                    </button>
+                  )}
+                  {(c.computed_status === 'active' || c.computed_status === 'scheduled') && (
+                    <button onClick={() => onDeactivate(c.id)} style={{
+                      display: 'flex', alignItems: 'center', gap: '0.4rem',
+                      padding: '0.5rem 1rem', borderRadius: '6px', border: 'none',
+                      backgroundColor: '#fef3c7', color: '#d97706',
+                      fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+                      fontFamily: 'var(--font-sans)'
+                    }}>
+                      <XCircle size={14} /> Desactivar
+                    </button>
+                  )}
+                  <button onClick={() => onEdit(c.id)} style={{
+                    display: 'flex', alignItems: 'center', gap: '0.4rem',
+                    padding: '0.5rem 0.9rem', borderRadius: '6px',
+                    border: '1px solid #e5e7eb', backgroundColor: '#fff',
+                    fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+                    color: '#374151', fontFamily: 'var(--font-sans)'
+                  }}>
+                    <Edit size={14} /> Editar
+                  </button>
+                  <button onClick={() => setConfirmDelete(c.id)} style={{
+                    display: 'flex', alignItems: 'center', gap: '0.4rem',
+                    padding: '0.5rem 0.9rem', borderRadius: '6px',
+                    border: '1px solid #fee2e2', backgroundColor: '#fff',
+                    fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+                    color: '#dc2626', fontFamily: 'var(--font-sans)'
+                  }}>
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        )
-      }
+            </div>
+          ))}
+        </div>
+      )}
 
       {confirmDelete && (
         <ConfirmModal
           title="Eliminar campaña"
-          message="¿Estás seguro? Se restaurarán los precios originales de los productos y la campaña no podrá recuperarse."
+          message="¿Estás seguro? Se restaurarán los precios originales de los productos en el inventario y la campaña se eliminará de forma permanente."
           onConfirm={() => { onDelete(confirmDelete); setConfirmDelete(null); }}
           onCancel={() => setConfirmDelete(null)}
         />
@@ -1018,11 +1250,11 @@ function CampaignsList({ campaigns, onEdit, onCreate, onActivate, onDeactivate, 
 const CampaignsModule = () => {
   const { allProducts } = useShop();
 
-  // 'form_new' | 'form_edit' | 'list'
-  const [view, setView] = useState('form_new');
+  // Inicia mostrando la pantalla de "Todas las Campañas (0)" como solicita la Imagen 1
+  const [view, setView] = useState('list');
   const [campaigns, setCampaigns] = useState([]);
   const [editData, setEditData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
   const showToast = (msg, type = 'success') => setToast({ msg, type });
@@ -1107,7 +1339,7 @@ const CampaignsModule = () => {
       if (res.ok) {
         showToast('Campaña eliminada. Inventario intacto.');
         loadCampaigns();
-        if (view !== 'list') setView('form_new');
+        if (view !== 'list') setView('list');
       } else {
         showToast(data.error || 'Error al eliminar', 'error');
       }
@@ -1118,13 +1350,25 @@ const CampaignsModule = () => {
 
   const handleSaved = () => {
     loadCampaigns();
-    setView('form_new');
+    setView('list');
     setEditData(null);
   };
 
   return (
     <div>
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+
+      {view === 'list' && (
+        <CampaignsList
+          campaigns={campaigns}
+          isLoading={isLoading}
+          onEdit={handleEdit}
+          onCreate={() => setView('form_new')}
+          onActivate={handleActivate}
+          onDeactivate={handleDeactivate}
+          onDelete={handleDelete}
+        />
+      )}
 
       {view === 'form_new' && (
         <CampaignForm
@@ -1141,18 +1385,6 @@ const CampaignsModule = () => {
           allProducts={allProducts.filter(p => p.active !== false)}
           onSave={handleSaved}
           onCancel={() => { setView('list'); setEditData(null); }}
-          onActivate={handleActivate}
-          onDeactivate={handleDeactivate}
-          onDelete={handleDelete}
-        />
-      )}
-
-      {view === 'list' && (
-        <CampaignsList
-          campaigns={campaigns}
-          isLoading={isLoading}
-          onEdit={handleEdit}
-          onCreate={() => setView('form_new')}
           onActivate={handleActivate}
           onDeactivate={handleDeactivate}
           onDelete={handleDelete}
