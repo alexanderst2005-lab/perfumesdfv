@@ -29,8 +29,9 @@ let cachedPromoBanner = null;
 const PromoBanner = () => {
   const { products = [], addToCart, toggleFavorite, isFavorite } = useShop();
   const [banner, setBanner] = useState(cachedPromoBanner || DEFAULT_BANNER);
-  const [isVisible, setIsVisible] = useState(Boolean(cachedPromoBanner));
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+  const cardRef = useRef(null);
 
   // Estado del carrusel aleatorio debajo del banner
   const trackRef = useRef(null);
@@ -85,18 +86,33 @@ const PromoBanner = () => {
   }, []);
 
   useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+    const checkReveal = () => {
+      const el = cardRef.current || sectionRef.current;
+      if (!el) return;
+      // No desplegar al abrir la página arriba del todo; solo a medida que el usuario va bajando
+      if (window.scrollY < 80) {
+        setIsVisible(false);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      if (rect.height === 0) return;
+
+      if (rect.top <= window.innerHeight * 0.78 && rect.bottom >= 60) {
+        setIsVisible(true);
+      } else if (rect.top > window.innerHeight * 0.96) {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', checkReveal, { passive: true });
+    window.addEventListener('resize', checkReveal);
+    const timer = setTimeout(checkReveal, 150);
+
+    return () => {
+      window.removeEventListener('scroll', checkReveal);
+      window.removeEventListener('resize', checkReveal);
+      clearTimeout(timer);
+    };
   }, [banner]);
 
   const updatePagination = () => {
@@ -185,12 +201,11 @@ const PromoBanner = () => {
     <section ref={sectionRef} className="dfv-promo" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
       <div className="dfv-promo__wrap">
         {/* 1. BANNER PROMOCIONAL CON IMAGEN 100% COMPLETA */}
-        <div className={`dfv-promo__card ${isVisible ? 'is-revealed' : ''}`}>
+        <div ref={cardRef} className={`dfv-promo__card ${isVisible ? 'is-revealed' : ''}`}>
           <img
             src={bgImage}
             alt={banner.title || 'Banner Promocional'}
             className="dfv-promo__img"
-            loading="lazy"
             decoding="async"
           />
           <div className="dfv-promo__overlay" />

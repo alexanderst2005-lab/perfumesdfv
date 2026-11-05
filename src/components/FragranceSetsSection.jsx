@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
@@ -8,6 +8,9 @@ const FragranceSetsSection = () => {
   const [setsBanner, setSetsBanner] = useState(cachedSetsBanner);
   const [loaded, setLoaded] = useState(Boolean(cachedSetsBanner));
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+  const imageWrapRef = useRef(null);
 
   useEffect(() => {
     fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
@@ -36,6 +39,38 @@ const FragranceSetsSection = () => {
     return () => clearInterval(timer);
   }, [imagesList.length]);
 
+  useEffect(() => {
+    if (!loaded || !setsBanner || setsBanner.active === false || imagesList.length === 0) return;
+
+    const checkReveal = () => {
+      const el = imageWrapRef.current || sectionRef.current;
+      if (!el) return;
+      // No desplegar al abrir la página arriba del todo; solo a medida que el usuario va bajando
+      if (window.scrollY < 80) {
+        setIsVisible(false);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      if (rect.height === 0) return;
+
+      if (rect.top <= window.innerHeight * 0.78 && rect.bottom >= 60) {
+        setIsVisible(true);
+      } else if (rect.top > window.innerHeight * 0.96) {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', checkReveal, { passive: true });
+    window.addEventListener('resize', checkReveal);
+    const timer = setTimeout(checkReveal, 150);
+
+    return () => {
+      window.removeEventListener('scroll', checkReveal);
+      window.removeEventListener('resize', checkReveal);
+      clearTimeout(timer);
+    };
+  }, [loaded, setsBanner, imagesList.length]);
+
   // Solo mostrar cuando esté configurado y activo desde el panel
   if (!loaded || !setsBanner || setsBanner.active === false || imagesList.length === 0) {
     return null;
@@ -45,13 +80,14 @@ const FragranceSetsSection = () => {
 
   return (
     <section
+      ref={sectionRef}
       className="dfv-sets-section"
       style={{ backgroundColor: '#FFFFFF', padding: '2rem 0 2.5rem', overflow: 'hidden' }}
     >
       <div className="dfv-sets-container">
         <div className="dfv-sets-layout">
           {/* IMAGEN COMPLETA A LA DERECHA EN PC / ARRIBA EN MÓVIL */}
-          <div className="dfv-sets-image-wrap">
+          <div ref={imageWrapRef} className={`dfv-sets-image-wrap ${isVisible ? 'is-revealed' : ''}`}>
             <img
               src={optimizeImg(activeImageUrl, 2000)}
               alt={setsBanner.title || 'Sets de Fragancias Exclusivas'}
@@ -61,7 +97,7 @@ const FragranceSetsSection = () => {
           </div>
 
           {/* CONTENIDO: ABAJO CENTRADO EN MÓVIL | IZQUIERDA ALINEADO EN PC */}
-          <div className="dfv-sets-content">
+          <div className={`dfv-sets-content ${isVisible ? 'is-revealed' : ''}`}>
             <h2 className="dfv-sets-title">
               {setsBanner.title || 'SETS DE FRAGANCIAS EXCLUSIVAS'}
             </h2>
@@ -100,6 +136,19 @@ const FragranceSetsSection = () => {
           display: flex;
           justify-content: center;
           align-items: center;
+          clip-path: inset(0 0 0 100%);
+          transform: translateX(48px) scale(1.03);
+          opacity: 0;
+          transition:
+            clip-path 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.65s ease;
+        }
+
+        .dfv-sets-image-wrap.is-revealed {
+          clip-path: inset(0 0 0 0);
+          transform: translateX(0) scale(1);
+          opacity: 1;
         }
 
         .dfv-sets-img {
@@ -116,6 +165,16 @@ const FragranceSetsSection = () => {
           padding: 2.2rem 1.5rem 2.2rem;
           max-width: 680px;
           margin: 0 auto;
+          opacity: 0;
+          transform: translateY(28px);
+          transition:
+            opacity 0.85s ease 0.25s,
+            transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+        }
+
+        .dfv-sets-content.is-revealed {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .dfv-sets-title {
