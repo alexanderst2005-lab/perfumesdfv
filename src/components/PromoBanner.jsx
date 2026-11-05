@@ -295,7 +295,7 @@ const PromoBanner = () => {
           width: 100%;
           border-radius: 8px;
           overflow: hidden;
-          background-color: #111111;
+          background-color: transparent;
           clip-path: inset(0 0 0 100%);
           transform: translateX(48px) scale(1.02);
           opacity: 0;
@@ -313,8 +313,6 @@ const PromoBanner = () => {
           width: 100%;
           height: auto;
           display: block;
-          object-fit: contain;
-          object-position: center;
         }
         .dfv-promo__overlay {
           position: absolute;
@@ -400,35 +398,31 @@ const PromoBanner = () => {
             padding: 28px 0 24px;
           }
           .dfv-promo__wrap {
-            max-width: 1220px;
+            max-width: 1420px;
+            padding: 0 2.2rem;
             display: grid;
-            grid-template-columns: 46% 1fr;
-            gap: 24px;
+            grid-template-columns: 44% 1fr;
+            gap: 28px;
             align-items: stretch;
           }
           .dfv-promo__card {
-            min-height: 460px;
-            max-height: 520px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
+            display: block;
+            border-radius: 8px;
+            align-self: start;
           }
           .dfv-promo__img {
-            max-height: 520px;
             width: 100%;
-            height: 100%;
-            object-fit: contain;
+            height: auto;
+            display: block;
           }
           .dfv-promo__title {
-            font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+            font-size: clamp(1.85rem, 3vw, 2.85rem);
           }
           .dfv-promo-products-wrap {
             margin-top: 0;
             position: relative;
             height: 100%;
-            min-height: 460px;
-            max-height: 520px;
+            min-height: 520px;
           }
           .dfv-promo-products-track {
             position: absolute;

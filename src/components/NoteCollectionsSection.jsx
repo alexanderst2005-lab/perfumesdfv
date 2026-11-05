@@ -20,7 +20,7 @@ const NoteCollectionsSection = () => {
           setCollections(activeCols);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoaded(true));
   }, []);
 
@@ -144,13 +144,13 @@ const NoteCollectionsSection = () => {
 
         @media (min-width: 769px) {
           .dfv-note-img-wrap img {
-            max-height: 250px !important;
+            max-height: 380px !important;
             width: 100% !important;
             height: auto !important;
             object-fit: contain !important;
           }
           .dfv-note-title {
-            font-size: 1rem !important;
+            font-size: 1.12rem !important;
           }
         }
 

@@ -26,7 +26,7 @@ const TrendingHousesSection = () => {
           setHouses(activeHouses);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoaded(true));
   }, []);
 
@@ -80,7 +80,7 @@ const TrendingHousesSection = () => {
   return (
     <section className="dfv-trending-houses-section" style={{ backgroundColor: '#ffffff', padding: '1.8rem 0 0' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
-        
+
         {/* ENCABEZADO: EN MÓVIL (IZQUIERDA + < 1/5 >) | EN PC (CENTRADO MÁS GRANDE, SIN 1/5) */}
         <div
           className="dfv-houses-header"
@@ -104,7 +104,7 @@ const TrendingHousesSection = () => {
 
           {/* Contador y Flechas < 1/5 > SOLO VISIBLE EN MÓVIL */}
           <div className="dfv-houses-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-            <button 
+            <button
               onClick={scrollPrev}
               aria-label="Anterior casa"
               style={{
@@ -130,7 +130,7 @@ const TrendingHousesSection = () => {
             }}>
               {currentPage}/{totalPages}
             </span>
-            <button 
+            <button
               onClick={scrollNext}
               aria-label="Siguiente casa"
               style={{
@@ -163,7 +163,7 @@ const TrendingHousesSection = () => {
           )}
 
           {/* CARRUSEL HORIZONTAL LIMPIO CON TARJETAS DE IGUAL ALTURA */}
-          <div 
+          <div
             ref={trackRef}
             className="dfv-houses-track"
             style={{
@@ -197,7 +197,7 @@ const TrendingHousesSection = () => {
                   }}
                 >
                   {/* IMAGEN GRANDE 100% COMPLETA SIN RECORTES */}
-                  <div 
+                  <div
                     className="dfv-house-img-wrap"
                     style={{
                       position: 'relative',
@@ -230,7 +230,7 @@ const TrendingHousesSection = () => {
 
                   {/* NOMBRE SIEMPRE ALINEADO EN LA MISMA LÍNEA HORIZONTAL */}
                   <div style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '14px' }}>
-                    <h3 
+                    <h3
                       className="dfv-house-title"
                       style={{
                         fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
@@ -283,16 +283,16 @@ const TrendingHousesSection = () => {
         /* ════ ESTILOS EXCLUSIVOS PARA PC (>= 769px) ════ */
         @media (min-width: 769px) {
           .dfv-trending-houses-section {
-            padding: 2.5rem 0 0 !important;
+            padding: 2.8rem 0 0 !important;
           }
           .dfv-houses-header {
             justify-content: center !important;
-            margin-bottom: 1.8rem !important;
+            margin-bottom: 2rem !important;
           }
           .dfv-houses-main-title {
-            font-size: 1.65rem !important;
+            font-size: 1.85rem !important;
             text-align: center !important;
-            letter-spacing: -0.3px !important;
+            letter-spacing: -0.35px !important;
           }
           .dfv-houses-controls {
             display: none !important;
@@ -301,11 +301,11 @@ const TrendingHousesSection = () => {
             gap: 20px !important;
           }
           .dfv-house-card {
-            flex: 0 0 calc((100% - 60px) / 4.2);
-            max-width: 260px;
+            flex: 0 0 calc((100% - 48px) / 3.5);
+            max-width: 350px;
           }
           .dfv-house-img-wrap img {
-            max-height: 260px !important;
+            max-height: 390px !important;
             width: 100% !important;
             height: auto !important;
             object-fit: contain !important;
