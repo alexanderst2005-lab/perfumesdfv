@@ -16,11 +16,14 @@ const PromoBannerModule = () => {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    fetch('/api/promo-banner')
+    fetch(`/api/promo-banner?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data && data.banner) {
-          setBanner(data.banner);
+          setBanner({
+            ...data.banner,
+            image_url: data.banner.image_url || data.banner.image || ''
+          });
         }
       })
       .catch(err => console.error('Error fetching banner:', err))
@@ -32,13 +35,34 @@ const PromoBannerModule = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
+  const compressImage = async (src, maxSize = 1600, quality = 0.85) => {
+    try {
+      const blob = await (await fetch(src)).blob();
+      const probe = await createImageBitmap(blob);
+      const scale = Math.min(1, maxSize / Math.max(probe.width, probe.height));
+      const w = Math.round(probe.width * scale);
+      const h = Math.round(probe.height * scale);
+      if (probe.close) probe.close();
+      const bmp = await createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(bmp, 0, 0);
+      return canvas.toDataURL('image/jpeg', quality);
+    } catch {
+      return src;
+    }
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
     try {
-      // Create data URL
       const reader = new FileReader();
       const base64Promise = new Promise((resolve, reject) => {
         reader.onload = () => resolve(reader.result);
@@ -46,15 +70,21 @@ const PromoBannerModule = () => {
         reader.readAsDataURL(file);
       });
       const base64 = await base64Promise;
+      const compressed = await compressImage(base64, 1600, 0.85);
 
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64 })
+        body: JSON.stringify({ image: compressed })
       });
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Error del servidor (${res.status})`);
+      }
       if (data && data.url) {
-        setBanner(prev => ({ ...prev, image_url: data.url }));
+        setBanner(prev => ({ ...prev, image_url: data.url, image: data.url }));
         showToast('Imagen subida a Cloudinary exitosamente');
       } else {
         throw new Error(data.error || 'Error al subir imagen');

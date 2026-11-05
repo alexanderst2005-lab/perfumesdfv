@@ -62,13 +62,35 @@ const NoteCollectionsModule = () => {
     setEditId(col.id);
     setFormData({
       name: col.name || '',
-      image_url: col.image_url || '',
+      image_url: col.image_url || col.image || '',
       active: col.active !== false,
       sort_order: col.sort_order || 0,
       product_ids: Array.isArray(col.product_ids) ? [...col.product_ids] : []
     });
     setSearchProductQuery('');
     setIsModalOpen(true);
+  };
+
+  const compressImage = async (src, maxSize = 1200, quality = 0.82) => {
+    try {
+      const blob = await (await fetch(src)).blob();
+      const probe = await createImageBitmap(blob);
+      const scale = Math.min(1, maxSize / Math.max(probe.width, probe.height));
+      const w = Math.round(probe.width * scale);
+      const h = Math.round(probe.height * scale);
+      if (probe.close) probe.close();
+      const bmp = await createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(bmp, 0, 0);
+      return canvas.toDataURL('image/jpeg', quality);
+    } catch {
+      return src;
+    }
   };
 
   const handleImageUpload = async (e) => {
@@ -84,13 +106,19 @@ const NoteCollectionsModule = () => {
         reader.readAsDataURL(file);
       });
       const base64 = await base64Promise;
+      const compressed = await compressImage(base64, 1200, 0.82);
 
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64 })
+        body: JSON.stringify({ image: compressed })
       });
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Error del servidor (${res.status})`);
+      }
       if (data && data.url) {
         setFormData(prev => ({ ...prev, image_url: data.url }));
         showToast('Imagen de portada subida');
@@ -280,9 +308,9 @@ const NoteCollectionsModule = () => {
             >
               {/* Imagen de portada */}
               <div style={{ position: 'relative', height: '160px', backgroundColor: '#F9F8F6' }}>
-                {col.image_url ? (
+                {(col.image_url || col.image) ? (
                   <img
-                    src={optimizeImg(col.image_url, 400)}
+                    src={optimizeImg(col.image_url || col.image, 400)}
                     alt={col.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />

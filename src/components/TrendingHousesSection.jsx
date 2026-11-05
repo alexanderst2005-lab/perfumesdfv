@@ -9,14 +9,14 @@ const TrendingHousesSection = () => {
   const trackRef = useRef(null);
 
   useEffect(() => {
-    fetch('/api/trending-houses')
+    fetch(`/api/trending-houses?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data.success && Array.isArray(data.houses)) {
-          const activeWithProducts = data.houses.filter(
-            h => h.active !== false && Number(h.product_count) > 0
+          const activeHouses = data.houses.filter(
+            h => h.active !== false
           );
-          setHouses(activeWithProducts);
+          setHouses(activeHouses);
         }
       })
       .catch(() => {})
@@ -118,7 +118,8 @@ const TrendingHousesSection = () => {
           }}
         >
           {houses.map((house) => {
-            const imgSrc = house.image ? optimizeImg(house.image, 600) : '/hero_campaign_4.webp';
+            const rawImg = house.image || house.image_url;
+            const imgSrc = rawImg ? optimizeImg(rawImg, 600) : '/hero_campaign_4.webp';
 
             return (
               <Link

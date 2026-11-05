@@ -1,6 +1,10 @@
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const sql = neon(process.env.DATABASE_URL);
 
   let body = req.body;
@@ -12,13 +16,20 @@ export default async function handler(req, res) {
     }
   }
 
-  // Detectar la sección solicitada
+  // Detectar la sección solicitada (soporta ?type=... o ?section=... o ruta directa)
   const rawUrl = req.url || '';
-  const type = req.query.type ||
+  const type = req.query.type || req.query.section ||
     (rawUrl.includes('promo-banner') ? 'promo-banner' :
      rawUrl.includes('note-collections') ? 'note-collections' :
      rawUrl.includes('trending-houses') ? 'trending-houses' :
      rawUrl.includes('site-counters') ? 'site-counters' : '');
+
+  // Helper para normalizar los campos de imagen en respuesta (image e image_url)
+  const withDualImage = (row) => {
+    if (!row) return row;
+    const img = row.image || row.image_url || null;
+    return { ...row, image: img, image_url: img };
+  };
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 1. PROMO BANNER
@@ -28,9 +39,7 @@ export default async function handler(req, res) {
       try {
         const rows = await sql`SELECT * FROM promo_banners ORDER BY id ASC LIMIT 1`;
         if (rows.length === 0) return res.status(200).json({ success: true, banner: null });
-        const row = rows[0];
-        const img = row.image_url || row.image || null;
-        return res.status(200).json({ success: true, banner: { ...row, image: img, image_url: img } });
+        return res.status(200).json({ success: true, banner: withDualImage(rows[0]) });
       } catch (error) {
         console.error('Error fetching promo banner:', error);
         return res.status(500).json({ success: false, error: 'Database error' });
@@ -41,47 +50,12 @@ export default async function handler(req, res) {
       try {
         const { title, subtitle, button_text, button_link, image_url, image, active } = body || {};
         const bannerImg = image_url !== undefined ? image_url : image;
-        const cols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'promo_banners'`;
-        const hasImageUrl = cols.some(c => c.column_name === 'image_url');
         const existing = await sql`SELECT id FROM promo_banners ORDER BY id ASC LIMIT 1`;
         let result;
 
-        if (!hasImageUrl) {
-          // Esquema con columna "image"
-          if (existing.length === 0) {
-            result = await sql`
-              INSERT INTO promo_banners (title, subtitle, button_text, button_link, image, active, updated_at)
-              VALUES (
-                ${title || 'ELEGANCIA QUE PERDURA'},
-                ${subtitle || 'Descubre fragancias que definen tu presencia.'},
-                ${button_text || 'COMPRAR AHORA'},
-                ${button_link || '/tienda'},
-                ${bannerImg || null},
-                ${active !== false},
-                NOW()
-              ) RETURNING *
-            `;
-          } else {
-            result = await sql`
-              UPDATE promo_banners SET
-                title = ${title || 'ELEGANCIA QUE PERDURA'},
-                subtitle = ${subtitle || 'Descubre fragancias que definen tu presencia.'},
-                button_text = ${button_text || 'COMPRAR AHORA'},
-                button_link = ${button_link || '/tienda'},
-                image = ${bannerImg !== undefined ? bannerImg : null},
-                active = ${active !== false},
-                updated_at = NOW()
-              WHERE id = ${existing[0].id}
-              RETURNING *
-            `;
-          }
-          const r = result[0];
-          return res.status(200).json({ success: true, banner: { ...r, image_url: r.image } });
-        }
-
         if (existing.length === 0) {
           result = await sql`
-            INSERT INTO promo_banners (title, subtitle, button_text, button_link, image_url, active, updated_at)
+            INSERT INTO promo_banners (title, subtitle, button_text, button_link, image, active, updated_at)
             VALUES (
               ${title || 'ELEGANCIA QUE PERDURA'},
               ${subtitle || 'Descubre fragancias que definen tu presencia.'},
@@ -99,17 +73,17 @@ export default async function handler(req, res) {
               subtitle = ${subtitle || 'Descubre fragancias que definen tu presencia.'},
               button_text = ${button_text || 'COMPRAR AHORA'},
               button_link = ${button_link || '/tienda'},
-              image_url = ${bannerImg !== undefined ? bannerImg : null},
+              image = ${bannerImg !== undefined ? bannerImg : null},
               active = ${active !== false},
               updated_at = NOW()
             WHERE id = ${existing[0].id}
             RETURNING *
           `;
         }
-        return res.status(200).json({ success: true, banner: result[0] });
+        return res.status(200).json({ success: true, banner: withDualImage(result[0]) });
       } catch (error) {
         console.error('Error updating promo banner:', error);
-        return res.status(500).json({ success: false, error: 'Database error' });
+        return res.status(500).json({ success: false, error: error.message || 'Database error' });
       }
     }
   }
@@ -178,7 +152,10 @@ export default async function handler(req, res) {
           GROUP BY c.id
           ORDER BY c.sort_order ASC, c.id ASC
         `;
-        return res.status(200).json({ success: true, collections });
+        return res.status(200).json({
+          success: true,
+          collections: collections.map(withDualImage)
+        });
       } catch (error) {
         console.error('Error fetching note collections:', error);
         return res.status(500).json({ success: false, error: 'Database error' });
@@ -194,7 +171,7 @@ export default async function handler(req, res) {
         }
 
         const inserted = await sql`
-          INSERT INTO note_collections (name, image_url, sort_order, active)
+          INSERT INTO note_collections (name, image, sort_order, active)
           VALUES (${name.trim()}, ${colImg || null}, ${sort_order || 0}, ${active !== false})
           RETURNING *
         `;
@@ -211,7 +188,7 @@ export default async function handler(req, res) {
             }
           }
         }
-        return res.status(201).json({ success: true, collection });
+        return res.status(201).json({ success: true, collection: withDualImage(collection) });
       } catch (error) {
         console.error('Error creating note collection:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -227,7 +204,7 @@ export default async function handler(req, res) {
         const updated = await sql`
           UPDATE note_collections SET
             name = ${name ? name.trim() : 'Colección'},
-            image_url = ${colImg !== undefined ? colImg : null},
+            image = ${colImg !== undefined ? colImg : null},
             sort_order = ${sort_order || 0},
             active = ${active !== false},
             updated_at = NOW()
@@ -247,7 +224,7 @@ export default async function handler(req, res) {
             }
           }
         }
-        return res.status(200).json({ success: true, collection: updated[0] });
+        return res.status(200).json({ success: true, collection: withDualImage(updated[0]) });
       } catch (error) {
         console.error('Error updating note collection:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -287,7 +264,10 @@ export default async function handler(req, res) {
           GROUP BY h.id
           ORDER BY h.sort_order ASC, h.id ASC
         `;
-        return res.status(200).json({ success: true, houses });
+        return res.status(200).json({
+          success: true,
+          houses: houses.map(withDualImage)
+        });
       } catch (error) {
         console.error('Error fetching trending houses:', error);
         return res.status(500).json({ success: false, error: 'Database error' });
@@ -303,7 +283,7 @@ export default async function handler(req, res) {
         }
 
         const inserted = await sql`
-          INSERT INTO trending_houses (name, image_url, sort_order, active)
+          INSERT INTO trending_houses (name, image, sort_order, active)
           VALUES (${name.trim()}, ${houseImg || null}, ${sort_order || 0}, ${active !== false})
           RETURNING *
         `;
@@ -320,7 +300,7 @@ export default async function handler(req, res) {
             }
           }
         }
-        return res.status(201).json({ success: true, house });
+        return res.status(201).json({ success: true, house: withDualImage(house) });
       } catch (error) {
         console.error('Error creating trending house:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -336,7 +316,7 @@ export default async function handler(req, res) {
         const updated = await sql`
           UPDATE trending_houses SET
             name = ${name ? name.trim() : 'Casa'},
-            image_url = ${houseImg !== undefined ? houseImg : null},
+            image = ${houseImg !== undefined ? houseImg : null},
             sort_order = ${sort_order || 0},
             active = ${active !== false},
             updated_at = NOW()
@@ -356,7 +336,7 @@ export default async function handler(req, res) {
             }
           }
         }
-        return res.status(200).json({ success: true, house: updated[0] });
+        return res.status(200).json({ success: true, house: withDualImage(updated[0]) });
       } catch (error) {
         console.error('Error updating trending house:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -376,6 +356,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(404).json({ success: false, error: 'Section not found' });
+  return res.status(405).json({ success: false, error: 'Method or section not allowed' });
 }
-

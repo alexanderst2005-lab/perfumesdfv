@@ -7,15 +7,15 @@ const NoteCollectionsSection = () => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/note-collections')
+    fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data.success && Array.isArray(data.collections)) {
-          // Filtrar solo las activas que tengan al menos 1 producto
-          const activeWithProducts = data.collections.filter(
-            c => c.active !== false && Number(c.product_count) > 0
+          // Filtrar solo las activas
+          const activeCols = data.collections.filter(
+            c => c.active !== false
           );
-          setCollections(activeWithProducts);
+          setCollections(activeCols);
         }
       })
       .catch(() => { })
@@ -47,7 +47,8 @@ const NoteCollectionsSection = () => {
         {/* GRID: 2 COLUMNAS EN MÓVIL, 4 EN ESCRITORIO */}
         <div className="dfv-notes-grid">
           {collections.map((col) => {
-            const imgSrc = col.image ? optimizeImg(col.image, 600) : '/hero_campaign_3.webp';
+            const rawImg = col.image || col.image_url;
+            const imgSrc = rawImg ? optimizeImg(rawImg, 600) : '/hero_campaign_3.webp';
 
             return (
               <Link
