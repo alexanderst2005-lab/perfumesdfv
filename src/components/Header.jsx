@@ -104,17 +104,8 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* RIGHT — Icons */}
+            {/* RIGHT — Solo Carrito */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem', flex: 1 }}>
-              <button style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer' }} aria-label="Buscar"><Search size={20} strokeWidth={1.5} /></button>
-
-              <Link to="/favoritos" style={{ position: 'relative', color: 'inherit' }} aria-label="Favoritos">
-                <Heart size={20} strokeWidth={1.5} />
-                {favorites.length > 0 && (
-                  <span style={badgeStyle}>{favorites.length}</span>
-                )}
-              </Link>
-
               <button
                 style={{ position: 'relative', color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer' }}
                 aria-label="Carrito"

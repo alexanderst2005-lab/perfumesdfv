@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+let cachedSetsBanner = null;
+
 const FragranceSetsSection = () => {
-  const [setsBanner, setSetsBanner] = useState(null);
-  const [loaded, setLoaded] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [setsBanner, setSetsBanner] = useState(cachedSetsBanner);
+  const [loaded, setLoaded] = useState(Boolean(cachedSetsBanner));
+  const [isVisible, setIsVisible] = useState(Boolean(cachedSetsBanner));
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const sectionRef = useRef(null);
 
@@ -14,6 +16,7 @@ const FragranceSetsSection = () => {
       .then(r => r.json())
       .then(data => {
         if (data && data.success && data.setsBanner) {
+          cachedSetsBanner = data.setsBanner;
           setSetsBanner(data.setsBanner);
         }
       })

@@ -293,9 +293,7 @@ const Home = () => {
       <PromoBanner />
 
       {/* ════ 4. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL ════ */}
-      <LazyOnView minHeight={520}>
-        <Suspense fallback={null}><InstagramReelsSection /></Suspense>
-      </LazyOnView>
+      <Suspense fallback={null}><InstagramReelsSection /></Suspense>
 
       {/* ════ 5. BARRA DE CONTADORES ════ */}
       <CountersBar />
@@ -762,27 +760,6 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
           </span>
         </div>
       )}
-
-      {/* Botón Favorito Minimalista con fondo suave */}
-      <button
-        onClick={(e) => { e.preventDefault(); onFav(); }}
-        style={{
-          position: 'absolute', top: '10px', right: '10px',
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(4px)',
-          border: 'none', cursor: 'pointer',
-          width: '30px', height: '30px',
-          borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-          zIndex: 6,
-          boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
-        }}
-        className={fav ? 'fav-active' : ''}
-        aria-label="Guardar en favoritos"
-      >
-        <Heart size={15} strokeWidth={1.8} color={fav ? '#E11D48' : '#222'} fill={fav ? '#E11D48' : 'none'} />
-      </button>
 
       {/* Botón Flotante Desktop en Hover */}
       {(onAdd && product.inStock) && (

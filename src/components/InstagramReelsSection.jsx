@@ -213,40 +213,15 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
       >
         <Play size={16} fill="#ffffff" color="#ffffff" />
       </div>
-
-      {/* Título del reel al pie */}
-      {reel.title && (
-        <div style={{
-          position: 'absolute',
-          bottom: '14px',
-          left: '58px',
-          right: '12px',
-          zIndex: 3,
-          pointerEvents: 'none'
-        }}>
-          <p style={{
-            color: '#FFFFFF',
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            lineHeight: 1.25,
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}>
-            {reel.title}
-          </p>
-        </div>
-      )}
     </div>
   );
 };
 
+let cachedReelsList = null;
+
 const InstagramReelsSection = () => {
-  const [dbReels, setDbReels] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [dbReels, setDbReels] = useState(cachedReelsList || []);
+  const [isLoading, setIsLoading] = useState(!cachedReelsList);
   const [activeModalReel, setActiveModalReel] = useState(null);
 
   useEffect(() => {
@@ -255,17 +230,19 @@ const InstagramReelsSection = () => {
     const fetchPromise = early ? Promise.resolve(early) : fetch('/api/reels');
 
     fetchPromise
-      .then(res => (res && res.ok ? res.json() : []))
+      .then(res => (res && res.ok ? res.json() : ( Array.isArray(res) ? res : [] )))
       .then(data => {
         if (Array.isArray(data)) {
-          setDbReels(data.map(r => ({
+          const mapped = data.map(r => ({
             id: r.id,
             title: r.title || 'Experiencia DFV Perfumes',
             thumbnailUrl: r.thumbnail_url || '',
             videoUrl: r.video_url,
             isUploadedVideo: true,
             active: r.active
-          })));
+          }));
+          cachedReelsList = mapped;
+          setDbReels(mapped);
         }
       })
       .catch(e => console.error('Error fetching reels:', e))

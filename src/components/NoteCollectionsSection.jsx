@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+let cachedNoteCollections = null;
+
 const NoteCollectionsSection = () => {
-  const [collections, setCollections] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [collections, setCollections] = useState(cachedNoteCollections || []);
+  const [loaded, setLoaded] = useState(Boolean(cachedNoteCollections));
 
   useEffect(() => {
     fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' })
@@ -14,6 +16,7 @@ const NoteCollectionsSection = () => {
           const activeCols = data.collections.filter(
             c => c.active !== false
           );
+          cachedNoteCollections = activeCols;
           setCollections(activeCols);
         }
       })
@@ -27,13 +30,13 @@ const NoteCollectionsSection = () => {
 
   return (
     <section className="dfv-note-collections-section" style={{ backgroundColor: '#FFFFFF', padding: '1.8rem 0 0' }}>
-      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
+      <div className="dfv-notes-container">
 
         {/* ENCABEZADO CENTRADO LIMPIO: SOLO TÍTULO */}
         <div style={{ textAlign: 'center', marginBottom: '1.4rem' }}>
           <h2 style={{
             fontFamily: "'Montserrat', sans-serif",
-            fontSize: 'clamp(1.05rem, 4.2vw, 1.5rem)',
+            fontSize: 'clamp(1.1rem, 4.3vw, 1.65rem)',
             fontWeight: '600',
             color: '#1a1a1a',
             margin: 0,
@@ -45,11 +48,11 @@ const NoteCollectionsSection = () => {
           </h2>
         </div>
 
-        {/* GRID: 2 COLUMNAS EN MÓVIL, 4 EN ESCRITORIO */}
+        {/* GRID: 2 COLUMNAS GRANDES EN MÓVIL, 4 EN ESCRITORIO */}
         <div className="dfv-notes-grid">
           {collections.map((col) => {
             const rawImg = col.image || col.image_url;
-            const imgSrc = rawImg ? optimizeImg(rawImg, 700) : '/hero_campaign_3.webp';
+            const imgSrc = rawImg ? optimizeImg(rawImg, 800) : '/hero_campaign_3.webp';
 
             return (
               <Link
@@ -65,13 +68,13 @@ const NoteCollectionsSection = () => {
                   color: 'inherit'
                 }}
               >
-                {/* CONTENEDOR DE ALTURA UNIFORME + FOTOGRAFÍA 100% COMPLETA SIN RECORTES */}
+                {/* FOTOGRAFÍA GRANDE Y 100% COMPLETA SIN RECORTES */}
                 <div
                   className="dfv-note-img-wrap"
                   style={{
                     position: 'relative',
                     width: '100%',
-                    aspectRatio: '1 / 1',
+                    flex: 1,
                     borderRadius: '8px',
                     overflow: 'hidden',
                     backgroundColor: '#ffffff',
@@ -87,7 +90,7 @@ const NoteCollectionsSection = () => {
                     decoding="async"
                     style={{
                       width: '100%',
-                      height: '100%',
+                      height: 'auto',
                       objectFit: 'contain',
                       objectPosition: 'center',
                       display: 'block',
@@ -102,7 +105,7 @@ const NoteCollectionsSection = () => {
                   <h3
                     style={{
                       fontFamily: "'Montserrat', sans-serif",
-                      fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
+                      fontSize: 'clamp(1rem, 3.2vw, 1.18rem)',
                       fontWeight: '600',
                       letterSpacing: '0.05em',
                       textTransform: 'uppercase',
@@ -126,10 +129,17 @@ const NoteCollectionsSection = () => {
       </div>
 
       <style>{`
+        .dfv-notes-container {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 0 1.15rem;
+        }
+
         .dfv-notes-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 1.5rem;
+          align-items: stretch;
         }
 
         .dfv-note-card:hover .dfv-note-img-wrap img {
@@ -144,9 +154,12 @@ const NoteCollectionsSection = () => {
         }
 
         @media (max-width: 640px) {
+          .dfv-notes-container {
+            padding: 0 0.65rem;
+          }
           .dfv-notes-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
+            gap: 10px;
             row-gap: 22px;
           }
         }

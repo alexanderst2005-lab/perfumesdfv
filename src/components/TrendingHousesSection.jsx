@@ -3,9 +3,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+let cachedTrendingHouses = null;
+
 const TrendingHousesSection = () => {
-  const [houses, setHouses] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [houses, setHouses] = useState(cachedTrendingHouses || []);
+  const [loaded, setLoaded] = useState(Boolean(cachedTrendingHouses));
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -20,6 +22,7 @@ const TrendingHousesSection = () => {
           const activeHouses = data.houses.filter(
             h => h.active !== false
           );
+          cachedTrendingHouses = activeHouses;
           setHouses(activeHouses);
         }
       })
@@ -159,12 +162,13 @@ const TrendingHousesSection = () => {
             </button>
           )}
 
-          {/* CARRUSEL HORIZONTAL LIMPIO */}
+          {/* CARRUSEL HORIZONTAL LIMPIO CON TARJETAS DE IGUAL ALTURA */}
           <div 
             ref={trackRef}
             className="dfv-houses-track"
             style={{
               display: 'flex',
+              alignItems: 'stretch',
               gap: '16px',
               overflowX: 'auto',
               scrollSnapType: 'x mandatory',
@@ -176,7 +180,7 @@ const TrendingHousesSection = () => {
           >
             {houses.map((house) => {
               const rawImg = house.image || house.image_url;
-              const imgSrc = rawImg ? optimizeImg(rawImg, 700) : '/hero_campaign_4.webp';
+              const imgSrc = rawImg ? optimizeImg(rawImg, 800) : '/hero_campaign_4.webp';
 
               return (
                 <Link
@@ -189,17 +193,16 @@ const TrendingHousesSection = () => {
                     color: 'inherit',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    height: '100%'
+                    justifyContent: 'space-between'
                   }}
                 >
-                  {/* CONTENEDOR DE ALTURA UNIFORME + IMAGEN 100% COMPLETA SIN RECORTES */}
+                  {/* IMAGEN GRANDE 100% COMPLETA SIN RECORTES */}
                   <div 
                     className="dfv-house-img-wrap"
                     style={{
                       position: 'relative',
                       width: '100%',
-                      aspectRatio: '1 / 1',
+                      flex: 1,
                       borderRadius: '8px',
                       overflow: 'hidden',
                       backgroundColor: '#ffffff',
@@ -215,7 +218,7 @@ const TrendingHousesSection = () => {
                       decoding="async"
                       style={{
                         width: '100%',
-                        height: '100%',
+                        height: 'auto',
                         objectFit: 'contain',
                         objectPosition: 'center',
                         display: 'block',
@@ -335,7 +338,10 @@ const TrendingHousesSection = () => {
 
         @media (max-width: 640px) {
           .dfv-house-card {
-            flex: 0 0 calc(46% - 4px);
+            flex: 0 0 calc(47.5% - 4px);
+          }
+          .dfv-houses-track {
+            gap: 10px !important;
           }
         }
       `}</style>

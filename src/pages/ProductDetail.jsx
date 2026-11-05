@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Heart, Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
 import { optimizeImg } from '../utils/img';
@@ -134,6 +134,7 @@ const GalleryPreloader = ({ images }) => {
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts, isFresh } = useShop();
   const product = products.find(p => p.id === id);
 
@@ -271,7 +272,7 @@ const ProductDetail = () => {
         <div style={{ marginBottom: '1.2rem' }}>
           <button
             type="button"
-            onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/tienda')}
+            onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/tienda')}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -497,16 +498,6 @@ const ProductDetail = () => {
                   onClick={() => product.inStock && addToCart(product, qty, size)}
                 >
                   {product.inStock ? 'AÑADIR AL CARRITO' : 'AGOTADO'}
-                </button>
-                <button
-                  onClick={() => toggleFavorite(product)}
-                  style={{
-                    width: '46px', display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    backgroundColor: 'transparent', border: '1px solid var(--color-black)', color: 'var(--color-black)',
-                    cursor: 'pointer', transition: 'all 0.2s', borderRadius: '2px'
-                  }}
-                >
-                  <Heart size={18} fill={isFavorite(product.id) ? 'currentColor' : 'none'} />
                 </button>
               </div>
 

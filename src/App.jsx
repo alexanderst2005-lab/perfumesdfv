@@ -22,41 +22,96 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Contacto = lazy(() => import('./pages/Contacto'));
 const CampaignPage = lazy(() => import('./pages/CampaignPage'));
 
-// Home handles its own marginTop via negative hero offset
-// Other pages handle their own paddingTop
 function AppInner() {
-  const { pathname, key } = useLocation();
+  const { pathname, search, key } = useLocation();
   const navType = useNavigationType();
   const isHome = pathname === '/';
   const isAdmin = pathname.startsWith('/admin');
+  const fullPath = `${pathname}${search}`;
 
   // Campañas activas del contexto
   const { activeCampaigns } = useShop();
 
-  // Guarda la posición de scroll de cada entrada del historial
+  // Guarda la posición exacta de scroll de cada pantalla en memoria y sessionStorage
   const positions = useRef(new Map());
-  const keyRef = useRef(key);
-  keyRef.current = key;
+  const pathPositions = useRef(new Map());
+  const activeKeyRef = useRef(key);
+  const activePathRef = useRef(fullPath);
+  const isRestoringRef = useRef(false);
+
   useEffect(() => {
-    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
-    const onScroll = () => positions.current.set(keyRef.current, window.scrollY);
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    const onScroll = () => {
+      if (isRestoringRef.current) return;
+      const y = window.scrollY;
+      positions.current.set(activeKeyRef.current, y);
+      pathPositions.current.set(activePathRef.current, y);
+      try {
+        sessionStorage.setItem(`dfv_scroll_key_${activeKeyRef.current}`, String(y));
+        sessionStorage.setItem(`dfv_scroll_path_${activePathRef.current}`, String(y));
+      } catch {}
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Navegar hacia adelante: arriba del todo. Volver atrás: restaurar donde estaba sin lag ni bucles
+  // Cuando cambia la ruta:
+  // - Si es navegación nueva (PUSH / REPLACE): subir al inicio (0,0)
+  // - Si el usuario le dio ATRÁS en el celular (POP): restaurar exactamente donde estaba
   useEffect(() => {
+    isRestoringRef.current = true;
+    activeKeyRef.current = key;
+    activePathRef.current = fullPath;
+
+    let timers = [];
+
     if (navType !== 'POP') {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      const t = setTimeout(() => {
+        isRestoringRef.current = false;
+      }, 120);
+      timers.push(t);
     } else {
-      const target = positions.current.get(key);
-      if (typeof target === 'number' && target > 0) {
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: target, behavior: 'instant' });
-        });
+      let target = positions.current.get(key);
+      if (typeof target !== 'number') {
+        try {
+          const savedByKey = sessionStorage.getItem(`dfv_scroll_key_${key}`);
+          if (savedByKey !== null && !isNaN(Number(savedByKey))) {
+            target = Number(savedByKey);
+          } else {
+            const savedByPath = sessionStorage.getItem(`dfv_scroll_path_${fullPath}`);
+            if (savedByPath !== null && !isNaN(Number(savedByPath))) {
+              target = Number(savedByPath);
+            }
+          }
+        } catch {}
       }
+      if (typeof target !== 'number') {
+        target = pathPositions.current.get(fullPath) || 0;
+      }
+
+      const restoreToTarget = () => {
+        window.scrollTo({ top: target, left: 0, behavior: 'instant' });
+      };
+
+      restoreToTarget();
+      requestAnimationFrame(restoreToTarget);
+      [40, 110, 220, 360].forEach(ms => {
+        timers.push(setTimeout(restoreToTarget, ms));
+      });
+      timers.push(
+        setTimeout(() => {
+          isRestoringRef.current = false;
+        }, 400)
+      );
     }
-  }, [key, navType]);
+
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, [key, fullPath, navType]);
 
   // Precarga las demás pantallas en segundo plano para que navegar sea instantáneo
   useEffect(() => {

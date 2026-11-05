@@ -11,9 +11,11 @@ const DEFAULT_BANNER = {
   active: true
 };
 
+let cachedPromoBanner = null;
+
 const PromoBanner = () => {
-  const [banner, setBanner] = useState(DEFAULT_BANNER);
-  const [isVisible, setIsVisible] = useState(false);
+  const [banner, setBanner] = useState(cachedPromoBanner || DEFAULT_BANNER);
+  const [isVisible, setIsVisible] = useState(Boolean(cachedPromoBanner));
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -21,6 +23,7 @@ const PromoBanner = () => {
       .then(r => r.json())
       .then(data => {
         if (data.success && data.banner) {
+          cachedPromoBanner = data.banner;
           setBanner(data.banner);
         }
       })
