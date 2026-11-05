@@ -59,16 +59,19 @@ const NoteCollectionsSection = () => {
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '100%',
                   textDecoration: 'none',
                   color: 'inherit'
                 }}
               >
-                {/* FOTOGRAFÍA 100% COMPLETA Y LIMPIA SIN RECORTES */}
+                {/* CONTENEDOR DE ALTURA UNIFORME + FOTOGRAFÍA 100% COMPLETA SIN RECORTES */}
                 <div
                   className="dfv-note-img-wrap"
                   style={{
                     position: 'relative',
                     width: '100%',
+                    aspectRatio: '1 / 1',
                     borderRadius: '8px',
                     overflow: 'hidden',
                     backgroundColor: '#ffffff',
@@ -84,7 +87,7 @@ const NoteCollectionsSection = () => {
                     decoding="async"
                     style={{
                       width: '100%',
-                      height: 'auto',
+                      height: '100%',
                       objectFit: 'contain',
                       objectPosition: 'center',
                       display: 'block',
@@ -94,8 +97,8 @@ const NoteCollectionsSection = () => {
                   />
                 </div>
 
-                {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
-                <div style={{ textAlign: 'center', marginTop: '12px' }}>
+                {/* NOMBRE SIEMPRE ALINEADO EN LA MISMA LÍNEA HORIZONTAL */}
+                <div style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '12px' }}>
                   <h3
                     style={{
                       fontFamily: "'Montserrat', sans-serif",
@@ -104,7 +107,8 @@ const NoteCollectionsSection = () => {
                       letterSpacing: '0.05em',
                       textTransform: 'uppercase',
                       color: '#1a1a1a',
-                      margin: 0
+                      margin: 0,
+                      lineHeight: 1.25
                     }}
                     className="dfv-note-title"
                   >

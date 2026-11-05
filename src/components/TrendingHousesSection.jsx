@@ -188,15 +188,18 @@ const TrendingHousesSection = () => {
                     textDecoration: 'none',
                     color: 'inherit',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    height: '100%'
                   }}
                 >
-                  {/* IMAGEN 100% COMPLETA Y LIMPIA SIN RECORTES */}
+                  {/* CONTENEDOR DE ALTURA UNIFORME + IMAGEN 100% COMPLETA SIN RECORTES */}
                   <div 
                     className="dfv-house-img-wrap"
                     style={{
                       position: 'relative',
                       width: '100%',
+                      aspectRatio: '1 / 1',
                       borderRadius: '8px',
                       overflow: 'hidden',
                       backgroundColor: '#ffffff',
@@ -212,7 +215,7 @@ const TrendingHousesSection = () => {
                       decoding="async"
                       style={{
                         width: '100%',
-                        height: 'auto',
+                        height: '100%',
                         objectFit: 'contain',
                         objectPosition: 'center',
                         display: 'block',
@@ -222,8 +225,8 @@ const TrendingHousesSection = () => {
                     />
                   </div>
 
-                  {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
-                  <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                  {/* NOMBRE SIEMPRE ALINEADO EN LA MISMA LÍNEA HORIZONTAL */}
+                  <div style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '14px' }}>
                     <h3 
                       className="dfv-house-title"
                       style={{
@@ -233,7 +236,8 @@ const TrendingHousesSection = () => {
                         letterSpacing: '0.06em',
                         textTransform: 'uppercase',
                         color: '#1a1a1a',
-                        margin: 0
+                        margin: 0,
+                        lineHeight: 1.25
                       }}
                     >
                       {house.name}
