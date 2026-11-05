@@ -23,7 +23,7 @@ const ProductMainImg = ({ src, alt }) => {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#FFFFFF' }}>
       {!loaded && (
-        <div 
+        <div
           style={{
             position: 'absolute',
             inset: 0,
@@ -99,19 +99,19 @@ const GalleryThumb = ({ src, alt, isActive, onClick }) => {
           backgroundColor: '#F3F4F6'
         }} />
       )}
-      <img 
-        src={optimizeImg(src, 180)} 
+      <img
+        src={optimizeImg(src, 180)}
         loading="eager"
         decoding="async"
         alt={alt}
         onLoad={() => setLoaded(true)}
-        style={{ 
-          width: '100%', 
-          height: '100%', 
+        style={{
+          width: '100%',
+          height: '100%',
           objectFit: 'contain',
           opacity: loaded ? 1 : 0,
           transition: 'opacity 0.15s ease'
-        }} 
+        }}
       />
     </button>
   );
@@ -260,7 +260,7 @@ const ProductDetail = () => {
   const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
   const arrivalStart = new Date(today); arrivalStart.setDate(arrivalStart.getDate() + 2);
   const arrivalEnd = new Date(today); arrivalEnd.setDate(arrivalEnd.getDate() + 5);
-  
+
   const formatD = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
 
   return (
@@ -299,7 +299,7 @@ const ProductDetail = () => {
           {/* Gallery */}
           <div className="gallery-section" key={product.id}>
             {/* Main Stage Image Frame */}
-            <div 
+            <div
               className="gallery-main-frame"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
@@ -391,7 +391,7 @@ const ProductDetail = () => {
 
               {/* Counter Badge */}
               {images.length > 1 && (
-                <div 
+                <div
                   style={{
                     position: 'absolute',
                     top: '12px',
@@ -579,7 +579,7 @@ const ProductDetail = () => {
               <h4 style={{ fontSize: '0.9rem', fontFamily: 'var(--font-sans)', fontWeight: '600', marginBottom: '1.4rem', color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Entrega Estimada
               </h4>
-              
+
               <div style={{ width: '100%' }}>
                 {/* Fila de Iconos y Línea estirada de extremo a extremo */}
                 <div style={{
@@ -695,7 +695,7 @@ const ProductDetail = () => {
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
               <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: '1.2rem', fontWeight: '600', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                Te podría interesar
+                También te recomendamos
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1.5rem' }} className="related-grid">
