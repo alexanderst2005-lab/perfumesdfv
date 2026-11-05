@@ -63,18 +63,15 @@ const FragranceSetsSection = () => {
     >
       <div className="dfv-sets-container">
         
-        {/* IMAGEN DESPLEGABLE ANIMADA DE DERECHA A IZQUIERDA */}
+        {/* IMAGEN COMPLETA DESPLEGABLE ANIMADA DE DERECHA A IZQUIERDA */}
         <div className={`dfv-sets-image-wrap ${isVisible ? 'is-revealed' : ''}`}>
-          {imagesList.map((imgUrl, idx) => (
-            <img
-              key={idx}
-              src={optimizeImg(imgUrl, 1200)}
-              alt={setsBanner.title || 'Sets de Fragancias Exclusivas'}
-              loading="lazy"
-              decoding="async"
-              className={`dfv-sets-img ${idx === currentImgIdx ? 'is-active' : ''}`}
-            />
-          ))}
+          <img
+            src={optimizeImg(imagesList[currentImgIdx] || imagesList[0], 1400)}
+            alt={setsBanner.title || 'Sets de Fragancias Exclusivas'}
+            loading="lazy"
+            decoding="async"
+            className="dfv-sets-img"
+          />
         </div>
 
         {/* CONTENIDO DEBAJO: TÍTULO GRANDE + SUBTÍTULO + BOTÓN CUADRADO */}
@@ -106,12 +103,13 @@ const FragranceSetsSection = () => {
         .dfv-sets-image-wrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 4 / 3.4;
-          max-height: 560px;
           overflow: hidden;
-          background-color: #f4f4f4;
+          background-color: #ffffff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           clip-path: inset(0 0 0 100%);
-          transform: translateX(48px) scale(1.04);
+          transform: translateX(48px);
           opacity: 0;
           transition:
             clip-path 1.05s cubic-bezier(0.22, 1, 0.36, 1),
@@ -121,26 +119,17 @@ const FragranceSetsSection = () => {
 
         .dfv-sets-image-wrap.is-revealed {
           clip-path: inset(0 0 0 0);
-          transform: translateX(0) scale(1);
+          transform: translateX(0);
           opacity: 1;
         }
 
         .dfv-sets-img {
-          position: absolute;
-          inset: 0;
           width: 100%;
-          height: 100%;
-          object-fit: cover;
+          height: auto;
+          max-height: 750px;
+          object-fit: contain;
           object-position: center;
           display: block;
-          opacity: 0;
-          transform: scale(1.04);
-          transition: opacity 0.8s ease, transform 4.5s ease;
-        }
-
-        .dfv-sets-img.is-active {
-          opacity: 1;
-          transform: scale(1);
         }
 
         .dfv-sets-content {
