@@ -11,44 +11,44 @@ const NoteCollectionsSection = () => {
       .then(r => r.json())
       .then(data => {
         if (data.success && Array.isArray(data.collections)) {
-          // Filtrar solo las activas
           const activeCols = data.collections.filter(
             c => c.active !== false
           );
           setCollections(activeCols);
         }
       })
-      .catch(() => { })
+      .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 
-  // Si no hay colecciones configuradas en el panel o no tienen productos, se oculta completamente
   if (!loaded || collections.length === 0) {
     return null;
   }
 
   return (
-    <section className="dfv-note-collections-section" style={{ backgroundColor: '#FFFFFF', padding: '3.5rem 0 3.25rem' }}>
+    <section className="dfv-note-collections-section" style={{ backgroundColor: '#FFFFFF', padding: '2.5rem 0 3rem' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
 
-        {/* ENCABEZADO CENTRADO */}
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <span style={{ fontFamily: 'var(--font-sans, "Montserrat", sans-serif)', fontSize: '0.68rem', letterSpacing: '3px', textTransform: 'uppercase', color: '#B99A5B', fontWeight: '700', display: 'block', marginBottom: '0.4rem' }}>
-            FAMILIAS OLFATIVAS
-          </span>
-          <h2 style={{ fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', fontWeight: '400', color: '#111111', margin: '0 0 0.5rem', letterSpacing: '0.5px' }}>
+        {/* ENCABEZADO CENTRADO LIMPIO: SOLO TÍTULO */}
+        <div style={{ textAlign: 'center', marginBottom: '1.6rem' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
+            fontSize: 'clamp(1.25rem, 3vw, 1.7rem)',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            margin: 0,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>
             COLECCIONES POR NOTAS
           </h2>
-          <p style={{ fontFamily: 'var(--font-sans, "Montserrat", sans-serif)', fontSize: '0.85rem', color: '#666666', margin: '0 auto', maxWidth: '520px', fontWeight: '300' }}>
-            Descubre fragancias seleccionadas por su personalidad olfativa
-          </p>
         </div>
 
         {/* GRID: 2 COLUMNAS EN MÓVIL, 4 EN ESCRITORIO */}
         <div className="dfv-notes-grid">
           {collections.map((col) => {
             const rawImg = col.image || col.image_url;
-            const imgSrc = rawImg ? optimizeImg(rawImg, 600) : '/hero_campaign_3.webp';
+            const imgSrc = rawImg ? optimizeImg(rawImg, 700) : '/hero_campaign_3.webp';
 
             return (
               <Link
@@ -59,23 +59,19 @@ const NoteCollectionsSection = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   textDecoration: 'none',
-                  color: 'inherit',
-                  transition: 'transform 0.25s ease'
+                  color: 'inherit'
                 }}
               >
-                {/* FOTOGRAFÍA CUADRADA */}
+                {/* FOTOGRAFÍA CUADRADA LIMPIA */}
                 <div
                   className="dfv-note-img-wrap"
                   style={{
                     position: 'relative',
                     width: '100%',
                     aspectRatio: '1/1',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     overflow: 'hidden',
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #EAE6DF',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    backgroundColor: '#f4f4f4'
                   }}
                 >
                   <img
@@ -87,51 +83,29 @@ const NoteCollectionsSection = () => {
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
+                      objectPosition: 'center',
                       display: 'block',
-                      transition: 'transform 0.4s ease'
+                      transition: 'transform 0.35s ease'
                     }}
                   />
-                  {/* Badge contador discreto */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      backgroundColor: 'rgba(10, 10, 10, 0.65)',
-                      backdropFilter: 'blur(4px)',
-                      color: '#ffffff',
-                      fontSize: '0.65rem',
-                      fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-                      fontWeight: '600',
-                      letterSpacing: '0.5px',
-                      padding: '3px 8px',
-                      borderRadius: '999px'
-                    }}
-                  >
-                    {col.product_count} {col.product_count === 1 ? 'perfume' : 'perfumes'}
-                  </div>
                 </div>
 
-                {/* NOMBRE DEBAJO EN MAYÚSCULAS */}
-                <div style={{ textAlign: 'center', marginTop: '0.85rem' }}>
+                {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
                   <h3
                     style={{
-                      fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-                      fontSize: '0.82rem',
-                      fontWeight: '700',
-                      letterSpacing: '2px',
+                      fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
+                      fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                      fontWeight: '600',
+                      letterSpacing: '0.06em',
                       textTransform: 'uppercase',
-                      color: '#111111',
-                      margin: '0 0 0.2rem 0',
-                      transition: 'color 0.2s ease'
+                      color: '#1a1a1a',
+                      margin: 0
                     }}
                     className="dfv-note-title"
                   >
                     {col.name}
                   </h3>
-                  <span style={{ fontSize: '0.7rem', color: '#B99A5B', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '500' }}>
-                    Explorar colección →
-                  </span>
                 </div>
               </Link>
             );
@@ -144,21 +118,11 @@ const NoteCollectionsSection = () => {
         .dfv-notes-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 1.75rem;
-        }
-
-        .dfv-note-card:hover .dfv-note-img-wrap {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 28px rgba(0,0,0,0.08);
-          border-color: #B99A5B;
+          gap: 1.5rem;
         }
 
         .dfv-note-card:hover .dfv-note-img-wrap img {
-          transform: scale(1.04);
-        }
-
-        .dfv-note-card:hover .dfv-note-title {
-          color: #B99A5B;
+          transform: scale(1.03);
         }
 
         @media (max-width: 1024px) {
@@ -171,7 +135,8 @@ const NoteCollectionsSection = () => {
         @media (max-width: 640px) {
           .dfv-notes-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            gap: 16px;
+            row-gap: 24px;
           }
         }
       `}</style>
@@ -180,4 +145,3 @@ const NoteCollectionsSection = () => {
 };
 
 export default NoteCollectionsSection;
-

@@ -132,7 +132,7 @@ const PromoBannerModule = () => {
 
   return (
     <div style={{ padding: '1.5rem', maxWidth: '1000px', margin: '0 auto' }}>
-      
+
       {/* Toast Notification */}
       {toast && (
         <div style={{
@@ -187,7 +187,7 @@ const PromoBannerModule = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
-        
+
         {/* Formulario de configuración */}
         <div style={{ backgroundColor: '#fff', padding: '1.8rem', borderRadius: '12px', border: '1px solid #EAE8E4', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#111', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

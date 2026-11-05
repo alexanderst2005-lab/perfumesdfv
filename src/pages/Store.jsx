@@ -14,6 +14,9 @@ const Store = () => {
   // Special external filter state (colecciones por notas, casas en tendencia)
   const [collectionProductIds, setCollectionProductIds] = useState(null);
   const [activeSpecialFilterName, setActiveSpecialFilterName] = useState('');
+  const [isLoadingSpecialFilter, setIsLoadingSpecialFilter] = useState(
+    Boolean(params.get('coleccion') || params.get('casa'))
+  );
 
   useEffect(() => {
     const colId = params.get('coleccion');
@@ -21,31 +24,45 @@ const Store = () => {
     const filtroParam = params.get('filtro');
 
     if (colId) {
-      fetch('/api/note-collections')
+      setIsLoadingSpecialFilter(true);
+      fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
           const col = (data.collections || []).find(c => String(c.id) === String(colId));
           if (col) {
-            setCollectionProductIds(col.product_ids || []);
+            setCollectionProductIds((col.product_ids || []).map(id => Number(id)));
             setActiveSpecialFilterName('Colección: ' + col.name);
+          } else {
+            setCollectionProductIds([]);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          setCollectionProductIds([]);
+        })
+        .finally(() => setIsLoadingSpecialFilter(false));
     } else if (casaId) {
-      fetch('/api/trending-houses')
+      setIsLoadingSpecialFilter(true);
+      fetch(`/api/trending-houses?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
           const h = (data.houses || []).find(x => String(x.id) === String(casaId));
           if (h) {
-            setCollectionProductIds(h.product_ids || []);
+            setCollectionProductIds((h.product_ids || []).map(id => Number(id)));
             setActiveSpecialFilterName('Casa: ' + h.name);
+          } else {
+            setCollectionProductIds([]);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          setCollectionProductIds([]);
+        })
+        .finally(() => setIsLoadingSpecialFilter(false));
     } else if (filtroParam === 'deseados') {
+      setIsLoadingSpecialFilter(false);
       setActiveSpecialFilterName('Los Más Deseados del Mes');
       setCollectionProductIds(null);
     } else {
+      setIsLoadingSpecialFilter(false);
       setCollectionProductIds(null);
       setActiveSpecialFilterName('');
     }
@@ -161,7 +178,8 @@ const Store = () => {
                      (p.brand && p.brand.toLowerCase().includes(query.toLowerCase()));
       const filtroParam = params.get('filtro');
       const matchFiltro = !filtroParam || (filtroParam === 'deseados' && p.isMostWanted);
-      const matchCollection = !collectionProductIds || collectionProductIds.includes(p.id);
+      const hasSpecialFilterParam = Boolean(params.get('coleccion') || params.get('casa'));
+      const matchCollection = !hasSpecialFilterParam || (Array.isArray(collectionProductIds) && collectionProductIds.some(id => String(id) === String(p.id)));
       return matchCat && matchBrand && matchFamily && matchPrice && matchQ && matchFiltro && matchCollection;
     });
 
@@ -181,7 +199,7 @@ const Store = () => {
     }
 
     return result;
-  }, [products, category, brand, family, priceRange, query, sortBy]);
+  }, [products, category, brand, family, priceRange, query, sortBy, collectionProductIds, search]);
 
   const clearFilters = () => {
     setCategory('Todos');
@@ -298,7 +316,7 @@ const Store = () => {
         </div>
 
         {/* Grid */}
-        {isLoadingProducts ? (
+        {(isLoadingProducts || isLoadingSpecialFilter) ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>

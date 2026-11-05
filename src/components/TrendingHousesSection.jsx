@@ -6,6 +6,8 @@ import { optimizeImg } from '../utils/img';
 const TrendingHousesSection = () => {
   const [houses, setHouses] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const trackRef = useRef(null);
 
   useEffect(() => {
@@ -23,103 +25,133 @@ const TrendingHousesSection = () => {
       .finally(() => setLoaded(true));
   }, []);
 
+  const updatePagination = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const scrollLeft = el.scrollLeft;
+    const scrollWidth = el.scrollWidth;
+    const clientWidth = el.clientWidth;
+
+    const maxScroll = Math.max(1, scrollWidth - clientWidth);
+    const pages = Math.max(1, Math.round(scrollWidth / clientWidth));
+    setTotalPages(pages);
+
+    const progress = Math.min(1, Math.max(0, scrollLeft / maxScroll));
+    const current = Math.min(pages, Math.max(1, Math.round(progress * (pages - 1)) + 1));
+    setCurrentPage(current);
+  };
+
+  useEffect(() => {
+    updatePagination();
+    const el = trackRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updatePagination, { passive: true });
+    window.addEventListener('resize', updatePagination);
+    return () => {
+      el.removeEventListener('scroll', updatePagination);
+      window.removeEventListener('resize', updatePagination);
+    };
+  }, [houses]);
+
   const scrollPrev = () => {
     if (!trackRef.current) return;
-    trackRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+    const width = trackRef.current.clientWidth;
+    trackRef.current.scrollBy({ left: -width * 0.85, behavior: 'smooth' });
   };
 
   const scrollNext = () => {
     if (!trackRef.current) return;
-    trackRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+    const width = trackRef.current.clientWidth;
+    trackRef.current.scrollBy({ left: width * 0.85, behavior: 'smooth' });
   };
 
-  // Si no hay casas configuradas desde el panel administrativo, se oculta completamente
   if (!loaded || houses.length === 0) {
     return null;
   }
 
   return (
-    <section className="dfv-trending-houses-section" style={{ backgroundColor: '#ffffff', padding: '3.5rem 0' }}>
+    <section className="dfv-trending-houses-section" style={{ backgroundColor: '#ffffff', padding: '2.5rem 0 2rem' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
         
-        {/* ENCABEZADO CON CONTROLES */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <span style={{ fontFamily: 'var(--font-sans, "Montserrat", sans-serif)', fontSize: '0.68rem', letterSpacing: '3px', textTransform: 'uppercase', color: '#B99A5B', fontWeight: '700', display: 'block', marginBottom: '0.35rem' }}>
-              DISTINCIÓN & PRESTIGIO
-            </span>
-            <h2 style={{ fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)', fontSize: 'clamp(1.4rem, 2.8vw, 1.95rem)', fontWeight: '400', color: '#111111', margin: 0, letterSpacing: '0.5px' }}>
-              CASAS EN TENDENCIA
-            </h2>
-          </div>
+        {/* ENCABEZADO LIMPIO: TÍTULO A LA IZQUIERDA + CONTROLES A LA DERECHA */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem', gap: '0.75rem' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
+            fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            margin: 0,
+            letterSpacing: '-0.2px',
+            lineHeight: 1.2
+          }}>
+            Casas en tendencia
+          </h2>
 
-          {/* Flechas de navegación */}
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          {/* Contador y Flechas estilo referencia < 1/5 > */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
             <button 
               onClick={scrollPrev}
               aria-label="Anterior casa"
               style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                border: '1px solid #E5E2DC',
-                backgroundColor: '#ffffff',
+                background: 'transparent',
+                border: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#111111',
-                transition: 'all 0.2s ease'
+                color: '#1a1a1a',
+                padding: '4px'
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E2DC'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={18} strokeWidth={1.75} />
             </button>
+            <span style={{
+              fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
+              fontSize: '0.82rem',
+              color: '#1a1a1a',
+              fontWeight: '500',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap'
+            }}>
+              {currentPage}/{totalPages}
+            </span>
             <button 
               onClick={scrollNext}
               aria-label="Siguiente casa"
               style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                border: '1px solid #E5E2DC',
-                backgroundColor: '#ffffff',
+                background: 'transparent',
+                border: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#111111',
-                transition: 'all 0.2s ease'
+                color: '#1a1a1a',
+                padding: '4px'
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E2DC'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={18} strokeWidth={1.75} />
             </button>
           </div>
         </div>
 
-        {/* CARRUSEL HORIZONTAL */}
+        {/* CARRUSEL HORIZONTAL LIMPIO */}
         <div 
           ref={trackRef}
           className="dfv-houses-track"
           style={{
             display: 'flex',
-            gap: '1.5rem',
+            gap: '16px',
             overflowX: 'auto',
             scrollSnapType: 'x mandatory',
             scrollBehavior: 'smooth',
             WebkitOverflowScrolling: 'touch',
-            paddingBottom: '1rem',
-            scrollbarWidth: 'none',
-            margin: '0 -0.5rem',
-            padding: '0 0.5rem 1rem'
+            paddingBottom: '0.5rem',
+            scrollbarWidth: 'none'
           }}
         >
           {houses.map((house) => {
             const rawImg = house.image || house.image_url;
-            const imgSrc = rawImg ? optimizeImg(rawImg, 600) : '/hero_campaign_4.webp';
+            const imgSrc = rawImg ? optimizeImg(rawImg, 700) : '/hero_campaign_4.webp';
 
             return (
               <Link
@@ -127,7 +159,6 @@ const TrendingHousesSection = () => {
                 to={`/tienda?casa=${house.id}`}
                 className="dfv-house-card"
                 style={{
-                  flex: '0 0 calc((100% - 4.5rem) / 4)',
                   scrollSnapAlign: 'start',
                   textDecoration: 'none',
                   color: 'inherit',
@@ -135,18 +166,16 @@ const TrendingHousesSection = () => {
                   flexDirection: 'column'
                 }}
               >
+                {/* IMAGEN CUADRADA COMPLETA Y LIMPIA */}
                 <div 
                   className="dfv-house-img-wrap"
                   style={{
                     position: 'relative',
                     width: '100%',
-                    aspectRatio: '16/10',
-                    borderRadius: '10px',
+                    aspectRatio: '1/1',
+                    borderRadius: '8px',
                     overflow: 'hidden',
-                    backgroundColor: '#111111',
-                    border: '1px solid #EAE6DF',
-                    boxShadow: '0 4px 14px rgba(0,0,0,0.04)',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    backgroundColor: '#f4f4f4'
                   }}
                 >
                   <img
@@ -158,32 +187,29 @@ const TrendingHousesSection = () => {
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
+                      objectPosition: 'center',
                       display: 'block',
-                      transition: 'transform 0.4s ease'
+                      transition: 'transform 0.35s ease'
                     }}
                   />
-                  {/* Overlay sutil */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%)' }} />
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: '0.85rem' }}>
+                {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
+                <div style={{ textAlign: 'center', marginTop: '14px' }}>
                   <h3 
                     className="dfv-house-title"
                     style={{
-                      fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-                      fontSize: '1rem',
-                      fontWeight: '500',
-                      letterSpacing: '1px',
-                      color: '#111111',
-                      margin: '0 0 0.2rem 0',
-                      transition: 'color 0.2s ease'
+                      fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
+                      fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                      fontWeight: '600',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: '#1a1a1a',
+                      margin: 0
                     }}
                   >
                     {house.name}
                   </h3>
-                  <span style={{ fontSize: '0.7rem', color: '#888888', letterSpacing: '0.5px' }}>
-                    {house.product_count} {house.product_count === 1 ? 'fragancia' : 'fragancias'}
-                  </span>
                 </div>
               </Link>
             );
@@ -197,29 +223,23 @@ const TrendingHousesSection = () => {
           display: none;
         }
 
-        .dfv-house-card:hover .dfv-house-img-wrap {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-          border-color: #B99A5B;
+        .dfv-house-card {
+          flex: 0 0 calc((100% - 48px) / 4);
         }
 
         .dfv-house-card:hover .dfv-house-img-wrap img {
-          transform: scale(1.05);
-        }
-
-        .dfv-house-card:hover .dfv-house-title {
-          color: #B99A5B;
+          transform: scale(1.03);
         }
 
         @media (max-width: 1024px) {
           .dfv-house-card {
-            flex: 0 0 calc((100% - 3rem) / 3) !important;
+            flex: 0 0 calc((100% - 32px) / 3);
           }
         }
 
         @media (max-width: 640px) {
           .dfv-house-card {
-            flex: 0 0 72% !important;
+            flex: 0 0 calc(46% - 4px);
           }
         }
       `}</style>
@@ -228,4 +248,3 @@ const TrendingHousesSection = () => {
 };
 
 export default TrendingHousesSection;
-
