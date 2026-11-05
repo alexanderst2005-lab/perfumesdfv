@@ -22,6 +22,28 @@ export const ShopProvider = ({ children }) => {
   // Storefront only shows active products; admin uses allProducts
   const products = allProducts.filter(p => p.active !== false);
 
+  const upsertProductLocal = useCallback((prod) => {
+    if (!prod || !prod.id) return;
+    setProducts(prev => {
+      const idx = prev.findIndex(item => String(item.id) === String(prod.id));
+      const next = idx >= 0
+        ? prev.map((item, i) => (i === idx ? { ...item, ...prod } : item))
+        : [prod, ...prev];
+      try { localStorage.setItem('perfume_products_cache', JSON.stringify(next)); } catch {}
+      setBrands([...new Set(next.map(p => p.brand).filter(Boolean))]);
+      return next;
+    });
+  }, []);
+
+  const removeProductLocal = useCallback((id) => {
+    setProducts(prev => {
+      const next = prev.filter(item => String(item.id) !== String(id));
+      try { localStorage.setItem('perfume_products_cache', JSON.stringify(next)); } catch {}
+      setBrands([...new Set(next.map(p => p.brand).filter(Boolean))]);
+      return next;
+    });
+  }, []);
+
   const refreshProducts = async () => {
     const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('No se pudo recargar los productos');
@@ -178,27 +200,28 @@ export const ShopProvider = ({ children }) => {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
-  // Precarga en segundo plano las fotos de las tarjetas del catálogo
-  // para que al hacer scroll, navegar o cambiar de página carguen instantáneamente desde la caché
+  // Precarga en segundo plano las primeras fotos del catálogo solo en la tienda (no en /admin)
   useEffect(() => {
     if (!allProducts.length) return;
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) return;
     const urls = allProducts
       .filter(p => p.active !== false && typeof p.image === 'string' && p.image.includes('/image/upload/'))
-      .map(p => optimizeImg(p.image, 400));
+      .slice(0, 12)
+      .map(p => optimizeImg(p.image, 800));
     let cancelled = false;
     const keep = [];
     let i = 0;
     const next = () => {
       if (cancelled || i >= urls.length) return;
-      urls.slice(i, i + 8).forEach(u => {
+      urls.slice(i, i + 4).forEach(u => {
         const im = new Image();
         im.decoding = 'async';
         im.src = u;
         keep.push(im);
       });
-      i += 8;
+      i += 4;
       if (i < urls.length) {
-        setTimeout(next, 80);
+        setTimeout(next, 120);
       }
     };
     next();
@@ -264,7 +287,7 @@ export const ShopProvider = ({ children }) => {
 
   return (
     <ShopContext.Provider value={{
-      products, allProducts, refreshProducts, brands, categories, refreshCategories, isLoadingProducts, isFresh,
+      products, allProducts, setProducts, upsertProductLocal, removeProductLocal, refreshProducts, brands, categories, refreshCategories, isLoadingProducts, isFresh,
       activeCampaigns, refreshCampaigns,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,

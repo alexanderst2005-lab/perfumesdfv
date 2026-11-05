@@ -5,10 +5,10 @@ function warmProductImages(images) {
   if (!images || !Array.isArray(images) || images.length === 0) return;
   for (const raw of images) {
     if (!raw || typeof raw !== 'string' || !raw.includes('/image/upload/')) continue;
-    const u500 = raw.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/');
-    const u900 = raw.replace('/image/upload/', '/image/upload/w_900,f_auto,q_auto/');
-    fetch(u500).catch(() => {});
-    fetch(u900).catch(() => {});
+    const uThumb = raw.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_200,c_limit/');
+    const uStore = raw.replace('/image/upload/', '/image/upload/f_auto,q_100,w_1200,c_limit/');
+    fetch(uThumb).catch(() => {});
+    fetch(uStore).catch(() => {});
   }
 }
 
@@ -16,7 +16,6 @@ export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
 
   if (req.method === 'POST') {
-    // Create new product
     try {
       const p = req.body;
       p.id = p.id || `p-${Date.now()}`;
@@ -24,12 +23,11 @@ export default async function handler(req, res) {
       let categoryId = p.categoryId ? parseInt(p.categoryId, 10) : null;
       let categoryName = p.category || '';
 
-      if (categoryId) {
+      // Solo consultar categories si falta el nombre o el ID
+      if (categoryId && !categoryName) {
         const catRow = await sql`SELECT id, name FROM categories WHERE id = ${categoryId}`;
-        if (catRow.length > 0) {
-          categoryName = catRow[0].name;
-        }
-      } else if (categoryName) {
+        if (catRow.length > 0) categoryName = catRow[0].name;
+      } else if (!categoryId && categoryName) {
         const catRow = await sql`SELECT id, name FROM categories WHERE LOWER(TRIM(name)) = LOWER(TRIM(${categoryName}))`;
         if (catRow.length > 0) {
           categoryId = catRow[0].id;
@@ -48,7 +46,7 @@ export default async function handler(req, res) {
           ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.isMostWanted === true}, ${p.active}
         ) RETURNING *
       `;
-      // Calentar las fotos en Cloudinary para que el primer visitante las reciba al instante
+
       const allImgs = [p.image];
       if (Array.isArray(p.images)) allImgs.push(...p.images);
       else if (typeof p.images === 'string') {
@@ -64,7 +62,6 @@ export default async function handler(req, res) {
   } 
   
   else if (req.method === 'PUT') {
-    // Update existing product
     try {
       const p = req.body;
       if (!p.id) return res.status(400).json({ error: 'Product ID is required' });
@@ -72,12 +69,10 @@ export default async function handler(req, res) {
       let categoryId = p.categoryId ? parseInt(p.categoryId, 10) : null;
       let categoryName = p.category || '';
 
-      if (categoryId) {
+      if (categoryId && !categoryName) {
         const catRow = await sql`SELECT id, name FROM categories WHERE id = ${categoryId}`;
-        if (catRow.length > 0) {
-          categoryName = catRow[0].name;
-        }
-      } else if (categoryName) {
+        if (catRow.length > 0) categoryName = catRow[0].name;
+      } else if (!categoryId && categoryName) {
         const catRow = await sql`SELECT id, name FROM categories WHERE LOWER(TRIM(name)) = LOWER(TRIM(${categoryName}))`;
         if (catRow.length > 0) {
           categoryId = catRow[0].id;
@@ -112,7 +107,6 @@ export default async function handler(req, res) {
         RETURNING *
       `;
 
-      // Calentar las fotos en Cloudinary para que el primer visitante las reciba al instante
       const allImgs = [p.image];
       if (Array.isArray(p.images)) allImgs.push(...p.images);
       else if (typeof p.images === 'string') {
@@ -128,12 +122,10 @@ export default async function handler(req, res) {
   }
 
   else if (req.method === 'DELETE') {
-    // Soft delete or hard delete product
     try {
       const { id } = req.body;
       if (!id) return res.status(400).json({ error: 'Product ID is required' });
 
-      // Usually it's better to deactivate than delete to keep order history intact
       const result = await sql`
         DELETE FROM products WHERE id = ${id} RETURNING *
       `;

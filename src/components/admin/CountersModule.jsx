@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Save, CheckCircle, BarChart2, Loader2, Sparkles } from 'lucide-react';
 
+let cachedAdminCounters = null;
+
 const CountersModule = () => {
-  const [counters, setCounters] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [counters, setCounters] = useState(() => cachedAdminCounters || []);
+  const [isLoading, setIsLoading] = useState(!cachedAdminCounters);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -12,6 +14,7 @@ const CountersModule = () => {
       .then(r => r.json())
       .then(data => {
         if (data && Array.isArray(data.counters)) {
+          cachedAdminCounters = data.counters;
           setCounters(data.counters);
         }
       })

@@ -36,17 +36,44 @@ const AdminDashboard = () => {
     localStorage.setItem('adminActiveTab', activeTab);
   }, [activeTab]);
 
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('dfv_admin_orders_cache');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
 
   useEffect(() => {
+    if (!isLoggedIn) return;
     fetch('/api/orders')
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
+        if (data.success && Array.isArray(data.data)) {
           setOrders(data.data);
+          try { sessionStorage.setItem('dfv_admin_orders_cache', JSON.stringify(data.data)); } catch {}
         }
-      });
-  }, []);
+      })
+      .catch(() => {});
+
+    // Precargar en segundo plano todos los módulos del panel para cambiar de pestaña en 0ms
+    const timer = setTimeout(() => {
+      import('../components/admin/InventoryModule');
+      import('../components/admin/HeroSedesModule');
+      import('../components/admin/MostWantedModule');
+      import('../components/admin/PromoBannerModule');
+      import('../components/admin/FragranceSetsModule');
+      import('../components/admin/TrendingHousesModule');
+      import('../components/admin/NoteCollectionsModule');
+      import('../components/admin/OrdersModule');
+      import('../components/admin/CategoriesModule');
+      import('../components/admin/ReelsModule');
+      import('../components/admin/ReviewsModule');
+      import('../components/admin/CustomersModule');
+      import('../components/admin/CampaignsModule');
+      import('../components/admin/CountersModule');
+    }, 80);
+    return () => clearTimeout(timer);
+  }, [isLoggedIn]);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },

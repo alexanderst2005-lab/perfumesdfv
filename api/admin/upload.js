@@ -20,30 +20,31 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'File or image data is required' });
     }
 
-    // Upload to Cloudinary with auto resource_type (supports video and image)
+    // Subida rápida a Cloudinary
     const result = await cloudinary.uploader.upload(uploadPayload, {
       resource_type: resourceType,
       folder: folder,
     });
 
-    // Pre-calentamiento ultra rápido en segundo plano (sin bloquear la respuesta)
+    // Pre-calentamiento y registro en DB en segundo plano (sin frenar la respuesta al panel admin)
     if (result.resource_type === 'image' && result.secure_url.includes('/image/upload/')) {
-      const fastUrl = result.secure_url.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/');
+      const thumbUrl = result.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_200,c_limit/');
+      const fastUrl = result.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_100,w_1200,c_limit/');
+      fetch(thumbUrl).catch(() => {});
       fetch(fastUrl).catch(() => {});
     }
 
-    // Save reference in our Neon database Media Library
-    const sql = neon(process.env.DATABASE_URL);
-    const media = await sql`
-      INSERT INTO media_library (url, name)
-      VALUES (${result.secure_url}, ${result.original_filename})
-      RETURNING *
-    `;
+    if (process.env.DATABASE_URL) {
+      const sql = neon(process.env.DATABASE_URL);
+      sql`
+        INSERT INTO media_library (url, name)
+        VALUES (${result.secure_url}, ${result.original_filename || 'upload'})
+      `.catch(() => {});
+    }
 
     return res.status(200).json({
       success: true,
-      url: result.secure_url,
-      media_id: media[0].id
+      url: result.secure_url
     });
 
   } catch (error) {

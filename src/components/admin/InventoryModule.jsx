@@ -1,13 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useShop } from '../../context/ShopContext';
-import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X } from 'lucide-react';
-import { optimizeImg } from '../../utils/img';
+import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X, Search } from 'lucide-react';
+import { optimizeImg, uploadAdminImage } from '../../utils/img';
 
 const InventoryModule = () => {
-  const { allProducts: products, refreshProducts, categories, isLoadingProducts } = useShop();
+  const { allProducts: products, upsertProductLocal, removeProductLocal, refreshProducts, categories, isLoadingProducts } = useShop();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'visible' | 'out' | 'wanted'
 
   const [formData, setFormData] = useState({
     id: '', name: '', brand: '', category: '', categoryId: null, family: '',
@@ -125,19 +127,19 @@ const InventoryModule = () => {
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
     files.forEach(file => {
-      // Preview instantáneo (sin leer el archivo a base64) y subida inmediata en segundo plano
+      // Preview instantáneo en 0ms y subida inmediata en segundo plano
       const url = URL.createObjectURL(file);
       setImagePreviews(prev => [...prev, url]);
-      // Miniatura liviana: evita decodificar una foto de varios MB en una cajita de 100px
       if (window.createImageBitmap) {
         createImageBitmap(file, { resizeWidth: 240, resizeQuality: 'low' }).then(bmp => {
           const c = document.createElement('canvas');
           c.width = bmp.width; c.height = bmp.height;
           c.getContext('2d').drawImage(bmp, 0, 0);
-          setThumbs(prev => ({ ...prev, [url]: c.toDataURL('image/jpeg', 0.7) }));
+          if (bmp.close) bmp.close();
+          setThumbs(prev => ({ ...prev, [url]: c.toDataURL('image/webp', 0.75) }));
         }).catch(() => { });
       }
-      const p = uploadToCloudinary(url);
+      const p = uploadAdminImage(file, 2000, 0.92);
       p.then(() => setUploadedKeys(prev => ({ ...prev, [url]: true }))).catch(() => { });
       uploadsRef.current.set(url, p);
     });
@@ -150,50 +152,22 @@ const InventoryModule = () => {
     setImagePreviews(newPreviews);
   };
 
-  const compressImage = async (src, maxSize = 2560, quality = 0.96) => {
-    try {
-      const blob = await (await fetch(src)).blob();
-      if (blob.size < 3000000) {
-        return await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      }
-      const img = await new Promise((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = reject;
-        el.src = src;
-      });
-      const scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.round(img.naturalWidth * scale);
-      const h = Math.round(img.naturalHeight * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      return canvas.toDataURL('image/jpeg', quality);
-    } catch (e) {
-      return src;
-    }
-  };
+  const filteredProducts = useMemo(() => {
+    let list = products;
+    if (statusFilter === 'visible') list = list.filter(p => p.active !== false);
+    else if (statusFilter === 'out') list = list.filter(p => !p.inStock);
+    else if (statusFilter === 'wanted') list = list.filter(p => p.isMostWanted);
 
-  const uploadToCloudinary = async (base64) => {
-    const compressed = await compressImage(base64);
-    const res = await fetch('/api/admin/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: compressed })
-    });
-    let data = {};
-    try { data = await res.json(); } catch (e) { /* non-JSON response */ }
-    if (!data.success) throw new Error(data.details || data.error || `Error ${res.status}`);
-    return data.url;
-  };
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      list = list.filter(p =>
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [products, searchQuery, statusFilter]);
 
   const handleSave = async () => {
     // Resolve valid category
@@ -233,7 +207,7 @@ const InventoryModule = () => {
             if (pending) {
               try { return await pending; } catch (e) { /* reintentar abajo */ }
             }
-            return await uploadToCloudinary(img);
+            return await uploadAdminImage(img, 2000, 0.92);
           }
           return img;
         })
@@ -260,6 +234,7 @@ const InventoryModule = () => {
 
       const payload = {
         ...formData,
+        id: editingProduct || formData.id || `p-${Date.now()}`,
         categoryId: finalCategoryId,
         category: finalCategoryName,
         price: finalPrice,
@@ -284,6 +259,8 @@ const InventoryModule = () => {
       let data = {};
       try { data = await res.json(); } catch (e) { /* non-JSON response */ }
       if (res.ok && data.success) {
+        // Actualización instantánea en memoria sin esperar recarga de red
+        upsertProductLocal(payload);
         setIsModalOpen(false);
         refreshProducts().catch(() => { });
       } else {
@@ -300,19 +277,38 @@ const InventoryModule = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#111827' }}>Inventario de Productos</h1>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', backgroundColor: '#111827', color: '#fff', fontSize: '0.8rem', fontWeight: '600' }}>
-              {products.length} {products.length === 1 ? 'producto' : 'productos'} subidos
-            </span>
-            <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', backgroundColor: '#d1fae5', color: '#065f46', fontSize: '0.8rem', fontWeight: '600' }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: '#111827', margin: 0 }}>Inventario de Productos</h1>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('all')}
+              style={{ padding: '0.3rem 0.85rem', borderRadius: '999px', border: 'none', cursor: 'pointer', backgroundColor: statusFilter === 'all' ? '#111827' : '#e5e7eb', color: statusFilter === 'all' ? '#fff' : '#374151', fontSize: '0.78rem', fontWeight: '600' }}
+            >
+              Todos ({products.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('visible')}
+              style={{ padding: '0.3rem 0.85rem', borderRadius: '999px', border: 'none', cursor: 'pointer', backgroundColor: statusFilter === 'visible' ? '#065f46' : '#d1fae5', color: statusFilter === 'visible' ? '#fff' : '#065f46', fontSize: '0.78rem', fontWeight: '600' }}
+            >
               {products.filter(p => p.active !== false).length} visibles
-            </span>
-            <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', backgroundColor: '#fee2e2', color: '#991b1b', fontSize: '0.8rem', fontWeight: '600' }}>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('out')}
+              style={{ padding: '0.3rem 0.85rem', borderRadius: '999px', border: 'none', cursor: 'pointer', backgroundColor: statusFilter === 'out' ? '#991b1b' : '#fee2e2', color: statusFilter === 'out' ? '#fff' : '#991b1b', fontSize: '0.78rem', fontWeight: '600' }}
+            >
               {products.filter(p => !p.inStock).length} agotados
-            </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('wanted')}
+              style={{ padding: '0.3rem 0.85rem', borderRadius: '999px', border: 'none', cursor: 'pointer', backgroundColor: statusFilter === 'wanted' ? '#92400e' : '#fef3c7', color: statusFilter === 'wanted' ? '#fff' : '#92400e', fontSize: '0.78rem', fontWeight: '600' }}
+            >
+              ★ {products.filter(p => p.isMostWanted).length} Más Deseados
+            </button>
           </div>
         </div>
         <button
@@ -322,6 +318,27 @@ const InventoryModule = () => {
           <Plus size={18} />
           Crear Producto
         </button>
+      </div>
+
+      {/* Buscador instantáneo */}
+      <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
+        <Search size={17} style={{ position: 'absolute', left: '0.95rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Buscar perfume por nombre, casa o categoría..."
+          style={{
+            width: '100%',
+            padding: '0.75rem 1rem 0.75rem 2.6rem',
+            backgroundColor: '#fff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '10px',
+            fontSize: '0.88rem',
+            outline: 'none',
+            boxSizing: 'border-box'
+          }}
+        />
       </div>
 
       <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
@@ -336,12 +353,12 @@ const InventoryModule = () => {
             </tr>
           </thead>
           <tbody>
-            {isLoadingProducts ? (
+            {isLoadingProducts && products.length === 0 ? (
               <tr><td colSpan="5" style={{ padding: '2rem', textAlign: 'center' }}>Cargando inventario...</td></tr>
-            ) : products.map(p => (
+            ) : filteredProducts.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <img src={optimizeImg(p.image, 200)} alt={p.name} decoding="async" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                  <img src={optimizeImg(p.image, 120)} alt={p.name} loading="lazy" decoding="async" width="40" height="40" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#f9fafb' }} />
                   <div>
                     <p style={{ fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                       {p.name}
@@ -354,22 +371,28 @@ const InventoryModule = () => {
                     <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{p.brand} | {p.category}</p>
                   </div>
                 </td>
-                <td style={{ padding: '1rem', fontWeight: '500' }}>${p.price.toLocaleString()}</td>
+                <td style={{ padding: '1rem', fontWeight: '500' }}>${Number(p.price || 0).toLocaleString()}</td>
                 <td style={{ padding: '1rem' }}>
                   <select
                     value={p.inStock ? 'true' : 'false'}
                     onChange={async (e) => {
                       const newInStock = e.target.value === 'true';
+                      const updatedProduct = { ...p, inStock: newInStock };
+                      upsertProductLocal(updatedProduct);
                       try {
-                        const updatedProduct = { ...p, inStock: newInStock };
                         const res = await fetch('/api/admin/products', {
                           method: 'PUT',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify(updatedProduct)
                         });
-                        if (res.ok) await refreshProducts();
-                        else alert('Error al actualizar el estado');
-                      } catch (err) { alert('Error de red'); }
+                        if (!res.ok) {
+                          upsertProductLocal(p);
+                          alert('Error al actualizar el estado');
+                        }
+                      } catch (err) {
+                        upsertProductLocal(p);
+                        alert('Error de red');
+                      }
                     }}
                     style={{
                       padding: '0.3rem 0.5rem',
@@ -404,11 +427,17 @@ const InventoryModule = () => {
                   </button>
                   <button onClick={async () => {
                     if (window.confirm('¿Seguro que deseas eliminar definitivamente este producto?')) {
+                      removeProductLocal(p.id);
                       try {
                         const res = await fetch('/api/admin/products', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: p.id }) });
-                        if (res.ok) await refreshProducts();
-                        else alert('Error al eliminar');
-                      } catch (e) { alert('Error de red'); }
+                        if (!res.ok) {
+                          upsertProductLocal(p);
+                          alert('Error al eliminar');
+                        }
+                      } catch (e) {
+                        upsertProductLocal(p);
+                        alert('Error de red');
+                      }
                     }
                   }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                     <Trash2 size={18} />

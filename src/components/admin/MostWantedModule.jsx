@@ -4,7 +4,7 @@ import { useShop } from '../../context/ShopContext';
 import { optimizeImg } from '../../utils/img';
 
 const MostWantedModule = () => {
-  const { products, setProducts } = useShop();
+  const { products, upsertProductLocal } = useShop();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState('all'); // 'all' | 'selected'
   const [loadingId, setLoadingId] = useState(null);
@@ -24,10 +24,8 @@ const MostWantedModule = () => {
     const newStatus = !product.isMostWanted;
 
     try {
-      // Optimistic update
-      setProducts(prev =>
-        prev.map(p => (p.id === product.id ? { ...p, isMostWanted: newStatus } : p))
-      );
+      // Optimistic update instantáneo
+      upsertProductLocal({ ...product, isMostWanted: newStatus });
 
       const res = await fetch('/api/admin/products', {
         method: 'PUT',
@@ -50,10 +48,7 @@ const MostWantedModule = () => {
       }
     } catch (err) {
       console.error(err);
-      // Revert optimistic update
-      setProducts(prev =>
-        prev.map(p => (p.id === product.id ? { ...p, isMostWanted: !newStatus } : p))
-      );
+      upsertProductLocal({ ...product, isMostWanted: !newStatus });
       showToast('Error al actualizar: ' + err.message, 'error');
     } finally {
       setLoadingId(null);
@@ -230,8 +225,10 @@ const MostWantedModule = () => {
 
               <div style={{ width: '100%', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.8rem', backgroundColor: '#FAF9F6', borderRadius: '6px' }}>
                 <img
-                  src={optimizeImg(p.image, 240)}
+                  src={optimizeImg(p.image, 200)}
                   alt={p.name}
+                  loading="lazy"
+                  decoding="async"
                   style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
                 />
               </div>

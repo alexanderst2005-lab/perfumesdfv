@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, Upload, CheckCircle, TrendingUp, Loader2, X } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
-import { optimizeImg } from '../../utils/img';
+import { optimizeImg, uploadAdminImage } from '../../utils/img';
+
+let cachedAdminHouses = null;
 
 const TrendingHousesModule = () => {
   const { products } = useShop();
-  const [houses, setHouses] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [houses, setHouses] = useState(() => cachedAdminHouses || []);
+  const [isLoading, setIsLoading] = useState(!cachedAdminHouses);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [toast, setToast] = useState(null);
+  const pendingUploadRef = useRef(null);
 
   // Modal Form State
   const [editId, setEditId] = useState(null);
@@ -23,12 +26,13 @@ const TrendingHousesModule = () => {
   });
   const [searchProductQuery, setSearchProductQuery] = useState('');
 
-  const fetchHouses = () => {
-    setIsLoading(true);
+  const fetchHouses = (silent = false) => {
+    if (!silent && !cachedAdminHouses) setIsLoading(true);
     fetch(`/api/trending-houses?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data && Array.isArray(data.houses)) {
+          cachedAdminHouses = data.houses;
           setHouses(data.houses);
         }
       })
@@ -37,7 +41,7 @@ const TrendingHousesModule = () => {
   };
 
   useEffect(() => {
-    fetchHouses();
+    fetchHouses(Boolean(cachedAdminHouses));
   }, []);
 
   const showToast = (msg, type = 'success') => {
@@ -71,69 +75,28 @@ const TrendingHousesModule = () => {
     setIsModalOpen(true);
   };
 
-  const compressImage = async (src, maxSize = 2560, quality = 0.96) => {
-    try {
-      if (src.length < 4000000) return src;
-      const img = await new Promise((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = reject;
-        el.src = src;
-      });
-      const scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.round(img.naturalWidth * scale);
-      const h = Math.round(img.naturalHeight * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      return canvas.toDataURL('image/jpeg', quality);
-    } catch {
-      return src;
-    }
-  };
-
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
+    const previewUrl = URL.createObjectURL(file);
+    setFormData(prev => ({ ...prev, image_url: previewUrl }));
     setIsUploading(true);
-    try {
-      const reader = new FileReader();
-      const base64Promise = new Promise((resolve, reject) => {
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const base64 = await base64Promise;
-      const compressed = await compressImage(base64, 1200, 0.82);
 
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: compressed })
-      });
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error(`Error del servidor (${res.status})`);
-      }
-      if (data && data.url) {
-        setFormData(prev => ({ ...prev, image_url: data.url }));
-        showToast('Imagen de la casa subida');
-      } else {
-        throw new Error(data.error || 'Error al subir imagen');
-      }
+    const p = uploadAdminImage(file, 2000, 0.92);
+    pendingUploadRef.current = p;
+
+    try {
+      const url = await p;
+      setFormData(prev => ({ ...prev, image_url: url }));
+      showToast('Imagen de la casa subida');
     } catch (err) {
       console.error(err);
       showToast('Error subiendo imagen: ' + (err.message || ''), 'error');
     } finally {
+      pendingUploadRef.current = null;
       setIsUploading(false);
-      e.target.value = '';
     }
   };
 
@@ -157,8 +120,17 @@ const TrendingHousesModule = () => {
 
     setIsSaving(true);
     try {
+      let finalForm = { ...formData };
+      if (pendingUploadRef.current) {
+        const uploadedUrl = await pendingUploadRef.current;
+        finalForm = { ...finalForm, image_url: uploadedUrl };
+      } else if (finalForm.image_url && finalForm.image_url.startsWith('blob:')) {
+        const uploadedUrl = await uploadAdminImage(finalForm.image_url, 2000, 0.92);
+        finalForm = { ...finalForm, image_url: uploadedUrl };
+      }
+
       const method = editId ? 'PUT' : 'POST';
-      const body = editId ? { id: editId, ...formData } : formData;
+      const body = editId ? { id: editId, ...finalForm } : finalForm;
 
       const res = await fetch('/api/trending-houses', {
         method,
@@ -169,7 +141,7 @@ const TrendingHousesModule = () => {
       if (data && data.success) {
         showToast(editId ? 'Casa actualizada' : 'Casa agregada con éxito');
         setIsModalOpen(false);
-        fetchHouses();
+        fetchHouses(true);
       } else {
         throw new Error(data.error || 'Error al guardar');
       }
@@ -313,8 +285,10 @@ const TrendingHousesModule = () => {
               <div style={{ position: 'relative', minHeight: '180px', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem' }}>
                 {(h.image_url || h.image) ? (
                   <img
-                    src={optimizeImg(h.image_url || h.image, 600)}
+                    src={optimizeImg(h.image_url || h.image, 280)}
                     alt={h.name}
+                    loading="lazy"
+                    decoding="async"
                     style={{ width: '100%', height: 'auto', maxHeight: '220px', objectFit: 'contain', display: 'block', borderRadius: '6px' }}
                   />
                 ) : (
@@ -602,6 +576,10 @@ const TrendingHousesModule = () => {
                         <img
                           src={optimizeImg(p.image, 100)}
                           alt={p.name}
+                          loading="lazy"
+                          decoding="async"
+                          width="32"
+                          height="32"
                           style={{ width: '32px', height: '32px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '4px' }}
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>

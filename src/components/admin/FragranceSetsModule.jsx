@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Save, Upload, CheckCircle, Loader2, Search, Trash2, Sparkles } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
-import { optimizeImg } from '../../utils/img';
+import { optimizeImg, uploadAdminImage } from '../../utils/img';
+
+let cachedAdminSets = null;
 
 const FragranceSetsModule = () => {
   const { products } = useShop();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!cachedAdminSets);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [toast, setToast] = useState(null);
   const [searchProductQuery, setSearchProductQuery] = useState('');
+  const uploadsRef = useRef(new Map());
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => cachedAdminSets || {
     title: 'SETS DE FRAGANCIAS EXCLUSIVAS',
     subtitle: 'Combinaciones cuidadosamente seleccionadas para elevar cada momento',
     button_text: 'VER SETS',
@@ -22,7 +25,6 @@ const FragranceSetsModule = () => {
   });
 
   useEffect(() => {
-    setIsLoading(true);
     fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
@@ -31,7 +33,7 @@ const FragranceSetsModule = () => {
           const imgs = Array.isArray(b.images) && b.images.length > 0
             ? b.images
             : (b.image_url || b.image ? [b.image_url || b.image] : []);
-          setFormData({
+          const next = {
             title: b.title || 'SETS DE FRAGANCIAS EXCLUSIVAS',
             subtitle: b.subtitle !== undefined ? b.subtitle : 'Combinaciones cuidadosamente seleccionadas para elevar cada momento',
             button_text: b.button_text || 'VER SETS',
@@ -39,7 +41,9 @@ const FragranceSetsModule = () => {
             images: imgs,
             product_ids: Array.isArray(b.product_ids) ? [...new Set(b.product_ids.map(x => String(x)).filter(Boolean))] : [],
             active: b.active !== false
-          });
+          };
+          cachedAdminSets = next;
+          setFormData(next);
         }
       })
       .catch(err => console.error('Error loading fragrance sets:', err))
@@ -51,77 +55,46 @@ const FragranceSetsModule = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const compressImage = async (src, maxSize = 2560, quality = 0.96) => {
-    try {
-      if (src.length < 4000000) return src;
-      const img = await new Promise((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = reject;
-        el.src = src;
-      });
-      const scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.round(img.naturalWidth * scale);
-      const h = Math.round(img.naturalHeight * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      return canvas.toDataURL('image/jpeg', quality);
-    } catch {
-      return src;
-    }
-  };
-
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
+    const previewUrl = URL.createObjectURL(file);
+    setFormData(prev => {
+      const updatedImages = [...prev.images, previewUrl];
+      return {
+        ...prev,
+        image_url: updatedImages[0] || previewUrl,
+        images: updatedImages
+      };
+    });
+
     setIsUploading(true);
+    const p = uploadAdminImage(file, 2000, 0.92);
+    uploadsRef.current.set(previewUrl, p);
+
     try {
-      const reader = new FileReader();
-      const base64Promise = new Promise((resolve, reject) => {
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+      const url = await p;
+      setFormData(prev => {
+        const updatedImages = prev.images.map(img => (img === previewUrl ? url : img));
+        return {
+          ...prev,
+          image_url: updatedImages[0] || url,
+          images: updatedImages
+        };
       });
-      const base64 = await base64Promise;
-      const compressed = await compressImage(base64, 1400, 0.85);
-
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: compressed })
-      });
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error(`Error del servidor (${res.status})`);
-      }
-
-      if (data && data.url) {
-        setFormData(prev => {
-          const updatedImages = [...prev.images, data.url];
-          return {
-            ...prev,
-            image_url: updatedImages[0] || data.url,
-            images: updatedImages
-          };
-        });
-        showToast('Imagen subida correctamente');
-      } else {
-        throw new Error(data.error || 'Error al subir imagen');
-      }
+      showToast('Imagen subida correctamente');
     } catch (err) {
       console.error(err);
+      setFormData(prev => {
+        const updatedImages = prev.images.filter(img => img !== previewUrl);
+        return { ...prev, images: updatedImages, image_url: updatedImages[0] || '' };
+      });
       showToast('Error subiendo imagen: ' + (err.message || ''), 'error');
     } finally {
+      uploadsRef.current.delete(previewUrl);
       setIsUploading(false);
-      e.target.value = '';
     }
   };
 
@@ -151,13 +124,31 @@ const FragranceSetsModule = () => {
     if (e) e.preventDefault();
     setIsSaving(true);
     try {
+      const resolvedImages = await Promise.all(
+        formData.images.map(async (img) => {
+          if (img && img.startsWith('blob:')) {
+            const pending = uploadsRef.current.get(img);
+            if (pending) return await pending;
+            return await uploadAdminImage(img, 2000, 0.92);
+          }
+          return img;
+        })
+      );
+      const payload = {
+        ...formData,
+        images: resolvedImages,
+        image_url: resolvedImages[0] || ''
+      };
+
       const res = await fetch('/api/fragrance-sets', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data && data.success) {
+        cachedAdminSets = payload;
+        setFormData(payload);
         showToast('¡Apartado de Sets guardado con éxito!');
       } else {
         throw new Error(data.error || 'Error al guardar');
@@ -263,7 +254,7 @@ const FragranceSetsModule = () => {
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
                 {formData.images.map((imgUrl, idx) => (
                   <div key={idx} style={{ position: 'relative', width: '140px', height: '120px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #EAE8E4' }}>
-                    <img src={optimizeImg(imgUrl, 400)} alt={`Set ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={optimizeImg(imgUrl, 280)} alt={`Set ${idx + 1}`} decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <button
                       type="button"
                       onClick={() => removeImageAt(idx)}
@@ -425,6 +416,10 @@ const FragranceSetsModule = () => {
                     <img
                       src={optimizeImg(p.image, 100)}
                       alt={p.name}
+                      loading="lazy"
+                      decoding="async"
+                      width="36"
+                      height="36"
                       style={{ width: '36px', height: '36px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '4px' }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>

@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { optimizeImg, uploadAdminImage } from '../../utils/img';
+
+let cachedAdminHeroSedes = null;
 
 const DEFAULT_HERO_SLIDES = [
   {
@@ -64,24 +67,24 @@ const DEFAULT_SEDES = [
 ];
 
 const HeroSedesModule = () => {
-  const [heroSlides, setHeroSlides] = useState(DEFAULT_HERO_SLIDES);
-  const [sedes, setSedes] = useState(DEFAULT_SEDES);
-  const [isLoading, setIsLoading] = useState(true);
+  const [heroSlides, setHeroSlides] = useState(() => cachedAdminHeroSedes?.hero_slides || DEFAULT_HERO_SLIDES);
+  const [sedes, setSedes] = useState(() => cachedAdminHeroSedes?.sedes || DEFAULT_SEDES);
+  const [isLoading, setIsLoading] = useState(!cachedAdminHeroSedes);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingKey, setUploadingKey] = useState(null);
   const [toast, setToast] = useState(null);
+  const uploadsRef = useRef(new Map());
 
   useEffect(() => {
     fetch(`/api/hero-sedes?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data && data.success) {
-          if (Array.isArray(data.hero_slides) && data.hero_slides.length > 0) {
-            setHeroSlides(data.hero_slides);
-          }
-          if (Array.isArray(data.sedes) && data.sedes.length > 0) {
-            setSedes(data.sedes);
-          }
+          const nextSlides = Array.isArray(data.hero_slides) && data.hero_slides.length > 0 ? data.hero_slides : DEFAULT_HERO_SLIDES;
+          const nextSedes = Array.isArray(data.sedes) && data.sedes.length > 0 ? data.sedes : DEFAULT_SEDES;
+          cachedAdminHeroSedes = { hero_slides: nextSlides, sedes: nextSedes };
+          setHeroSlides(nextSlides);
+          setSedes(nextSedes);
         }
       })
       .catch(err => console.error('Error fetching hero-sedes:', err))
@@ -93,84 +96,41 @@ const HeroSedesModule = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const compressImage = async (src, maxSize = 2560, quality = 0.96) => {
-    try {
-      if (src.length < 4000000) return src;
-      const img = await new Promise((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = reject;
-        el.src = src;
-      });
-      const scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.round(img.naturalWidth * scale);
-      const h = Math.round(img.naturalHeight * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      return canvas.toDataURL('image/jpeg', quality);
-    } catch {
-      return src;
-    }
-  };
-
-  const uploadToCloudinary = async (file, keyLabel) => {
-    if (!file) return null;
-    setUploadingKey(keyLabel);
-    try {
-      const reader = new FileReader();
-      const base64 = await new Promise((resolve, reject) => {
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const compressed = await compressImage(base64, 1800, 0.86);
-
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: compressed })
-      });
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error(`Error del servidor (${res.status})`);
-      }
-      if (data && data.url) {
-        showToast('Fotografía cargada exitosamente');
-        return data.url;
-      } else {
-        throw new Error(data.error || 'Error subiendo imagen');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Error subiendo imagen: ' + (err.message || ''), 'error');
-      return null;
-    } finally {
-      setUploadingKey(null);
-    }
-  };
-
-  // Reemplazar imagen de un Slide de la Hero (actualiza tanto PC como Móvil, o individualmente)
+  // Reemplazar imagen de un Slide de la Hero con vista previa instantánea (0ms) y subida rápida
   const handleHeroImageUpload = async (idx, field, e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    const url = await uploadToCloudinary(file, `hero-${idx}-${field}`);
-    if (!url) return;
 
+    const previewUrl = URL.createObjectURL(file);
+    const keyLabel = `hero-${idx}-${field}`;
+    setUploadingKey(keyLabel);
+
+    // Mostrar vista previa de inmediato
     setHeroSlides(prev => prev.map((slide, i) => {
       if (i !== idx) return slide;
-      if (field === 'both') {
-        return { ...slide, imageDesktop: url, imageMobile: url };
-      }
-      return { ...slide, [field]: url };
+      if (field === 'both') return { ...slide, imageDesktop: previewUrl, imageMobile: previewUrl };
+      return { ...slide, [field]: previewUrl };
     }));
+
+    const uploadPromise = uploadAdminImage(file, 2000, 0.92);
+    uploadsRef.current.set(previewUrl, uploadPromise);
+
+    try {
+      const url = await uploadPromise;
+      setHeroSlides(prev => prev.map((slide, i) => {
+        if (i !== idx) return slide;
+        if (field === 'both') return { ...slide, imageDesktop: url, imageMobile: url };
+        return { ...slide, [field]: url };
+      }));
+      showToast('Fotografía cargada exitosamente');
+    } catch (err) {
+      console.error(err);
+      showToast('Error subiendo imagen: ' + (err.message || ''), 'error');
+    } finally {
+      uploadsRef.current.delete(previewUrl);
+      setUploadingKey(null);
+    }
   };
 
   const handleSlideFieldChange = (idx, field, val) => {
@@ -202,34 +162,78 @@ const HeroSedesModule = () => {
     setHeroSlides(prev => prev.filter((_, i) => i !== idx));
   };
 
-  // Reemplazar imagen de una Sede
+  // Reemplazar imagen de una Sede con vista previa instantánea (0ms)
   const handleSedeImageUpload = async (idx, e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    const url = await uploadToCloudinary(file, `sede-${idx}`);
-    if (!url) return;
 
-    setSedes(prev => prev.map((s, i) => (i === idx ? { ...s, img: url } : s)));
+    const previewUrl = URL.createObjectURL(file);
+    const keyLabel = `sede-${idx}`;
+    setUploadingKey(keyLabel);
+
+    setSedes(prev => prev.map((s, i) => (i === idx ? { ...s, img: previewUrl } : s)));
+
+    const uploadPromise = uploadAdminImage(file, 2000, 0.92);
+    uploadsRef.current.set(previewUrl, uploadPromise);
+
+    try {
+      const url = await uploadPromise;
+      setSedes(prev => prev.map((s, i) => (i === idx ? { ...s, img: url } : s)));
+      showToast('Fotografía de la sede cargada exitosamente');
+    } catch (err) {
+      console.error(err);
+      showToast('Error subiendo imagen: ' + (err.message || ''), 'error');
+    } finally {
+      uploadsRef.current.delete(previewUrl);
+      setUploadingKey(null);
+    }
   };
 
   const handleSedeFieldChange = (idx, field, val) => {
     setSedes(prev => prev.map((s, i) => (i === idx ? { ...s, [field]: val } : s)));
   };
 
+  const resolveUrl = async (u) => {
+    if (!u || typeof u !== 'string') return u;
+    if (u.startsWith('blob:') || u.startsWith('data:')) {
+      const pending = uploadsRef.current.get(u);
+      if (pending) return await pending;
+      return await uploadAdminImage(u, 2000, 0.92);
+    }
+    return u;
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const resolvedSlides = await Promise.all(
+        heroSlides.map(async (s) => ({
+          ...s,
+          imageDesktop: await resolveUrl(s.imageDesktop),
+          imageMobile: await resolveUrl(s.imageMobile || s.imageDesktop)
+        }))
+      );
+      const resolvedSedes = await Promise.all(
+        sedes.map(async (s) => ({
+          ...s,
+          img: await resolveUrl(s.img)
+        }))
+      );
+
       const res = await fetch('/api/hero-sedes', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          hero_slides: heroSlides,
-          sedes: sedes
+          hero_slides: resolvedSlides,
+          sedes: resolvedSedes
         })
       });
       const data = await res.json();
       if (data && data.success) {
+        cachedAdminHeroSedes = { hero_slides: resolvedSlides, sedes: resolvedSedes };
+        setHeroSlides(resolvedSlides);
+        setSedes(resolvedSedes);
         showToast('Hero Principal y Sedes actualizadas en la tienda');
       } else {
         throw new Error(data.error || 'No se pudo guardar');
@@ -355,8 +359,9 @@ const HeroSedesModule = () => {
                 {/* Vista previa actual del Slide */}
                 <div style={{ position: 'relative', height: '210px', backgroundColor: '#121212', overflow: 'hidden' }}>
                   <img
-                    src={slide.imageDesktop || slide.imageMobile}
+                    src={optimizeImg(slide.imageDesktop || slide.imageMobile, 300)}
                     alt={slide.title}
+                    decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.78 }}
                   />
                   <div style={{
@@ -574,8 +579,9 @@ const HeroSedesModule = () => {
                 {/* Vista previa actual de la Sede */}
                 <div style={{ position: 'relative', height: '240px', backgroundColor: '#f4f4f4', overflow: 'hidden' }}>
                   <img
-                    src={sede.img}
+                    src={optimizeImg(sede.img, 300)}
                     alt={sede.name}
+                    decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   <span style={{

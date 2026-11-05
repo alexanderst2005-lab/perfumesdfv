@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Save, Upload, CheckCircle, Eye, EyeOff, Sparkles, Loader2 } from 'lucide-react';
+import { optimizeImg, uploadAdminImage } from '../../utils/img';
+
+let cachedAdminPromoBanner = null;
 
 const PromoBannerModule = () => {
-  const [banner, setBanner] = useState({
+  const [banner, setBanner] = useState(() => cachedAdminPromoBanner || {
     title: '',
     subtitle: '',
     button_text: 'COMPRAR AHORA',
@@ -10,20 +13,23 @@ const PromoBannerModule = () => {
     image_url: '',
     active: true
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!cachedAdminPromoBanner);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [toast, setToast] = useState(null);
+  const pendingUploadRef = useRef(null);
 
   useEffect(() => {
     fetch(`/api/promo-banner?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data && data.banner) {
-          setBanner({
+          const next = {
             ...data.banner,
             image_url: data.banner.image_url || data.banner.image || ''
-          });
+          };
+          cachedAdminPromoBanner = next;
+          setBanner(next);
         }
       })
       .catch(err => console.error('Error fetching banner:', err))
@@ -35,69 +41,28 @@ const PromoBannerModule = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const compressImage = async (src, maxSize = 2560, quality = 0.96) => {
-    try {
-      if (src.length < 4000000) return src;
-      const img = await new Promise((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = reject;
-        el.src = src;
-      });
-      const scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
-      const w = Math.round(img.naturalWidth * scale);
-      const h = Math.round(img.naturalHeight * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      return canvas.toDataURL('image/jpeg', quality);
-    } catch {
-      return src;
-    }
-  };
-
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
+    const previewUrl = URL.createObjectURL(file);
+    setBanner(prev => ({ ...prev, image_url: previewUrl, image: previewUrl }));
     setIsUploading(true);
-    try {
-      const reader = new FileReader();
-      const base64Promise = new Promise((resolve, reject) => {
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const base64 = await base64Promise;
-      const compressed = await compressImage(base64, 1600, 0.85);
 
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: compressed })
-      });
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error(`Error del servidor (${res.status})`);
-      }
-      if (data && data.url) {
-        setBanner(prev => ({ ...prev, image_url: data.url, image: data.url }));
-        showToast('Imagen subida a Cloudinary exitosamente');
-      } else {
-        throw new Error(data.error || 'Error al subir imagen');
-      }
+    const p = uploadAdminImage(file, 2000, 0.92);
+    pendingUploadRef.current = p;
+
+    try {
+      const url = await p;
+      setBanner(prev => ({ ...prev, image_url: url, image: url }));
+      showToast('Imagen cargada exitosamente');
     } catch (err) {
       console.error(err);
       showToast('Error al subir la imagen: ' + (err.message || ''), 'error');
     } finally {
+      pendingUploadRef.current = null;
       setIsUploading(false);
-      e.target.value = '';
     }
   };
 
@@ -105,13 +70,24 @@ const PromoBannerModule = () => {
     if (e) e.preventDefault();
     setIsSaving(true);
     try {
+      let finalBanner = { ...banner };
+      if (pendingUploadRef.current) {
+        const uploadedUrl = await pendingUploadRef.current;
+        finalBanner = { ...finalBanner, image_url: uploadedUrl, image: uploadedUrl };
+      } else if (finalBanner.image_url && finalBanner.image_url.startsWith('blob:')) {
+        const uploadedUrl = await uploadAdminImage(finalBanner.image_url, 2000, 0.92);
+        finalBanner = { ...finalBanner, image_url: uploadedUrl, image: uploadedUrl };
+      }
+
       const res = await fetch('/api/promo-banner', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(banner)
+        body: JSON.stringify(finalBanner)
       });
       const data = await res.json();
       if (data && data.success) {
+        cachedAdminPromoBanner = finalBanner;
+        setBanner(finalBanner);
         showToast('Banner promocional actualizado correctamente');
       } else {
         throw new Error(data.error || 'No se pudo guardar');
@@ -376,8 +352,9 @@ const PromoBannerModule = () => {
           }}>
             {/* Imagen 100% completa sin recortar */}
             <img
-              src={banner.image_url || '/hero_campaign_2.webp'}
+              src={optimizeImg(banner.image_url || '/hero_campaign_2.webp', 320)}
               alt="Preview"
+              decoding="async"
               style={{
                 width: '100%',
                 height: 'auto',
