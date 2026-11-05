@@ -25,7 +25,7 @@ const NoteCollectionsModule = () => {
 
   const fetchCollections = () => {
     setIsLoading(true);
-    fetch('/api/note-collections')
+    fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data && Array.isArray(data.collections)) {
@@ -135,11 +135,12 @@ const NoteCollectionsModule = () => {
   };
 
   const toggleProductSelect = (productId) => {
+    const numId = Number(productId);
     setFormData(prev => {
-      const exists = prev.product_ids.includes(productId);
+      const exists = prev.product_ids.some(id => Number(id) === numId);
       const updated = exists
-        ? prev.product_ids.filter(id => id !== productId)
-        : [...prev.product_ids, productId];
+        ? prev.product_ids.filter(id => Number(id) !== numId)
+        : [...prev.product_ids, numId];
       return { ...prev, product_ids: updated };
     });
   };
@@ -537,7 +538,7 @@ const NoteCollectionsModule = () => {
                 {/* Lista de productos scrollable */}
                 <div style={{ maxHeight: '220px', overflowY: 'auto', border: '1px solid #EAE8E4', borderRadius: '8px', padding: '0.5rem' }}>
                   {filteredProducts.map(p => {
-                    const isSelected = formData.product_ids.includes(p.id);
+                    const isSelected = formData.product_ids.some(id => Number(id) === Number(p.id));
                     return (
                       <div
                         key={p.id}

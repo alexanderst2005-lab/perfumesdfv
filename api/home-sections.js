@@ -136,19 +136,26 @@ export default async function handler(req, res) {
   // 3. NOTE COLLECTIONS
   // ═══════════════════════════════════════════════════════════════════════════
   if (type === 'note-collections') {
+    await sql`
+      CREATE TABLE IF NOT EXISTS note_collection_products (
+        collection_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        PRIMARY KEY (collection_id, product_id)
+      )
+    `.catch(() => {});
+
     if (req.method === 'GET') {
       try {
         const collections = await sql`
           SELECT 
             c.*,
             COALESCE(
-              json_agg(p.id) FILTER (WHERE p.id IS NOT NULL),
+              json_agg(cp.product_id) FILTER (WHERE cp.product_id IS NOT NULL),
               '[]'
             ) AS product_ids,
-            COUNT(p.id)::int AS product_count
+            COUNT(cp.product_id)::int AS product_count
           FROM note_collections c
           LEFT JOIN note_collection_products cp ON c.id = cp.collection_id
-          LEFT JOIN products p ON cp.product_id = p.id AND p.active != false
           GROUP BY c.id
           ORDER BY c.sort_order ASC, c.id ASC
         `;
@@ -177,18 +184,18 @@ export default async function handler(req, res) {
         `;
         const collection = inserted[0];
 
-        if (Array.isArray(product_ids) && product_ids.length > 0) {
-          for (const pid of product_ids) {
-            if (pid) {
-              await sql`
-                INSERT INTO note_collection_products (collection_id, product_id)
-                VALUES (${collection.id}, ${pid})
-                ON CONFLICT (collection_id, product_id) DO NOTHING
-              `;
-            }
-          }
+        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        for (const pid of cleanIds) {
+          await sql`
+            INSERT INTO note_collection_products (collection_id, product_id)
+            VALUES (${collection.id}, ${pid})
+            ON CONFLICT (collection_id, product_id) DO NOTHING
+          `;
         }
-        return res.status(201).json({ success: true, collection: withDualImage(collection) });
+        return res.status(201).json({
+          success: true,
+          collection: { ...withDualImage(collection), product_ids: cleanIds, product_count: cleanIds.length }
+        });
       } catch (error) {
         console.error('Error creating note collection:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -212,19 +219,21 @@ export default async function handler(req, res) {
           RETURNING *
         `;
 
+        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
         if (Array.isArray(product_ids)) {
           await sql`DELETE FROM note_collection_products WHERE collection_id = ${id}`;
-          for (const pid of product_ids) {
-            if (pid) {
-              await sql`
-                INSERT INTO note_collection_products (collection_id, product_id)
-                VALUES (${id}, ${pid})
-                ON CONFLICT (collection_id, product_id) DO NOTHING
-              `;
-            }
+          for (const pid of cleanIds) {
+            await sql`
+              INSERT INTO note_collection_products (collection_id, product_id)
+              VALUES (${id}, ${pid})
+              ON CONFLICT (collection_id, product_id) DO NOTHING
+            `;
           }
         }
-        return res.status(200).json({ success: true, collection: withDualImage(updated[0]) });
+        return res.status(200).json({
+          success: true,
+          collection: { ...withDualImage(updated[0]), product_ids: cleanIds, product_count: cleanIds.length }
+        });
       } catch (error) {
         console.error('Error updating note collection:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -235,6 +244,7 @@ export default async function handler(req, res) {
       try {
         const id = (body && body.id) || req.query.id;
         if (!id) return res.status(400).json({ success: false, error: 'ID es obligatorio' });
+        await sql`DELETE FROM note_collection_products WHERE collection_id = ${id}`.catch(() => {});
         await sql`DELETE FROM note_collections WHERE id = ${id}`;
         return res.status(200).json({ success: true });
       } catch (error) {
@@ -248,19 +258,26 @@ export default async function handler(req, res) {
   // 4. TRENDING HOUSES
   // ═══════════════════════════════════════════════════════════════════════════
   if (type === 'trending-houses') {
+    await sql`
+      CREATE TABLE IF NOT EXISTS trending_house_products (
+        house_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        PRIMARY KEY (house_id, product_id)
+      )
+    `.catch(() => {});
+
     if (req.method === 'GET') {
       try {
         const houses = await sql`
           SELECT 
             h.*,
             COALESCE(
-              json_agg(p.id) FILTER (WHERE p.id IS NOT NULL),
+              json_agg(hp.product_id) FILTER (WHERE hp.product_id IS NOT NULL),
               '[]'
             ) AS product_ids,
-            COUNT(p.id)::int AS product_count
+            COUNT(hp.product_id)::int AS product_count
           FROM trending_houses h
           LEFT JOIN trending_house_products hp ON h.id = hp.house_id
-          LEFT JOIN products p ON hp.product_id = p.id AND p.active != false
           GROUP BY h.id
           ORDER BY h.sort_order ASC, h.id ASC
         `;
@@ -289,18 +306,18 @@ export default async function handler(req, res) {
         `;
         const house = inserted[0];
 
-        if (Array.isArray(product_ids) && product_ids.length > 0) {
-          for (const pid of product_ids) {
-            if (pid) {
-              await sql`
-                INSERT INTO trending_house_products (house_id, product_id)
-                VALUES (${house.id}, ${pid})
-                ON CONFLICT (house_id, product_id) DO NOTHING
-              `;
-            }
-          }
+        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        for (const pid of cleanIds) {
+          await sql`
+            INSERT INTO trending_house_products (house_id, product_id)
+            VALUES (${house.id}, ${pid})
+            ON CONFLICT (house_id, product_id) DO NOTHING
+          `;
         }
-        return res.status(201).json({ success: true, house: withDualImage(house) });
+        return res.status(201).json({
+          success: true,
+          house: { ...withDualImage(house), product_ids: cleanIds, product_count: cleanIds.length }
+        });
       } catch (error) {
         console.error('Error creating trending house:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -324,19 +341,21 @@ export default async function handler(req, res) {
           RETURNING *
         `;
 
+        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
         if (Array.isArray(product_ids)) {
           await sql`DELETE FROM trending_house_products WHERE house_id = ${id}`;
-          for (const pid of product_ids) {
-            if (pid) {
-              await sql`
-                INSERT INTO trending_house_products (house_id, product_id)
-                VALUES (${id}, ${pid})
-                ON CONFLICT (house_id, product_id) DO NOTHING
-              `;
-            }
+          for (const pid of cleanIds) {
+            await sql`
+              INSERT INTO trending_house_products (house_id, product_id)
+              VALUES (${id}, ${pid})
+              ON CONFLICT (house_id, product_id) DO NOTHING
+            `;
           }
         }
-        return res.status(200).json({ success: true, house: withDualImage(updated[0]) });
+        return res.status(200).json({
+          success: true,
+          house: { ...withDualImage(updated[0]), product_ids: cleanIds, product_count: cleanIds.length }
+        });
       } catch (error) {
         console.error('Error updating trending house:', error);
         return res.status(500).json({ success: false, error: error.message });
@@ -347,6 +366,7 @@ export default async function handler(req, res) {
       try {
         const id = (body && body.id) || req.query.id;
         if (!id) return res.status(400).json({ success: false, error: 'ID es obligatorio' });
+        await sql`DELETE FROM trending_house_products WHERE house_id = ${id}`.catch(() => {});
         await sql`DELETE FROM trending_houses WHERE id = ${id}`;
         return res.status(200).json({ success: true });
       } catch (error) {

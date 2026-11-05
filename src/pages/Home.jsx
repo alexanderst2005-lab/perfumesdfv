@@ -308,317 +308,200 @@ const Home = () => {
       {/* ════ 8. COLECCIONES POR NOTAS (DESPUÉS DE CASAS EN TENDENCIA) ════ */}
       <NoteCollectionsSection />
 
-      {/* ════ 10. SEDES FÍSICAS (EXISTENTE) ════ */}
-      <section id="sedes" className="section-padding container">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <span style={{
-            fontSize: '0.72rem',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            color: '#B99A5B',
-            fontWeight: '600',
-            fontFamily: 'var(--font-sans)',
-            display: 'block',
-            marginBottom: '0.4rem'
-          }}>
-            PALMIRA, VALLE DEL CAUCA
-          </span>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
-            Nuestras Sedes
-          </h2>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.92rem', color: '#777', letterSpacing: '0.3px', maxWidth: '620px', margin: '0 auto' }}>
-            Visítanos en nuestras dos ubicaciones físicas en Palmira o escríbenos directamente a la línea de WhatsApp de cada sede.
-          </p>
-        </div>
-
-        {/* Pestañas selectoras en celular y tablet */}
-        <div className="sedes-mobile-tabs">
-          <button
-            type="button"
-            onClick={() => setActiveSedeIndex(0)}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              border: activeSedeIndex === 0 ? '1.5px solid #B99A5B' : '1px solid #ECE7DE',
-              backgroundColor: activeSedeIndex === 0 ? '#111111' : '#FFFFFF',
-              color: activeSedeIndex === 0 ? '#FFFFFF' : '#666666',
-              fontSize: '0.78rem',
+      {/* ════ 10. SEDES FÍSICAS (DISEÑO LIMPIO Y PROFESIONAL) ════ */}
+      <section id="sedes" style={{ backgroundColor: '#ffffff', padding: '2.5rem 0 3rem' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
+          
+          {/* ENCABEZADO: NUESTRAS SEDES A LA IZQUIERDA + CONTROLES < 1/2 > A LA DERECHA */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem', gap: '0.75rem' }}>
+            <h2 style={{
+              fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
+              fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
               fontWeight: '600',
-              letterSpacing: '0.5px',
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              fontFamily: 'var(--font-sans)',
-              boxShadow: activeSedeIndex === 0 ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
-            }}
-          >
-            Sede Calle 31 · Centro
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSedeIndex(1)}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              border: activeSedeIndex === 1 ? '1.5px solid #B99A5B' : '1px solid #ECE7DE',
-              backgroundColor: activeSedeIndex === 1 ? '#111111' : '#FFFFFF',
-              color: activeSedeIndex === 1 ? '#FFFFFF' : '#666666',
-              fontSize: '0.78rem',
-              fontWeight: '600',
-              letterSpacing: '0.5px',
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              fontFamily: 'var(--font-sans)',
-              boxShadow: activeSedeIndex === 1 ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
-            }}
-          >
-            Sede C.C. Llanogrande
-          </button>
-        </div>
+              color: '#1a1a1a',
+              margin: 0,
+              letterSpacing: '0.02em',
+              textTransform: 'uppercase',
+              lineHeight: 1.2
+            }}>
+              NUESTRAS SEDES
+            </h2>
 
-        {/* Carrusel Sedes */}
-        <div 
-          className="sedes-slider-wrapper"
-          onTouchStart={handleSedeTouchStart}
-          onTouchEnd={handleSedeTouchEnd}
-          style={{
-            width: '100%',
-            overflow: 'hidden',
-            position: 'relative'
-          }}
-        >
-          <div 
-            className="sedes-slider-track"
-            style={{
-              display: 'flex',
-              width: '100%',
-              transform: `translateX(-${activeSedeIndex * 100}%)`,
-              transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-          >
-            {[
-              {
-                name: 'Sede Calle 31 · Centro',
-                tag: 'Palmira · Centro',
-                address: 'Calle 31 #27-44, Palmira, Valle',
-                hours: 'Lunes a sábado: 9:00 a. m. – 12:30 p. m. y 2:30 p. m. – 7:00 p. m.',
-                phoneFormatted: '+57 320 697 0036',
-                img: '/sede_calle31.jpg',
-                maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca',
-                wa: 'https://wa.me/573206970036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Calle%2031%20Palmira',
-              },
-              {
-                name: 'Sede C.C. Llanogrande',
-                tag: 'Palmira · C.C. Llanogrande',
-                address: 'Centro Comercial Llanogrande, Palmira, Valle',
-                hours: 'L–J: 10:30 a. m. – 8:00 p. m. | V–S: 10:30 a. m. – 8:30 p. m. | D–F: 11:00 a. m. – 7:30 p. m.',
-                phoneFormatted: '+57 320 862 7036',
-                img: '/sede_llanogrande.jpg',
-                maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira',
-                wa: 'https://wa.me/573208627036?text=Hola%20DFV%20Perfumes%2C%20quisiera%20asesor%C3%ADa%20de%20la%20Sede%20Llanogrande%20Palmira',
-              },
-            ].map(s => (
-              <div 
-                key={s.name}
-                className="sede-slide-item"
+            <div className="sedes-header-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+              <button
+                type="button"
+                onClick={() => setActiveSedeIndex(prev => (prev === 0 ? 1 : 0))}
+                aria-label="Sede anterior"
                 style={{
-                  width: '100%',
-                  minWidth: '100%',
-                  flex: '0 0 100%',
-                  boxSizing: 'border-box'
+                  background: 'transparent',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#1a1a1a',
+                  padding: '4px'
                 }}
               >
+                <ChevronLeft size={18} strokeWidth={1.75} />
+              </button>
+              <span style={{
+                fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
+                fontSize: '0.82rem',
+                color: '#1a1a1a',
+                fontWeight: '500',
+                letterSpacing: '0.5px',
+                whiteSpace: 'nowrap'
+              }}>
+                {activeSedeIndex + 1}/2
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveSedeIndex(prev => (prev === 0 ? 1 : 0))}
+                aria-label="Sede siguiente"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#1a1a1a',
+                  padding: '4px'
+                }}
+              >
+                <ChevronRight size={18} strokeWidth={1.75} />
+              </button>
+            </div>
+          </div>
+
+          {/* CARRUSEL / GRID DE SEDES */}
+          <div 
+            className="sedes-slider-wrapper"
+            onTouchStart={handleSedeTouchStart}
+            onTouchEnd={handleSedeTouchEnd}
+            style={{
+              width: '100%',
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+          >
+            <div 
+              className="sedes-slider-track"
+              style={{
+                display: 'flex',
+                width: '100%',
+                transform: `translateX(-${activeSedeIndex * 100}%)`,
+                transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+            >
+              {[
+                {
+                  name: 'Sede Calle 31 · Centro',
+                  img: '/sede_calle31.jpg',
+                  maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca'
+                },
+                {
+                  name: 'Sede C.C. Llanogrande',
+                  img: '/sede_llanogrande.jpg',
+                  maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira'
+                }
+              ].map((s, idx) => (
                 <div 
-                  className="sede-card"
+                  key={s.name}
+                  className="sede-slide-item"
                   style={{
-                    border: '1px solid rgba(0,0,0,0.06)',
-                    background: '#fff',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
                     width: '100%',
-                    height: '100%'
+                    minWidth: '100%',
+                    flex: '0 0 100%',
+                    boxSizing: 'border-box'
                   }}
                 >
-                  <div style={{ aspectRatio: '16/9', overflow: 'hidden', position: 'relative' }}>
-                    <img src={s.img} alt={s.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <span style={{
-                      position: 'absolute',
-                      top: '12px',
-                      left: '12px',
-                      backgroundColor: 'rgba(0,0,0,0.65)',
-                      backdropFilter: 'blur(6px)',
-                      color: '#fff',
-                      fontSize: '0.68rem',
-                      letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                      padding: '4px 10px',
-                      borderRadius: '4px',
-                      fontWeight: '600'
-                    }}>
-                      {s.tag}
-                    </span>
-                  </div>
-                  <div style={{ padding: '1.6rem', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
-                    <div>
-                      <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', marginBottom: '0.4rem', color: '#111' }}>{s.name}</h3>
-                      <p style={{ fontSize: '0.88rem', color: '#444', marginBottom: '0.3rem', letterSpacing: '0.3px' }}>📍 {s.address}</p>
-                      <p style={{ fontSize: '0.78rem', color: '#777', marginBottom: '0.5rem', lineHeight: '1.5' }}>🕒 {s.hours}</p>
-                      <p style={{ fontSize: '0.86rem', color: '#059669', marginBottom: '1.4rem', fontWeight: '600' }}>
-                        💬 WhatsApp: {s.phoneFormatted}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.8rem' }}>
-                      <a href={s.maps} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.75rem', fontSize: '0.7rem', textAlign: 'center', border: '1px solid #ddd', color: '#333', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontWeight: '600', borderRadius: '4px' }}>CÓMO LLEGAR</a>
-                      <a href={s.wa} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '0.75rem', fontSize: '0.7rem', textAlign: 'center', background: '#111', color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontWeight: '600', borderRadius: '4px' }}>WHATSAPP</a>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    {/* FOTOGRAFÍA GRANDE Y LIMPIA */}
+                    <a
+                      href={s.maps}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        aspectRatio: '1/1',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        backgroundColor: '#f4f4f4',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <img
+                        src={s.img}
+                        alt={`DFV Perfumes - Sede ${idx + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          objectPosition: 'center',
+                          display: 'block',
+                          transition: 'transform 0.4s ease'
+                        }}
+                      />
+                    </a>
+
+                    {/* ENLACE SUBRAYADO ¿CÓMO LLEGAR? */}
+                    <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+                      <a
+                        href={s.maps}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
+                          fontSize: '0.88rem',
+                          fontWeight: '500',
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          color: '#1a1a1a',
+                          textDecoration: 'none',
+                          borderBottom: '1.5px solid #1a1a1a',
+                          paddingBottom: '3px',
+                          display: 'inline-block',
+                          transition: 'opacity 0.2s ease'
+                        }}
+                      >
+                        ¿CÓMO LLEGAR?
+                      </a>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Controles de cambio en celular y tablet */}
-        <div className="sedes-mobile-controls">
-          <button
-            type="button"
-            onClick={() => setActiveSedeIndex(0)}
-            aria-label="Sede anterior"
-            disabled={activeSedeIndex === 0}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              border: '1px solid #E5E0D8',
-              background: activeSedeIndex === 0 ? '#F4F4F4' : '#FFFFFF',
-              color: activeSedeIndex === 0 ? '#BBB' : '#111',
-              cursor: activeSedeIndex === 0 ? 'default' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: activeSedeIndex === 0 ? 'none' : '0 2px 8px rgba(0,0,0,0.06)',
-              transition: 'all 0.2s'
-            }}
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button
-              type="button"
-              onClick={() => setActiveSedeIndex(0)}
-              aria-label="Ver Sede Calle 31"
-              style={{
-                width: activeSedeIndex === 0 ? '36px' : '14px',
-                height: '7px',
-                borderRadius: '999px',
-                border: 'none',
-                backgroundColor: activeSedeIndex === 0 ? '#B99A5B' : '#DCD7CE',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                padding: 0
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => setActiveSedeIndex(1)}
-              aria-label="Ver Sede C.C. Llanogrande"
-              style={{
-                width: activeSedeIndex === 1 ? '36px' : '14px',
-                height: '7px',
-                borderRadius: '999px',
-                border: 'none',
-                backgroundColor: activeSedeIndex === 1 ? '#B99A5B' : '#DCD7CE',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                padding: 0
-              }}
-            />
+              ))}
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setActiveSedeIndex(1)}
-            aria-label="Sede siguiente"
-            disabled={activeSedeIndex === 1}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              border: '1px solid #E5E0D8',
-              background: activeSedeIndex === 1 ? '#F4F4F4' : '#FFFFFF',
-              color: activeSedeIndex === 1 ? '#BBB' : '#111',
-              cursor: activeSedeIndex === 1 ? 'default' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: activeSedeIndex === 1 ? 'none' : '0 2px 8px rgba(0,0,0,0.06)',
-              transition: 'all 0.2s'
-            }}
-          >
-            <ChevronRight size={20} />
-          </button>
+          <style>{`
+            @media (min-width: 1025px) {
+              .sedes-header-controls {
+                display: none !important;
+              }
+              .sedes-slider-wrapper {
+                overflow: visible !important;
+              }
+              .sedes-slider-track {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 2rem !important;
+                transform: none !important;
+                transition: none !important;
+                width: 100% !important;
+              }
+              .sede-slide-item {
+                width: auto !important;
+                min-width: 0 !important;
+                flex: auto !important;
+              }
+            }
+          `}</style>
         </div>
-
-        <p className="sedes-swipe-hint">
-          {activeSedeIndex === 0 ? 'Desliza hacia la izquierda para ver Sede C.C. Llanogrande ➔' : '◀ Desliza hacia la derecha para ver Sede Calle 31'}
-        </p>
-
-        <style>{`
-          .sedes-mobile-tabs,
-          .sedes-mobile-controls,
-          .sedes-swipe-hint {
-            display: none;
-          }
-          @media (min-width: 1025px) {
-            .sedes-slider-wrapper {
-              overflow: visible !important;
-            }
-            .sedes-slider-track {
-              display: grid !important;
-              grid-template-columns: repeat(2, 1fr) !important;
-              gap: 2rem !important;
-              transform: none !important;
-              transition: none !important;
-              width: 100% !important;
-            }
-            .sede-slide-item {
-              width: auto !important;
-              min-width: 0 !important;
-              flex: auto !important;
-            }
-          }
-          @media (max-width: 1024px) {
-            .sedes-mobile-tabs {
-              display: flex !important;
-              gap: 10px;
-              margin-bottom: 1.4rem;
-            }
-            .sedes-slider-wrapper {
-              overflow: hidden !important;
-              width: 100% !important;
-            }
-            .sedes-mobile-controls {
-              display: flex !important;
-              justify-content: center;
-              align-items: center;
-              gap: 1.4rem;
-              margin-top: 1.4rem;
-            }
-            .sedes-swipe-hint {
-              display: block !important;
-              text-align: center;
-              font-size: 0.76rem;
-              color: #888;
-              margin-top: 0.6rem;
-              letter-spacing: 0.5px;
-            }
-          }
-        `}</style>
       </section>
 
       {/* ════ 10. PREGUNTAS FRECUENTES ════ */}
