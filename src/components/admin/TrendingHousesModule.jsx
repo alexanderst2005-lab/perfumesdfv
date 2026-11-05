@@ -589,3 +589,4 @@ const TrendingHousesModule = () => {
 };
 
 export default TrendingHousesModule;
+

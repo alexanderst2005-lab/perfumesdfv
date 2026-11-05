@@ -590,3 +590,4 @@ const NoteCollectionsModule = () => {
 };
 
 export default NoteCollectionsModule;
+

@@ -2,6 +2,30 @@
   "regions": ["iad1"],
   "rewrites": [
     {
+      "source": "/api/promo-banner",
+      "destination": "/api/home-sections?type=promo-banner"
+    },
+    {
+      "source": "/api/site-counters",
+      "destination": "/api/home-sections?type=site-counters"
+    },
+    {
+      "source": "/api/note-collections",
+      "destination": "/api/home-sections?type=note-collections"
+    },
+    {
+      "source": "/api/trending-houses",
+      "destination": "/api/home-sections?type=trending-houses"
+    },
+    {
+      "source": "/api/admin/reels",
+      "destination": "/api/reels?admin=true"
+    },
+    {
+      "source": "/api/admin/reviews",
+      "destination": "/api/reviews?admin=true"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },

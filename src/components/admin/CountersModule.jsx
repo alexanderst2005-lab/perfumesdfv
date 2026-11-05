@@ -228,3 +228,4 @@ const CountersModule = () => {
 };
 
 export default CountersModule;
+
