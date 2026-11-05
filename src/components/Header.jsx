@@ -57,33 +57,15 @@ const Header = () => {
             position: 'relative', /* Importante para el centrado absoluto del logo */
           }}>
 
-            {/* LEFT — Hamburger (Mobile) & Nav Links (Desktop) */}
+            {/* LEFT — Hamburger Menu (PC & Mobile) */}
             <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
               <button
-                className="mobile-only"
                 aria-label="Menú"
-                style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', marginRight: '1rem' }}
+                style={{ color: 'inherit', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
                 onClick={() => setMenuOpen(true)}
               >
                 <Menu size={24} strokeWidth={1.5} />
               </button>
-
-              <nav className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '2.2rem' }}>
-                {navLinks.map(l => (
-                  <Link key={l.label} to={l.path} style={{
-                    color: 'inherit',
-                    textDecoration: 'none',
-                    fontSize: '0.75rem',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    fontWeight: '500',
-                    opacity: 0.85,
-                    transition: 'opacity 0.2s'
-                  }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.85}>
-                    {l.label}
-                  </Link>
-                ))}
-              </nav>
             </div>
 
             {/* CENTER — Logo DFV PERFUMES 100% Centrado */}
@@ -140,10 +122,12 @@ const Header = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.28 }}
+              className="dfv-side-menu"
               style={{
                 position: 'fixed', top: 0, left: 0, bottom: 0,
-                width: '100%', backgroundColor: '#fff', zIndex: 1999,
-                padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column',
+                width: '100%', maxWidth: '400px', backgroundColor: '#fff', zIndex: 1999,
+                padding: '2rem 1.8rem', display: 'flex', flexDirection: 'column',
+                boxShadow: '12px 0 36px rgba(0,0,0,0.18)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
