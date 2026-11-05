@@ -152,10 +152,10 @@ const CountersBar = () => {
       ref={sectionRef}
       className="dfv-counters-section" 
       style={{ 
-        backgroundColor: '#FAF8F5', 
+        backgroundColor: '#FFFFFF', 
         padding: '3.75rem 0 3.5rem',
-        borderTop: '1px solid #EAE6DF',
-        borderBottom: '1px solid #EAE6DF'
+        borderTop: '1px solid #F0ECE6',
+        borderBottom: '1px solid #F0ECE6'
       }}
     >
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.25rem' }}>

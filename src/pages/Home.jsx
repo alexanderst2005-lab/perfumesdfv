@@ -115,7 +115,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div style={{ backgroundColor: '#FFFFFF', minHeight: '100vh', width: '100%' }}>
 
       {/* ════ 1. HERO PRINCIPAL EXISTENTE (DISEÑO ORIGINAL CENTRADO) ════ */}
       <section
@@ -291,22 +291,22 @@ const Home = () => {
       {/* ════ 3. BANNER PROMOCIONAL ════ */}
       <PromoBanner />
 
-      {/* ════ 4. COLECCIONES POR NOTAS ════ */}
-      <NoteCollectionsSection />
-
-      {/* ════ 5. CASAS EN TENDENCIA ════ */}
-      <TrendingHousesSection />
-
-      {/* ════ 6. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL ════ */}
+      {/* ════ 4. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL ════ */}
       <LazyOnView minHeight={520}>
         <Suspense fallback={null}><InstagramReelsSection /></Suspense>
       </LazyOnView>
 
-      {/* ════ 7. BARRA DE CONTADORES (DESPUÉS DE LOS VIDEOS) ════ */}
+      {/* ════ 5. BARRA DE CONTADORES ════ */}
       <CountersBar />
 
-      {/* ════ 8. FAVORITOS EN OFERTA (DESPUÉS DE LOS CONTADORES) ════ */}
+      {/* ════ 6. FAVORITOS EN OFERTA ════ */}
       <OffersSection />
+
+      {/* ════ 7. CASAS EN TENDENCIA (DESPUÉS DE FAVORITOS EN OFERTAS) ════ */}
+      <TrendingHousesSection />
+
+      {/* ════ 8. COLECCIONES POR NOTAS (DESPUÉS DE CASAS EN TENDENCIA) ════ */}
+      <NoteCollectionsSection />
 
       {/* ════ 10. SEDES FÍSICAS (EXISTENTE) ════ */}
       <section id="sedes" className="section-padding container">
@@ -494,7 +494,7 @@ const Home = () => {
               height: '40px',
               borderRadius: '50%',
               border: '1px solid #E5E0D8',
-              background: activeSedeIndex === 0 ? '#F9F8F6' : '#FFFFFF',
+              background: activeSedeIndex === 0 ? '#F4F4F4' : '#FFFFFF',
               color: activeSedeIndex === 0 ? '#BBB' : '#111',
               cursor: activeSedeIndex === 0 ? 'default' : 'pointer',
               display: 'flex',
@@ -550,7 +550,7 @@ const Home = () => {
               height: '40px',
               borderRadius: '50%',
               border: '1px solid #E5E0D8',
-              background: activeSedeIndex === 1 ? '#F9F8F6' : '#FFFFFF',
+              background: activeSedeIndex === 1 ? '#F4F4F4' : '#FFFFFF',
               color: activeSedeIndex === 1 ? '#BBB' : '#111',
               cursor: activeSedeIndex === 1 ? 'default' : 'pointer',
               display: 'flex',
@@ -621,8 +621,8 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ 11. PREGUNTAS FRECUENTES (EXISTENTE REORGANIZADA) ════ */}
-      <section style={{ backgroundColor: '#FCFBF9', padding: '4rem 0 3rem', borderTop: '1px solid #EAE8E4' }}>
+      {/* ════ 10. PREGUNTAS FRECUENTES ════ */}
+      <section style={{ backgroundColor: '#FFFFFF', padding: '4rem 0 3rem', borderTop: '1px solid #F0ECE6' }}>
         <div className="container" style={{ maxWidth: '640px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span style={{
@@ -719,8 +719,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ════ 12. MEDIOS DE PAGO Y ALIADOS (EXISTENTE) ════ */}
-      <section style={{ padding: '3.5rem 0', backgroundColor: '#fff', borderTop: '1px solid #EAE8E4' }}>
+      {/* ════ 11. MEDIOS DE PAGO Y ALIADOS ════ */}
+      <section style={{ padding: '3.5rem 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #F0ECE6' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           
           {/* Opciones de Pago */}
@@ -979,8 +979,8 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
           style={{
             width: '100%',
             padding: '0.48rem 0.6rem',
-            backgroundColor: '#FAF9F6',
-            border: '1px solid #D5D0C6',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #1A1A1A',
             borderRadius: '4px',
             color: '#1A1A1A',
             fontSize: '0.64rem',

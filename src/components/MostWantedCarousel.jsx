@@ -181,7 +181,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
                   transition: 'all 0.2s ease',
                   padding: 0
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#FAF8F5'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E2DC'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
               >
                 <ChevronLeft size={16} />
@@ -203,7 +203,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
                   transition: 'all 0.2s ease',
                   padding: 0
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#FAF8F5'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E2DC'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
               >
                 <ChevronRight size={16} />

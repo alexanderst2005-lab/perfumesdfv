@@ -50,7 +50,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
     const tryPlay = () => {
       const p = video.play();
       if (p !== undefined) {
-        p.then(() => setVideoLoaded(true)).catch(() => {});
+        p.then(() => setVideoLoaded(true)).catch(() => { });
       }
     };
 
@@ -82,7 +82,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
   };
 
   return (
-    <div 
+    <div
       className="reel-feed-card"
       onClick={() => onOpenModal(reel)}
       style={{
@@ -98,9 +98,9 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
     >
       {/* 1. Póster / Imagen SIEMPRE visible debajo para que nunca se vea cuadro negro */}
       {thumb ? (
-        <img 
-          src={thumb} 
-          alt={reel.title} 
+        <img
+          src={thumb}
+          alt={reel.title}
           loading="lazy"
           decoding="async"
           style={{
@@ -122,9 +122,9 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
 
       {/* 2. Video reproduciéndose en bucle optimizado por afuerita */}
       {fastVideoUrl && (
-        <video 
+        <video
           ref={videoRef}
-          src={fastVideoUrl} 
+          src={fastVideoUrl}
           poster={thumb || undefined}
           autoPlay
           loop
@@ -190,7 +190,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
       )}
 
       {/* Botón Circular de Play en la esquina inferior izquierda */}
-      <div 
+      <div
         style={{
           position: 'absolute',
           bottom: '14px',
@@ -289,13 +289,13 @@ const InstagramReelsSection = () => {
   }
 
   return (
-    <section 
+    <section
       id="instagram-reels"
       className="section-padding"
-      style={{ 
-        backgroundColor: '#FCFBF9',
-        borderTop: '1px solid #EAE8E4',
-        borderBottom: '1px solid #EAE8E4',
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderTop: '1px solid #F0ECE6',
+        borderBottom: '1px solid #F0ECE6',
         position: 'relative',
         overflow: 'hidden'
       }}
@@ -352,7 +352,7 @@ const InstagramReelsSection = () => {
             Mira cómo nuestra comunidad vive, usa y recomienda sus fragancias favoritas.
           </p>
 
-          <a 
+          <a
             href={INSTAGRAM_ACCOUNT.profileUrl}
             target="_blank"
             rel="noreferrer"
@@ -390,7 +390,7 @@ const InstagramReelsSection = () => {
         <div className="reels-scroll-wrapper">
           <div className="reels-feed-container">
             {reels.map((reel) => (
-              <ReelFeedCard 
+              <ReelFeedCard
                 key={reel.id}
                 reel={reel}
                 onOpenModal={openReelModal}
@@ -402,7 +402,7 @@ const InstagramReelsSection = () => {
 
       {/* Modal Popup para Reproducir el Video EN PANTALLA COMPLETA con Audio */}
       {activeModalReel && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             inset: 0,
@@ -417,7 +417,7 @@ const InstagramReelsSection = () => {
           }}
           onClick={closeModal}
         >
-          <div 
+          <div
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '16px',
@@ -448,7 +448,7 @@ const InstagramReelsSection = () => {
                   {activeModalReel.title}
                 </span>
               </div>
-              <button 
+              <button
                 onClick={closeModal}
                 style={{
                   color: '#111',
@@ -507,7 +507,7 @@ const InstagramReelsSection = () => {
                 DFV Perfumes Oficial
               </span>
               {activeModalReel.reelUrl && (
-                <a 
+                <a
                   href={activeModalReel.reelUrl}
                   target="_blank"
                   rel="noreferrer"

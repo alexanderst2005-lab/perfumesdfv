@@ -27,7 +27,7 @@ const NoteCollectionsSection = () => {
           }
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoaded(true));
   }, []);
 
@@ -36,9 +36,9 @@ const NoteCollectionsSection = () => {
   }
 
   return (
-    <section className="dfv-note-collections-section" style={{ backgroundColor: '#FAF8F5', padding: '3.5rem 0 3.25rem' }}>
+    <section className="dfv-note-collections-section" style={{ backgroundColor: '#FFFFFF', padding: '3.5rem 0 3.25rem' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
-        
+
         {/* ENCABEZADO CENTRADO */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <span style={{ fontFamily: 'var(--font-sans, "Montserrat", sans-serif)', fontSize: '0.68rem', letterSpacing: '3px', textTransform: 'uppercase', color: '#B99A5B', fontWeight: '700', display: 'block', marginBottom: '0.4rem' }}>
@@ -71,7 +71,7 @@ const NoteCollectionsSection = () => {
                 }}
               >
                 {/* FOTOGRAFÍA CUADRADA */}
-                <div 
+                <div
                   className="dfv-note-img-wrap"
                   style={{
                     position: 'relative',
@@ -99,7 +99,7 @@ const NoteCollectionsSection = () => {
                     }}
                   />
                   {/* Badge contador discreto */}
-                  <div 
+                  <div
                     style={{
                       position: 'absolute',
                       top: '10px',
@@ -121,7 +121,7 @@ const NoteCollectionsSection = () => {
 
                 {/* NOMBRE DEBAJO EN MAYÚSCULAS */}
                 <div style={{ textAlign: 'center', marginTop: '0.85rem' }}>
-                  <h3 
+                  <h3
                     style={{
                       fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
                       fontSize: '0.82rem',

@@ -99,8 +99,8 @@ const OffersSection = () => {
       className="section-padding"
       style={{
         backgroundColor: '#FFFFFF',
-        borderTop: '1px solid #EAE8E4',
-        borderBottom: '1px solid #EAE8E4',
+        borderTop: '1px solid #F0ECE6',
+        borderBottom: '1px solid #F0ECE6',
         position: 'relative'
       }}
     >
