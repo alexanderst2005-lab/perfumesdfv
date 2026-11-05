@@ -308,12 +308,12 @@ const NoteCollectionsModule = () => {
               }}
             >
               {/* Imagen de portada */}
-              <div style={{ position: 'relative', height: '160px', backgroundColor: '#F9F8F6' }}>
+              <div style={{ position: 'relative', minHeight: '180px', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem' }}>
                 {(col.image_url || col.image) ? (
                   <img
-                    src={optimizeImg(col.image_url || col.image, 400)}
+                    src={optimizeImg(col.image_url || col.image, 600)}
                     alt={col.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    style={{ width: '100%', height: 'auto', maxHeight: '220px', objectFit: 'contain', display: 'block', borderRadius: '6px' }}
                   />
                 ) : (
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>
@@ -473,7 +473,7 @@ const NoteCollectionsModule = () => {
                   </label>
                   {formData.image_url && (
                     <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <img src={formData.image_url} alt="Portada" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                      <img src={formData.image_url} alt="Portada" style={{ width: '56px', height: '56px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#fff', border: '1px solid #EAE8E4' }} />
                       <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 500 }}>✓ Portada cargada</span>
                     </div>
                   )}

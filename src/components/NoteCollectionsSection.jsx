@@ -63,16 +63,18 @@ const NoteCollectionsSection = () => {
                   color: 'inherit'
                 }}
               >
-                {/* FOTOGRAFÍA CUADRADA LIMPIA */}
+                {/* FOTOGRAFÍA 100% COMPLETA Y LIMPIA SIN RECORTES */}
                 <div
                   className="dfv-note-img-wrap"
                   style={{
                     position: 'relative',
                     width: '100%',
-                    aspectRatio: '1/1',
                     borderRadius: '8px',
                     overflow: 'hidden',
-                    backgroundColor: '#f4f4f4'
+                    backgroundColor: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
                   <img
@@ -82,10 +84,11 @@ const NoteCollectionsSection = () => {
                     decoding="async"
                     style={{
                       width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
+                      height: 'auto',
+                      objectFit: 'contain',
                       objectPosition: 'center',
                       display: 'block',
+                      borderRadius: '8px',
                       transition: 'transform 0.35s ease'
                     }}
                   />
