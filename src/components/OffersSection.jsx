@@ -297,8 +297,11 @@ const OffersSection = () => {
           .dfv-offers-controls {
             display: none !important;
           }
+          .dfv-offers-track {
+            gap: 20px !important;
+          }
           .dfv-offer-card-wrap {
-            flex: 0 0 calc((100% - 42px) / 4.15);
+            flex: 0 0 calc((100% - 60px) / 4.12);
           }
           .dfv-offers-pc-btn {
             display: flex;

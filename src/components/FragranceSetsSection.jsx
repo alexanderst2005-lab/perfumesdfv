@@ -204,42 +204,50 @@ const FragranceSetsSection = () => {
           margin: 0 1.25rem;
         }
 
-        /* ════ DISEÑO EXCLUSIVO PC (COMO IMAGEN 4: TEXTO A LA IZQUIERDA + IMAGEN A LA DERECHA) ════ */
+        /* ════ DISEÑO EXCLUSIVO PC (COMO IMAGEN 4: TEXTO A LA IZQUIERDA ALINEADO AL BORDE + IMAGEN A LA DERECHA) ════ */
         @media (min-width: 769px) {
           .dfv-sets-section {
             padding: 3.5rem 0 3rem !important;
           }
           .dfv-sets-container {
-            padding: 0 1.15rem;
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 28px !important;
+            box-sizing: border-box !important;
           }
           .dfv-sets-layout {
             display: grid;
-            grid-template-columns: 1fr 1.15fr;
+            grid-template-columns: 42% 1fr;
             align-items: center;
-            gap: 3.5rem;
+            gap: 2.5rem;
             margin-bottom: 3rem;
+            width: 100%;
           }
           .dfv-sets-content {
             order: 1;
             text-align: left;
-            padding: 0;
-            margin: 0;
+            padding: 0 !important;
+            margin: 0 !important;
+            justify-self: start;
+            width: 100%;
             max-width: 520px;
           }
           .dfv-sets-image-wrap {
             order: 2;
             border-radius: 0;
+            width: 100%;
           }
           .dfv-sets-title {
             font-size: clamp(2.2rem, 3.6vw, 3.15rem);
             line-height: 1.12;
             margin: 0 0 1.25rem;
-            max-width: 420px;
+            max-width: 440px;
           }
           .dfv-sets-subtitle {
             font-size: 0.96rem;
             margin: 0 0 2rem;
-            max-width: 440px;
+            max-width: 460px;
             color: #333333;
           }
           .dfv-sets-btn {
@@ -256,7 +264,7 @@ const FragranceSetsSection = () => {
             color: #ffffff;
           }
           .dfv-sets-divider {
-            margin: 0;
+            margin: 0 !important;
           }
         }
       `}</style>

@@ -284,8 +284,11 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           .dfv-mw-controls {
             display: none !important;
           }
+          .dfv-mw-carousel-track {
+            gap: 20px !important;
+          }
           .dfv-mw-card-wrapper {
-            flex: 0 0 calc((100% - 42px) / 4.15);
+            flex: 0 0 calc((100% - 60px) / 4.12);
           }
           .dfv-pc-slider-btn {
             display: flex;

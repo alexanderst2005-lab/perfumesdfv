@@ -297,8 +297,11 @@ const TrendingHousesSection = () => {
           .dfv-houses-controls {
             display: none !important;
           }
+          .dfv-houses-track {
+            gap: 22px !important;
+          }
           .dfv-house-card {
-            flex: 0 0 calc((100% - 48px) / 4.15);
+            flex: 0 0 calc((100% - 44px) / 3.12);
           }
           .dfv-houses-pc-btn {
             display: flex;
