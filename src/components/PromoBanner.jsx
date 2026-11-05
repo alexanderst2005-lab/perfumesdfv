@@ -132,11 +132,12 @@ const PromoBanner = () => {
     };
   }, [randomProducts]);
 
-  // Movimiento automático continuo ("que se mantengan cambiando solos")
+  // Movimiento automático continuo en móvil ("que se mantengan cambiando solos")
   useEffect(() => {
     if (randomProducts.length <= 2) return;
     const timer = setInterval(() => {
       if (isPausedRef.current) return;
+      if (typeof window !== 'undefined' && window.innerWidth >= 769) return;
       const el = trackRef.current;
       if (!el) return;
       const maxScroll = el.scrollWidth - el.clientWidth;
@@ -202,7 +203,7 @@ const PromoBanner = () => {
           </div>
         </div>
 
-        {/* 2. CARRUSEL DE PRODUCTOS ALEATORIOS ABAJITO DEL BANNER (CAMBIANDO SOLOS COMO IMAGEN 2) */}
+        {/* 2. PRODUCTOS ALEATORIOS (A UN LADO EN PC CON SCROLL VERTICAL / ABAJO EN MÓVIL CON CARRUSEL) */}
         {randomProducts.length > 0 && (
           <div
             className="dfv-promo-products-wrap"
@@ -212,41 +213,15 @@ const PromoBanner = () => {
             onTouchEnd={() => {
               setTimeout(() => { isPausedRef.current = false; }, 2500);
             }}
-            style={{ marginTop: '1.35rem', position: 'relative' }}
           >
-            {canScrollLeft && (
-              <button
-                type="button"
-                onClick={scrollPrev}
-                aria-label="Anterior"
-                className="dfv-promo-pc-btn dfv-promo-pc-btn--left"
-              >
-                <ChevronLeft size={20} strokeWidth={1.8} />
-              </button>
-            )}
-
             <div
               ref={trackRef}
               className="dfv-promo-products-track"
-              style={{
-                display: 'flex',
-                gap: '14px',
-                overflowX: 'auto',
-                scrollSnapType: 'x mandatory',
-                scrollBehavior: 'smooth',
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: '0.4rem',
-                scrollbarWidth: 'none'
-              }}
             >
               {randomProducts.map((p, idx) => (
                 <div
                   key={p.id}
                   className="dfv-promo-product-card"
-                  style={{
-                    scrollSnapAlign: 'start',
-                    boxSizing: 'border-box'
-                  }}
                 >
                   <ProductCard
                     product={p}
@@ -258,17 +233,6 @@ const PromoBanner = () => {
                 </div>
               ))}
             </div>
-
-            {(canScrollRight || randomProducts.length > 4) && (
-              <button
-                type="button"
-                onClick={scrollNext}
-                aria-label="Siguiente"
-                className="dfv-promo-pc-btn dfv-promo-pc-btn--right"
-              >
-                <ChevronRight size={20} strokeWidth={1.8} />
-              </button>
-            )}
 
             {/* PAGINACIÓN INFERIOR CENTRADA < 1/6 > EN MÓVIL (IDÉNTICA A IMAGEN 2) */}
             <div className="dfv-promo-bottom-pager">
@@ -419,11 +383,8 @@ const PromoBanner = () => {
         }
         .dfv-promo__btn:hover { background: #ffffff; color: #1a1a1a; }
 
-        /* Carrusel de productos aleatorios debajo del banner */
+        /* Productos aleatorios: en PC a la derecha con scroll vertical / en móvil abajo en carrusel */
         .dfv-promo-products-track::-webkit-scrollbar {
-          display: none;
-        }
-        .dfv-promo-pc-btn {
           display: none;
         }
         .dfv-promo-bottom-pager {
@@ -435,44 +396,72 @@ const PromoBanner = () => {
         }
 
         @media (min-width: 769px) {
+          .dfv-promo {
+            padding: 32px 0 28px;
+          }
+          .dfv-promo__wrap {
+            display: grid;
+            grid-template-columns: 48.5% 1fr;
+            gap: 28px;
+            align-items: stretch;
+          }
+          .dfv-promo__card {
+            min-height: 580px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+          }
+          .dfv-promo__title {
+            font-size: clamp(2rem, 3.6vw, 3.4rem);
+          }
+          .dfv-promo-products-wrap {
+            margin-top: 0;
+            position: relative;
+            height: 100%;
+            min-height: 580px;
+          }
+          .dfv-promo-products-track {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 26px 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            align-content: start;
+            padding-bottom: 12px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
           .dfv-promo-product-card {
-            flex: 0 0 calc((100% - 42px) / 4.15);
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
           }
           .dfv-promo-bottom-pager {
             display: none !important;
           }
-          .dfv-promo-pc-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 38%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background-color: #ffffff;
-            border: 1px solid #d9d9d9;
-            border-radius: 3px;
-            color: #1a1a1a;
-            cursor: pointer;
-            z-index: 15;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-          }
-          .dfv-promo-pc-btn:hover {
-            background-color: #f8f8f8;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
-          }
-          .dfv-promo-pc-btn--left {
-            left: 8px;
-          }
-          .dfv-promo-pc-btn--right {
-            right: 8px;
-          }
         }
 
         @media (max-width: 768px) {
+          .dfv-promo-products-wrap {
+            margin-top: 1.35rem;
+            position: relative;
+          }
+          .dfv-promo-products-track {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.4rem;
+            scrollbar-width: none;
+          }
           .dfv-promo-product-card {
+            scroll-snap-align: start;
+            box-sizing: border-box;
             flex: 0 0 calc((100% - 28px) / 3);
           }
         }

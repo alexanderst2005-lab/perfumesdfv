@@ -677,3 +677,4 @@ const HeroSedesModule = () => {
 };
 
 export default HeroSedesModule;
+
