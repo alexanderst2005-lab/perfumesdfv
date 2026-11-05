@@ -41,11 +41,36 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
   }
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      videoRef.current.play().catch(() => {});
-    }
-  }, [isMuted]);
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = isMuted;
+
+    // Reproducción directa por afuerita
+    const tryPlay = () => {
+      const p = video.play();
+      if (p !== undefined) {
+        p.then(() => setVideoLoaded(true)).catch(() => {});
+      }
+    };
+
+    tryPlay();
+
+    // IntersectionObserver para garantizar reproducción al hacer scroll
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tryPlay();
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [isMuted, fastVideoUrl]);
 
   const toggleSound = (e) => {
     e.stopPropagation();
@@ -106,7 +131,7 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
           muted={isMuted}
           playsInline
           webkit-playsinline="true"
-          preload="none"
+          preload="auto"
           onCanPlay={() => setVideoLoaded(true)}
           onPlaying={() => setVideoLoaded(true)}
           onLoadedData={() => setVideoLoaded(true)}
@@ -118,8 +143,8 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
             objectFit: 'cover',
             display: 'block',
             zIndex: 2,
-            opacity: videoLoaded ? 1 : 0,
-            transition: 'opacity 0.4s ease transform 0.5s ease'
+            opacity: videoLoaded ? 1 : 0.8,
+            transition: 'opacity 0.3s ease'
           }}
           className="reel-video-preview"
         />

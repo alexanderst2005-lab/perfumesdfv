@@ -3,8 +3,15 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+const DEFAULT_HOUSES = [
+  { id: 'lattafa', name: 'Lattafa', product_count: 14, image: '/hero_campaign_1.webp' },
+  { id: 'afnan', name: 'Afnan', product_count: 9, image: '/hero_campaign_2.webp' },
+  { id: 'armaf', name: 'Armaf', product_count: 11, image: '/hero_campaign_3.webp' },
+  { id: 'al-haramain', name: 'Al Haramain', product_count: 8, image: '/hero_campaign_1_m.webp' }
+];
+
 const TrendingHousesSection = () => {
-  const [houses, setHouses] = useState([]);
+  const [houses, setHouses] = useState(DEFAULT_HOUSES);
   const [loaded, setLoaded] = useState(false);
   const trackRef = useRef(null);
 
@@ -16,7 +23,9 @@ const TrendingHousesSection = () => {
           const activeWithProducts = data.houses.filter(
             h => h.active !== false && h.product_count > 0
           );
-          setHouses(activeWithProducts);
+          if (activeWithProducts.length > 0) {
+            setHouses(activeWithProducts);
+          }
         }
       })
       .catch(() => {})
@@ -33,7 +42,7 @@ const TrendingHousesSection = () => {
     trackRef.current.scrollBy({ left: 320, behavior: 'smooth' });
   };
 
-  if (!loaded || houses.length === 0) {
+  if (houses.length === 0) {
     return null;
   }
 

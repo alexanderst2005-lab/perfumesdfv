@@ -2,15 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+const DEFAULT_BANNER = {
+  title: 'ELEGANCIA QUE PERDURA',
+  subtitle: 'Fragancias exclusivas que definen tu presencia con un sello inconfundible de lujo.',
+  buttonText: 'COMPRAR AHORA',
+  link: '/tienda',
+  image: '/hero_campaign_2.webp',
+  active: true
+};
+
 const PromoBanner = () => {
-  const [banner, setBanner] = useState(null);
+  const [banner, setBanner] = useState(DEFAULT_BANNER);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch('/api/promo-banner')
       .then(r => r.json())
       .then(data => {
-        if (data.success && data.banner) {
+        if (data.success && data.banner && data.banner.active !== false) {
           setBanner(data.banner);
         }
       })
@@ -18,7 +27,7 @@ const PromoBanner = () => {
       .finally(() => setLoaded(true));
   }, []);
 
-  if (!loaded || !banner || banner.active === false) {
+  if (!banner || banner.active === false) {
     return null;
   }
 

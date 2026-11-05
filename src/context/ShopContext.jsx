@@ -121,8 +121,8 @@ export const ShopProvider = ({ children }) => {
         window.__early = null;
         const [earlyP, earlyC] = early ? await Promise.all([early.products, early.categories]) : [null, null];
         const [resP, resC] = await Promise.all([
-          earlyP || fetch('/api/products'),
-          earlyC || fetch('/api/categories')
+          earlyP || fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' }),
+          earlyC || fetch(`/api/categories?t=${Date.now()}`, { cache: 'no-store' })
         ]);
         
         if (resP.ok) {
@@ -168,6 +168,14 @@ export const ShopProvider = ({ children }) => {
       }
     };
     fetchData();
+
+    // Auto-refresh fresh data when window regains focus (e.g. switching back from admin panel)
+    const handleFocus = () => {
+      refreshProducts().catch(() => {});
+      refreshCategories().catch(() => {});
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   // Precarga en segundo plano las fotos de las tarjetas del catálogo

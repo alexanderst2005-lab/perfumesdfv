@@ -11,13 +11,13 @@
     <link rel="preload" as="image" type="image/webp" href="/hero_campaign_1_m.webp" media="(max-width: 768px)" fetchpriority="high" />
     <link rel="preload" as="image" type="image/webp" href="/hero_campaign_1.webp" media="(min-width: 769px)" fetchpriority="high" />
     <script>
-      // Inicia la descarga inmediata de productos, categorías y reels al mismo tiempo que el HTML
       (function () {
         try {
+          var t = Date.now();
           window.__early = {
-            products: fetch('/api/products').catch(function () { return null; }),
-            categories: fetch('/api/categories').catch(function () { return null; }),
-            reels: fetch('/api/reels').catch(function () { return null; })
+            products: fetch('/api/products?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
+            categories: fetch('/api/categories?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
+            reels: fetch('/api/reels?t=' + t, { cache: 'no-store' }).catch(function () { return null; })
           };
         } catch (e) {}
       })();

@@ -297,14 +297,22 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
         }
         @media (max-width: 640px) {
           .dfv-most-wanted-section {
-            padding: 2.2rem 0 1.8rem !important;
+            padding: 3.25rem 0 2.25rem !important;
+          }
+          .dfv-mw-header {
+            align-items: flex-start !important;
+            margin-bottom: 1.2rem !important;
+          }
+          .dfv-mw-controls {
+            align-self: flex-start !important;
+            margin-top: 0.2rem !important;
           }
           .dfv-mw-card-wrapper {
-            flex: 0 0 45% !important; /* Tarjetas proporcionadas y no gigantes en celular */
-            min-width: 145px !important;
+            flex: 0 0 calc((100% - 1rem) / 2.25) !important; /* 2 tarjetas completas + asomo de la 3ra */
+            min-width: 152px !important;
           }
           .dfv-mw-carousel-track {
-            gap: 0.75rem !important;
+            gap: 0.85rem !important;
           }
         }
       `}</style>

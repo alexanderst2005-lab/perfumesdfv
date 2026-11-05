@@ -1,18 +1,14 @@
 import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
-  // GET is cached at the CDN (admin refreshes bypass it with a unique ?t= query).
-  // Any write method is never cached so admin changes reflect immediately.
-  if (req.method === 'GET') {
-    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=30, stale-while-revalidate=86400');
-  } else {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-  }
+  // Always disable cache for real-time updates
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
   try {
     const sql = neon(process.env.DATABASE_URL);
 
-    // Safely parse body if sent as string
     let body = req.body;
     if (typeof body === 'string') {
       try {
@@ -34,7 +30,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'El nombre de la categoría es requerido' });
       }
 
-      // Check if category already exists (case-insensitive)
       const existing = await sql`
         SELECT id FROM categories WHERE LOWER(TRIM(name)) = LOWER(${name})
       `;
@@ -51,56 +46,48 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PUT') {
-      const id = body.id !== undefined && body.id !== null ? parseInt(body.id, 10) : null;
-      const name = body.name?.trim();
-
-      if (!id || isNaN(id) || !name) {
-        return res.status(400).json({ success: false, error: 'ID y Nombre de categoría son requeridos' });
+      const { id, name } = body;
+      if (!id || !name?.trim()) {
+        return res.status(400).json({ success: false, error: 'ID y nuevo nombre son requeridos' });
       }
 
-      // Check existing category
-      const current = await sql`SELECT * FROM categories WHERE id = ${id}`;
-      if (current.length === 0) {
-        return res.status(404).json({ success: false, error: 'Categoría no encontrada' });
-      }
-      const oldName = current[0].name;
-
-      // Check if another category already has this name
-      const duplicate = await sql`
-        SELECT id FROM categories WHERE LOWER(TRIM(name)) = LOWER(${name}) AND id != ${id}
+      const existing = await sql`
+        SELECT id FROM categories WHERE LOWER(TRIM(name)) = LOWER(${name.trim()}) AND id != ${id}
       `;
-      if (duplicate.length > 0) {
+      if (existing.length > 0) {
         return res.status(400).json({ success: false, error: `Ya existe otra categoría llamada "${name}"` });
       }
 
       const updated = await sql`
         UPDATE categories 
-        SET name = ${name} 
+        SET name = ${name.trim()} 
         WHERE id = ${id} 
         RETURNING *
       `;
-
-      // If category name was renamed, update all products referencing old category name or linked by category_id
-      if (oldName && oldName !== name) {
-        try {
-          await sql`
-            UPDATE products 
-            SET category = ${name} 
-            WHERE category_id = ${id} 
-               OR LOWER(TRIM(category)) = LOWER(TRIM(${oldName}))
-          `;
-        } catch (cascadeErr) {
-          console.error('Cascade Category Update Error:', cascadeErr);
-        }
+      
+      if (updated.length === 0) {
+        return res.status(404).json({ success: false, error: 'Categoría no encontrada' });
       }
 
       return res.status(200).json({ success: true, data: updated[0] });
     }
 
     if (req.method === 'DELETE') {
-      const id = body.id !== undefined && body.id !== null ? parseInt(body.id, 10) : null;
-      if (!id || isNaN(id)) {
-        return res.status(400).json({ success: false, error: 'ID de categoría es requerido' });
+      const { id } = body;
+      if (!id) {
+        return res.status(400).json({ success: false, error: 'ID es requerido' });
+      }
+
+      // Check if products exist in category
+      const assigned = await sql`
+        SELECT COUNT(*)::int as count FROM products WHERE category_id = ${id}
+      `;
+      
+      if (assigned[0]?.count > 0) {
+        return res.status(400).json({ 
+          success: false, 
+          error: `No se puede eliminar: tiene ${assigned[0].count} producto(s) asignado(s)` 
+        });
       }
 
       await sql`DELETE FROM categories WHERE id = ${id}`;
@@ -110,7 +97,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method Not Allowed' });
   } catch (error) {
     console.error('Categories API Error:', error);
-    return res.status(500).json({ success: false, error: error.message || 'Error del servidor', details: error.message });
+    return res.status(500).json({ success: false, error: 'Internal Server Error', details: error.message });
   }
 }
-

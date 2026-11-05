@@ -288,3 +288,4 @@ const MostWantedModule = () => {
 };
 
 export default MostWantedModule;
+

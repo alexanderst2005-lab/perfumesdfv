@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+const DEFAULT_COLLECTIONS = [
+  { id: 'ambar-maderoso', name: 'Ámbar & Maderas', product_count: 8, image: '/hero_campaign_1.webp' },
+  { id: 'vainilla-dulce', name: 'Vainilla Gourmand', product_count: 6, image: '/hero_campaign_2.webp' },
+  { id: 'cuero-oriental', name: 'Cuero & Oriente', product_count: 5, image: '/hero_campaign_3.webp' },
+  { id: 'citrico-marino', name: 'Cítricos & Frescos', product_count: 7, image: '/hero_campaign_1_m.webp' }
+];
+
 const NoteCollectionsSection = () => {
-  const [collections, setCollections] = useState([]);
+  const [collections, setCollections] = useState(DEFAULT_COLLECTIONS);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -15,14 +22,16 @@ const NoteCollectionsSection = () => {
           const activeWithProducts = data.collections.filter(
             c => c.active !== false && c.product_count > 0
           );
-          setCollections(activeWithProducts);
+          if (activeWithProducts.length > 0) {
+            setCollections(activeWithProducts);
+          }
         }
       })
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 
-  if (!loaded || collections.length === 0) {
+  if (collections.length === 0) {
     return null;
   }
 

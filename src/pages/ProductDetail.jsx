@@ -426,13 +426,30 @@ const ProductDetail = () => {
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginTop: '0.2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.2rem', flexWrap: 'wrap' }}>
               <span className="product-price" style={{ fontWeight: '500', fontFamily: 'var(--font-sans)' }}>
                 ${product.price.toLocaleString()}
               </span>
               {product.oldPrice && (
                 <span className="product-old-price" style={{ textDecoration: 'line-through', color: 'var(--color-gray)' }}>
                   ${product.oldPrice.toLocaleString()}
+                </span>
+              )}
+              {Boolean(product.discount && String(product.discount).trim()) && (
+                <span style={{
+                  backgroundColor: '#DC2626',
+                  color: '#FFFFFF',
+                  padding: '4px 9px',
+                  fontSize: '0.74rem',
+                  fontWeight: '800',
+                  borderRadius: '4px',
+                  letterSpacing: '0.6px',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+                  display: 'inline-flex',
+                  alignItems: 'center'
+                }}>
+                  -{String(product.discount).replace(/[^0-9]/g, '')}% OFF
                 </span>
               )}
             </div>

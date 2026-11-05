@@ -280,7 +280,7 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ 3. LOS MÁS DESEADOS DEL MES (NUEVO CARRUSEL) ════ */}
+      {/* ════ 2. LOS MÁS DESEADOS DEL MES ════ */}
       <MostWantedCarousel 
         products={products} 
         onFav={toggleFavorite} 
@@ -288,25 +288,25 @@ const Home = () => {
         onAdd={addToCart} 
       />
 
-      {/* ════ 4. FAVORITOS EN OFERTA (SECCIÓN EXISTENTE) ════ */}
-      <OffersSection />
-
-      {/* ════ 5. BANNER PROMOCIONAL (NUEVO) ════ */}
+      {/* ════ 3. BANNER PROMOCIONAL ════ */}
       <PromoBanner />
 
-      {/* ════ 6. COLECCIONES POR NOTAS (NUEVA) ════ */}
+      {/* ════ 4. COLECCIONES POR NOTAS ════ */}
       <NoteCollectionsSection />
 
-      {/* ════ 7. CASAS EN TENDENCIA (NUEVA) ════ */}
+      {/* ════ 5. CASAS EN TENDENCIA ════ */}
       <TrendingHousesSection />
 
-      {/* ════ 8. BARRA DE CONTADORES (NUEVA) ════ */}
-      <CountersBar />
-
-      {/* ════ 9. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL (EXISTENTE REORGANIZADA) ════ */}
+      {/* ════ 6. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL ════ */}
       <LazyOnView minHeight={520}>
         <Suspense fallback={null}><InstagramReelsSection /></Suspense>
       </LazyOnView>
+
+      {/* ════ 7. BARRA DE CONTADORES (DESPUÉS DE LOS VIDEOS) ════ */}
+      <CountersBar />
+
+      {/* ════ 8. FAVORITOS EN OFERTA (DESPUÉS DE LOS CONTADORES) ════ */}
+      <OffersSection />
 
       {/* ════ 10. SEDES FÍSICAS (EXISTENTE) ════ */}
       <section id="sedes" className="section-padding container">
@@ -808,24 +808,27 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         />
       </Link>
       
-      {/* Etiqueta de Descuento Discreta */}
-      {product.discount && (
+      {/* Etiqueta de Descuento Destacada en Rojo */}
+      {Boolean(product.discount && String(product.discount).trim()) && (
         <span style={{ 
           position: 'absolute', 
           top: '10px', 
           left: '10px', 
-          background: 'rgba(10, 10, 10, 0.9)', 
-          backdropFilter: 'blur(4px)',
-          color: '#fff', 
-          padding: '3px 7px', 
-          fontSize: '0.58rem', 
-          letterSpacing: '0.5px', 
-          fontWeight: '600', 
+          backgroundColor: '#DC2626', 
+          color: '#FFFFFF', 
+          padding: '4px 9px', 
+          fontSize: '0.72rem', 
+          letterSpacing: '0.6px', 
+          fontWeight: '800', 
           textTransform: 'uppercase',
-          borderRadius: '3px',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+          borderRadius: '4px',
+          boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+          zIndex: 6,
+          lineHeight: 1,
+          display: 'inline-flex',
+          alignItems: 'center'
         }}>
-          -{product.discount}%
+          -{String(product.discount).replace(/[^0-9]/g, '')}% OFF
         </span>
       )}
 
