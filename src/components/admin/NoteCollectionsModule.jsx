@@ -208,7 +208,7 @@ const NoteCollectionsModule = () => {
 
   return (
     <div style={{ padding: '1.5rem', maxWidth: '1100px', margin: '0 auto' }}>
-      
+
       {/* Toast */}
       {toast && (
         <div style={{
@@ -432,7 +432,7 @@ const NoteCollectionsModule = () => {
 
             {/* Modal Body */}
             <div style={{ padding: '1.5rem', overflowY: 'auto', flex: 1 }}>
-              
+
               {/* Nombre */}
               <div style={{ marginBottom: '1.2rem' }}>
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#333', marginBottom: '0.4rem' }}>

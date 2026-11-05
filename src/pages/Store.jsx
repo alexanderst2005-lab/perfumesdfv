@@ -99,6 +99,9 @@ const Store = () => {
     if (pageInUrl && !isNaN(parseInt(pageInUrl, 10))) {
       return parseInt(pageInUrl, 10);
     }
+    if (params.get('coleccion') || params.get('casa') || params.get('sets') || params.get('filtro')) {
+      return 1;
+    }
     try {
       const savedPage = sessionStorage.getItem('perfume_store_page');
       if (savedPage && !isNaN(parseInt(savedPage, 10))) {
@@ -218,6 +221,15 @@ const Store = () => {
 
     return result;
   }, [products, category, brand, family, priceRange, query, sortBy, collectionProductIds, search]);
+
+  const totalPagesCount = Math.max(1, Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPagesCount);
+
+  useEffect(() => {
+    if (currentPage > totalPagesCount && filteredAndSorted.length > 0) {
+      setCurrentPage(1);
+    }
+  }, [filteredAndSorted.length, totalPagesCount, currentPage]);
 
   const clearFilters = () => {
     setCategory('Todos');
@@ -357,7 +369,7 @@ const Store = () => {
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
               {filteredAndSorted
-                .slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE)
+                .slice((safeCurrentPage - 1) * PRODUCTS_PER_PAGE, safeCurrentPage * PRODUCTS_PER_PAGE)
                 .map((p, pIdx) => (
                   <ProductCard
                     key={p.id}

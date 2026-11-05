@@ -145,6 +145,9 @@ export default async function handler(req, res) {
       )
     `.catch(() => {});
     await sql`
+      ALTER TABLE note_collection_products DROP CONSTRAINT IF EXISTS note_collection_products_product_id_fkey
+    `.catch(() => {});
+    await sql`
       ALTER TABLE note_collection_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
     `.catch(() => {});
 
@@ -268,6 +271,9 @@ export default async function handler(req, res) {
         product_id TEXT NOT NULL,
         PRIMARY KEY (house_id, product_id)
       )
+    `.catch(() => {});
+    await sql`
+      ALTER TABLE trending_house_products DROP CONSTRAINT IF EXISTS trending_house_products_product_id_fkey
     `.catch(() => {});
     await sql`
       ALTER TABLE trending_house_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
