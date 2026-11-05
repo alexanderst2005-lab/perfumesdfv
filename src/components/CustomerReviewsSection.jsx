@@ -28,12 +28,12 @@ const DEFAULT_DFV_REVIEWS = [
   },
   {
     id: 'r3',
-    name: 'Luisa F.',
-    initial: 'L',
+    name: 'Camila D.',
+    initial: 'C',
     avatarBg: '#7D3C98',
     city: 'Bogotá',
     timeAgo: 'Hace 1 semana',
-    text: 'Compré con Sistecrédito súper rápido por WhatsApp. Me recomendaron el Yara de Lattafa y huele delicioso, dulce y elegante. En la oficina todas me preguntan cuál uso.',
+    text: 'Me recomendaron el Yara de Lattafa por WhatsApp y huele delicioso, dulce y elegante. Llegó súper bien protegido y en la oficina todas me preguntan cuál uso.',
     topReview: true,
     usefulCount: 31,
     loveCount: 25

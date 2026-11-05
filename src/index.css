@@ -97,7 +97,7 @@ img {
 }
 
 @media (min-width: 769px) {
-  .container,
+  .container:not(.dfv-faq-container),
   .header-container,
   .dfv-promo__wrap,
   .dfv-sets-container,
@@ -108,21 +108,6 @@ img {
     margin-right: auto !important;
     padding-left: 2.2rem !important;
     padding-right: 2.2rem !important;
-    box-sizing: border-box !important;
-  }
-}
-
-@media (min-width: 769px) {
-
-  .container,
-  .header-container,
-  .dfv-promo__wrap,
-  .dfv-sets-container,
-  .dfv-notes-container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 28px !important;
-    padding-right: 28px !important;
     box-sizing: border-box !important;
   }
 }
@@ -346,18 +331,19 @@ img {
   animation: marquee 30s linear infinite;
 }
 
-/* ─── Scrollbar ─── */
-::-webkit-scrollbar {
-  width: 6px;
+/* ─── Scrollbar (oculto en html/body para que la Hero cubra el 100% sin línea blanca a la derecha) ─── */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-cream);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-gray-light);
-  border-radius: 3px;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  display: none !important;
+  background: transparent !important;
 }
 
 /* ─── Hide scrollbar for carousels ─── */

@@ -563,7 +563,7 @@ const Home = () => {
 
       {/* ════ 10. PREGUNTAS FRECUENTES ════ */}
       <section style={{ backgroundColor: '#FFFFFF', padding: '4rem 0 3rem', borderTop: '1px solid #F0ECE6' }}>
-        <div className="container" style={{ maxWidth: '640px' }}>
+        <div className="container dfv-faq-container" style={{ maxWidth: '640px', margin: '0 auto', padding: '0 1.5rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span style={{
               fontSize: '0.68rem',
