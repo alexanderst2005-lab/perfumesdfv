@@ -2,15 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
-const DEFAULT_COLLECTIONS = [
-  { id: 'ambar-maderoso', name: 'Ámbar & Maderas', product_count: 8, image: '/hero_campaign_1.webp' },
-  { id: 'vainilla-dulce', name: 'Vainilla Gourmand', product_count: 6, image: '/hero_campaign_2.webp' },
-  { id: 'cuero-oriental', name: 'Cuero & Oriente', product_count: 5, image: '/hero_campaign_3.webp' },
-  { id: 'citrico-marino', name: 'Cítricos & Frescos', product_count: 7, image: '/hero_campaign_1_m.webp' }
-];
-
 const NoteCollectionsSection = () => {
-  const [collections, setCollections] = useState(DEFAULT_COLLECTIONS);
+  const [collections, setCollections] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -20,18 +13,17 @@ const NoteCollectionsSection = () => {
         if (data.success && Array.isArray(data.collections)) {
           // Filtrar solo las activas que tengan al menos 1 producto
           const activeWithProducts = data.collections.filter(
-            c => c.active !== false && c.product_count > 0
+            c => c.active !== false && Number(c.product_count) > 0
           );
-          if (activeWithProducts.length > 0) {
-            setCollections(activeWithProducts);
-          }
+          setCollections(activeWithProducts);
         }
       })
       .catch(() => { })
       .finally(() => setLoaded(true));
   }, []);
 
-  if (collections.length === 0) {
+  // Si no hay colecciones configuradas en el panel o no tienen productos, se oculta completamente
+  if (!loaded || collections.length === 0) {
     return null;
   }
 

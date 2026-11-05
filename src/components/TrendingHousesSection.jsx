@@ -3,15 +3,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
-const DEFAULT_HOUSES = [
-  { id: 'lattafa', name: 'Lattafa', product_count: 14, image: '/hero_campaign_1.webp' },
-  { id: 'afnan', name: 'Afnan', product_count: 9, image: '/hero_campaign_2.webp' },
-  { id: 'armaf', name: 'Armaf', product_count: 11, image: '/hero_campaign_3.webp' },
-  { id: 'al-haramain', name: 'Al Haramain', product_count: 8, image: '/hero_campaign_1_m.webp' }
-];
-
 const TrendingHousesSection = () => {
-  const [houses, setHouses] = useState(DEFAULT_HOUSES);
+  const [houses, setHouses] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const trackRef = useRef(null);
 
@@ -21,11 +14,9 @@ const TrendingHousesSection = () => {
       .then(data => {
         if (data.success && Array.isArray(data.houses)) {
           const activeWithProducts = data.houses.filter(
-            h => h.active !== false && h.product_count > 0
+            h => h.active !== false && Number(h.product_count) > 0
           );
-          if (activeWithProducts.length > 0) {
-            setHouses(activeWithProducts);
-          }
+          setHouses(activeWithProducts);
         }
       })
       .catch(() => {})
@@ -42,7 +33,8 @@ const TrendingHousesSection = () => {
     trackRef.current.scrollBy({ left: 320, behavior: 'smooth' });
   };
 
-  if (houses.length === 0) {
+  // Si no hay casas configuradas desde el panel administrativo, se oculta completamente
+  if (!loaded || houses.length === 0) {
     return null;
   }
 
