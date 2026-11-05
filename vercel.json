@@ -22,6 +22,10 @@
       "destination": "/api/home-sections?type=fragrance-sets"
     },
     {
+      "source": "/api/hero-sedes",
+      "destination": "/api/home-sections?type=hero-sedes"
+    },
+    {
       "source": "/api/admin/reels",
       "destination": "/api/reels?admin=true"
     },

@@ -23,6 +23,7 @@ export default async function handler(req, res) {
      rawUrl.includes('note-collections') ? 'note-collections' :
      rawUrl.includes('trending-houses') ? 'trending-houses' :
      rawUrl.includes('fragrance-sets') ? 'fragrance-sets' :
+     rawUrl.includes('hero-sedes') ? 'hero-sedes' :
      rawUrl.includes('site-counters') ? 'site-counters' : '');
 
   // Helper para normalizar los campos de imagen en respuesta (image e image_url)
@@ -481,6 +482,145 @@ export default async function handler(req, res) {
         });
       } catch (error) {
         console.error('Error saving fragrance sets banner:', error);
+        return res.status(500).json({ success: false, error: error.message || 'Database error' });
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 6. HERO PRINCIPAL & NUESTRAS SEDES
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (type === 'hero-sedes') {
+    const DEFAULT_HERO_SLIDES = [
+      {
+        id: 1,
+        campaign: 'ROYAL SAPPHIRE',
+        title: 'LUJO EN TUS MANOS',
+        subtitle: 'Descubre el poder de una joya embotellada.',
+        buttonText: 'DESCUBRIR',
+        buttonLink: '/tienda',
+        imageDesktop: '/hero_campaign_1.webp',
+        imageMobile: '/hero_campaign_1_m.webp',
+        alignment: 'center'
+      },
+      {
+        id: 2,
+        campaign: 'BHARARA COLLECTION',
+        title: 'LA DUPLA PERFECTA',
+        subtitle: 'Fragancias para destacar en cualquier ocasión.',
+        buttonText: 'VER COLECCIÓN',
+        buttonLink: '/tienda',
+        imageDesktop: '/hero_campaign_2.webp',
+        imageMobile: '/hero_campaign_2_m.webp',
+        alignment: 'center'
+      },
+      {
+        id: 3,
+        campaign: 'LATTAFA PARA ELLA',
+        title: 'ESENCIA FEMENINA',
+        subtitle: 'Aromas dulces y florales que enamoran.',
+        buttonText: 'VER CATÁLOGO',
+        buttonLink: '/tienda?cat=Mujer',
+        imageDesktop: '/hero_campaign_3.webp',
+        imageMobile: '/hero_campaign_3_m.webp',
+        alignment: 'center'
+      },
+      {
+        id: 4,
+        campaign: "BADE'E AL OUD",
+        title: 'MISTERIO ÁRABE',
+        subtitle: 'Notas intensas y maderas exóticas.',
+        buttonText: 'EXPLORAR',
+        buttonLink: '/tienda',
+        imageDesktop: '/hero_campaign_4.webp',
+        imageMobile: '/hero_campaign_4_m.webp',
+        alignment: 'center'
+      }
+    ];
+
+    const DEFAULT_SEDES = [
+      {
+        id: 1,
+        name: 'Sede Calle 31 · Centro',
+        img: '/sede_calle31.jpg',
+        maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca'
+      },
+      {
+        id: 2,
+        name: 'Sede C.C. Llanogrande',
+        img: '/sede_llanogrande.jpg',
+        maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira'
+      }
+    ];
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS site_hero_sedes (
+        id SERIAL PRIMARY KEY,
+        hero_slides JSONB DEFAULT '[]',
+        sedes JSONB DEFAULT '[]',
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `.catch(() => {});
+
+    if (req.method === 'GET') {
+      try {
+        const rows = await sql`SELECT * FROM site_hero_sedes ORDER BY id ASC LIMIT 1`;
+        if (rows.length === 0) {
+          return res.status(200).json({
+            success: true,
+            hero_slides: DEFAULT_HERO_SLIDES,
+            sedes: DEFAULT_SEDES
+          });
+        }
+        const row = rows[0];
+        const heroSlides = Array.isArray(row.hero_slides) && row.hero_slides.length > 0 ? row.hero_slides : DEFAULT_HERO_SLIDES;
+        const sedesList = Array.isArray(row.sedes) && row.sedes.length > 0 ? row.sedes : DEFAULT_SEDES;
+        return res.status(200).json({
+          success: true,
+          hero_slides: heroSlides,
+          sedes: sedesList
+        });
+      } catch (error) {
+        console.error('Error fetching hero-sedes:', error);
+        return res.status(200).json({
+          success: true,
+          hero_slides: DEFAULT_HERO_SLIDES,
+          sedes: DEFAULT_SEDES
+        });
+      }
+    }
+
+    if (req.method === 'PUT' || req.method === 'POST') {
+      try {
+        const { hero_slides, sedes } = body || {};
+        const cleanSlides = Array.isArray(hero_slides) && hero_slides.length > 0 ? hero_slides : DEFAULT_HERO_SLIDES;
+        const cleanSedes = Array.isArray(sedes) && sedes.length > 0 ? sedes : DEFAULT_SEDES;
+
+        const existing = await sql`SELECT id FROM site_hero_sedes ORDER BY id ASC LIMIT 1`;
+        let result;
+        if (existing.length === 0) {
+          result = await sql`
+            INSERT INTO site_hero_sedes (hero_slides, sedes, updated_at)
+            VALUES (${JSON.stringify(cleanSlides)}::jsonb, ${JSON.stringify(cleanSedes)}::jsonb, NOW())
+            RETURNING *
+          `;
+        } else {
+          result = await sql`
+            UPDATE site_hero_sedes SET
+              hero_slides = ${JSON.stringify(cleanSlides)}::jsonb,
+              sedes = ${JSON.stringify(cleanSedes)}::jsonb,
+              updated_at = NOW()
+            WHERE id = ${existing[0].id}
+            RETURNING *
+          `;
+        }
+        return res.status(200).json({
+          success: true,
+          hero_slides: result[0].hero_slides,
+          sedes: result[0].sedes
+        });
+      } catch (error) {
+        console.error('Error saving hero-sedes:', error);
         return res.status(500).json({ success: false, error: error.message || 'Database error' });
       }
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers, Star, Gift } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin } from 'lucide-react';
 const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
 const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
 const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
@@ -14,6 +14,7 @@ const TrendingHousesModule = lazy(() => import('../components/admin/TrendingHous
 const FragranceSetsModule = lazy(() => import('../components/admin/FragranceSetsModule'));
 const CountersModule = lazy(() => import('../components/admin/CountersModule'));
 const MostWantedModule = lazy(() => import('../components/admin/MostWantedModule'));
+const HeroSedesModule = lazy(() => import('../components/admin/HeroSedesModule'));
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -49,6 +50,7 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'hero-sedes', label: 'Hero Principal & Sedes', icon: MapPin },
     { id: 'inventory', label: 'Inventario', icon: Package },
     { id: 'most-wanted', label: 'Los Más Deseados', icon: Star },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
@@ -375,6 +377,7 @@ const AdminDashboard = () => {
           )}
 
           <Suspense fallback={<p style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Cargando…</p>}>
+            {activeTab === 'hero-sedes' && <HeroSedesModule />}
             {activeTab === 'inventory' && <InventoryModule />}
             {activeTab === 'orders' && <OrdersModule />}
             {activeTab === 'categories' && <CategoriesModule />}

@@ -61,12 +61,50 @@ const HERO_SLIDES = [
   }
 ];
 
+const DEFAULT_SEDES = [
+  {
+    id: 1,
+    name: 'Sede Calle 31 · Centro',
+    img: '/sede_calle31.jpg',
+    maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca'
+  },
+  {
+    id: 2,
+    name: 'Sede C.C. Llanogrande',
+    img: '/sede_llanogrande.jpg',
+    maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira'
+  }
+];
+
+let cachedHeroSlides = null;
+let cachedSedes = null;
+
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
   const { addToCart, toggleFavorite, isFavorite, products } = useShop();
 
   const [openFaq, setOpenFaq] = useState(null);
+  const [heroSlides, setHeroSlides] = useState(() => cachedHeroSlides || HERO_SLIDES);
+  const [sedesList, setSedesList] = useState(() => cachedSedes || DEFAULT_SEDES);
+
+  useEffect(() => {
+    fetch(`/api/hero-sedes?t=${Date.now()}`, { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          if (Array.isArray(data.data.hero_slides) && data.data.hero_slides.length > 0) {
+            cachedHeroSlides = data.data.hero_slides;
+            setHeroSlides(data.data.hero_slides);
+          }
+          if (Array.isArray(data.data.sedes) && data.data.sedes.length > 0) {
+            cachedSedes = data.data.sedes;
+            setSedesList(data.data.sedes);
+          }
+        }
+      })
+      .catch(err => console.error('Error loading hero & sedes:', err));
+  }, []);
 
   // --- HERO LOGIC ---
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -84,29 +122,30 @@ const Home = () => {
     const touchEnd = e.changedTouches[0].clientX;
     const diff = sedeTouchStart - touchEnd;
     if (diff > 45) {
-      setActiveSedeIndex(1);
+      setActiveSedeIndex(prev => (prev + 1) % sedesList.length);
     } else if (diff < -45) {
-      setActiveSedeIndex(0);
+      setActiveSedeIndex(prev => (prev - 1 + sedesList.length) % sedesList.length);
     }
   };
 
   // Pre-cargar todos los slides del hero en memoria
   useEffect(() => {
-    HERO_SLIDES.forEach(s => {
-      const d = new Image(); d.src = s.imageDesktop;
-      const m = new Image(); m.src = s.imageMobile;
+    heroSlides.forEach(s => {
+      if (s.imageDesktop) { const d = new Image(); d.src = s.imageDesktop; }
+      if (s.imageMobile) { const m = new Image(); m.src = s.imageMobile; }
     });
-  }, []);
+  }, [heroSlides]);
 
   useEffect(() => {
+    if (!heroSlides.length) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlides.length]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
 
   const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
   const handleTouchEnd = (e) => {
@@ -133,11 +172,11 @@ const Home = () => {
           backgroundColor: '#121212'
         }}
       >
-        {HERO_SLIDES.map((slide, index) => {
+        {heroSlides.map((slide, index) => {
           const isActive = index === currentSlide;
           return (
             <div
-              key={slide.id}
+              key={slide.id || index}
               style={{
                 position: 'absolute',
                 inset: 0,
@@ -254,7 +293,7 @@ const Home = () => {
 
         {/* Indicadores Inferiores 01 -- 02 -- 03 -- 04 */}
         <div style={{ position: 'absolute', bottom: '2.5rem', display: 'flex', gap: '1rem', alignItems: 'center', zIndex: 10 }}>
-          {HERO_SLIDES.map((_, idx) => (
+          {heroSlides.map((_, idx) => (
             <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button
                 onClick={() => setCurrentSlide(idx)}
@@ -266,7 +305,7 @@ const Home = () => {
               >
                 0{idx + 1}
               </button>
-              {idx < HERO_SLIDES.length - 1 && (
+              {idx < heroSlides.length - 1 && (
                 <div style={{ width: '30px', height: '1px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
               )}
             </div>
@@ -333,7 +372,7 @@ const Home = () => {
             <div className="sedes-header-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
               <button
                 type="button"
-                onClick={() => setActiveSedeIndex(prev => (prev === 0 ? 1 : 0))}
+                onClick={() => setActiveSedeIndex(prev => (prev - 1 + sedesList.length) % sedesList.length)}
                 aria-label="Sede anterior"
                 style={{
                   background: 'transparent',
@@ -356,11 +395,11 @@ const Home = () => {
                 letterSpacing: '0.5px',
                 whiteSpace: 'nowrap'
               }}>
-                {activeSedeIndex + 1}/2
+                {activeSedeIndex + 1}/{sedesList.length}
               </span>
               <button
                 type="button"
-                onClick={() => setActiveSedeIndex(prev => (prev === 0 ? 1 : 0))}
+                onClick={() => setActiveSedeIndex(prev => (prev + 1) % sedesList.length)}
                 aria-label="Sede siguiente"
                 style={{
                   background: 'transparent',
@@ -398,20 +437,9 @@ const Home = () => {
                 transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
             >
-              {[
-                {
-                  name: 'Sede Calle 31 · Centro',
-                  img: '/sede_calle31.jpg',
-                  maps: 'https://maps.google.com/?q=Calle+31+%2327-44+Palmira+Valle+del+Cauca'
-                },
-                {
-                  name: 'Sede C.C. Llanogrande',
-                  img: '/sede_llanogrande.jpg',
-                  maps: 'https://maps.google.com/?q=Centro+Comercial+Llanogrande+Palmira'
-                }
-              ].map((s, idx) => (
+              {sedesList.map((s, idx) => (
                 <div 
-                  key={s.name}
+                  key={s.id || s.name || idx}
                   className="sede-slide-item"
                   style={{
                     width: '100%',
