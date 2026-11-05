@@ -7,9 +7,11 @@ import { ProductCard } from './Home';
 const Store = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
-  const initCat = params.get('category') || 'Todos';
+  const initCat = params.get('offers') === 'true'
+    ? 'Ofertas'
+    : (params.get('category') || 'Todos');
 
-  const { addToCart, toggleFavorite, isFavorite, products, brands, categories: dbCategories, isLoadingProducts } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, brands, categories: dbCategories, activeCampaigns, isLoadingProducts } = useShop();
 
   // Special external filter state (colecciones por notas, casas en tendencia, sets)
   const [collectionProductIds, setCollectionProductIds] = useState(null);
@@ -130,19 +132,26 @@ const Store = () => {
     });
   };
 
-  // Sync state when URL params change (e.g. user clicked /tienda?category=Mujer)
+  // Sync state when URL params change (e.g. user clicked /tienda?category=Mujer or /tienda?offers=true)
   useEffect(() => {
     if (prevSearchRef.current !== search) {
       prevSearchRef.current = search;
-      const currentCat = params.get('category') || 'Todos';
+      const currentCat = params.get('offers') === 'true'
+        ? 'Ofertas'
+        : (params.get('category') || 'Todos');
       const pageInUrl = params.get('page');
       setCategory(currentCat);
+      setBrand('Todas');
+      setFamily(params.get('family') || 'Todas');
+      setPriceRange('Todos');
+      setQuery('');
       if (pageInUrl && !isNaN(parseInt(pageInUrl, 10))) {
         setCurrentPage(parseInt(pageInUrl, 10));
       } else {
         setCurrentPage(1);
         try { sessionStorage.setItem('perfume_store_page', '1'); } catch {}
       }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
   }, [search]);
 
@@ -177,16 +186,42 @@ const Store = () => {
 
   const categories = ['Todos', ...dbCategories.map(c => c.name), 'Ofertas'];
 
+  const isSameCategorySelection = (selected, option) => {
+    const s = (selected || '').toLowerCase();
+    const o = (option || '').toLowerCase();
+    if (s === o) return true;
+    if ((s === 'mujer' || s === 'femenino') && (o.includes('fem') || o.includes('muj') || o.includes('dama'))) return true;
+    if ((s === 'hombre' || s === 'masculino') && (o.includes('masc') || o.includes('homb') || o.includes('caball'))) return true;
+    return false;
+  };
+
+  // Mapa de productos en campaña activa por si un producto está en campaña de oferta
+  const campaignOffersMap = useMemo(() => {
+    const map = new Map();
+    (activeCampaigns || []).forEach(campaign => {
+      (campaign.products || []).forEach(cp => {
+        if (cp && cp.product_id) {
+          map.set(String(cp.product_id), cp);
+        }
+      });
+    });
+    return map;
+  }, [activeCampaigns]);
+
   // Apply filters and sorting
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => {
       const pCat = (p.category || '').toLowerCase();
       const selCat = (category || '').toLowerCase();
+      const hasOffer = (Number(p.discount) > 0) ||
+                       (p.oldPrice && Number(p.oldPrice) > Number(p.price)) ||
+                       campaignOffersMap.has(String(p.id));
       const matchCat = selCat === 'todos' || 
                        (pCat && pCat === selCat) || 
-                       (selCat === 'hombre' && (pCat.includes('masc') || pCat.includes('homb'))) ||
-                       (selCat === 'mujer' && (pCat.includes('fem') || pCat.includes('muj'))) ||
-                       (category === 'Ofertas' && p.discount);
+                       ((selCat === 'hombre' || selCat === 'masculino') && (pCat.includes('masc') || pCat.includes('homb') || pCat.includes('caball'))) ||
+                       ((selCat === 'mujer' || selCat === 'femenino') && (pCat.includes('fem') || pCat.includes('muj') || pCat.includes('dama'))) ||
+                       (selCat === 'unisex' && pCat.includes('unisex')) ||
+                       (selCat === 'ofertas' && hasOffer);
       const matchBrand = brand === 'Todas' || 
                          (p.brand && p.brand.toLowerCase() === brand.toLowerCase());
       const matchFamily = family === 'Todas' ||
@@ -204,6 +239,21 @@ const Store = () => {
       return matchCat && matchBrand && matchFamily && matchPrice && matchQ && matchFiltro && matchCollection;
     });
 
+    if ((category || '').toLowerCase() === 'ofertas') {
+      result = result.map(p => {
+        const cp = campaignOffersMap.get(String(p.id));
+        if (cp && !(Number(p.discount) > 0)) {
+          return {
+            ...p,
+            price: Number(cp.promo_price) || p.price,
+            oldPrice: Number(cp.ref_price) || p.oldPrice,
+            discount: cp.discount_pct || p.discount,
+          };
+        }
+        return p;
+      });
+    }
+
     switch (sortBy) {
       case 'precio_asc':
         result.sort((a, b) => a.price - b.price);
@@ -214,13 +264,12 @@ const Store = () => {
       case 'nombre':
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      // destacados y recientes mantienen el orden original por ahora (mock)
       default:
         break;
     }
 
     return result;
-  }, [products, category, brand, family, priceRange, query, sortBy, collectionProductIds, search]);
+  }, [products, category, brand, family, priceRange, query, sortBy, collectionProductIds, search, campaignOffersMap]);
 
   const totalPagesCount = Math.max(1, Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPagesCount);
@@ -252,7 +301,9 @@ const Store = () => {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <p className="eyebrow" style={{ marginBottom: '0.5rem', opacity: 0.6, fontSize: '0.65rem', letterSpacing: '3px' }}>DFV PERFUMES</p>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: '400', marginBottom: '0.5rem', color: 'var(--color-black)' }}>Catálogo</h1>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: '400', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
+            {category && category !== 'Todos' ? `Catálogo · ${category}` : 'Catálogo'}
+          </h1>
           <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem' }}>Explora nuestra selección premium de fragancias.</p>
         </div>
 
@@ -503,18 +554,21 @@ const Store = () => {
             <div style={{ marginBottom: '2rem' }}>
               <p style={{ fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--color-gray)', marginBottom: '1rem', fontWeight: '600' }}>Categoría / Género</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                {categories.map(c => (
-                  <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
-                    <input 
-                      type="radio" 
-                      name="category" 
-                      checked={category === c} 
-                      onChange={() => setCategory(c)} 
-                      style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }}
-                    />
-                    <span style={{ fontSize: '0.9rem', color: category === c ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: category === c ? '500' : '400' }}>{c}</span>
-                  </label>
-                ))}
+                {categories.map(c => {
+                  const isSelected = isSameCategorySelection(category, c);
+                  return (
+                    <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
+                      <input 
+                        type="radio" 
+                        name="category" 
+                        checked={isSelected} 
+                        onChange={() => setCategory(c)} 
+                        style={{ accentColor: 'var(--color-black)', width: '16px', height: '16px' }}
+                      />
+                      <span style={{ fontSize: '0.9rem', color: isSelected ? 'var(--color-black)' : 'var(--color-gray)', fontWeight: isSelected ? '500' : '400' }}>{c}</span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 

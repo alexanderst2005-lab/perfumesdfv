@@ -23,7 +23,7 @@ const Contacto = lazy(() => import('./pages/Contacto'));
 const CampaignPage = lazy(() => import('./pages/CampaignPage'));
 
 function AppInner() {
-  const { pathname, search, key } = useLocation();
+  const { pathname, search, hash, key } = useLocation();
   const navType = useNavigationType();
   const isHome = pathname === '/';
   const isAdmin = pathname.startsWith('/admin');
@@ -67,7 +67,25 @@ function AppInner() {
 
     let timers = [];
 
-    if (navType !== 'POP') {
+    if (hash) {
+      const targetId = hash.replace(/^#/, '');
+      const scrollToHash = () => {
+        const el = document.getElementById(targetId);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY - 90;
+          window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        }
+      };
+      scrollToHash();
+      [60, 180, 350].forEach(ms => {
+        timers.push(setTimeout(scrollToHash, ms));
+      });
+      timers.push(
+        setTimeout(() => {
+          isRestoringRef.current = false;
+        }, 400)
+      );
+    } else if (navType !== 'POP') {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       const t = setTimeout(() => {
         isRestoringRef.current = false;
@@ -111,7 +129,7 @@ function AppInner() {
     return () => {
       timers.forEach(clearTimeout);
     };
-  }, [key, fullPath, navType]);
+  }, [key, fullPath, hash, navType]);
 
   // Precarga las demás pantallas en segundo plano para que navegar sea instantáneo
   useEffect(() => {

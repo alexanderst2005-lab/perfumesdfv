@@ -50,7 +50,7 @@ export const ShopProvider = ({ children }) => {
     const data = await res.json();
     setProducts(data);
     setBrands([...new Set(data.map(p => p.brand))]);
-    try { localStorage.setItem('perfume_products_cache', JSON.stringify(data)); } catch (e) {}
+    try { localStorage.setItem('perfume_products_cache', JSON.stringify(data)); } catch (e) { }
     return data;
   };
 
@@ -61,7 +61,7 @@ export const ShopProvider = ({ children }) => {
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         setCategories(data.data);
-        try { localStorage.setItem('perfume_categories_cache', JSON.stringify(data.data)); } catch (e) {}
+        try { localStorage.setItem('perfume_categories_cache', JSON.stringify(data.data)); } catch (e) { }
         return data.data;
       }
     } catch (e) {
@@ -117,7 +117,7 @@ export const ShopProvider = ({ children }) => {
       const data = await res.json();
       if (data.success) {
         setActiveCampaigns(data.data);
-        try { localStorage.setItem('dfv_active_campaigns', JSON.stringify(data.data)); } catch {}
+        try { localStorage.setItem('dfv_active_campaigns', JSON.stringify(data.data)); } catch { }
         return data.data;
       }
     } catch (e) {
@@ -146,13 +146,13 @@ export const ShopProvider = ({ children }) => {
           earlyP || fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' }),
           earlyC || fetch(`/api/categories?t=${Date.now()}`, { cache: 'no-store' })
         ]);
-        
+
         if (resP.ok) {
           const data = await resP.json();
           setProducts(data);
           try {
             localStorage.setItem('perfume_products_cache', JSON.stringify(data));
-          } catch (e) {}
+          } catch (e) { }
           const uniqueBrands = [...new Set(data.map(p => p.brand))];
           setBrands(uniqueBrands);
         } else {
@@ -163,14 +163,14 @@ export const ShopProvider = ({ children }) => {
             return;
           }
         }
-        
+
         if (resC.ok) {
           const data = await resC.json();
           if (data.success) {
             setCategories(data.data);
             try {
               localStorage.setItem('perfume_categories_cache', JSON.stringify(data.data));
-            } catch (e) {}
+            } catch (e) { }
           }
         }
         // If we reach here successfully
@@ -193,8 +193,8 @@ export const ShopProvider = ({ children }) => {
 
     // Auto-refresh fresh data when window regains focus (e.g. switching back from admin panel)
     const handleFocus = () => {
-      refreshProducts().catch(() => {});
-      refreshCategories().catch(() => {});
+      refreshProducts().catch(() => { });
+      refreshCategories().catch(() => { });
     };
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
