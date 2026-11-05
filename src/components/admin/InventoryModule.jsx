@@ -8,11 +8,11 @@ const InventoryModule = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const [formData, setFormData] = useState({
-    id: '', name: '', brand: '', category: '', categoryId: null, family: '', 
-    price: '', oldPrice: '', discount: '', sizesText: '', 
-    description: '', occasion: '', concentration: '', 
+    id: '', name: '', brand: '', category: '', categoryId: null, family: '',
+    price: '', oldPrice: '', discount: '', sizesText: '',
+    description: '', occasion: '', concentration: '',
     stockCount: 10, inStock: true, active: true, image: '', images: []
   });
 
@@ -25,13 +25,14 @@ const InventoryModule = () => {
   const openCreateModal = () => {
     setEditingProduct(null);
     setFormData({
-      id: '', name: '', brand: '', 
-      category: '', 
+      id: '', name: '', brand: '',
+      category: '',
       categoryId: null,
-      family: '', 
-      price: '', oldPrice: '', discount: '', sizesText: '', 
-      description: '', occasion: '', concentration: '', 
-      stockCount: 10, inStock: true, active: true, image: '', images: []
+      family: '',
+      price: '', oldPrice: '', discount: '', sizesText: '',
+      description: '', occasion: '', concentration: '',
+      stockCount: 10, inStock: true, active: true, image: '', images: [],
+      isMostWanted: false
     });
     setImagePreviews([]);
     setIsModalOpen(true);
@@ -71,19 +72,20 @@ const InventoryModule = () => {
     }
 
     setFormData({
-      id: p.id, 
-      name: p.name, 
-      brand: p.brand, 
-      category: matchedCat ? matchedCat.name : (p.category || ''), 
+      id: p.id,
+      name: p.name,
+      brand: p.brand,
+      category: matchedCat ? matchedCat.name : (p.category || ''),
       categoryId: matchedCat ? matchedCat.id : (p.categoryId || null),
-      family: p.family || '', 
-      price: p.price, oldPrice: p.oldPrice || '', discount: p.discount || '', 
-      sizesText: existingSizes, 
-      description: p.description || '', 
+      family: p.family || '',
+      price: p.price, oldPrice: p.oldPrice || '', discount: p.discount || '',
+      sizesText: existingSizes,
+      description: p.description || '',
       occasion: p.occasion || '',
-      concentration: p.concentration || '', stockCount: p.stockCount || 10, 
+      concentration: p.concentration || '', stockCount: p.stockCount || 10,
       inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || [],
-      notes: p.notes || {}, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller
+      notes: p.notes || {}, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller,
+      isMostWanted: !!p.isMostWanted
     });
     const rawExisting = [];
     if (p.image && typeof p.image === 'string' && p.image.trim()) {
@@ -133,10 +135,10 @@ const InventoryModule = () => {
           c.width = bmp.width; c.height = bmp.height;
           c.getContext('2d').drawImage(bmp, 0, 0);
           setThumbs(prev => ({ ...prev, [url]: c.toDataURL('image/jpeg', 0.7) }));
-        }).catch(() => {});
+        }).catch(() => { });
       }
       const p = uploadToCloudinary(url);
-      p.then(() => setUploadedKeys(prev => ({ ...prev, [url]: true }))).catch(() => {});
+      p.then(() => setUploadedKeys(prev => ({ ...prev, [url]: true }))).catch(() => { });
       uploadsRef.current.set(url, p);
     });
     e.target.value = '';
@@ -185,8 +187,8 @@ const InventoryModule = () => {
   const handleSave = async () => {
     // Resolve valid category
     const matchedCat = (formData.categoryId && categories.find(c => c.id === formData.categoryId)) ||
-                       (formData.category && categories.find(c => c.name.toLowerCase() === formData.category.toLowerCase())) ||
-                       null;
+      (formData.category && categories.find(c => c.name.toLowerCase() === formData.category.toLowerCase())) ||
+      null;
 
     if (!matchedCat && !formData.category) {
       alert('Selecciona una categoría');
@@ -256,6 +258,7 @@ const InventoryModule = () => {
         notes: formData.notes || {},
         isNew: !!formData.isNew,
         isBestSeller: !!formData.isBestSeller,
+        isMostWanted: !!formData.isMostWanted,
         sizes: parsedSizes,
         image: finalImageUrl,
         images: secondaryImages
@@ -271,7 +274,7 @@ const InventoryModule = () => {
       try { data = await res.json(); } catch (e) { /* non-JSON response */ }
       if (res.ok && data.success) {
         setIsModalOpen(false);
-        refreshProducts().catch(() => {});
+        refreshProducts().catch(() => { });
       } else {
         alert('Error: ' + (data.details || data.error || `HTTP ${res.status}`));
       }
@@ -301,7 +304,7 @@ const InventoryModule = () => {
             </span>
           </div>
         </div>
-        <button 
+        <button
           onClick={openCreateModal}
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#000', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
         >
@@ -329,13 +332,20 @@ const InventoryModule = () => {
                 <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <img src={optimizeImg(p.image, 200)} alt={p.name} decoding="async" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
                   <div>
-                    <p style={{ fontWeight: '600', color: '#111827' }}>{p.name}</p>
+                    <p style={{ fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      {p.name}
+                      {p.isMostWanted && (
+                        <span style={{ fontSize: '0.65rem', backgroundColor: '#fef3c7', color: '#92400e', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                          ★ MÁS DESEADO
+                        </span>
+                      )}
+                    </p>
                     <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>{p.brand} | {p.category}</p>
                   </div>
                 </td>
                 <td style={{ padding: '1rem', fontWeight: '500' }}>${p.price.toLocaleString()}</td>
                 <td style={{ padding: '1rem' }}>
-                  <select 
+                  <select
                     value={p.inStock ? 'true' : 'false'}
                     onChange={async (e) => {
                       const newInStock = e.target.value === 'true';
@@ -348,13 +358,13 @@ const InventoryModule = () => {
                         });
                         if (res.ok) await refreshProducts();
                         else alert('Error al actualizar el estado');
-                      } catch(err) { alert('Error de red'); }
+                      } catch (err) { alert('Error de red'); }
                     }}
-                    style={{ 
-                      padding: '0.3rem 0.5rem', 
-                      borderRadius: '4px', 
-                      fontSize: '0.75rem', 
-                      fontWeight: 'bold', 
+                    style={{
+                      padding: '0.3rem 0.5rem',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
                       cursor: 'pointer',
                       border: 'none',
                       outline: 'none',
@@ -382,12 +392,12 @@ const InventoryModule = () => {
                     <Edit size={18} />
                   </button>
                   <button onClick={async () => {
-                    if(window.confirm('¿Seguro que deseas eliminar definitivamente este producto?')) {
+                    if (window.confirm('¿Seguro que deseas eliminar definitivamente este producto?')) {
                       try {
-                        const res = await fetch('/api/admin/products', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: p.id}) });
-                        if(res.ok) await refreshProducts();
+                        const res = await fetch('/api/admin/products', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: p.id }) });
+                        if (res.ok) await refreshProducts();
                         else alert('Error al eliminar');
-                      } catch(e) { alert('Error de red'); }
+                      } catch (e) { alert('Error de red'); }
                     }
                   }} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                     <Trash2 size={18} />
@@ -408,9 +418,9 @@ const InventoryModule = () => {
                 <X size={24} color="#6b7280" />
               </button>
             </div>
-            
+
             <div style={{ display: 'grid', gap: '1rem' }}>
-              
+
               <div style={{ marginBottom: '1.5rem', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '12px', backgroundColor: '#f9fafb' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div>
@@ -422,7 +432,7 @@ const InventoryModule = () => {
                     <input type="file" accept="image/*" multiple onChange={handleImagesChange} style={{ display: 'none' }} />
                   </label>
                 </div>
-                
+
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
                   {imagePreviews.length === 0 && (
                     <div style={{ width: '100%', padding: '2rem', textAlign: 'center', border: '1px dashed #d1d5db', borderRadius: '8px', color: '#9ca3af' }}>
@@ -473,7 +483,7 @@ const InventoryModule = () => {
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                   Nombre del Perfume
                 </label>
-                <input type="text" placeholder="Ej: Khamrah, Club de Nuit..." value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
+                <input type="text" placeholder="Ej: Khamrah, Club de Nuit..." value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
@@ -481,27 +491,27 @@ const InventoryModule = () => {
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                     Casa
                   </label>
-                  <input type="text" placeholder="Ej: Lattafa, Armaf, Dior..." value={formData.brand} onChange={e => setFormData({...formData, brand: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
+                  <input type="text" placeholder="Ej: Lattafa, Armaf, Dior..." value={formData.brand} onChange={e => setFormData({ ...formData, brand: e.target.value })} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                     Categoría
                   </label>
-                  <select 
+                  <select
                     value={
-                      formData.categoryId || 
-                      categories.find(c => c.name.toLowerCase() === formData.category?.toLowerCase())?.id || 
+                      formData.categoryId ||
+                      categories.find(c => c.name.toLowerCase() === formData.category?.toLowerCase())?.id ||
                       ''
-                    } 
+                    }
                     onChange={e => {
                       const selectedId = parseInt(e.target.value, 10);
                       const catObj = categories.find(c => c.id === selectedId);
                       setFormData({
-                        ...formData, 
+                        ...formData,
                         categoryId: selectedId || null,
                         category: catObj ? catObj.name : ''
                       });
-                    }} 
+                    }}
                     style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
                   >
                     <option value="">Selecciona categoría</option>
@@ -517,13 +527,13 @@ const InventoryModule = () => {
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                     Precio Actual ($)
                   </label>
-                  <input type="number" placeholder="Ej: 185000" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
+                  <input type="number" placeholder="Ej: 185000" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                     Precio Anterior ($ Tachado - Opcional)
                   </label>
-                  <input type="number" placeholder="Ej: 220000" value={formData.oldPrice} onChange={e => setFormData({...formData, oldPrice: e.target.value})} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} title="Opcional. Si lo llenas, saldrá como precio tachado." />
+                  <input type="number" placeholder="Ej: 220000" value={formData.oldPrice} onChange={e => setFormData({ ...formData, oldPrice: e.target.value })} style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} title="Opcional. Si lo llenas, saldrá como precio tachado." />
                 </div>
               </div>
 
@@ -532,12 +542,12 @@ const InventoryModule = () => {
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                   Presentación / Mililitros (Opcional - Ej: 100 ml)
                 </label>
-                <input 
-                  type="text" 
-                  placeholder="Ej: 100 ml (dejar vacío si no aplica)" 
-                  value={formData.sizesText} 
-                  onChange={e => setFormData({...formData, sizesText: e.target.value})} 
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} 
+                <input
+                  type="text"
+                  placeholder="Ej: 100 ml (dejar vacío si no aplica)"
+                  value={formData.sizesText}
+                  onChange={e => setFormData({ ...formData, sizesText: e.target.value })}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
                 />
                 <span style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '0.2rem', display: 'block' }}>
                   Opcional. Si no se llena, no aparecerá el apartado de presentación en la página del producto. Para varios tamaños, sepáralos por comas (ej: 50 ml, 100 ml).
@@ -549,12 +559,12 @@ const InventoryModule = () => {
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                   Ocasión de Uso (Ej: Noche, Citas especiales, Diario, Oficina, Eventos de gala)
                 </label>
-                <input 
-                  type="text" 
-                  placeholder="Ej: Citas románticas, Eventos nocturnos, Uso diario..." 
-                  value={formData.occasion} 
-                  onChange={e => setFormData({...formData, occasion: e.target.value})} 
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }} 
+                <input
+                  type="text"
+                  placeholder="Ej: Citas románticas, Eventos nocturnos, Uso diario..."
+                  value={formData.occasion}
+                  onChange={e => setFormData({ ...formData, occasion: e.target.value })}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
                 />
               </div>
 
@@ -563,23 +573,27 @@ const InventoryModule = () => {
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
                   Descripción del Perfume
                 </label>
-                <textarea 
+                <textarea
                   rows={3}
-                  placeholder="Escribe la historia o descripción de las notas, proyección y sensaciones de la fragancia..." 
-                  value={formData.description} 
-                  onChange={e => setFormData({...formData, description: e.target.value})} 
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem', fontFamily: 'inherit', resize: 'vertical' }} 
+                  placeholder="Escribe la historia o descripción de las notas, proyección y sensaciones de la fragancia..."
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem', fontFamily: 'inherit', resize: 'vertical' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '2rem', marginTop: '0.5rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginTop: '0.5rem', backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
-                  <input type="checkbox" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} style={{ width: '18px', height: '18px' }} />
+                  <input type="checkbox" checked={formData.active} onChange={e => setFormData({ ...formData, active: e.target.checked })} style={{ width: '18px', height: '18px' }} />
                   Visible en la Tienda
                 </label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '500' }}>
-                  <input type="checkbox" checked={formData.inStock} onChange={e => setFormData({...formData, inStock: e.target.checked})} style={{ width: '18px', height: '18px' }} />
+                  <input type="checkbox" checked={formData.inStock} onChange={e => setFormData({ ...formData, inStock: e.target.checked })} style={{ width: '18px', height: '18px' }} />
                   Disponible (Hay Stock)
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '600', color: '#B99A5B' }}>
+                  <input type="checkbox" checked={!!formData.isMostWanted} onChange={e => setFormData({ ...formData, isMostWanted: e.target.checked })} style={{ width: '18px', height: '18px', accentColor: '#B99A5B' }} />
+                  ✦ Más deseado del mes
                 </label>
               </div>
             </div>

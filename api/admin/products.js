@@ -40,12 +40,12 @@ export default async function handler(req, res) {
       const result = await sql`
         INSERT INTO products (
           id, name, brand, category, category_id, family, price, old_price, discount, sizes,
-          image, images, description, occasion, notes, concentration, in_stock, stock_count, is_new, is_best_seller, active
+          image, images, description, occasion, notes, concentration, in_stock, stock_count, is_new, is_best_seller, is_most_wanted, active
         ) VALUES (
           ${p.id}, ${p.name}, ${p.brand}, ${categoryName}, ${categoryId}, ${p.family}, ${p.price},
           ${p.oldPrice || null}, ${p.discount || null}, ${JSON.stringify(p.sizes || [])},
           ${p.image}, ${JSON.stringify(p.images || [])}, ${p.description}, ${p.occasion || null}, ${JSON.stringify(p.notes || {})}, ${p.concentration},
-          ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.active}
+          ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.isMostWanted === true}, ${p.active}
         ) RETURNING *
       `;
       // Calentar las fotos en Cloudinary para que el primer visitante las reciba al instante
@@ -106,6 +106,7 @@ export default async function handler(req, res) {
           stock_count = ${p.stockCount},
           is_new = ${p.isNew},
           is_best_seller = ${p.isBestSeller},
+          is_most_wanted = ${p.isMostWanted === true},
           active = ${p.active}
         WHERE id = ${p.id}
         RETURNING *

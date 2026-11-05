@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   try {
     const sql = neon(process.env.DATABASE_URL);
-    
+
     // Caché en Edge CDN (60s) con stale-while-revalidate para respuesta en ~15ms
     if (req.query && req.query.t) {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       LEFT JOIN categories c ON p.category_id = c.id
       ORDER BY p.id ASC
     `;
-    
+
     // Map the snake_case database columns back to camelCase for the frontend
     const products = rows.map(row => ({
       id: row.id,
@@ -48,7 +48,8 @@ export default async function handler(req, res) {
       stockCount: row.stock_count,
       active: row.active !== false,
       isNew: row.is_new,
-      isBestSeller: row.is_best_seller
+      isBestSeller: row.is_best_seller,
+      isMostWanted: row.is_most_wanted === true
     }));
 
     return res.status(200).json(products);

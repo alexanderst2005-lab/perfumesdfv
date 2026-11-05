@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers } from 'lucide-react';
 const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
 const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
 const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
@@ -8,6 +8,10 @@ const ReelsModule = lazy(() => import('../components/admin/ReelsModule'));
 const ReviewsModule = lazy(() => import('../components/admin/ReviewsModule'));
 const CustomersModule = lazy(() => import('../components/admin/CustomersModule'));
 const CampaignsModule = lazy(() => import('../components/admin/CampaignsModule'));
+const PromoBannerModule = lazy(() => import('../components/admin/PromoBannerModule'));
+const NoteCollectionsModule = lazy(() => import('../components/admin/NoteCollectionsModule'));
+const TrendingHousesModule = lazy(() => import('../components/admin/TrendingHousesModule'));
+const CountersModule = lazy(() => import('../components/admin/CountersModule'));
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -50,6 +54,10 @@ const AdminDashboard = () => {
     { id: 'reviews', label: 'Reseñas', icon: MessageSquareQuote },
     { id: 'customers', label: 'Clientes', icon: Users },
     { id: 'campaigns', label: 'Campañas promocionales', icon: Megaphone },
+    { id: 'promo-banner', label: 'Banner Promocional', icon: ImageIcon },
+    { id: 'note-collections', label: 'Colecciones por Notas', icon: Layers },
+    { id: 'trending-houses', label: 'Casas en Tendencia', icon: TrendingUp },
+    { id: 'counters', label: 'Cifras y Contadores', icon: BarChart2 },
   ];
 
   // Calculate stats
@@ -370,6 +378,10 @@ const AdminDashboard = () => {
             {activeTab === 'reviews' && <ReviewsModule />}
             {activeTab === 'customers' && <CustomersModule />}
             {activeTab === 'campaigns' && <CampaignsModule />}
+            {activeTab === 'promo-banner' && <PromoBannerModule />}
+            {activeTab === 'note-collections' && <NoteCollectionsModule />}
+            {activeTab === 'trending-houses' && <TrendingHousesModule />}
+            {activeTab === 'counters' && <CountersModule />}
           </Suspense>
         </main>
       </div>

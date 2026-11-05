@@ -313,7 +313,7 @@ img {
 /* ─── Mobile Responsive ─── */
 @media (max-width: 768px) {
   .container { padding: 0 1.25rem; }
-  .section-padding { padding: 3.5rem 0; }
+  .section-padding { padding: 2.75rem 0; } /* ~44px entre secciones en móvil */
   
   .desktop-only { display: none !important; }
   .mobile-only { display: block !important; }
@@ -325,4 +325,22 @@ img {
 
 @media (min-width: 769px) {
   .mobile-only { display: none !important; }
+}
+
+
+/* ─── Microinteracciones Globales ─── */
+.product-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.interactive-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+.interactive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }

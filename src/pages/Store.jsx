@@ -11,6 +11,46 @@ const Store = () => {
 
   const { addToCart, toggleFavorite, isFavorite, products, brands, categories: dbCategories, isLoadingProducts } = useShop();
 
+  // Special external filter state (colecciones por notas, casas en tendencia)
+  const [collectionProductIds, setCollectionProductIds] = useState(null);
+  const [activeSpecialFilterName, setActiveSpecialFilterName] = useState('');
+
+  useEffect(() => {
+    const colId = params.get('coleccion');
+    const casaId = params.get('casa');
+    const filtroParam = params.get('filtro');
+
+    if (colId) {
+      fetch('/api/note-collections')
+        .then(r => r.json())
+        .then(data => {
+          const col = (data.collections || []).find(c => String(c.id) === String(colId));
+          if (col) {
+            setCollectionProductIds(col.product_ids || []);
+            setActiveSpecialFilterName('Colección: ' + col.name);
+          }
+        })
+        .catch(() => {});
+    } else if (casaId) {
+      fetch('/api/trending-houses')
+        .then(r => r.json())
+        .then(data => {
+          const h = (data.houses || []).find(x => String(x.id) === String(casaId));
+          if (h) {
+            setCollectionProductIds(h.product_ids || []);
+            setActiveSpecialFilterName('Casa: ' + h.name);
+          }
+        })
+        .catch(() => {});
+    } else if (filtroParam === 'deseados') {
+      setActiveSpecialFilterName('Los Más Deseados del Mes');
+      setCollectionProductIds(null);
+    } else {
+      setCollectionProductIds(null);
+      setActiveSpecialFilterName('');
+    }
+  }, [search]);
+
   // Filters state
   const [category, setCategory] = useState(initCat);
   const [brand, setBrand] = useState('Todas');
@@ -119,7 +159,10 @@ const Store = () => {
       const matchQ = !query || 
                      (p.name && p.name.toLowerCase().includes(query.toLowerCase())) || 
                      (p.brand && p.brand.toLowerCase().includes(query.toLowerCase()));
-      return matchCat && matchBrand && matchFamily && matchPrice && matchQ;
+      const filtroParam = params.get('filtro');
+      const matchFiltro = !filtroParam || (filtroParam === 'deseados' && p.isMostWanted);
+      const matchCollection = !collectionProductIds || collectionProductIds.includes(p.id);
+      return matchCat && matchBrand && matchFamily && matchPrice && matchQ && matchFiltro && matchCollection;
     });
 
     switch (sortBy) {
@@ -164,6 +207,28 @@ const Store = () => {
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: '400', marginBottom: '0.5rem', color: 'var(--color-black)' }}>Catálogo</h1>
           <p style={{ color: 'var(--color-gray)', fontSize: '0.9rem' }}>Explora nuestra selección premium de fragancias.</p>
         </div>
+
+        {activeSpecialFilterName && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.45rem 1.1rem',
+              backgroundColor: '#FAF8F5',
+              border: '1px solid #B99A5B',
+              borderRadius: '999px',
+              fontSize: '0.75rem',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              color: '#111',
+              fontWeight: 500
+            }}>
+              <span>✦ {activeSpecialFilterName}</span>
+              <Link to="/tienda" style={{ color: '#888', textDecoration: 'none', marginLeft: '0.4rem', fontWeight: 'bold' }}>✕</Link>
+            </div>
+          </div>
+        )}
 
         {/* Search + Filter Row */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap', alignItems: 'center' }}>

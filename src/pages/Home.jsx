@@ -1,12 +1,17 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ArrowRight, CheckCircle, Truck, MessageCircle, ShieldCheck, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import OffersSection from '../components/OffersSection';
+import BenefitsBar from '../components/BenefitsBar';
+import MostWantedCarousel from '../components/MostWantedCarousel';
+import PromoBanner from '../components/PromoBanner';
+import NoteCollectionsSection from '../components/NoteCollectionsSection';
+import TrendingHousesSection from '../components/TrendingHousesSection';
+import CountersBar from '../components/CountersBar';
 import LazyOnView from '../components/LazyOnView';
 import { optimizeImg, prefetchImg } from '../utils/img';
 
-const TestimonialsSection = lazy(() => import('../components/TestimonialsSection'));
 const InstagramReelsSection = lazy(() => import('../components/InstagramReelsSection'));
 
 const HERO_SLIDES = [
@@ -59,31 +64,9 @@ const HERO_SLIDES = [
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
-  const { addToCart, toggleFavorite, isFavorite, products, categories, isLoadingProducts } = useShop();
-  const [activeCategory, setActiveCategory] = useState('TODOS');
-  
-  const displayCategoryNames = ['TODOS', ...categories.map(c => c.name.toUpperCase())];
+  const { addToCart, toggleFavorite, isFavorite, products } = useShop();
 
   const [openFaq, setOpenFaq] = useState(null);
-  const featured = products.slice(0, 4);
-  const newArrivals = products.slice(0, 4);
-  const bestSellers = products.filter(p => p.isBestSeller);
-
-  let displayProducts = products;
-  if (activeCategory !== 'TODOS') {
-    if (activeCategory === 'OFERTAS') {
-      displayProducts = products.filter(p => p.discount);
-    } else {
-      const activeCatLower = activeCategory.toLowerCase();
-      displayProducts = products.filter(p => {
-        const pCat = (p.category || '').toLowerCase();
-        return pCat === activeCatLower ||
-          (activeCatLower === 'hombre' && (pCat.includes('masc') || pCat.includes('homb'))) ||
-          (activeCatLower === 'mujer' && (pCat.includes('fem') || pCat.includes('muj')));
-      });
-    }
-  }
-  displayProducts = displayProducts.slice(0, 8);
 
   // --- HERO LOGIC ---
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -101,15 +84,13 @@ const Home = () => {
     const touchEnd = e.changedTouches[0].clientX;
     const diff = sedeTouchStart - touchEnd;
     if (diff > 45) {
-      // Swipe izquierda -> Sede siguiente
       setActiveSedeIndex(1);
     } else if (diff < -45) {
-      // Swipe derecha -> Sede anterior
       setActiveSedeIndex(0);
     }
   };
 
-  // Pre-cargar todos los slides del hero en memoria para transición instantánea sin parpadeo negro
+  // Pre-cargar todos los slides del hero en memoria
   useEffect(() => {
     HERO_SLIDES.forEach(s => {
       const d = new Image(); d.src = s.imageDesktop;
@@ -137,157 +118,218 @@ const Home = () => {
   return (
     <div>
 
-      <section
+      {/* ════ 1. HERO PRINCIPAL EXISTENTE ════ */}
+      <section 
         className="hero-section"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         style={{
           position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          backgroundColor: '#121212'
+          paddingTop: `${TOTAL_HEADER}px`,
+          boxSizing: 'border-box',
+          backgroundColor: '#0a0a0a'
         }}
       >
-        {HERO_SLIDES.map((slide, index) => {
-          const isActive = index === currentSlide;
-          return (
+        <button
+          onClick={prevSlide}
+          aria-label="Anterior"
+          className="hero-arrow"
+          style={{
+            position: 'absolute',
+            left: '2rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            zIndex: 10,
+            opacity: 0.6,
+            transition: 'opacity 0.3s',
+            padding: '1rem'
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
+        >
+          <span style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>&#x2039;</span>
+        </button>
+
+        <button
+          onClick={nextSlide}
+          aria-label="Siguiente"
+          className="hero-arrow"
+          style={{
+            position: 'absolute',
+            right: '2rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            zIndex: 10,
+            opacity: 0.6,
+            transition: 'opacity 0.3s',
+            padding: '1rem'
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
+        >
+          <span style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>&#x203A;</span>
+        </button>
+
+        <div style={{ position: 'absolute', inset: 0 }}>
+          {HERO_SLIDES.map((slide, index) => (
             <div
               key={slide.id}
               style={{
                 position: 'absolute',
                 inset: 0,
-                opacity: isActive ? 1 : 0,
-                pointerEvents: isActive ? 'auto' : 'none',
-                transition: 'opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
-                zIndex: isActive ? 2 : 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: slide.alignment === 'left' ? 'flex-start' : slide.alignment === 'right' ? 'flex-end' : 'center',
-                textAlign: slide.alignment,
-                padding: '0 5%',
+                opacity: currentSlide === index ? 1 : 0,
+                transition: 'opacity 0.8s ease-in-out',
+                pointerEvents: currentSlide === index ? 'auto' : 'none'
               }}
             >
               <picture>
                 <source media="(max-width: 768px)" srcSet={slide.imageMobile} />
-                <img 
-                  src={slide.imageDesktop} 
-                  alt={slide.title} 
+                <img
+                  src={slide.imageDesktop}
+                  alt={slide.title}
                   loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
                   decoding="async"
                   style={{
                     position: 'absolute',
-                    inset: 0,
+                    top: 0,
+                    left: 0,
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    zIndex: -2,
-                    transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                    objectPosition: 'center',
+                    transform: currentSlide === index ? 'scale(1)' : 'scale(1.05)',
                     transition: 'transform 7s ease-out'
                   }}
                 />
               </picture>
-            
-            {/* Overlay sutil adaptado a la alineación */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              background: slide.alignment === 'center' 
-                ? 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)'
-                : slide.alignment === 'left'
-                ? 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)'
-                : 'linear-gradient(to left, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)',
-              zIndex: -1
-            }} />
 
-            {/* Contenido */}
-            <div style={{
-              maxWidth: '650px',
-              width: '100%',
-              opacity: index === currentSlide ? 1 : 0,
-              transform: index === currentSlide ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'all 0.8s ease-out 0.3s'
-            }}>
-              <p style={{ color: '#fff', fontSize: '0.65rem', letterSpacing: '4px', textTransform: 'uppercase', opacity: 0.8, marginBottom: '1rem' }}>
-                {slide.campaign}
-              </p>
-              <h1 style={{ color: '#fff', fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 6vw, 4.5rem)', fontWeight: '400', lineHeight: '1.1', marginBottom: '1rem', textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
-                {slide.title}
-              </h1>
-              <p style={{ color: '#fff', fontSize: '1rem', opacity: 0.85, marginBottom: '2.5rem', fontWeight: '300', textShadow: '0 1px 10px rgba(0,0,0,0.3)' }}>
-                {slide.subtitle}
-              </p>
-              <Link
-                to={slide.buttonLink}
+              <div
                 style={{
-                  display: 'inline-block',
-                  padding: '1.1rem 3rem',
-                  border: '1px solid rgba(255,255,255,0.6)',
-                  color: '#fff',
-                  fontSize: '0.8rem',
-                  letterSpacing: '2px',
-                  textTransform: 'uppercase',
-                  backgroundColor: 'transparent',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease',
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%)'
                 }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#fff';
-                  e.target.style.color = '#000';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'transparent';
-                  e.target.style.color = '#fff';
+              />
+
+              <div
+                style={{
+                  position: 'relative',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+                  paddingBottom: 'clamp(2.5rem, 6vh, 4.5rem)',
+                  textAlign: 'center',
+                  zIndex: 2,
+                  paddingLeft: '1.5rem',
+                  paddingRight: '1.5rem'
                 }}
               >
-                {slide.buttonText}
-              </Link>
-            </div>
-          </div>
-        );
-      })}
+                <div style={{ maxWidth: '700px', width: '100%' }}>
+                  <p
+                    style={{
+                      color: 'var(--color-gold)',
+                      fontSize: 'clamp(0.65rem, 1.2vw, 0.78rem)',
+                      letterSpacing: 'clamp(2px, 0.5vw, 4px)',
+                      textTransform: 'uppercase',
+                      marginBottom: '0.4rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    {slide.campaign}
+                  </p>
 
-        {/* Flechas Desktop */}
-        <button 
-          onClick={prevSlide}
-          className="hero-arrow hero-arrow-left"
-          style={{ position: 'absolute', left: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
-          onMouseEnter={e => e.currentTarget.style.opacity = 1}
-          onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
-        >
-          <ChevronLeft size={40} strokeWidth={1} />
-        </button>
-        <button 
-          onClick={nextSlide}
-          className="hero-arrow hero-arrow-right"
-          style={{ position: 'absolute', right: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
-          onMouseEnter={e => e.currentTarget.style.opacity = 1}
-          onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
-        >
-          <ChevronRight size={40} strokeWidth={1} />
-        </button>
+                  <h1
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontSize: 'clamp(1.75rem, 5vw, 3.2rem)',
+                      color: 'white',
+                      fontWeight: '400',
+                      letterSpacing: 'clamp(1px, 0.3vw, 2px)',
+                      marginBottom: '0.5rem',
+                      lineHeight: 1.15
+                    }}
+                  >
+                    {slide.title}
+                  </h1>
 
-        {/* Indicadores Inferiores */}
-        <div style={{ position: 'absolute', bottom: '2.5rem', display: 'flex', gap: '1rem', alignItems: 'center', zIndex: 10 }}>
-          {HERO_SLIDES.map((_, idx) => (
-            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <button
-                onClick={() => setCurrentSlide(idx)}
-                style={{
-                  background: 'none', border: 'none', color: '#fff', cursor: 'pointer',
-                  fontSize: '0.75rem', letterSpacing: '1px', opacity: idx === currentSlide ? 1 : 0.4,
-                  transition: 'opacity 0.3s'
-                }}
-              >
-                0{idx + 1}
-              </button>
-              {idx < HERO_SLIDES.length - 1 && (
-                <div style={{ width: '30px', height: '1px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
-              )}
+                  <p
+                    style={{
+                      color: 'rgba(255,255,255,0.85)',
+                      fontSize: 'clamp(0.78rem, 1.5vw, 0.95rem)',
+                      fontWeight: '300',
+                      marginBottom: '1.3rem',
+                      letterSpacing: '0.5px'
+                    }}
+                  >
+                    {slide.subtitle}
+                  </p>
+
+                  <Link
+                    to={slide.buttonLink}
+                    style={{
+                      display: 'inline-block',
+                      backgroundColor: 'white',
+                      color: 'var(--color-black)',
+                      padding: 'clamp(0.65rem, 1.5vh, 0.85rem) clamp(1.8rem, 4vw, 2.5rem)',
+                      fontSize: 'clamp(0.68rem, 1.2vw, 0.75rem)',
+                      letterSpacing: '2px',
+                      textTransform: 'uppercase',
+                      fontWeight: '500',
+                      textDecoration: 'none',
+                      transition: 'all 0.3s ease',
+                      border: '1px solid white'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.color = 'var(--color-black)';
+                    }}
+                  >
+                    {slide.buttonText}
+                  </Link>
+                </div>
+              </div>
             </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '1.2rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: '8px',
+            zIndex: 10
+          }}
+        >
+          {HERO_SLIDES.map((_, index) => (
+            <div
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              style={{
+                width: currentSlide === index ? '28px' : '6px',
+                height: '3px',
+                backgroundColor: currentSlide === index ? 'white' : 'rgba(255,255,255,0.4)',
+                borderRadius: '2px',
+                transition: 'all 0.4s ease',
+                cursor: 'pointer'
+              }}
+            />
           ))}
         </div>
 
@@ -299,185 +341,38 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ SECCIÓN DINÁMICA: FAVORITOS EN OFERTA (SOLO SI HAY OFERTAS) ════ */}
+      {/* ════ 2. BARRA DE BENEFICIOS (NUEVA) ════ */}
+      <BenefitsBar />
+
+      {/* ════ 3. LOS MÁS DESEADOS DEL MES (NUEVO CARRUSEL) ════ */}
+      <MostWantedCarousel 
+        products={products} 
+        onFav={toggleFavorite} 
+        isFavorite={isFavorite} 
+        onAdd={addToCart} 
+      />
+
+      {/* ════ 4. FAVORITOS EN OFERTA (SECCIÓN EXISTENTE) ════ */}
       <OffersSection />
 
-      {/* ════ 2. NUESTROS PRODUCTOS (LA COLECCIÓN) ════ */}
-      <section className="section-padding" style={{ backgroundColor: '#FCFBF9' }}>
-        <div className="container">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.25rem, 2.4vw, 1.65rem)', fontWeight: '400', marginBottom: '0.4rem', color: 'var(--color-black)', letterSpacing: '1px' }}>
-              La Colección
-            </h2>
-            <p style={{ color: '#777', fontSize: '0.85rem', marginBottom: '1.2rem', letterSpacing: '0.5px', fontWeight: '300' }}>
-              Fragancias seleccionadas para ti
-            </p>
-            <Link to="/tienda" style={{ fontSize: '0.68rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', transition: 'opacity 0.3s' }} onMouseEnter={e => e.target.style.opacity = 0.6} onMouseLeave={e => e.target.style.opacity = 1}>
-              VER TODOS →
-            </Link>
-          </div>
+      {/* ════ 5. BANNER PROMOCIONAL (NUEVO) ════ */}
+      <PromoBanner />
 
-          {/* Filtros Editoriales */}
-          <div className="catalog-filters-wrapper no-scrollbar" style={{ width: '100%', overflowX: 'auto', marginBottom: '3.5rem', paddingBottom: '0.5rem', WebkitOverflowScrolling: 'touch' }}>
-            <div className="catalog-filters" style={{ display: 'flex', gap: '2.5rem', padding: '0 1.5rem' }}>
-              {displayCategoryNames.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase',
-                  color: activeCategory === cat ? '#000' : '#888',
-                  fontWeight: activeCategory === cat ? '500' : '400',
-                  borderBottom: activeCategory === cat ? '1px solid #000' : '1px solid transparent',
-                  paddingBottom: '0.3rem', transition: 'all 0.3s ease', whiteSpace: 'nowrap'
-                }}
-              >
-                {cat}
-              </button>
-              ))}
-            </div>
-          </div>
+      {/* ════ 6. COLECCIONES POR NOTAS (NUEVA) ════ */}
+      <NoteCollectionsSection />
 
-          <div className="featured-grid">
-            {isLoadingProducts && displayProducts.length === 0 ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <div style={{
-                    aspectRatio: '4/5',
-                    backgroundColor: '#f3f4f6',
-                    borderRadius: '6px',
-                    marginBottom: '1.2rem',
-                    animation: 'pulseSkeleton 1.5s ease-in-out infinite'
-                  }} />
-                  <div style={{ height: '12px', width: '40%', backgroundColor: '#f3f4f6', marginBottom: '8px', borderRadius: '4px' }} />
-                  <div style={{ height: '16px', width: '80%', backgroundColor: '#f3f4f6', marginBottom: '10px', borderRadius: '4px' }} />
-                  <div style={{ height: '14px', width: '50%', backgroundColor: '#f3f4f6', borderRadius: '4px' }} />
-                </div>
-              ))
-            ) : (
-              displayProducts.map((p, pIdx) => (
-                <ProductCard key={p.id} product={p} onFav={() => toggleFavorite(p)} fav={isFavorite(p.id)} onAdd={() => addToCart(p, 1, p.sizes?.[0])} priority={pIdx < 4} />
-              ))
-            )}
-          </div>
-        </div>
+      {/* ════ 7. CASAS EN TENDENCIA (NUEVA) ════ */}
+      <TrendingHousesSection />
 
-        <style>{`
-          @keyframes pulseSkeleton {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-          }
-          .catalog-filters { justify-content: center; min-width: max-content; }
-          .featured-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem 2rem; }
-          @media (max-width: 1024px) {
-            .featured-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 1.5rem; }
-          }
-          @media (max-width: 768px) {
-            .catalog-filters { justify-content: flex-start; }
-            .catalog-filters-wrapper { margin-left: -1.5rem; margin-right: -1.5rem; width: calc(100% + 3rem); padding-left: 0; padding-right: 0; }
-            .featured-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem 1rem; }
-          }
-        `}</style>
-      </section>
+      {/* ════ 8. BARRA DE CONTADORES (NUEVA) ════ */}
+      <CountersBar />
 
-      {/* ════ PREGUNTAS FRECUENTES ════ */}
-      <section style={{ backgroundColor: '#fff', padding: '3rem 0 2rem' }}>
-        <div className="container" style={{ maxWidth: '600px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-              Preguntas Frecuentes
-            </h2>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#666', lineHeight: '1.5', fontWeight: '300' }}>
-              Encuentra respuestas a las preguntas más comunes sobre nuestros perfumes, compras y atención.
-            </p>
-          </div>
-
-          <div style={{ borderTop: '1px solid #EAE8E4' }}>
-            {[
-              {
-                q: '¿Cómo puedo realizar una compra?',
-                a: 'Puedes explorar nuestro catálogo, seleccionar el perfume que deseas y agregarlo al carrito. Luego podrás revisar tu pedido, ingresar tus datos y finalizar la compra. Al finalizar, tu pedido será enviado a nuestro canal de WhatsApp para confirmar la información y continuar con la atención.'
-              },
-              {
-                q: '¿Los perfumes son originales?',
-                a: 'Sí. Trabajamos con perfumes originales e importados. En cada producto encontrarás la información disponible sobre la fragancia, su marca, presentación y precio.'
-              },
-              {
-                q: '¿Realizan envíos?',
-                a: 'Sí, contamos con opciones de entrega según la ciudad y la disponibilidad del servicio. Si tienes dudas sobre la entrega de tu pedido, puedes comunicarte con nosotros por WhatsApp.'
-              },
-              {
-                q: '¿Qué métodos de pago tienen disponibles?',
-                a: 'Los métodos de pago disponibles se informarán durante el proceso de compra o mediante nuestro canal de atención por WhatsApp.'
-              },
-              {
-                q: '¿Puedo recibir ayuda para elegir un perfume?',
-                a: 'Claro. Si no sabes qué fragancia elegir, puedes comunicarte con nosotros por WhatsApp y recibir orientación según tus preferencias, el tipo de fragancia que buscas y la ocasión para la que la necesitas.'
-              }
-            ].map((faq, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div key={idx} style={{ borderBottom: '1px solid #EAE8E4' }}>
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    style={{
-                      width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      background: 'none', border: 'none', padding: '1.2rem 0', cursor: 'pointer', textAlign: 'left',
-                      fontFamily: 'var(--font-serif)', fontSize: '0.95rem', color: '#111'
-                    }}
-                  >
-                    <span style={{ paddingRight: '1rem' }}>{faq.q}</span>
-                    <span style={{ color: '#000', transition: 'transform 0.3s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
-                      {isOpen ? <Minus size={16} strokeWidth={1.5} /> : <Plus size={16} strokeWidth={1.5} />}
-                    </span>
-                  </button>
-                  <div
-                    style={{
-                      overflow: 'hidden',
-                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      maxHeight: isOpen ? '300px' : '0',
-                      opacity: isOpen ? 1 : 0
-                    }}
-                  >
-                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#666', lineHeight: '1.6', paddingBottom: '1.2rem' }}>
-                      {faq.a}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.6rem', letterSpacing: '1px' }}>¿NECESITAS MÁS AYUDA?</p>
-            <a 
-              href="https://wa.me/573027642208" 
-              target="_blank" 
-              rel="noreferrer"
-              style={{
-                display: 'inline-block', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
-              }}
-              onMouseEnter={e => e.target.style.opacity = 0.6}
-              onMouseLeave={e => e.target.style.opacity = 1}
-            >
-              CONSULTAR POR WHATSAPP
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ════ NUEVA SECCIÓN: REELS DE INSTAGRAM ════ */}
+      {/* ════ 9. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL (EXISTENTE REORGANIZADA) ════ */}
       <LazyOnView minHeight={520}>
         <Suspense fallback={null}><InstagramReelsSection /></Suspense>
       </LazyOnView>
 
-      {/* ════ NUEVA SECCIÓN: LO QUE DICEN NUESTROS CLIENTES ════ */}
-      <LazyOnView minHeight={420}>
-        <Suspense fallback={null}><TestimonialsSection /></Suspense>
-      </LazyOnView>
-
-      {/* ════ NUESTRAS SEDES ════ */}
+      {/* ════ 10. SEDES FÍSICAS (EXISTENTE) ════ */}
       <section id="sedes" className="section-padding container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span style={{
@@ -546,7 +441,7 @@ const Home = () => {
           </button>
         </div>
 
-        {/* Carrusel 100% Completo: Muestra 1 sola tarjeta grande a la vez sin recortes */}
+        {/* Carrusel Sedes */}
         <div 
           className="sedes-slider-wrapper"
           onTouchStart={handleSedeTouchStart}
@@ -651,7 +546,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Controles de cambio con flechas y puntos en celular y tablet */}
+        {/* Controles de cambio en celular y tablet */}
         <div className="sedes-mobile-controls">
           <button
             type="button"
@@ -790,24 +685,106 @@ const Home = () => {
         `}</style>
       </section>
 
-      {/* ════ TRAYECTORIA DE LA MARCA ════ */}
-      <section style={{ backgroundColor: '#F9F8F6', padding: '3rem 0', borderTop: '1px solid #EAE8E4' }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', letterSpacing: '3px', color: '#888', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
-            DESDE 1992
-          </p>
-          <div style={{ width: '1px', height: '20px', backgroundColor: '#D5D1C8', margin: '0 auto 1.2rem' }} />
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', color: '#111', letterSpacing: '1px', marginBottom: '0.8rem' }}>
-            MÁS DE 30 AÑOS DE TRAYECTORIA
-          </h2>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', color: '#666', fontStyle: 'italic' }}>
-            Perfumes originales e importados.
-          </p>
+      {/* ════ 11. PREGUNTAS FRECUENTES (EXISTENTE REORGANIZADA) ════ */}
+      <section style={{ backgroundColor: '#FCFBF9', padding: '4rem 0 3rem', borderTop: '1px solid #EAE8E4' }}>
+        <div className="container" style={{ maxWidth: '640px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <span style={{
+              fontSize: '0.68rem',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              color: '#B99A5B',
+              fontWeight: '600',
+              fontFamily: 'var(--font-sans)',
+              display: 'block',
+              marginBottom: '0.4rem'
+            }}>
+              RESOLVEMOS TUS DUDAS
+            </span>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: '400', color: 'var(--color-black)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
+              Preguntas Frecuentes
+            </h2>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#666', lineHeight: '1.5', fontWeight: '300' }}>
+              Encuentra respuestas a las preguntas más comunes sobre nuestros perfumes, compras y envíos.
+            </p>
+          </div>
+
+          <div style={{ borderTop: '1px solid #EAE8E4' }}>
+            {[
+              {
+                q: '¿Cómo puedo realizar una compra?',
+                a: 'Puedes explorar nuestro catálogo, seleccionar el perfume que deseas y agregarlo al carrito. Luego podrás revisar tu pedido, ingresar tus datos y finalizar la compra. Al finalizar, tu pedido será recibido y podrás confirmar los detalles por WhatsApp con nuestra atención personalizada.'
+              },
+              {
+                q: '¿Los perfumes son originales?',
+                a: 'Sí, 100% garantizados. Trabajamos exclusivamente con perfumes originales e importados de las mejores casas perfumistas del mundo con más de 30 años de experiencia comercial.'
+              },
+              {
+                q: '¿Realizan envíos a todo el país?',
+                a: 'Sí, realizamos envíos seguros y asegurados a cualquier municipio de Colombia. Si tienes dudas sobre los tiempos de entrega específicos de tu ciudad, consúltanos directamente por WhatsApp.'
+              },
+              {
+                q: '¿Qué métodos de pago tienen disponibles?',
+                a: 'Aceptamos transferencias bancarias (Bancolombia, Nequi, Daviplata), pago seguro en línea mediante pasarela y pagos a través de aliados comerciales como Addi y Sistecrédito.'
+              },
+              {
+                q: '¿Puedo recibir asesoría para elegir mi perfume?',
+                a: '¡Por supuesto! Es uno de nuestros sellos distintivos. Puedes escribirnos a nuestra línea de WhatsApp y uno de nuestros expertos perfumistas te guiará según tus gustos, clima, ocasión y notas olfativas favoritas.'
+              }
+            ].map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div key={idx} style={{ borderBottom: '1px solid #EAE8E4' }}>
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    style={{
+                      width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      background: 'none', border: 'none', padding: '1.2rem 0', cursor: 'pointer', textAlign: 'left',
+                      fontFamily: 'var(--font-serif)', fontSize: '0.95rem', color: '#111'
+                    }}
+                  >
+                    <span style={{ paddingRight: '1rem' }}>{faq.q}</span>
+                    <span style={{ color: '#000', transition: 'transform 0.3s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
+                      {isOpen ? <Minus size={16} strokeWidth={1.5} /> : <Plus size={16} strokeWidth={1.5} />}
+                    </span>
+                  </button>
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      maxHeight: isOpen ? '300px' : '0',
+                      opacity: isOpen ? 1 : 0
+                    }}
+                  >
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#666', lineHeight: '1.6', paddingBottom: '1.2rem' }}>
+                      {faq.a}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.6rem', letterSpacing: '1px' }}>¿TIENES OTRA PREGUNTA?</p>
+            <a 
+              href="https://wa.me/573027642208" 
+              target="_blank" 
+              rel="noreferrer"
+              style={{
+                display: 'inline-block', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
+              }}
+              onMouseEnter={e => e.target.style.opacity = 0.6}
+              onMouseLeave={e => e.target.style.opacity = 1}
+            >
+              CONSULTAR POR WHATSAPP →
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* ════ OPCIONES DE PAGO Y ALIADOS ════ */}
-      <section style={{ padding: '3rem 0', backgroundColor: '#fff', borderTop: '1px solid #EAE8E4' }}>
+      {/* ════ 12. MEDIOS DE PAGO Y ALIADOS (EXISTENTE) ════ */}
+      <section style={{ padding: '3.5rem 0', backgroundColor: '#fff', borderTop: '1px solid #EAE8E4' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           
           {/* Opciones de Pago */}
@@ -819,6 +796,8 @@ const Home = () => {
               <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#222' }}>TRANSFERENCIA</span>
               <span style={{ fontSize: '0.75rem', color: '#999' }}>·</span>
               <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#222' }}>EFECTIVO</span>
+              <span style={{ fontSize: '0.75rem', color: '#999' }}>·</span>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', letterSpacing: '1px', color: '#222' }}>TARJETAS</span>
             </div>
           </div>
 
@@ -842,14 +821,24 @@ const Home = () => {
         `}</style>
       </section>
 
-
     </div>
   );
 };
 
-/* ── Shared Product Card Component ── */
+/* ── Shared Product Card Component (Microinteracciones & Responsive) ── */
 export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) => (
-  <div className="product-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', textAlign: 'left', backgroundColor: 'transparent' }}>
+  <div 
+    className="product-card" 
+    style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100%', 
+      textAlign: 'left', 
+      backgroundColor: 'transparent',
+      transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+      borderRadius: '8px'
+    }}
+  >
     <div 
       className="product-card__image-wrap" 
       style={{ 
@@ -1044,7 +1033,6 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         )}
       </div>
 
-      {/* Botón Agregar al Carrito para Móvil y Tablet (debajo del precio, sin tapar la botella) */}
       {(onAdd && product.inStock) && (
         <button
           onClick={(e) => { e.preventDefault(); onAdd(); }}
@@ -1076,6 +1064,9 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
     </div>
 
     <style>{`
+      .product-card:hover {
+        transform: translateY(-4px);
+      }
       .product-card:hover .product-img {
         transform: scale(1.03);
       }
