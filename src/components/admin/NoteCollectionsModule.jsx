@@ -65,7 +65,7 @@ const NoteCollectionsModule = () => {
       image_url: col.image_url || col.image || '',
       active: col.active !== false,
       sort_order: col.sort_order || 0,
-      product_ids: Array.isArray(col.product_ids) ? [...col.product_ids] : []
+      product_ids: Array.isArray(col.product_ids) ? [...new Set(col.product_ids.map(x => String(x)).filter(Boolean))] : []
     });
     setSearchProductQuery('');
     setIsModalOpen(true);
@@ -135,12 +135,12 @@ const NoteCollectionsModule = () => {
   };
 
   const toggleProductSelect = (productId) => {
-    const numId = Number(productId);
+    const strId = String(productId);
     setFormData(prev => {
-      const exists = prev.product_ids.some(id => Number(id) === numId);
+      const exists = prev.product_ids.some(id => String(id) === strId);
       const updated = exists
-        ? prev.product_ids.filter(id => Number(id) !== numId)
-        : [...prev.product_ids, numId];
+        ? prev.product_ids.filter(id => String(id) !== strId)
+        : [...prev.product_ids, strId];
       return { ...prev, product_ids: updated };
     });
   };
@@ -523,6 +523,41 @@ const NoteCollectionsModule = () => {
                   )}
                 </div>
 
+                {/* Píldoras visibles de los productos seleccionados */}
+                {formData.product_ids.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '0.8rem', padding: '0.65rem', backgroundColor: '#FAF8F5', borderRadius: '8px', border: '1px solid #EAE6DF' }}>
+                    {formData.product_ids.map(selId => {
+                      const prod = products.find(p => String(p.id) === String(selId));
+                      return (
+                        <span
+                          key={String(selId)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            padding: '0.3rem 0.65rem',
+                            backgroundColor: '#111',
+                            color: '#fff',
+                            borderRadius: '999px',
+                            fontSize: '0.72rem',
+                            fontWeight: 500
+                          }}
+                        >
+                          <span>✓ {prod ? prod.name : selId}</span>
+                          <button
+                            type="button"
+                            onClick={() => toggleProductSelect(selId)}
+                            style={{ background: 'none', border: 'none', color: '#ccc', cursor: 'pointer', padding: 0, fontSize: '0.78rem', lineHeight: 1 }}
+                            title="Quitar"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
                 {/* Buscador de productos */}
                 <div style={{ position: 'relative', marginBottom: '0.8rem' }}>
                   <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
@@ -538,7 +573,7 @@ const NoteCollectionsModule = () => {
                 {/* Lista de productos scrollable */}
                 <div style={{ maxHeight: '220px', overflowY: 'auto', border: '1px solid #EAE8E4', borderRadius: '8px', padding: '0.5rem' }}>
                   {filteredProducts.map(p => {
-                    const isSelected = formData.product_ids.some(id => Number(id) === Number(p.id));
+                    const isSelected = formData.product_ids.some(id => String(id) === String(p.id));
                     return (
                       <div
                         key={p.id}
@@ -549,7 +584,9 @@ const NoteCollectionsModule = () => {
                           gap: '0.8rem',
                           padding: '0.5rem 0.6rem',
                           borderRadius: '6px',
-                          backgroundColor: isSelected ? '#FAF8F5' : 'transparent',
+                          backgroundColor: isSelected ? '#F0FDF4' : 'transparent',
+                          border: isSelected ? '1px solid #16A34A' : '1px solid transparent',
+                          marginBottom: '4px',
                           cursor: 'pointer',
                           transition: 'background-color 0.15s'
                         }}
@@ -557,8 +594,8 @@ const NoteCollectionsModule = () => {
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() => {}}
-                          style={{ cursor: 'pointer', accentColor: '#111' }}
+                          readOnly
+                          style={{ width: '17px', height: '17px', cursor: 'pointer', accentColor: '#16A34A', pointerEvents: 'none' }}
                         />
                         <img
                           src={optimizeImg(p.image, 100)}

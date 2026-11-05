@@ -140,9 +140,12 @@ export default async function handler(req, res) {
     await sql`
       CREATE TABLE IF NOT EXISTS note_collection_products (
         collection_id INTEGER NOT NULL,
-        product_id INTEGER NOT NULL,
+        product_id TEXT NOT NULL,
         PRIMARY KEY (collection_id, product_id)
       )
+    `.catch(() => {});
+    await sql`
+      ALTER TABLE note_collection_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
     `.catch(() => {});
 
     if (req.method === 'GET') {
@@ -185,7 +188,7 @@ export default async function handler(req, res) {
         `;
         const collection = inserted[0];
 
-        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const cleanIds = Array.isArray(product_ids) ? [...new Set(product_ids.map(x => String(x || '').trim()).filter(Boolean))] : [];
         for (const pid of cleanIds) {
           await sql`
             INSERT INTO note_collection_products (collection_id, product_id)
@@ -220,7 +223,7 @@ export default async function handler(req, res) {
           RETURNING *
         `;
 
-        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const cleanIds = Array.isArray(product_ids) ? [...new Set(product_ids.map(x => String(x || '').trim()).filter(Boolean))] : [];
         if (Array.isArray(product_ids)) {
           await sql`DELETE FROM note_collection_products WHERE collection_id = ${id}`;
           for (const pid of cleanIds) {
@@ -262,9 +265,12 @@ export default async function handler(req, res) {
     await sql`
       CREATE TABLE IF NOT EXISTS trending_house_products (
         house_id INTEGER NOT NULL,
-        product_id INTEGER NOT NULL,
+        product_id TEXT NOT NULL,
         PRIMARY KEY (house_id, product_id)
       )
+    `.catch(() => {});
+    await sql`
+      ALTER TABLE trending_house_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
     `.catch(() => {});
 
     if (req.method === 'GET') {
@@ -307,7 +313,7 @@ export default async function handler(req, res) {
         `;
         const house = inserted[0];
 
-        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const cleanIds = Array.isArray(product_ids) ? [...new Set(product_ids.map(x => String(x || '').trim()).filter(Boolean))] : [];
         for (const pid of cleanIds) {
           await sql`
             INSERT INTO trending_house_products (house_id, product_id)
@@ -342,7 +348,7 @@ export default async function handler(req, res) {
           RETURNING *
         `;
 
-        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const cleanIds = Array.isArray(product_ids) ? [...new Set(product_ids.map(x => String(x || '').trim()).filter(Boolean))] : [];
         if (Array.isArray(product_ids)) {
           await sql`DELETE FROM trending_house_products WHERE house_id = ${id}`;
           for (const pid of cleanIds) {
@@ -402,7 +408,7 @@ export default async function handler(req, res) {
           return res.status(200).json({ success: true, setsBanner: null });
         }
         const row = rows[0];
-        const productIds = Array.isArray(row.product_ids) ? row.product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const productIds = Array.isArray(row.product_ids) ? [...new Set(row.product_ids.map(x => String(x || '').trim()).filter(Boolean))] : [];
         const imagesList = Array.isArray(row.images) ? row.images.filter(Boolean) : (row.image ? [row.image] : []);
         return res.status(200).json({
           success: true,
@@ -423,7 +429,7 @@ export default async function handler(req, res) {
         const { title, subtitle, button_text, image_url, image, images, product_ids, active } = body || {};
         const mainImg = image_url !== undefined ? image_url : (image !== undefined ? image : (Array.isArray(images) && images[0] ? images[0] : null));
         const cleanImages = Array.isArray(images) ? images.filter(Boolean) : (mainImg ? [mainImg] : []);
-        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const cleanIds = Array.isArray(product_ids) ? [...new Set(product_ids.map(x => String(x || '').trim()).filter(Boolean))] : [];
 
         const existing = await sql`SELECT id FROM fragrance_sets_banner ORDER BY id ASC LIMIT 1`;
         let result;

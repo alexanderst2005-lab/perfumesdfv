@@ -31,7 +31,7 @@ const Store = () => {
         .then(data => {
           const col = (data.collections || []).find(c => String(c.id) === String(colId));
           if (col) {
-            setCollectionProductIds((col.product_ids || []).map(id => Number(id)));
+            setCollectionProductIds((col.product_ids || []).map(id => String(id)));
             setActiveSpecialFilterName('Colección: ' + col.name);
           } else {
             setCollectionProductIds([]);
@@ -48,7 +48,7 @@ const Store = () => {
         .then(data => {
           const h = (data.houses || []).find(x => String(x.id) === String(casaId));
           if (h) {
-            setCollectionProductIds((h.product_ids || []).map(id => Number(id)));
+            setCollectionProductIds((h.product_ids || []).map(id => String(id)));
             setActiveSpecialFilterName('Casa: ' + h.name);
           } else {
             setCollectionProductIds([]);
@@ -65,7 +65,7 @@ const Store = () => {
         .then(data => {
           const b = data && data.setsBanner;
           if (b && Array.isArray(b.product_ids)) {
-            setCollectionProductIds(b.product_ids.map(id => Number(id)));
+            setCollectionProductIds(b.product_ids.map(id => String(id)));
             setActiveSpecialFilterName(b.title || 'Sets de Fragancias Exclusivas');
           } else {
             setCollectionProductIds([]);
