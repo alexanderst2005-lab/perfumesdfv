@@ -28,7 +28,9 @@ export default async function handler(req, res) {
       try {
         const rows = await sql`SELECT * FROM promo_banners ORDER BY id ASC LIMIT 1`;
         if (rows.length === 0) return res.status(200).json({ success: true, banner: null });
-        return res.status(200).json({ success: true, banner: rows[0] });
+        const row = rows[0];
+        const img = row.image_url || row.image || null;
+        return res.status(200).json({ success: true, banner: { ...row, image: img, image_url: img } });
       } catch (error) {
         console.error('Error fetching promo banner:', error);
         return res.status(500).json({ success: false, error: 'Database error' });
@@ -39,8 +41,43 @@ export default async function handler(req, res) {
       try {
         const { title, subtitle, button_text, button_link, image_url, image, active } = body || {};
         const bannerImg = image_url !== undefined ? image_url : image;
+        const cols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'promo_banners'`;
+        const hasImageUrl = cols.some(c => c.column_name === 'image_url');
         const existing = await sql`SELECT id FROM promo_banners ORDER BY id ASC LIMIT 1`;
         let result;
+
+        if (!hasImageUrl) {
+          // Esquema con columna "image"
+          if (existing.length === 0) {
+            result = await sql`
+              INSERT INTO promo_banners (title, subtitle, button_text, button_link, image, active, updated_at)
+              VALUES (
+                ${title || 'ELEGANCIA QUE PERDURA'},
+                ${subtitle || 'Descubre fragancias que definen tu presencia.'},
+                ${button_text || 'COMPRAR AHORA'},
+                ${button_link || '/tienda'},
+                ${bannerImg || null},
+                ${active !== false},
+                NOW()
+              ) RETURNING *
+            `;
+          } else {
+            result = await sql`
+              UPDATE promo_banners SET
+                title = ${title || 'ELEGANCIA QUE PERDURA'},
+                subtitle = ${subtitle || 'Descubre fragancias que definen tu presencia.'},
+                button_text = ${button_text || 'COMPRAR AHORA'},
+                button_link = ${button_link || '/tienda'},
+                image = ${bannerImg !== undefined ? bannerImg : null},
+                active = ${active !== false},
+                updated_at = NOW()
+              WHERE id = ${existing[0].id}
+              RETURNING *
+            `;
+          }
+          const r = result[0];
+          return res.status(200).json({ success: true, banner: { ...r, image_url: r.image } });
+        }
 
         if (existing.length === 0) {
           result = await sql`

@@ -921,7 +921,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
     <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0 0.1rem' }}>
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
         <h3 style={{ 
-          fontFamily: 'var(--font-serif)', 
+          fontFamily: 'var(--font-name)', 
           fontSize: 'clamp(0.9rem, 1.4vw, 1rem)', 
           fontWeight: '500', 
           color: '#1A1A1A', 

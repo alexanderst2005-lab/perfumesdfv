@@ -5,163 +5,127 @@ import { optimizeImg } from '../utils/img';
 const DEFAULT_BANNER = {
   title: 'ELEGANCIA QUE PERDURA',
   subtitle: 'Fragancias exclusivas que definen tu presencia con un sello inconfundible de lujo.',
-  buttonText: 'COMPRAR AHORA',
-  link: '/tienda',
+  button_text: 'COMPRAR AHORA',
+  button_link: '/tienda',
   image: '/hero_campaign_2.webp',
   active: true
 };
 
 const PromoBanner = () => {
   const [banner, setBanner] = useState(DEFAULT_BANNER);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/promo-banner')
+    fetch(`/api/promo-banner?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
-        if (data.success && data.banner && data.banner.active !== false) {
+        if (data.success && data.banner) {
           setBanner(data.banner);
         }
       })
-      .catch(() => {})
-      .finally(() => setLoaded(true));
+      .catch(() => {});
   }, []);
 
   if (!banner || banner.active === false) {
     return null;
   }
 
-  const bgImage = banner.image ? optimizeImg(banner.image, 1600) : '/hero_campaign_2.webp';
+  // La imagen subida desde el panel se guarda como image_url (o image)
+  const rawImg = banner.image_url || banner.image;
+  const bgImage = rawImg ? optimizeImg(rawImg, 1400) : '/hero_campaign_2.webp';
 
   return (
-    <section className="dfv-promo-banner-section" style={{ position: 'relative', width: '100%', overflow: 'hidden', margin: '3rem 0' }}>
-      <div 
-        style={{
-          position: 'relative',
-          minHeight: '380px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        {/* Capa de contraste sofisticada: viñeta oscura que realza la tipografía blanca */}
-        <div 
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(135deg, rgba(5,5,5,0.78) 0%, rgba(15,15,15,0.55) 60%, rgba(5,5,5,0.85) 100%)',
-            backdropFilter: 'blur(1px)'
-          }} 
-        />
-
-        {/* Borde sutil dorado superior e inferior */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(185,154,91,0.5), transparent)' }} />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(185,154,91,0.5), transparent)' }} />
-
-        {/* Contenido centrado */}
-        <div 
-          className="container" 
-          style={{ 
-            position: 'relative', 
-            zIndex: 2, 
-            textAlign: 'center', 
-            padding: '3rem 1.5rem',
-            maxWidth: '780px',
-            margin: '0 auto'
-          }}
-        >
-          <span 
-            style={{ 
-              display: 'inline-block',
-              fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-              fontSize: '0.7rem',
-              letterSpacing: '3.5px',
-              textTransform: 'uppercase',
-              color: '#D1B878',
-              fontWeight: '700',
-              marginBottom: '0.85rem'
-            }}
-          >
-            ✦ ALTA PERFUMERÍA DFV ✦
-          </span>
-
-          <h2 
-            style={{ 
-              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
-              fontWeight: '400',
-              color: '#ffffff',
-              lineHeight: 1.2,
-              margin: '0 0 1rem',
-              letterSpacing: '0.8px'
-            }}
-          >
-            {banner.title}
-          </h2>
-
-          {banner.subtitle && (
-            <p 
-              style={{ 
-                fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-                fontSize: 'clamp(0.85rem, 1.8vw, 1.05rem)',
-                color: '#e4e4e7',
-                lineHeight: 1.6,
-                margin: '0 auto 2rem',
-                maxWidth: '560px',
-                fontWeight: '300'
-              }}
-            >
-              {banner.subtitle}
-            </p>
-          )}
-
-          <div>
-            <Link
-              to={banner.button_link || '/tienda'}
-              className="dfv-promo-banner-btn"
-              style={{
-                display: 'inline-block',
-                padding: '0.95rem 2.75rem',
-                backgroundColor: '#0a0a0a',
-                color: '#ffffff',
-                fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                letterSpacing: '2.5px',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-                borderRadius: '4px',
-                border: '1px solid rgba(185, 154, 91, 0.4)',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = '#B99A5B';
-                e.currentTarget.style.color = '#0a0a0a';
-                e.currentTarget.style.borderColor = '#B99A5B';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 12px 30px rgba(185, 154, 91, 0.35)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = '#0a0a0a';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.borderColor = 'rgba(185, 154, 91, 0.4)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
-              }}
-            >
+    <section className="dfv-promo" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="dfv-promo__wrap">
+        <div className="dfv-promo__card" style={{ backgroundImage: `url(${bgImage})` }}>
+          <div className="dfv-promo__overlay" />
+          <div className="dfv-promo__content">
+            <h2 className="dfv-promo__title">{banner.title}</h2>
+            {banner.subtitle && <p className="dfv-promo__subtitle">{banner.subtitle}</p>}
+            <Link to={banner.button_link || '/tienda'} className="dfv-promo__btn">
               {banner.button_text || 'COMPRAR AHORA'}
             </Link>
           </div>
         </div>
       </div>
+
+      <style>{`
+        .dfv-promo { padding: 48px 0; }
+        .dfv-promo__wrap { max-width: 1320px; margin: 0 auto; padding: 0 20px; }
+        .dfv-promo__card {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 460px;
+          border-radius: 8px;
+          overflow: hidden;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-color: #2a2a2a;
+        }
+        .dfv-promo__overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.50) 100%);
+        }
+        .dfv-promo__content {
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          max-width: 760px;
+          padding: 40px 24px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .dfv-promo__title {
+          font-family: 'Montserrat', sans-serif;
+          font-size: clamp(2.6rem, 8.5vw, 5.2rem);
+          font-weight: 600;
+          line-height: 1.02;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: #ffffff;
+          margin: 0 0 16px;
+          text-shadow: 0 2px 18px rgba(0,0,0,0.25);
+          overflow-wrap: anywhere;
+        }
+        .dfv-promo__subtitle {
+          font-family: 'Montserrat', sans-serif;
+          font-size: clamp(0.78rem, 2.4vw, 1rem);
+          font-weight: 400;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.92);
+          line-height: 1.5;
+          margin: 0 0 28px;
+          max-width: 560px;
+        }
+        .dfv-promo__btn {
+          display: inline-block;
+          padding: 14px 34px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 0.78rem;
+          font-weight: 500;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          text-decoration: none;
+          color: #ffffff;
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.75);
+          border-radius: 999px;
+          transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dfv-promo__btn:hover { background: #ffffff; color: #1a1a1a; }
+        @media (max-width: 640px) {
+          .dfv-promo { padding: 40px 0; }
+          .dfv-promo__card { min-height: 440px; }
+        }
+      `}</style>
     </section>
   );
 };
 
 export default PromoBanner;
-

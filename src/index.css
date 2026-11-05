@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
   --color-black: #050505;
@@ -15,7 +15,8 @@
   --announcement-height: 36px;
   --total-header: 106px;
   --bottom-nav-height: 64px;
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-serif: 'Montserrat', -apple-system, sans-serif;
+  --font-name: 'Archivo', 'Inter', -apple-system, sans-serif;
   --font-sans: 'Montserrat', -apple-system, sans-serif;
   --transition: all 0.25s ease;
   --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
