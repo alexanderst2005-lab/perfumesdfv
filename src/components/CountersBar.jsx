@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 
 // Contadores por defecto oficiales de DFV Perfumes
 const DEFAULT_COUNTERS = [
-  { id: 'c1', value: 5000, suffix: '+', label: 'CLIENTES SATISFECHOS' },
-  { id: 'c2', value: 12000, suffix: '+', label: 'PEDIDOS ENTREGADOS' },
-  { id: 'c3', value: 30, suffix: '+', label: 'AÑOS DE TRAYECTORIA' },
-  { id: 'c4', value: 100, suffix: '%', label: 'ENVÍOS A TODO EL PAÍS' }
+  { id: 'c1', value: 5000, suffix: '+', label: 'CLIENTES FELICES', icon: '👥' },
+  { id: 'c2', value: 12000, suffix: '+', label: 'PEDIDOS ENTREGADOS', icon: '📦' },
+  { id: 'c3', value: 30, suffix: '+', label: 'AÑOS DE TRAYECTORIA', icon: '⭐' },
+  { id: 'c4', value: 100, suffix: '%', label: 'ENVÍOS A TODO EL PAÍS', icon: '🚚' }
 ];
+
+const DEFAULT_ICONS = ['👥', '📦', '⭐', '🚚'];
 
 // Hook para animar números suavemente de 0 al valor final
 function useCountUp(targetValue, shouldStart, duration = 1600) {
@@ -23,7 +25,6 @@ function useCountUp(targetValue, shouldStart, duration = 1600) {
     const step = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      // easeOutCubic
       const ease = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(ease * targetValue));
 
@@ -41,43 +42,51 @@ function useCountUp(targetValue, shouldStart, duration = 1600) {
   return count;
 }
 
-const SingleCounterCard = ({ counter, shouldAnimate }) => {
+const SingleCounterCard = ({ counter, index, shouldAnimate }) => {
   const animatedValue = useCountUp(counter.value || 0, shouldAnimate);
 
   const formattedNumber = () => {
-    if (counter.value === 12000) {
-      return animatedValue.toLocaleString('es-CO'); // "12.000"
-    }
-    if (counter.value === 5000) {
-      return animatedValue.toString(); // "5000"
-    }
     return animatedValue.toLocaleString('es-CO');
+  };
+
+  const getEmoji = () => {
+    if (counter.icon) return counter.icon;
+    const lbl = (counter.label || '').toUpperCase();
+    if (lbl.includes('CLIENTE')) return '👥';
+    if (lbl.includes('PEDIDO')) return '📦';
+    if (lbl.includes('ENVÍO') || lbl.includes('ENVIO') || lbl.includes('DESPACHO')) return '🚚';
+    if (lbl.includes('SATISFAC') || lbl.includes('AÑO') || lbl.includes('TRAYECTORIA')) return '⭐';
+    return DEFAULT_ICONS[index % DEFAULT_ICONS.length];
   };
 
   return (
     <div 
       className="dfv-counter-card"
       style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid #EAE6DF',
-        borderRadius: '12px',
-        padding: '1.85rem 1.25rem',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #EAEAEA',
+        borderRadius: '20px',
+        padding: '1.75rem 1rem',
         textAlign: 'center',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.02)',
-        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center'
       }}
     >
+      {/* ICONO / EMOJI ARRIBA */}
+      <div style={{ fontSize: '1.8rem', lineHeight: 1, marginBottom: '0.6rem' }}>
+        {getEmoji()}
+      </div>
+
+      {/* NÚMERO GRANDE EN NEGRITA MONTSERRAT */}
       <div 
         style={{
-          fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-          fontSize: 'clamp(2rem, 3.6vw, 2.75rem)',
-          fontWeight: '500',
+          fontFamily: "'Montserrat', sans-serif",
+          fontSize: 'clamp(1.6rem, 4.5vw, 2.2rem)',
+          fontWeight: '700',
           color: '#111111',
-          lineHeight: 1.1,
+          lineHeight: 1.15,
           marginBottom: '0.45rem',
           letterSpacing: '-0.5px',
           display: 'inline-flex',
@@ -85,18 +94,18 @@ const SingleCounterCard = ({ counter, shouldAnimate }) => {
           justifyContent: 'center'
         }}
       >
-        {counter.prefix && <span style={{ color: '#B99A5B', marginRight: '2px' }}>{counter.prefix}</span>}
+        {counter.prefix && <span>{counter.prefix}</span>}
         <span>{formattedNumber()}</span>
-        <span style={{ color: '#B99A5B', fontSize: '0.9em', marginLeft: '2px', fontWeight: '400' }}>
-          {counter.suffix || ''}
-        </span>
+        <span>{counter.suffix || ''}</span>
       </div>
+
+      {/* DESCRIPCIÓN DEBAJO EN MAYÚSCULAS GRIS */}
       <p 
         style={{
-          fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-          fontSize: '0.74rem',
-          fontWeight: '600',
-          letterSpacing: '1.2px',
+          fontFamily: "'Montserrat', sans-serif",
+          fontSize: '0.72rem',
+          fontWeight: '400',
+          letterSpacing: '0.08em',
           textTransform: 'uppercase',
           color: '#555555',
           margin: 0,
@@ -115,7 +124,7 @@ const CountersBar = () => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    fetch('/api/site-counters')
+    fetch(`/api/site-counters?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data.success && Array.isArray(data.counters)) {
@@ -153,48 +162,32 @@ const CountersBar = () => {
       className="dfv-counters-section" 
       style={{ 
         backgroundColor: '#FFFFFF', 
-        padding: '3.75rem 0 3.5rem',
-        borderTop: '1px solid #F0ECE6',
-        borderBottom: '1px solid #F0ECE6'
+        padding: '2.75rem 0 2.5rem'
       }}
     >
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.25rem' }}>
         
         {/* GRID: 2x2 EN MÓVIL, 4 EN ESCRITORIO */}
         <div className="dfv-counters-grid">
-          {counters.map((c) => (
-            <SingleCounterCard key={c.id} counter={c} shouldAnimate={shouldAnimate} />
+          {counters.map((c, idx) => (
+            <SingleCounterCard key={c.id || idx} counter={c} index={idx} shouldAnimate={shouldAnimate} />
           ))}
         </div>
 
-        {/* FRASE INSPIRACIONAL AL PIE */}
-        <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
-          <div style={{ width: '42px', height: '1px', backgroundColor: '#B99A5B', margin: '0 auto 1.1rem', opacity: 0.6 }} />
+        {/* FRASE SENCILLA AL PIE */}
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
           <p 
             style={{
-              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(1.05rem, 2.2vw, 1.3rem)',
-              color: '#333333',
-              fontStyle: 'italic',
+              fontFamily: "var(--font-name, 'Archivo', 'Inter', sans-serif)",
+              fontSize: '0.88rem',
+              color: '#777777',
+              fontWeight: '400',
               margin: 0,
-              letterSpacing: '0.4px',
-              lineHeight: 1.3
+              lineHeight: 1.4
             }}
           >
-            “Miles de clientes confían en nosotros”
+            Miles de clientes confían en nosotros cada día
           </p>
-          <span style={{ 
-            display: 'block', 
-            fontSize: '0.68rem', 
-            letterSpacing: '2.8px', 
-            textTransform: 'uppercase', 
-            color: '#888888', 
-            marginTop: '0.45rem', 
-            fontWeight: '600',
-            fontFamily: 'var(--font-sans, "Montserrat", sans-serif)' 
-          }}>
-            PASIÓN POR LA AUTENTICIDAD & EL LUJO
-          </span>
         </div>
 
       </div>
@@ -203,26 +196,20 @@ const CountersBar = () => {
         .dfv-counters-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
-        }
-
-        .dfv-counter-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 24px rgba(0,0,0,0.06);
-          border-color: #B99A5B;
+          gap: 1.25rem;
         }
 
         @media (max-width: 768px) {
           .dfv-counters-section {
-            padding: 3rem 0 2.75rem !important;
+            padding: 2.25rem 0 2rem !important;
           }
           .dfv-counters-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.85rem;
+            gap: 14px;
           }
           .dfv-counter-card {
-            padding: 1.35rem 0.75rem !important;
-            border-radius: 10px !important;
+            padding: 1.5rem 0.75rem !important;
+            border-radius: 20px !important;
           }
         }
       `}</style>

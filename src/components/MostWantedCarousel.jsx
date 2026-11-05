@@ -35,7 +35,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
       if (cachedIdsJson) {
         const cachedIds = JSON.parse(cachedIdsJson);
         const matched = cachedIds
-          .map(id => candidateProducts.find(p => p.id === id))
+          .map(id => candidateProducts.find(p => String(p.id) === String(id)))
           .filter(Boolean);
 
         if (matched.length > 0) {
@@ -99,116 +99,89 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
   }
 
   return (
-    <section className="dfv-most-wanted-section" style={{ backgroundColor: '#ffffff', padding: '3rem 0 2.5rem' }}>
-      <div className="container" style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 1rem' }}>
+    <section className="dfv-most-wanted-section" style={{ backgroundColor: '#ffffff', padding: '2.75rem 0 2.25rem' }}>
+      <div className="container" style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 1.15rem' }}>
         
-        {/* ENCABEZADO */}
+        {/* ENCABEZADO ESTILO IMAGEN 2: TÍTULO A LA IZQUIERDA + < 1/6 > A LA DERECHA */}
         <div 
           className="dfv-mw-header"
           style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
-            alignItems: 'flex-end', 
+            alignItems: 'center', 
             marginBottom: '1.4rem',
             position: 'relative',
-            width: '100%'
+            width: '100%',
+            gap: '0.75rem'
           }}
         >
           {/* Título a la izquierda */}
-          <div style={{ flex: 1, minWidth: 0, paddingRight: '0.8rem' }}>
-            <span style={{ 
-              fontFamily: 'var(--font-sans, "Montserrat", sans-serif)', 
-              fontSize: '0.62rem', 
-              letterSpacing: '2.5px', 
-              textTransform: 'uppercase', 
-              color: '#B99A5B', 
-              fontWeight: '700', 
-              display: 'block', 
-              marginBottom: '0.25rem' 
-            }}>
-              SELECCIÓN EXCLUSIVA
-            </span>
-            <h2 style={{ 
-              fontFamily: 'var(--font-serif, "Playfair Display", serif)', 
-              fontSize: 'clamp(1.15rem, 3.2vw, 1.75rem)', 
-              fontWeight: '400', 
-              color: '#111111', 
-              margin: 0, 
-              letterSpacing: '0.5px',
-              lineHeight: 1.2
-            }}>
-              Los más deseados del mes
-            </h2>
-          </div>
+          <h2 style={{ 
+            fontFamily: "'Montserrat', sans-serif", 
+            fontSize: 'clamp(1.25rem, 3.2vw, 1.7rem)', 
+            fontWeight: '600', 
+            color: '#1a1a1a', 
+            margin: 0, 
+            letterSpacing: '-0.2px',
+            lineHeight: 1.2
+          }}>
+            Los más deseados del mes
+          </h2>
 
-          {/* Flechas y Contador a la derecha ESQUINADO Y PEQUEÑO */}
+          {/* Flechas y Contador a la derecha: < 1/6 > */}
           <div 
             className="dfv-mw-controls"
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '0.5rem',
+              gap: '0.45rem',
               flexShrink: 0
             }}
           >
+            <button 
+              onClick={scrollPrev}
+              aria-label="Anterior perfume"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#1a1a1a',
+                padding: '4px'
+              }}
+            >
+              <ChevronLeft size={18} strokeWidth={1.75} />
+            </button>
+
             <span style={{ 
-              fontFamily: 'var(--font-sans, "Montserrat", sans-serif)', 
-              fontSize: '0.68rem', 
-              color: '#888888', 
-              fontWeight: '600',
-              letterSpacing: '1px',
-              paddingRight: '0.2rem',
+              fontFamily: "'Montserrat', sans-serif", 
+              fontSize: '0.82rem', 
+              color: '#1a1a1a', 
+              fontWeight: '500',
+              letterSpacing: '0.5px',
               whiteSpace: 'nowrap'
             }}>
-              {currentPage} / {totalPages}
+              {currentPage}/{totalPages}
             </span>
 
-            <div style={{ display: 'flex', gap: '0.3rem' }}>
-              <button 
-                onClick={scrollPrev}
-                aria-label="Anterior perfume"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  border: '1px solid #E5E2DC',
-                  backgroundColor: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: '#111111',
-                  transition: 'all 0.2s ease',
-                  padding: 0
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E2DC'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button 
-                onClick={scrollNext}
-                aria-label="Siguiente perfume"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  border: '1px solid #E5E2DC',
-                  backgroundColor: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: '#111111',
-                  transition: 'all 0.2s ease',
-                  padding: 0
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#111111'; e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E2DC'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
+            <button 
+              onClick={scrollNext}
+              aria-label="Siguiente perfume"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#1a1a1a',
+                padding: '4px'
+              }}
+            >
+              <ChevronRight size={18} strokeWidth={1.75} />
+            </button>
           </div>
         </div>
 
@@ -297,15 +270,15 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
         }
         @media (max-width: 640px) {
           .dfv-most-wanted-section {
-            padding: 3.25rem 0 2.25rem !important;
+            padding: 2.5rem 0 2rem !important;
           }
           .dfv-mw-header {
-            align-items: flex-start !important;
+            align-items: center !important;
             margin-bottom: 1.2rem !important;
           }
           .dfv-mw-controls {
-            align-self: flex-start !important;
-            margin-top: 0.2rem !important;
+            align-self: center !important;
+            margin-top: 0 !important;
           }
           .dfv-mw-card-wrapper {
             flex: 0 0 calc((100% - 1rem) / 2.25) !important; /* 2 tarjetas completas + asomo de la 3ra */

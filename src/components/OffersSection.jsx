@@ -110,37 +110,23 @@ const OffersSection = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '2.5rem',
-          flexWrap: 'wrap',
-          gap: '1rem'
+          marginBottom: '1.6rem',
+          gap: '0.75rem'
         }}>
-          <div>
-            <p style={{
-              fontSize: '0.64rem',
-              letterSpacing: '2.5px',
-              textTransform: 'uppercase',
-              color: '#B99A5B',
-              fontWeight: '600',
-              fontFamily: 'var(--font-sans)',
-              marginBottom: '0.3rem'
-            }}>
-              PRECIOS ESPECIALES
-            </p>
-            <h2 style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(1.25rem, 2.4vw, 1.65rem)',
-              fontWeight: '400',
-              color: '#0A0A0A',
-              margin: 0,
-              letterSpacing: '0.5px',
-              lineHeight: 1.2
-            }}>
-              Favoritos en Oferta
-            </h2>
-          </div>
+          <h2 style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: 'clamp(1.25rem, 3.2vw, 1.7rem)',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            margin: 0,
+            letterSpacing: '-0.2px',
+            lineHeight: 1.2
+          }}>
+            Favoritos en Oferta
+          </h2>
 
-          {/* Controles de paginación con flechitas */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          {/* Controles de paginación con flechitas: < 1/6 > */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
             <button
               onClick={prev}
               disabled={currentIndex === 0}
@@ -148,7 +134,7 @@ const OffersSection = () => {
               style={{
                 background: 'none',
                 border: 'none',
-                color: currentIndex === 0 ? '#C5C0B8' : '#050505',
+                color: currentIndex === 0 ? '#C5C0B8' : '#1a1a1a',
                 cursor: currentIndex === 0 ? 'default' : 'pointer',
                 padding: '4px',
                 display: 'flex',
@@ -156,15 +142,16 @@ const OffersSection = () => {
                 transition: 'opacity 0.2s'
               }}
             >
-              <ChevronLeft size={24} strokeWidth={1.5} />
+              <ChevronLeft size={18} strokeWidth={1.75} />
             </button>
 
             <span style={{
-              fontSize: '0.9rem',
+              fontSize: '0.82rem',
               fontWeight: '500',
-              fontFamily: 'var(--font-sans)',
-              color: '#333',
-              letterSpacing: '1px'
+              fontFamily: "'Montserrat', sans-serif",
+              color: '#1a1a1a',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap'
             }}>
               {currentPageNumber}/{totalPages || 1}
             </span>
@@ -176,7 +163,7 @@ const OffersSection = () => {
               style={{
                 background: 'none',
                 border: 'none',
-                color: currentIndex >= maxIndex ? '#C5C0B8' : '#050505',
+                color: currentIndex >= maxIndex ? '#C5C0B8' : '#1a1a1a',
                 cursor: currentIndex >= maxIndex ? 'default' : 'pointer',
                 padding: '4px',
                 display: 'flex',
@@ -184,7 +171,7 @@ const OffersSection = () => {
                 transition: 'opacity 0.2s'
               }}
             >
-              <ChevronRight size={24} strokeWidth={1.5} />
+              <ChevronRight size={18} strokeWidth={1.75} />
             </button>
           </div>
         </div>

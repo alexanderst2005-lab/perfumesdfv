@@ -216,6 +216,9 @@ const TrendingHousesSection = () => {
           })}
         </div>
 
+        {/* RAYITA DIVISORIA DEBAJO DE CASAS EN TENDENCIA */}
+        <div style={{ height: '1px', backgroundColor: '#e8e8e8', marginTop: '1.8rem' }} />
+
       </div>
 
       <style>{`
