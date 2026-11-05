@@ -237,13 +237,15 @@ const FragranceSetsSection = () => {
             order: 2;
             border-radius: 6px;
             width: 100%;
+            justify-content: flex-end !important;
           }
           .dfv-sets-img {
-            max-height: 550px !important;
+            max-height: 670px !important;
             width: auto !important;
             max-width: 100% !important;
             object-fit: contain !important;
-            margin: 0 auto;
+            margin-left: auto !important;
+            margin-right: 0 !important;
           }
           .dfv-sets-title {
             font-size: clamp(1.95rem, 3vw, 2.75rem);

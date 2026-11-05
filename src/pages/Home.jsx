@@ -192,22 +192,23 @@ const Home = () => {
                 padding: '0 5%',
               }}
             >
-              <picture>
-                <source media="(max-width: 768px)" srcSet={slide.imageMobile} />
+              <picture style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', overflow: 'hidden', zIndex: -2 }}>
+                <source media="(max-width: 768px)" srcSet={optimizeImg(slide.imageMobile || slide.imageDesktop, 1400)} />
                 <img 
-                  src={slide.imageDesktop} 
+                  src={optimizeImg(slide.imageDesktop, 2400)} 
                   alt={slide.title} 
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
                   style={{
                     position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
+                    top: '-1%',
+                    left: '-1.5%',
+                    width: '103%',
+                    height: '102%',
+                    maxWidth: 'none',
                     objectFit: 'cover',
-                    zIndex: -2,
-                    transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                    transition: 'transform 7s ease-out'
+                    objectPosition: 'center',
+                    display: 'block'
                   }}
                 />
               </picture>
@@ -696,7 +697,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
       display: 'flex', 
       flexDirection: 'column', 
       height: '100%', 
-      textAlign: 'left', 
+      textAlign: 'center', 
       backgroundColor: 'transparent',
       transition: 'transform 0.25s ease, box-shadow 0.25s ease',
       borderRadius: '8px'
@@ -720,7 +721,7 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         style={{ display: 'block', width: '100%', height: '100%' }}
       >
         <img 
-          src={optimizeImg(product.image, 400)} 
+          src={optimizeImg(product.image, 1200)} 
           alt={product.name} 
           className="product-img"
           loading={priority ? "eager" : "lazy"}
@@ -824,8 +825,8 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
       )}
     </div>
     
-    <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0 0.1rem' }}>
-      <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none' }}>
+    <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', flexGrow: 1, padding: '0 0.25rem' }}>
+      <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none', width: '100%' }}>
         <h3 style={{ 
           fontFamily: 'var(--font-name)', 
           fontSize: 'clamp(0.9rem, 1.4vw, 1rem)', 
@@ -837,7 +838,8 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical'
+          WebkitBoxOrient: 'vertical',
+          textAlign: 'center'
         }}>
           {product.name}
         </h3>
@@ -850,7 +852,8 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         letterSpacing: '1.5px',
         textTransform: 'uppercase', 
         color: '#8A857D', 
-        margin: '0 0 0.2rem 0' 
+        margin: '0 0 0.2rem 0',
+        textAlign: 'center'
       }}>
         {product.brand}
       </p>
@@ -862,12 +865,13 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         letterSpacing: '1px',
         textTransform: 'uppercase', 
         color: '#B0AAA0', 
-        margin: '0 0 0.5rem 0' 
+        margin: '0 0 0.5rem 0',
+        textAlign: 'center'
       }}>
         {product.category}
       </p>
       
-      <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'baseline', marginBottom: '0.5rem' }}>
+      <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'baseline', justifyContent: 'center', width: '100%', marginBottom: '0.5rem' }}>
         <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#0A0A0A', fontWeight: '600', letterSpacing: '-0.2px' }}>
           ${product.price.toLocaleString()}
         </span>

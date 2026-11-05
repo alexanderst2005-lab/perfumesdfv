@@ -51,22 +51,25 @@ const FragranceSetsModule = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const compressImage = async (src, maxSize = 1400, quality = 0.85) => {
+  const compressImage = async (src, maxSize = 2560, quality = 0.96) => {
     try {
-      const blob = await (await fetch(src)).blob();
-      const probe = await createImageBitmap(blob);
-      const scale = Math.min(1, maxSize / Math.max(probe.width, probe.height));
-      const w = Math.round(probe.width * scale);
-      const h = Math.round(probe.height * scale);
-      if (probe.close) probe.close();
-      const bmp = await createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
+      if (src.length < 4000000) return src;
+      const img = await new Promise((resolve, reject) => {
+        const el = new Image();
+        el.onload = () => resolve(el);
+        el.onerror = reject;
+        el.src = src;
+      });
+      const scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.round(img.naturalWidth * scale);
+      const h = Math.round(img.naturalHeight * scale);
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(bmp, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
       return canvas.toDataURL('image/jpeg', quality);
     } catch {
       return src;
