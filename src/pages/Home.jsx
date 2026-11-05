@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Heart, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import OffersSection from '../components/OffersSection';
-import BenefitsBar from '../components/BenefitsBar';
 import MostWantedCarousel from '../components/MostWantedCarousel';
 import PromoBanner from '../components/PromoBanner';
 import NoteCollectionsSection from '../components/NoteCollectionsSection';
@@ -118,218 +117,158 @@ const Home = () => {
   return (
     <div>
 
-      {/* ════ 1. HERO PRINCIPAL EXISTENTE ════ */}
-      <section 
+      {/* ════ 1. HERO PRINCIPAL EXISTENTE (DISEÑO ORIGINAL CENTRADO) ════ */}
+      <section
         className="hero-section"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         style={{
           position: 'relative',
-          paddingTop: `${TOTAL_HEADER}px`,
-          boxSizing: 'border-box',
-          backgroundColor: '#0a0a0a'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          backgroundColor: '#121212'
         }}
       >
-        <button
-          onClick={prevSlide}
-          aria-label="Anterior"
-          className="hero-arrow"
-          style={{
-            position: 'absolute',
-            left: '2rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            cursor: 'pointer',
-            zIndex: 10,
-            opacity: 0.6,
-            transition: 'opacity 0.3s',
-            padding: '1rem'
-          }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
-        >
-          <span style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>&#x2039;</span>
-        </button>
-
-        <button
-          onClick={nextSlide}
-          aria-label="Siguiente"
-          className="hero-arrow"
-          style={{
-            position: 'absolute',
-            right: '2rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            cursor: 'pointer',
-            zIndex: 10,
-            opacity: 0.6,
-            transition: 'opacity 0.3s',
-            padding: '1rem'
-          }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
-        >
-          <span style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>&#x203A;</span>
-        </button>
-
-        <div style={{ position: 'absolute', inset: 0 }}>
-          {HERO_SLIDES.map((slide, index) => (
+        {HERO_SLIDES.map((slide, index) => {
+          const isActive = index === currentSlide;
+          return (
             <div
               key={slide.id}
               style={{
                 position: 'absolute',
                 inset: 0,
-                opacity: currentSlide === index ? 1 : 0,
-                transition: 'opacity 0.8s ease-in-out',
-                pointerEvents: currentSlide === index ? 'auto' : 'none'
+                opacity: isActive ? 1 : 0,
+                pointerEvents: isActive ? 'auto' : 'none',
+                transition: 'opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
+                zIndex: isActive ? 2 : 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: slide.alignment === 'left' ? 'flex-start' : slide.alignment === 'right' ? 'flex-end' : 'center',
+                textAlign: slide.alignment,
+                padding: '0 5%',
               }}
             >
               <picture>
                 <source media="(max-width: 768px)" srcSet={slide.imageMobile} />
-                <img
-                  src={slide.imageDesktop}
-                  alt={slide.title}
+                <img 
+                  src={slide.imageDesktop} 
+                  alt={slide.title} 
                   loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
                   decoding="async"
                   style={{
                     position: 'absolute',
-                    top: 0,
-                    left: 0,
+                    inset: 0,
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    objectPosition: 'center',
-                    transform: currentSlide === index ? 'scale(1)' : 'scale(1.05)',
+                    zIndex: -2,
+                    transform: isActive ? 'scale(1.05)' : 'scale(1)',
                     transition: 'transform 7s ease-out'
                   }}
                 />
               </picture>
+            
+              {/* Overlay sutil adaptado a la alineación */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: slide.alignment === 'center' 
+                  ? 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%)'
+                  : slide.alignment === 'left'
+                  ? 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)'
+                  : 'linear-gradient(to left, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)',
+                zIndex: -1
+              }} />
 
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%)'
-                }}
-              />
-
-              <div
-                style={{
-                  position: 'relative',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  justifyContent: 'center',
-                  paddingBottom: 'clamp(2.5rem, 6vh, 4.5rem)',
-                  textAlign: 'center',
-                  zIndex: 2,
-                  paddingLeft: '1.5rem',
-                  paddingRight: '1.5rem'
-                }}
-              >
-                <div style={{ maxWidth: '700px', width: '100%' }}>
-                  <p
-                    style={{
-                      color: 'var(--color-gold)',
-                      fontSize: 'clamp(0.65rem, 1.2vw, 0.78rem)',
-                      letterSpacing: 'clamp(2px, 0.5vw, 4px)',
-                      textTransform: 'uppercase',
-                      marginBottom: '0.4rem',
-                      fontWeight: '500'
-                    }}
-                  >
-                    {slide.campaign}
-                  </p>
-
-                  <h1
-                    style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontSize: 'clamp(1.75rem, 5vw, 3.2rem)',
-                      color: 'white',
-                      fontWeight: '400',
-                      letterSpacing: 'clamp(1px, 0.3vw, 2px)',
-                      marginBottom: '0.5rem',
-                      lineHeight: 1.15
-                    }}
-                  >
-                    {slide.title}
-                  </h1>
-
-                  <p
-                    style={{
-                      color: 'rgba(255,255,255,0.85)',
-                      fontSize: 'clamp(0.78rem, 1.5vw, 0.95rem)',
-                      fontWeight: '300',
-                      marginBottom: '1.3rem',
-                      letterSpacing: '0.5px'
-                    }}
-                  >
-                    {slide.subtitle}
-                  </p>
-
-                  <Link
-                    to={slide.buttonLink}
-                    style={{
-                      display: 'inline-block',
-                      backgroundColor: 'white',
-                      color: 'var(--color-black)',
-                      padding: 'clamp(0.65rem, 1.5vh, 0.85rem) clamp(1.8rem, 4vw, 2.5rem)',
-                      fontSize: 'clamp(0.68rem, 1.2vw, 0.75rem)',
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
-                      fontWeight: '500',
-                      textDecoration: 'none',
-                      transition: 'all 0.3s ease',
-                      border: '1px solid white'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = 'white';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = 'white';
-                      e.currentTarget.style.color = 'var(--color-black)';
-                    }}
-                  >
-                    {slide.buttonText}
-                  </Link>
-                </div>
+              {/* Contenido centrado arriba */}
+              <div style={{
+                maxWidth: '680px',
+                width: '100%',
+                opacity: index === currentSlide ? 1 : 0,
+                transform: index === currentSlide ? 'translateY(0)' : 'translateY(20px)',
+                transition: 'all 0.8s ease-out 0.3s'
+              }}>
+                <p style={{ color: '#fff', fontSize: '0.68rem', letterSpacing: '4px', textTransform: 'uppercase', opacity: 0.85, marginBottom: '0.8rem' }}>
+                  {slide.campaign}
+                </p>
+                <h1 style={{ color: '#fff', fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.2rem, 6.5vw, 4.5rem)', fontWeight: '400', lineHeight: '1.1', marginBottom: '1rem', textShadow: '0 2px 20px rgba(0,0,0,0.45)' }}>
+                  {slide.title}
+                </h1>
+                <p style={{ color: '#fff', fontSize: 'clamp(0.85rem, 1.8vw, 1.05rem)', opacity: 0.9, marginBottom: '2.2rem', fontWeight: '300', textShadow: '0 1px 10px rgba(0,0,0,0.3)' }}>
+                  {slide.subtitle}
+                </p>
+                <Link
+                  to={slide.buttonLink}
+                  style={{
+                    display: 'inline-block',
+                    padding: '0.9rem 2.8rem',
+                    border: '1px solid rgba(255,255,255,0.65)',
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    backgroundColor: 'transparent',
+                    fontWeight: '500',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#fff';
+                    e.currentTarget.style.color = '#000';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                >
+                  {slide.buttonText}
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
 
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '1.2rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            gap: '8px',
-            zIndex: 10
-          }}
+        {/* Flechas Desktop */}
+        <button 
+          onClick={prevSlide}
+          className="hero-arrow hero-arrow-left"
+          style={{ position: 'absolute', left: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
         >
-          {HERO_SLIDES.map((_, index) => (
-            <div
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              style={{
-                width: currentSlide === index ? '28px' : '6px',
-                height: '3px',
-                backgroundColor: currentSlide === index ? 'white' : 'rgba(255,255,255,0.4)',
-                borderRadius: '2px',
-                transition: 'all 0.4s ease',
-                cursor: 'pointer'
-              }}
-            />
+          <ChevronLeft size={40} strokeWidth={1} />
+        </button>
+        <button 
+          onClick={nextSlide}
+          className="hero-arrow hero-arrow-right"
+          style={{ position: 'absolute', right: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
+        >
+          <ChevronRight size={40} strokeWidth={1} />
+        </button>
+
+        {/* Indicadores Inferiores 01 -- 02 -- 03 -- 04 */}
+        <div style={{ position: 'absolute', bottom: '2.5rem', display: 'flex', gap: '1rem', alignItems: 'center', zIndex: 10 }}>
+          {HERO_SLIDES.map((_, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button
+                onClick={() => setCurrentSlide(idx)}
+                style={{
+                  background: 'none', border: 'none', color: '#fff', cursor: 'pointer',
+                  fontSize: '0.75rem', letterSpacing: '1px', opacity: idx === currentSlide ? 1 : 0.4,
+                  transition: 'opacity 0.3s'
+                }}
+              >
+                0{idx + 1}
+              </button>
+              {idx < HERO_SLIDES.length - 1 && (
+                <div style={{ width: '30px', height: '1px', backgroundColor: 'rgba(255,255,255,0.3)' }} />
+              )}
+            </div>
           ))}
         </div>
 
@@ -340,9 +279,6 @@ const Home = () => {
           }
         `}</style>
       </section>
-
-      {/* ════ 2. BARRA DE BENEFICIOS (NUEVA) ════ */}
-      <BenefitsBar />
 
       {/* ════ 3. LOS MÁS DESEADOS DEL MES (NUEVO CARRUSEL) ════ */}
       <MostWantedCarousel 

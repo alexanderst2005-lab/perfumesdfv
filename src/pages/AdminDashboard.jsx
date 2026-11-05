@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers, Star } from 'lucide-react';
 const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
 const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
 const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
@@ -12,6 +12,7 @@ const PromoBannerModule = lazy(() => import('../components/admin/PromoBannerModu
 const NoteCollectionsModule = lazy(() => import('../components/admin/NoteCollectionsModule'));
 const TrendingHousesModule = lazy(() => import('../components/admin/TrendingHousesModule'));
 const CountersModule = lazy(() => import('../components/admin/CountersModule'));
+const MostWantedModule = lazy(() => import('../components/admin/MostWantedModule'));
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -48,6 +49,7 @@ const AdminDashboard = () => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'inventory', label: 'Inventario', icon: Package },
+    { id: 'most-wanted', label: 'Los Más Deseados', icon: Star },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'reels', label: 'Reels / Videos', icon: Video },
@@ -382,6 +384,7 @@ const AdminDashboard = () => {
             {activeTab === 'note-collections' && <NoteCollectionsModule />}
             {activeTab === 'trending-houses' && <TrendingHousesModule />}
             {activeTab === 'counters' && <CountersModule />}
+            {activeTab === 'most-wanted' && <MostWantedModule />}
           </Suspense>
         </main>
       </div>

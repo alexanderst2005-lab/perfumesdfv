@@ -19,39 +19,59 @@ const getEmbedUrl = (url) => {
   return null;
 };
 
-// Tarjeta individual con miniatura estática y botón de play (SIN autoplay)
+// Tarjeta individual con reproducción directa en vivo ("afuerita")
 const ReelFeedCard = ({ reel, onOpenModal }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
-  // Auto-generación o ajuste de thumbnail optimizado de Cloudinary
+  // Versión liviana de video para móvil y web (comprimido y tamaño justo)
+  const fastVideoUrl = reel.videoUrl && reel.videoUrl.includes('/video/upload/') && !reel.videoUrl.includes('w_')
+    ? reel.videoUrl.replace('/video/upload/', '/video/upload/q_auto:eco,vc_auto,w_540/')
+    : reel.videoUrl;
+
+  // Auto-generación de póster/thumbnail si es video de Cloudinary
   let thumb = reel.thumbnailUrl;
   if (thumb && thumb.includes('/image/upload/') && !thumb.includes('w_')) {
-    thumb = thumb.replace('/image/upload/', '/image/upload/w_600,f_auto,q_auto/');
+    thumb = thumb.replace('/image/upload/', '/image/upload/w_500,f_auto,q_auto/');
   } else if (!thumb && reel.videoUrl && reel.videoUrl.includes('/video/upload/')) {
     thumb = reel.videoUrl
-      .replace('/video/upload/', '/video/upload/so_0,w_600,q_auto,f_auto/')
+      .replace('/video/upload/', '/video/upload/so_0,w_500,q_auto,f_auto/')
       .replace(/\.[^/.]+$/, '.jpg');
   }
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isMuted]);
+
+  const toggleSound = (e) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      const nextMuted = !isMuted;
+      videoRef.current.muted = nextMuted;
+      setIsMuted(nextMuted);
+    }
+  };
 
   return (
     <div 
       className="reel-feed-card"
       onClick={() => onOpenModal(reel)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         position: 'relative',
         borderRadius: '16px',
         overflow: 'hidden',
         aspectRatio: '9/16',
         backgroundColor: '#1c1917',
-        boxShadow: isHovered ? '0 16px 36px rgba(0, 0, 0, 0.22)' : '0 8px 24px rgba(0, 0, 0, 0.08)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
         cursor: 'pointer',
-        transform: isHovered ? 'translateY(-4px)' : 'none',
-        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        transition: 'all 0.3s ease'
       }}
     >
-      {/* 1. Imagen / Miniatura estática */}
+      {/* 1. Póster / Imagen SIEMPRE visible debajo para que nunca se vea cuadro negro */}
       {thumb ? (
         <img 
           src={thumb} 
@@ -65,64 +85,125 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
             height: '100%',
             objectFit: 'cover',
             display: 'block',
-            transform: isHovered ? 'scale(1.04)' : 'scale(1)',
-            transition: 'transform 0.5s ease',
+            zIndex: 1,
+            opacity: videoLoaded ? 0 : 1,
+            transition: 'opacity 0.4s ease',
             pointerEvents: 'none'
           }}
         />
       ) : (
-        <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#262626' }} />
+        <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#262626', zIndex: 1 }} />
       )}
 
-      {/* Degradado para legibilidad */}
+      {/* 2. Video reproduciéndose en bucle optimizado por afuerita */}
+      {fastVideoUrl && (
+        <video 
+          ref={videoRef}
+          src={fastVideoUrl} 
+          poster={thumb || undefined}
+          autoPlay
+          loop
+          muted={isMuted}
+          playsInline
+          webkit-playsinline="true"
+          preload="none"
+          onCanPlay={() => setVideoLoaded(true)}
+          onPlaying={() => setVideoLoaded(true)}
+          onLoadedData={() => setVideoLoaded(true)}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            zIndex: 2,
+            opacity: videoLoaded ? 1 : 0,
+            transition: 'opacity 0.4s ease transform 0.5s ease'
+          }}
+          className="reel-video-preview"
+        />
+      )}
+
+      {/* Sutil viñeta en la base y arriba para contraste */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.3) 100%)',
-        pointerEvents: 'none'
+        background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 40%, rgba(0,0,0,0.25) 100%)',
+        pointerEvents: 'none',
+        zIndex: 2
       }} />
 
-      {/* Botón Central de Play Visible */}
+      {/* Botón flotante de audio en la esquina superior derecha */}
+      {reel.videoUrl && (
+        <button
+          type="button"
+          onClick={toggleSound}
+          title={isMuted ? "Activar audio" : "Silenciar"}
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            width: '34px',
+            height: '34px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(0, 0, 0, 0.55)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            zIndex: 4
+          }}
+        >
+          {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+        </button>
+      )}
+
+      {/* Botón Circular de Play en la esquina inferior izquierda */}
       <div 
         style={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: isHovered ? 'translate(-50%, -50%) scale(1.12)' : 'translate(-50%, -50%) scale(1)',
-          width: '58px',
-          height: '58px',
+          bottom: '14px',
+          left: '14px',
+          width: '38px',
+          height: '38px',
           borderRadius: '50%',
-          backgroundColor: isHovered ? '#B99A5B' : 'rgba(0, 0, 0, 0.55)',
+          backgroundColor: 'rgba(0, 0, 0, 0.45)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
-          border: '2px solid rgba(255, 255, 255, 0.85)',
+          border: '1.5px solid rgba(255, 255, 255, 0.8)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingLeft: '4px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-          transition: 'all 0.25s ease',
+          paddingLeft: '3px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+          transition: 'all 0.3s ease',
           zIndex: 3
         }}
       >
-        <Play size={22} fill="#ffffff" color="#ffffff" />
+        <Play size={16} fill="#ffffff" color="#ffffff" />
       </div>
 
-      {/* Título o descripción al pie de la tarjeta */}
+      {/* Título del reel al pie */}
       {reel.title && (
         <div style={{
           position: 'absolute',
-          bottom: '16px',
-          left: '16px',
-          right: '16px',
-          zIndex: 2,
+          bottom: '14px',
+          left: '58px',
+          right: '12px',
+          zIndex: 3,
           pointerEvents: 'none'
         }}>
           <p style={{
             color: '#FFFFFF',
-            fontSize: '0.82rem',
+            fontSize: '0.75rem',
             fontWeight: 500,
-            lineHeight: 1.3,
+            lineHeight: 1.25,
             margin: 0,
             textShadow: '0 2px 4px rgba(0,0,0,0.8)',
             display: '-webkit-box',
