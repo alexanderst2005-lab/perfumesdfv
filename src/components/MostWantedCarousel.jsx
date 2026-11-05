@@ -44,13 +44,13 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           return;
         }
       }
-    } catch {}
+    } catch { }
 
     const shuffled = shuffleArray(candidateProducts).slice(0, 12);
     setSelectedProducts(shuffled);
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(shuffled.map(p => p.id)));
-    } catch {}
+    } catch { }
   }, [candidateProducts]);
 
   const updatePagination = () => {
@@ -105,14 +105,14 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
   return (
     <section className="dfv-most-wanted-section" style={{ backgroundColor: '#ffffff', padding: '2rem 0 0' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
-        
+
         {/* ENCABEZADO: EN MÓVIL (IZQUIERDA + < 1/6 >) | EN PC (CENTRADO Y MÁS GRANDE, SIN 1/2) */}
-        <div 
+        <div
           className="dfv-mw-header"
-          style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginBottom: '1.15rem',
             width: '100%',
             gap: '0.5rem',
@@ -124,16 +124,16 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           </h2>
 
           {/* Contador < 1/6 > SOLO VISIBLE EN MÓVIL */}
-          <div 
+          <div
             className="dfv-mw-controls"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '0.35rem',
               flexShrink: 0
             }}
           >
-            <button 
+            <button
               onClick={scrollPrev}
               aria-label="Anterior perfume"
               style={{
@@ -150,10 +150,10 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
               <ChevronLeft size={17} strokeWidth={1.75} />
             </button>
 
-            <span style={{ 
-              fontFamily: "'Montserrat', sans-serif", 
-              fontSize: '0.8rem', 
-              color: '#1a1a1a', 
+            <span style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: '0.8rem',
+              color: '#1a1a1a',
               fontWeight: '500',
               letterSpacing: '0.3px',
               whiteSpace: 'nowrap'
@@ -161,7 +161,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
               {currentPage}/{totalPages}
             </span>
 
-            <button 
+            <button
               onClick={scrollNext}
               aria-label="Siguiente perfume"
               style={{
@@ -195,7 +195,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           )}
 
           {/* TRACK DE PRODUCTOS CON SCROLL-SNAP */}
-          <div 
+          <div
             ref={trackRef}
             className="dfv-mw-carousel-track"
             style={{
@@ -210,18 +210,18 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
             }}
           >
             {selectedProducts.map((p, idx) => (
-              <div 
-                key={p.id} 
+              <div
+                key={p.id}
                 className="dfv-mw-card-wrapper"
                 style={{
                   scrollSnapAlign: 'start',
                   boxSizing: 'border-box'
                 }}
               >
-                <ProductCard 
-                  product={p} 
-                  onFav={() => onFav(p)} 
-                  fav={isFavorite(p.id)} 
+                <ProductCard
+                  product={p}
+                  onFav={() => onFav(p)}
+                  fav={isFavorite(p.id)}
                   onAdd={() => onAdd(p, 1, p.sizes?.[0])}
                   priority={idx < 4}
                 />
@@ -270,25 +270,26 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
         /* ════ ESTILOS EXCLUSIVOS PARA PC (>= 769px) ════ */
         @media (min-width: 769px) {
           .dfv-most-wanted-section {
-            padding: 3rem 0 0 !important;
+            padding: 2.5rem 0 0 !important;
           }
           .dfv-mw-header {
             justify-content: center !important;
-            margin-bottom: 2.2rem !important;
+            margin-bottom: 1.8rem !important;
           }
           .dfv-section-inline-title {
-            font-size: 2rem !important;
+            font-size: 1.65rem !important;
             text-align: center !important;
-            letter-spacing: -0.4px !important;
+            letter-spacing: -0.3px !important;
           }
           .dfv-mw-controls {
             display: none !important;
           }
           .dfv-mw-carousel-track {
-            gap: 20px !important;
+            gap: 18px !important;
           }
           .dfv-mw-card-wrapper {
-            flex: 0 0 calc((100% - 60px) / 4.12);
+            flex: 0 0 calc((100% - 54px) / 4.2);
+            max-width: 270px;
           }
           .dfv-pc-slider-btn {
             display: flex;

@@ -130,16 +130,28 @@ const NoteCollectionsSection = () => {
 
       <style>{`
         .dfv-notes-container {
-          max-width: 1280px;
+          max-width: 1180px;
           margin: 0 auto;
-          padding: 0 1.15rem;
+          padding: 0 1.5rem;
         }
 
         .dfv-notes-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
+          gap: 1.25rem;
           align-items: stretch;
+        }
+
+        @media (min-width: 769px) {
+          .dfv-note-img-wrap img {
+            max-height: 250px !important;
+            width: 100% !important;
+            height: auto !important;
+            object-fit: contain !important;
+          }
+          .dfv-note-title {
+            font-size: 1rem !important;
+          }
         }
 
         .dfv-note-card:hover .dfv-note-img-wrap img {

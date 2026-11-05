@@ -283,25 +283,26 @@ const OffersSection = () => {
         /* ════ ESTILOS EXCLUSIVOS PARA PC (>= 769px) ════ */
         @media (min-width: 769px) {
           .dfv-offers-section {
-            padding: 3rem 0 0 !important;
+            padding: 2.5rem 0 0 !important;
           }
           .dfv-offers-header {
             justify-content: center !important;
-            margin-bottom: 2.2rem !important;
+            margin-bottom: 1.8rem !important;
           }
           .dfv-offers-title {
-            font-size: 2rem !important;
+            font-size: 1.65rem !important;
             text-align: center !important;
-            letter-spacing: -0.4px !important;
+            letter-spacing: -0.3px !important;
           }
           .dfv-offers-controls {
             display: none !important;
           }
           .dfv-offers-track {
-            gap: 20px !important;
+            gap: 18px !important;
           }
           .dfv-offer-card-wrap {
-            flex: 0 0 calc((100% - 60px) / 4.12);
+            flex: 0 0 calc((100% - 54px) / 4.2);
+            max-width: 270px;
           }
           .dfv-offers-pc-btn {
             display: flex;

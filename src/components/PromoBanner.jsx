@@ -397,29 +397,38 @@ const PromoBanner = () => {
 
         @media (min-width: 769px) {
           .dfv-promo {
-            padding: 32px 0 28px;
+            padding: 28px 0 24px;
           }
           .dfv-promo__wrap {
+            max-width: 1220px;
             display: grid;
-            grid-template-columns: 48.5% 1fr;
-            gap: 28px;
+            grid-template-columns: 46% 1fr;
+            gap: 24px;
             align-items: stretch;
           }
           .dfv-promo__card {
-            min-height: 580px;
+            min-height: 460px;
+            max-height: 520px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
           }
+          .dfv-promo__img {
+            max-height: 520px;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          }
           .dfv-promo__title {
-            font-size: clamp(2rem, 3.6vw, 3.4rem);
+            font-size: clamp(1.6rem, 2.6vw, 2.4rem);
           }
           .dfv-promo-products-wrap {
             margin-top: 0;
             position: relative;
             height: 100%;
-            min-height: 580px;
+            min-height: 460px;
+            max-height: 520px;
           }
           .dfv-promo-products-track {
             position: absolute;

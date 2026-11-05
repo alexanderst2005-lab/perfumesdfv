@@ -204,24 +204,24 @@ const FragranceSetsSection = () => {
           margin: 0 1.25rem;
         }
 
-        /* ════ DISEÑO EXCLUSIVO PC (COMO IMAGEN 4: TEXTO A LA IZQUIERDA ALINEADO AL BORDE + IMAGEN A LA DERECHA) ════ */
+        /* ════ DISEÑO EXCLUSIVO PC (PROPORCIONADO: TEXTO A LA IZQUIERDA + IMAGEN CONTENIDA A LA DERECHA) ════ */
         @media (min-width: 769px) {
           .dfv-sets-section {
-            padding: 3.5rem 0 3rem !important;
+            padding: 2.5rem 0 2.2rem !important;
           }
           .dfv-sets-container {
-            max-width: 100% !important;
+            max-width: 1120px !important;
             width: 100% !important;
-            margin: 0 !important;
-            padding: 0 28px !important;
+            margin: 0 auto !important;
+            padding: 0 2rem !important;
             box-sizing: border-box !important;
           }
           .dfv-sets-layout {
             display: grid;
-            grid-template-columns: 42% 1fr;
+            grid-template-columns: 1fr 1fr;
             align-items: center;
             gap: 2.5rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2.2rem;
             width: 100%;
           }
           .dfv-sets-content {
@@ -231,31 +231,38 @@ const FragranceSetsSection = () => {
             margin: 0 !important;
             justify-self: start;
             width: 100%;
-            max-width: 520px;
+            max-width: 440px;
           }
           .dfv-sets-image-wrap {
             order: 2;
-            border-radius: 0;
+            border-radius: 6px;
             width: 100%;
           }
+          .dfv-sets-img {
+            max-height: 410px !important;
+            width: auto !important;
+            max-width: 100% !important;
+            object-fit: contain !important;
+            margin: 0 auto;
+          }
           .dfv-sets-title {
-            font-size: clamp(2.2rem, 3.6vw, 3.15rem);
-            line-height: 1.12;
-            margin: 0 0 1.25rem;
-            max-width: 440px;
+            font-size: clamp(1.6rem, 2.3vw, 2.1rem);
+            line-height: 1.15;
+            margin: 0 0 1rem;
+            max-width: 380px;
           }
           .dfv-sets-subtitle {
-            font-size: 0.96rem;
-            margin: 0 0 2rem;
-            max-width: 460px;
+            font-size: 0.9rem;
+            margin: 0 0 1.5rem;
+            max-width: 390px;
             color: #333333;
           }
           .dfv-sets-btn {
             background-color: #222222;
             color: #ffffff;
             border: 1.5px solid #222222;
-            padding: 13px 26px;
-            font-size: 0.78rem;
+            padding: 11px 24px;
+            font-size: 0.75rem;
             letter-spacing: 0.06em;
           }
           .dfv-sets-btn:hover {
