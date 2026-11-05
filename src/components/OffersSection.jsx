@@ -9,6 +9,8 @@ const OffersSection = () => {
   const trackRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   // 1. Productos con descuento del inventario normal
   const inventoryOffers = products.filter(p => p.discount && p.discount > 0);
@@ -46,6 +48,9 @@ const OffersSection = () => {
     const scrollLeft = el.scrollLeft;
     const scrollWidth = el.scrollWidth;
     const clientWidth = el.clientWidth;
+
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 8);
 
     const maxScroll = Math.max(1, scrollWidth - clientWidth);
     const pages = Math.max(1, Math.round(scrollWidth / clientWidth));
@@ -96,29 +101,36 @@ const OffersSection = () => {
       }}
     >
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
-        {/* Cabecera en una sola línea: Favoritos en Oferta + < 1/6 > */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1.15rem',
-          gap: '0.5rem',
-          flexWrap: 'nowrap'
-        }}>
-          <h2 style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
-            fontWeight: '600',
-            color: '#1a1a1a',
-            margin: 0,
-            letterSpacing: '-0.3px',
-            lineHeight: 1.2,
-            whiteSpace: 'nowrap'
-          }}>
+        {/* Cabecera: en móvil (Izquierda + < 1/6 >) | en PC (Centrado más grande, sin 1/1) */}
+        <div
+          className="dfv-offers-header"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.15rem',
+            gap: '0.5rem',
+            flexWrap: 'nowrap'
+          }}
+        >
+          <h2
+            className="dfv-offers-title"
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
+              fontWeight: '600',
+              color: '#1a1a1a',
+              margin: 0,
+              letterSpacing: '-0.3px',
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap'
+            }}
+          >
             Favoritos en Oferta
           </h2>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
+          {/* Contador < 1/6 > SOLO VISIBLE EN MÓVIL */}
+          <div className="dfv-offers-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
             <button
               onClick={scrollPrev}
               aria-label="Anterior"
@@ -164,42 +176,67 @@ const OffersSection = () => {
           </div>
         </div>
 
-        {/* Track de productos con scroll-snap (2 tarjetas + asomo de la 3ra en móvil, 4 en PC) */}
-        <div
-          ref={trackRef}
-          className="dfv-offers-track"
-          style={{
-            display: 'flex',
-            gap: '14px',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: '0.5rem',
-            scrollbarWidth: 'none'
-          }}
-        >
-          {offerProducts.map((p, idx) => (
-            <div
-              key={p.id}
-              className="dfv-offer-card-wrap"
-              style={{
-                scrollSnapAlign: 'start',
-                boxSizing: 'border-box'
-              }}
+        {/* Contenedor relativo para botones flotantes en PC */}
+        <div style={{ position: 'relative' }}>
+          {canScrollLeft && (
+            <button
+              type="button"
+              onClick={scrollPrev}
+              aria-label="Anterior"
+              className="dfv-offers-pc-btn dfv-offers-pc-btn--left"
             >
-              <ProductCard
-                product={p}
-                onFav={() => toggleFavorite(p)}
-                fav={isFavorite(p.id)}
-                onAdd={() => addToCart(p, 1, p.sizes?.[0])}
-                priority={idx < 4}
-              />
-            </div>
-          ))}
+              <ChevronLeft size={20} strokeWidth={1.8} />
+            </button>
+          )}
+
+          {/* Track de productos con scroll-snap */}
+          <div
+            ref={trackRef}
+            className="dfv-offers-track"
+            style={{
+              display: 'flex',
+              gap: '14px',
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch',
+              paddingBottom: '0.5rem',
+              scrollbarWidth: 'none'
+            }}
+          >
+            {offerProducts.map((p, idx) => (
+              <div
+                key={p.id}
+                className="dfv-offer-card-wrap"
+                style={{
+                  scrollSnapAlign: 'start',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <ProductCard
+                  product={p}
+                  onFav={() => toggleFavorite(p)}
+                  fav={isFavorite(p.id)}
+                  onAdd={() => addToCart(p, 1, p.sizes?.[0])}
+                  priority={idx < 4}
+                />
+              </div>
+            ))}
+          </div>
+
+          {(canScrollRight || offerProducts.length > 4) && (
+            <button
+              type="button"
+              onClick={scrollNext}
+              aria-label="Siguiente"
+              className="dfv-offers-pc-btn dfv-offers-pc-btn--right"
+            >
+              <ChevronRight size={20} strokeWidth={1.8} />
+            </button>
+          )}
         </div>
 
-        {/* Botón inferior estilo Imagen 3: DESCÚBRELOS AQUÍ */}
+        {/* Botón inferior: DESCÚBRELOS AQUÍ */}
         <div style={{ textAlign: 'center', marginTop: '1.6rem' }}>
           <Link
             to="/tienda?category=Ofertas"
@@ -239,10 +276,61 @@ const OffersSection = () => {
         .dfv-offers-track::-webkit-scrollbar {
           display: none;
         }
-        .dfv-offer-card-wrap {
-          flex: 0 0 calc((100% - 42px) / 4);
+        .dfv-offers-pc-btn {
+          display: none;
         }
-        @media (max-width: 1024px) {
+
+        /* ════ ESTILOS EXCLUSIVOS PARA PC (>= 769px) ════ */
+        @media (min-width: 769px) {
+          .dfv-offers-section {
+            padding: 3rem 0 0 !important;
+          }
+          .dfv-offers-header {
+            justify-content: center !important;
+            margin-bottom: 2.2rem !important;
+          }
+          .dfv-offers-title {
+            font-size: 2rem !important;
+            text-align: center !important;
+            letter-spacing: -0.4px !important;
+          }
+          .dfv-offers-controls {
+            display: none !important;
+          }
+          .dfv-offer-card-wrap {
+            flex: 0 0 calc((100% - 42px) / 4.15);
+          }
+          .dfv-offers-pc-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 38%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background-color: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            color: #1a1a1a;
+            cursor: pointer;
+            z-index: 15;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+          }
+          .dfv-offers-pc-btn:hover {
+            background-color: #f8f8f8;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+          }
+          .dfv-offers-pc-btn--left {
+            left: 8px;
+          }
+          .dfv-offers-pc-btn--right {
+            right: 8px;
+          }
+        }
+
+        @media (max-width: 768px) {
           .dfv-offer-card-wrap {
             flex: 0 0 calc((100% - 28px) / 3);
           }

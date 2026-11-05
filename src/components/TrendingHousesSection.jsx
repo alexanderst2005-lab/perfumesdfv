@@ -8,6 +8,8 @@ const TrendingHousesSection = () => {
   const [loaded, setLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
   const trackRef = useRef(null);
 
   useEffect(() => {
@@ -31,6 +33,9 @@ const TrendingHousesSection = () => {
     const scrollLeft = el.scrollLeft;
     const scrollWidth = el.scrollWidth;
     const clientWidth = el.clientWidth;
+
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 8);
 
     const maxScroll = Math.max(1, scrollWidth - clientWidth);
     const pages = Math.max(1, Math.round(scrollWidth / clientWidth));
@@ -73,23 +78,29 @@ const TrendingHousesSection = () => {
     <section className="dfv-trending-houses-section" style={{ backgroundColor: '#ffffff', padding: '1.8rem 0 0' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
         
-        {/* ENCABEZADO LIMPIO EN UNA SOLA LÍNEA: TÍTULO A LA IZQUIERDA + CONTROLES A LA DERECHA */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}>
-          <h2 style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
-            fontWeight: '600',
-            color: '#1a1a1a',
-            margin: 0,
-            letterSpacing: '-0.3px',
-            lineHeight: 1.2,
-            whiteSpace: 'nowrap'
-          }}>
+        {/* ENCABEZADO: EN MÓVIL (IZQUIERDA + < 1/5 >) | EN PC (CENTRADO MÁS GRANDE, SIN 1/5) */}
+        <div
+          className="dfv-houses-header"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}
+        >
+          <h2
+            className="dfv-houses-main-title"
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
+              fontWeight: '600',
+              color: '#1a1a1a',
+              margin: 0,
+              letterSpacing: '-0.3px',
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap'
+            }}
+          >
             Casas en tendencia
           </h2>
 
-          {/* Contador y Flechas estilo referencia < 1/5 > */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+          {/* Contador y Flechas < 1/5 > SOLO VISIBLE EN MÓVIL */}
+          <div className="dfv-houses-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
             <button 
               onClick={scrollPrev}
               aria-label="Anterior casa"
@@ -135,89 +146,114 @@ const TrendingHousesSection = () => {
           </div>
         </div>
 
-        {/* CARRUSEL HORIZONTAL LIMPIO */}
-        <div 
-          ref={trackRef}
-          className="dfv-houses-track"
-          style={{
-            display: 'flex',
-            gap: '16px',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: '0.5rem',
-            scrollbarWidth: 'none'
-          }}
-        >
-          {houses.map((house) => {
-            const rawImg = house.image || house.image_url;
-            const imgSrc = rawImg ? optimizeImg(rawImg, 700) : '/hero_campaign_4.webp';
+        {/* CONTENEDOR RELATIVO PARA BOTONES FLOTANTES EN PC */}
+        <div style={{ position: 'relative' }}>
+          {canScrollLeft && (
+            <button
+              type="button"
+              onClick={scrollPrev}
+              aria-label="Anterior casa"
+              className="dfv-houses-pc-btn dfv-houses-pc-btn--left"
+            >
+              <ChevronLeft size={20} strokeWidth={1.8} />
+            </button>
+          )}
 
-            return (
-              <Link
-                key={house.id}
-                to={`/tienda?casa=${house.id}`}
-                className="dfv-house-card"
-                style={{
-                  scrollSnapAlign: 'start',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-              >
-                {/* IMAGEN 100% COMPLETA Y LIMPIA SIN RECORTES */}
-                <div 
-                  className="dfv-house-img-wrap"
+          {/* CARRUSEL HORIZONTAL LIMPIO */}
+          <div 
+            ref={trackRef}
+            className="dfv-houses-track"
+            style={{
+              display: 'flex',
+              gap: '16px',
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch',
+              paddingBottom: '0.5rem',
+              scrollbarWidth: 'none'
+            }}
+          >
+            {houses.map((house) => {
+              const rawImg = house.image || house.image_url;
+              const imgSrc = rawImg ? optimizeImg(rawImg, 700) : '/hero_campaign_4.webp';
+
+              return (
+                <Link
+                  key={house.id}
+                  to={`/tienda?casa=${house.id}`}
+                  className="dfv-house-card"
                   style={{
-                    position: 'relative',
-                    width: '100%',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    backgroundColor: '#ffffff',
+                    scrollSnapAlign: 'start',
+                    textDecoration: 'none',
+                    color: 'inherit',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    flexDirection: 'column'
                   }}
                 >
-                  <img
-                    src={imgSrc}
-                    alt={house.name}
-                    loading="lazy"
-                    decoding="async"
+                  {/* IMAGEN 100% COMPLETA Y LIMPIA SIN RECORTES */}
+                  <div 
+                    className="dfv-house-img-wrap"
                     style={{
+                      position: 'relative',
                       width: '100%',
-                      height: 'auto',
-                      objectFit: 'contain',
-                      objectPosition: 'center',
-                      display: 'block',
                       borderRadius: '8px',
-                      transition: 'transform 0.35s ease'
-                    }}
-                  />
-                </div>
-
-                {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
-                <div style={{ textAlign: 'center', marginTop: '14px' }}>
-                  <h3 
-                    className="dfv-house-title"
-                    style={{
-                      fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
-                      fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
-                      fontWeight: '600',
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
-                      color: '#1a1a1a',
-                      margin: 0
+                      overflow: 'hidden',
+                      backgroundColor: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                   >
-                    {house.name}
-                  </h3>
-                </div>
-              </Link>
-            );
-          })}
+                    <img
+                      src={imgSrc}
+                      alt={house.name}
+                      loading="lazy"
+                      decoding="async"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        display: 'block',
+                        borderRadius: '8px',
+                        transition: 'transform 0.35s ease'
+                      }}
+                    />
+                  </div>
+
+                  {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
+                  <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                    <h3 
+                      className="dfv-house-title"
+                      style={{
+                        fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
+                        fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                        fontWeight: '600',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        color: '#1a1a1a',
+                        margin: 0
+                      }}
+                    >
+                      {house.name}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {(canScrollRight || houses.length > 4) && (
+            <button
+              type="button"
+              onClick={scrollNext}
+              aria-label="Siguiente casa"
+              className="dfv-houses-pc-btn dfv-houses-pc-btn--right"
+            >
+              <ChevronRight size={20} strokeWidth={1.8} />
+            </button>
+          )}
         </div>
 
         {/* RAYITA DIVISORIA DEBAJO DE CASAS EN TENDENCIA */}
@@ -229,16 +265,65 @@ const TrendingHousesSection = () => {
         .dfv-houses-track::-webkit-scrollbar {
           display: none;
         }
-
-        .dfv-house-card {
-          flex: 0 0 calc((100% - 48px) / 4);
+        .dfv-houses-pc-btn {
+          display: none;
         }
 
         .dfv-house-card:hover .dfv-house-img-wrap img {
           transform: scale(1.03);
         }
 
-        @media (max-width: 1024px) {
+        /* ════ ESTILOS EXCLUSIVOS PARA PC (>= 769px) ════ */
+        @media (min-width: 769px) {
+          .dfv-trending-houses-section {
+            padding: 3rem 0 0 !important;
+          }
+          .dfv-houses-header {
+            justify-content: center !important;
+            margin-bottom: 2.2rem !important;
+          }
+          .dfv-houses-main-title {
+            font-size: 2rem !important;
+            text-align: center !important;
+            letter-spacing: -0.4px !important;
+          }
+          .dfv-houses-controls {
+            display: none !important;
+          }
+          .dfv-house-card {
+            flex: 0 0 calc((100% - 48px) / 4.15);
+          }
+          .dfv-houses-pc-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 42%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background-color: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            color: #1a1a1a;
+            cursor: pointer;
+            z-index: 15;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+          }
+          .dfv-houses-pc-btn:hover {
+            background-color: #f8f8f8;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+          }
+          .dfv-houses-pc-btn--left {
+            left: 8px;
+          }
+          .dfv-houses-pc-btn--right {
+            right: 8px;
+          }
+        }
+
+        @media (max-width: 768px) {
           .dfv-house-card {
             flex: 0 0 calc((100% - 32px) / 3);
           }

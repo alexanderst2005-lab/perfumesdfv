@@ -17,6 +17,8 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
   const trackRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
   const candidateProducts = useMemo(() => {
@@ -58,6 +60,9 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
     const scrollLeft = el.scrollLeft;
     const scrollWidth = el.scrollWidth;
     const clientWidth = el.clientWidth;
+
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 8);
 
     const maxScroll = Math.max(1, scrollWidth - clientWidth);
     const pages = Math.max(1, Math.round(scrollWidth / clientWidth));
@@ -101,7 +106,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
     <section className="dfv-most-wanted-section" style={{ backgroundColor: '#ffffff', padding: '2rem 0 0' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
         
-        {/* ENCABEZADO EN UNA SOLA LÍNEA: Los más deseados del mes + < 1/6 > */}
+        {/* ENCABEZADO: EN MÓVIL (IZQUIERDA + < 1/6 >) | EN PC (CENTRADO Y MÁS GRANDE, SIN 1/2) */}
         <div 
           className="dfv-mw-header"
           style={{ 
@@ -118,6 +123,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
             Los más deseados del mes
           </h2>
 
+          {/* Contador < 1/6 > SOLO VISIBLE EN MÓVIL */}
           <div 
             className="dfv-mw-controls"
             style={{ 
@@ -174,42 +180,69 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           </div>
         </div>
 
-        {/* TRACK DE PRODUCTOS CON SCROLL-SNAP (2 TARJETAS + ASOMO DE LA 3RA EN MÓVIL, 4 EN PC) */}
-        <div 
-          ref={trackRef}
-          className="dfv-mw-carousel-track"
-          style={{
-            display: 'flex',
-            gap: '14px',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: '0.5rem',
-            scrollbarWidth: 'none'
-          }}
-        >
-          {selectedProducts.map((p, idx) => (
-            <div 
-              key={p.id} 
-              className="dfv-mw-card-wrapper"
-              style={{
-                scrollSnapAlign: 'start',
-                boxSizing: 'border-box'
-              }}
+        {/* CONTENEDOR RELATIVO PARA BOTONES FLOTANTES EN PC */}
+        <div style={{ position: 'relative' }}>
+          {/* Botón Izquierdo PC estilo Imagen 2 */}
+          {canScrollLeft && (
+            <button
+              type="button"
+              onClick={scrollPrev}
+              aria-label="Anterior"
+              className="dfv-pc-slider-btn dfv-pc-slider-btn--left"
             >
-              <ProductCard 
-                product={p} 
-                onFav={() => onFav(p)} 
-                fav={isFavorite(p.id)} 
-                onAdd={() => onAdd(p, 1, p.sizes?.[0])}
-                priority={idx < 4}
-              />
-            </div>
-          ))}
+              <ChevronLeft size={20} strokeWidth={1.8} />
+            </button>
+          )}
+
+          {/* TRACK DE PRODUCTOS CON SCROLL-SNAP */}
+          <div 
+            ref={trackRef}
+            className="dfv-mw-carousel-track"
+            style={{
+              display: 'flex',
+              gap: '14px',
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch',
+              paddingBottom: '0.5rem',
+              scrollbarWidth: 'none'
+            }}
+          >
+            {selectedProducts.map((p, idx) => (
+              <div 
+                key={p.id} 
+                className="dfv-mw-card-wrapper"
+                style={{
+                  scrollSnapAlign: 'start',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <ProductCard 
+                  product={p} 
+                  onFav={() => onFav(p)} 
+                  fav={isFavorite(p.id)} 
+                  onAdd={() => onAdd(p, 1, p.sizes?.[0])}
+                  priority={idx < 4}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Botón Derecho PC estilo Imagen 2 */}
+          {(canScrollRight || selectedProducts.length > 4) && (
+            <button
+              type="button"
+              onClick={scrollNext}
+              aria-label="Siguiente"
+              className="dfv-pc-slider-btn dfv-pc-slider-btn--right"
+            >
+              <ChevronRight size={20} strokeWidth={1.8} />
+            </button>
+          )}
         </div>
 
-        {/* RAYITA DIVISORIA DEBAJO DE LOS MÁS DESEADOS DEL MES (COMO EN IMAGEN 1) */}
+        {/* RAYITA DIVISORIA DEBAJO DE LOS MÁS DESEADOS DEL MES */}
         <div style={{ height: '1px', backgroundColor: '#e8e8e8', marginTop: '1.6rem' }} />
 
       </div>
@@ -230,10 +263,61 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        .dfv-mw-card-wrapper {
-          flex: 0 0 calc((100% - 42px) / 4);
+        .dfv-pc-slider-btn {
+          display: none;
         }
-        @media (max-width: 1024px) {
+
+        /* ════ ESTILOS EXCLUSIVOS PARA PC (>= 769px) ════ */
+        @media (min-width: 769px) {
+          .dfv-most-wanted-section {
+            padding: 3rem 0 0 !important;
+          }
+          .dfv-mw-header {
+            justify-content: center !important;
+            margin-bottom: 2.2rem !important;
+          }
+          .dfv-section-inline-title {
+            font-size: 2rem !important;
+            text-align: center !important;
+            letter-spacing: -0.4px !important;
+          }
+          .dfv-mw-controls {
+            display: none !important;
+          }
+          .dfv-mw-card-wrapper {
+            flex: 0 0 calc((100% - 42px) / 4.15);
+          }
+          .dfv-pc-slider-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 38%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background-color: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            color: #1a1a1a;
+            cursor: pointer;
+            z-index: 15;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+          }
+          .dfv-pc-slider-btn:hover {
+            background-color: #f8f8f8;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+          }
+          .dfv-pc-slider-btn--left {
+            left: 8px;
+          }
+          .dfv-pc-slider-btn--right {
+            right: 8px;
+          }
+        }
+
+        @media (max-width: 768px) {
           .dfv-mw-card-wrapper {
             flex: 0 0 calc((100% - 28px) / 3);
           }

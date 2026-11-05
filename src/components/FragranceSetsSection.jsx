@@ -62,33 +62,34 @@ const FragranceSetsSection = () => {
       style={{ backgroundColor: '#FFFFFF', padding: '2rem 0 2.5rem', overflow: 'hidden' }}
     >
       <div className="dfv-sets-container">
-        
-        {/* IMAGEN COMPLETA DESPLEGABLE ANIMADA DE DERECHA A IZQUIERDA */}
-        <div className={`dfv-sets-image-wrap ${isVisible ? 'is-revealed' : ''}`}>
-          <img
-            src={optimizeImg(imagesList[currentImgIdx] || imagesList[0], 1400)}
-            alt={setsBanner.title || 'Sets de Fragancias Exclusivas'}
-            loading="lazy"
-            decoding="async"
-            className="dfv-sets-img"
-          />
-        </div>
+        <div className="dfv-sets-layout">
+          {/* IMAGEN COMPLETA DESPLEGABLE ANIMADA DE DERECHA A IZQUIERDA (ARRIBA EN MÓVIL / DERECHA EN PC) */}
+          <div className={`dfv-sets-image-wrap ${isVisible ? 'is-revealed' : ''}`}>
+            <img
+              src={optimizeImg(imagesList[currentImgIdx] || imagesList[0], 1400)}
+              alt={setsBanner.title || 'Sets de Fragancias Exclusivas'}
+              loading="lazy"
+              decoding="async"
+              className="dfv-sets-img"
+            />
+          </div>
 
-        {/* CONTENIDO DEBAJO: TÍTULO GRANDE + SUBTÍTULO + BOTÓN CUADRADO */}
-        <div className={`dfv-sets-content ${isVisible ? 'is-revealed' : ''}`}>
-          <h2 className="dfv-sets-title">
-            {setsBanner.title || 'SETS DE FRAGANCIAS EXCLUSIVAS'}
-          </h2>
+          {/* CONTENIDO: ABAJO CENTRADO EN MÓVIL | IZQUIERDA ALINEADO EN PC (COMO IMAGEN 4) */}
+          <div className={`dfv-sets-content ${isVisible ? 'is-revealed' : ''}`}>
+            <h2 className="dfv-sets-title">
+              {setsBanner.title || 'SETS DE FRAGANCIAS EXCLUSIVAS'}
+            </h2>
 
-          {setsBanner.subtitle && (
-            <p className="dfv-sets-subtitle">
-              {setsBanner.subtitle}
-            </p>
-          )}
+            {setsBanner.subtitle && (
+              <p className="dfv-sets-subtitle">
+                {setsBanner.subtitle}
+              </p>
+            )}
 
-          <Link to="/tienda?sets=1" className="dfv-sets-btn">
-            {setsBanner.button_text || 'VER SETS'}
-          </Link>
+            <Link to="/tienda?sets=1" className="dfv-sets-btn">
+              {setsBanner.button_text || 'VER SETS'}
+            </Link>
+          </div>
         </div>
 
         <div className="dfv-sets-divider" />
@@ -98,6 +99,11 @@ const FragranceSetsSection = () => {
         .dfv-sets-container {
           max-width: 1280px;
           margin: 0 auto;
+        }
+
+        .dfv-sets-layout {
+          display: flex;
+          flex-direction: column;
         }
 
         .dfv-sets-image-wrap {
@@ -148,7 +154,7 @@ const FragranceSetsSection = () => {
         }
 
         .dfv-sets-title {
-          font-family: var(--font-serif, 'Montserrat', sans-serif);
+          font-family: 'Montserrat', sans-serif;
           font-size: clamp(1.75rem, 6.2vw, 2.5rem);
           font-weight: 600;
           line-height: 1.18;
@@ -171,7 +177,7 @@ const FragranceSetsSection = () => {
         .dfv-sets-btn {
           display: inline-block;
           padding: 15px 34px;
-          font-family: var(--font-sans, 'Montserrat', sans-serif);
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.85rem;
           font-weight: 500;
           letter-spacing: 0.08em;
@@ -195,12 +201,56 @@ const FragranceSetsSection = () => {
           margin: 0 1.25rem;
         }
 
+        /* ════ DISEÑO EXCLUSIVO PC (COMO IMAGEN 4: TEXTO A LA IZQUIERDA + IMAGEN A LA DERECHA) ════ */
         @media (min-width: 769px) {
+          .dfv-sets-section {
+            padding: 3.5rem 0 3rem !important;
+          }
           .dfv-sets-container {
-            padding: 0 1.25rem;
+            padding: 0 1.15rem;
+          }
+          .dfv-sets-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            align-items: center;
+            gap: 3.5rem;
+            margin-bottom: 3rem;
+          }
+          .dfv-sets-content {
+            order: 1;
+            text-align: left;
+            padding: 0;
+            margin: 0;
+            max-width: 520px;
           }
           .dfv-sets-image-wrap {
-            border-radius: 8px;
+            order: 2;
+            border-radius: 0;
+          }
+          .dfv-sets-title {
+            font-size: clamp(2.2rem, 3.6vw, 3.15rem);
+            line-height: 1.12;
+            margin: 0 0 1.25rem;
+            max-width: 420px;
+          }
+          .dfv-sets-subtitle {
+            font-size: 0.96rem;
+            margin: 0 0 2rem;
+            max-width: 440px;
+            color: #333333;
+          }
+          .dfv-sets-btn {
+            background-color: #222222;
+            color: #ffffff;
+            border: 1.5px solid #222222;
+            padding: 13px 26px;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+          }
+          .dfv-sets-btn:hover {
+            background-color: #000000;
+            border-color: #000000;
+            color: #ffffff;
           }
           .dfv-sets-divider {
             margin: 0;
@@ -212,4 +262,3 @@ const FragranceSetsSection = () => {
 };
 
 export default FragranceSetsSection;
-
