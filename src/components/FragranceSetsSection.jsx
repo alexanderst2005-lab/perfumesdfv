@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
@@ -7,9 +7,7 @@ let cachedSetsBanner = null;
 const FragranceSetsSection = () => {
   const [setsBanner, setSetsBanner] = useState(cachedSetsBanner);
   const [loaded, setLoaded] = useState(Boolean(cachedSetsBanner));
-  const [isVisible, setIsVisible] = useState(Boolean(cachedSetsBanner));
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
-  const sectionRef = useRef(null);
 
   useEffect(() => {
     fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
@@ -23,21 +21,6 @@ const FragranceSetsSection = () => {
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [loaded, setsBanner]);
 
   const imagesList = setsBanner
     ? (Array.isArray(setsBanner.images) && setsBanner.images.length > 0
@@ -58,27 +41,27 @@ const FragranceSetsSection = () => {
     return null;
   }
 
+  const activeImageUrl = imagesList[currentImgIdx] || imagesList[0];
+
   return (
     <section
-      ref={sectionRef}
       className="dfv-sets-section"
       style={{ backgroundColor: '#FFFFFF', padding: '2rem 0 2.5rem', overflow: 'hidden' }}
     >
       <div className="dfv-sets-container">
         <div className="dfv-sets-layout">
-          {/* IMAGEN COMPLETA DESPLEGABLE ANIMADA DE DERECHA A IZQUIERDA (ARRIBA EN MÓVIL / DERECHA EN PC) */}
-          <div className={`dfv-sets-image-wrap ${isVisible ? 'is-revealed' : ''}`}>
+          {/* IMAGEN COMPLETA A LA DERECHA EN PC / ARRIBA EN MÓVIL */}
+          <div className="dfv-sets-image-wrap">
             <img
-              src={optimizeImg(imagesList[currentImgIdx] || imagesList[0], 1400)}
+              src={optimizeImg(activeImageUrl, 2000)}
               alt={setsBanner.title || 'Sets de Fragancias Exclusivas'}
-              loading="lazy"
               decoding="async"
               className="dfv-sets-img"
             />
           </div>
 
-          {/* CONTENIDO: ABAJO CENTRADO EN MÓVIL | IZQUIERDA ALINEADO EN PC (COMO IMAGEN 4) */}
-          <div className={`dfv-sets-content ${isVisible ? 'is-revealed' : ''}`}>
+          {/* CONTENIDO: ABAJO CENTRADO EN MÓVIL | IZQUIERDA ALINEADO EN PC */}
+          <div className="dfv-sets-content">
             <h2 className="dfv-sets-title">
               {setsBanner.title || 'SETS DE FRAGANCIAS EXCLUSIVAS'}
             </h2>
@@ -100,7 +83,7 @@ const FragranceSetsSection = () => {
 
       <style>{`
         .dfv-sets-container {
-          max-width: 1280px;
+          max-width: 1420px;
           margin: 0 auto;
         }
 
@@ -117,19 +100,6 @@ const FragranceSetsSection = () => {
           display: flex;
           justify-content: center;
           align-items: center;
-          clip-path: inset(0 0 0 100%);
-          transform: translateX(48px);
-          opacity: 0;
-          transition:
-            clip-path 1.05s cubic-bezier(0.22, 1, 0.36, 1),
-            transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
-            opacity 0.6s ease;
-        }
-
-        .dfv-sets-image-wrap.is-revealed {
-          clip-path: inset(0 0 0 0);
-          transform: translateX(0);
-          opacity: 1;
         }
 
         .dfv-sets-img {
@@ -146,14 +116,6 @@ const FragranceSetsSection = () => {
           padding: 2.2rem 1.5rem 2.2rem;
           max-width: 680px;
           margin: 0 auto;
-          opacity: 0;
-          transform: translateY(22px);
-          transition: opacity 0.75s ease 0.25s, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
-        }
-
-        .dfv-sets-content.is-revealed {
-          opacity: 1;
-          transform: translateY(0);
         }
 
         .dfv-sets-title {
@@ -204,7 +166,7 @@ const FragranceSetsSection = () => {
           margin: 0 1.25rem;
         }
 
-        /* ════ DISEÑO EXCLUSIVO PC (PROPORCIONADO: TEXTO A LA IZQUIERDA + IMAGEN CONTENIDA A LA DERECHA) ════ */
+        /* ════ DISEÑO EXCLUSIVO PC (TEXTO A LA IZQUIERDA + IMAGEN GRANDE A LA DERECHA) ════ */
         @media (min-width: 769px) {
           .dfv-sets-section {
             padding: 3rem 0 2.5rem !important;
@@ -218,7 +180,7 @@ const FragranceSetsSection = () => {
           }
           .dfv-sets-layout {
             display: grid;
-            grid-template-columns: 44% 56%;
+            grid-template-columns: 42% 58%;
             align-items: center;
             gap: 2.5rem;
             margin-bottom: 2.6rem;
@@ -237,15 +199,17 @@ const FragranceSetsSection = () => {
             order: 2;
             border-radius: 6px;
             width: 100%;
+            display: flex !important;
             justify-content: flex-end !important;
+            align-items: center !important;
           }
           .dfv-sets-img {
-            max-height: 670px !important;
-            width: auto !important;
-            max-width: 100% !important;
+            width: 100% !important;
+            height: auto !important;
+            max-height: 660px !important;
             object-fit: contain !important;
-            margin-left: auto !important;
-            margin-right: 0 !important;
+            object-position: right center !important;
+            display: block !important;
           }
           .dfv-sets-title {
             font-size: clamp(1.95rem, 3vw, 2.75rem);

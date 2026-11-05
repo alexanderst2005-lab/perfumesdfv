@@ -8,6 +8,7 @@ import PromoBanner from '../components/PromoBanner';
 import NoteCollectionsSection from '../components/NoteCollectionsSection';
 import TrendingHousesSection from '../components/TrendingHousesSection';
 import FragranceSetsSection from '../components/FragranceSetsSection';
+import CustomerReviewsSection from '../components/CustomerReviewsSection';
 import CountersBar from '../components/CountersBar';
 import LazyOnView from '../components/LazyOnView';
 import { optimizeImg, prefetchImg } from '../utils/img';
@@ -350,13 +351,16 @@ const Home = () => {
       {/* ════ 8. COLECCIONES POR NOTAS (DESPUÉS DE SETS DE FRAGANCIAS) ════ */}
       <NoteCollectionsSection />
 
+      {/* ════ 9. RESEÑAS DE CLIENTES (EXPERIENCIAS QUE ENAMORAN) ════ */}
+      <CustomerReviewsSection />
+
       {/* ════ 10. SEDES FÍSICAS (DISEÑO LIMPIO Y PROFESIONAL) ════ */}
       <section id="sedes" style={{ backgroundColor: '#ffffff', padding: '1.8rem 0 2.5rem' }}>
         <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
           
-          {/* ENCABEZADO: NUESTRAS SEDES A LA IZQUIERDA + CONTROLES < 1/2 > A LA DERECHA */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}>
-            <h2 style={{
+          {/* ENCABEZADO: NUESTRAS SEDES CENTRADO EN PC / CON CONTROLES EN MÓVIL */}
+          <div className="sedes-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}>
+            <h2 className="sedes-main-title" style={{
               fontFamily: "'Montserrat', sans-serif",
               fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
               fontWeight: '600',
@@ -524,7 +528,15 @@ const Home = () => {
           </div>
 
           <style>{`
-            @media (min-width: 1025px) {
+            @media (min-width: 769px) {
+              .sedes-header-wrap {
+                justify-content: center !important;
+                margin-bottom: 2rem !important;
+              }
+              .sedes-main-title {
+                text-align: center !important;
+                font-size: 1.85rem !important;
+              }
               .sedes-header-controls {
                 display: none !important;
               }

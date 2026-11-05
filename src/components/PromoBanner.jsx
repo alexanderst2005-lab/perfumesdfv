@@ -401,7 +401,7 @@ const PromoBanner = () => {
             max-width: 1420px;
             padding: 0 2.2rem;
             display: grid;
-            grid-template-columns: 44% 1fr;
+            grid-template-columns: 47% 1fr;
             gap: 28px;
             align-items: stretch;
           }
@@ -428,8 +428,9 @@ const PromoBanner = () => {
             position: absolute;
             inset: 0;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 26px 20px;
+            grid-template-columns: repeat(2, minmax(0, 260px));
+            justify-content: center;
+            gap: 22px 20px;
             overflow-y: auto;
             overflow-x: hidden;
             align-content: start;
@@ -441,6 +442,9 @@ const PromoBanner = () => {
             width: 100%;
             min-width: 0;
             box-sizing: border-box;
+          }
+          .dfv-promo-product-card .product-card__image-wrap {
+            max-height: 255px !important;
           }
           .dfv-promo-bottom-pager {
             display: none !important;
