@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ProductCard from './ProductCardV2';
+import { ProductCard } from '../pages/Home';
 
 function shuffleArray(array) {
   const arr = [...array];
@@ -308,11 +308,11 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
             margin-top: 0.2rem !important;
           }
           .dfv-mw-card-wrapper {
-            flex: 0 0 calc((100% - 32px) / 2.25) !important; /* 2 tarjetas completas + asomo de la 3ra */
-            min-width: 0 !important;
+            flex: 0 0 calc((100% - 1rem) / 2.25) !important; /* 2 tarjetas completas + asomo de la 3ra */
+            min-width: 152px !important;
           }
           .dfv-mw-carousel-track {
-            gap: 16px !important;
+            gap: 0.85rem !important;
           }
         }
       `}</style>
