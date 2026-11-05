@@ -454,8 +454,21 @@ const Home = () => {
                       />
                     </a>
 
-                    {/* ENLACE SUBRAYADO ¿CÓMO LLEGAR? */}
+                    {/* NOMBRE DE LA SEDE + ENLACE SUBRAYADO ¿CÓMO LLEGAR? */}
                     <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+                      <h3
+                        style={{
+                          fontFamily: "'Montserrat', sans-serif",
+                          fontSize: 'clamp(1.05rem, 2.5vw, 1.3rem)',
+                          fontWeight: '600',
+                          letterSpacing: '0.05em',
+                          textTransform: 'uppercase',
+                          color: '#1a1a1a',
+                          margin: '0 0 0.6rem 0'
+                        }}
+                      >
+                        {s.name}
+                      </h3>
                       <a
                         href={s.maps}
                         target="_blank"

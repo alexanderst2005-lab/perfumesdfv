@@ -367,57 +367,58 @@ const PromoBannerModule = () => {
             position: 'relative',
             borderRadius: '12px',
             overflow: 'hidden',
-            minHeight: '340px',
             backgroundColor: '#0a0a0a',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            padding: '2rem',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.15)'
+            boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+            width: '100%'
           }}>
-            {/* Imagen de fondo */}
+            {/* Imagen 100% completa sin recortar */}
             <img
               src={banner.image_url || '/hero_campaign_2.webp'}
               alt="Preview"
               style={{
-                position: 'absolute',
-                inset: 0,
                 width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                opacity: 0.55
+                height: 'auto',
+                display: 'block',
+                objectFit: 'contain'
               }}
             />
             {/* Overlay gradiente */}
             <div style={{
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.7) 100%)'
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.5) 100%)'
             }} />
 
-            {/* Contenido centrado */}
-            <div style={{ position: 'relative', zIndex: 2, maxWidth: '480px' }}>
-              <span style={{ fontSize: '0.65rem', letterSpacing: '3px', textTransform: 'uppercase', color: '#B99A5B', fontWeight: 600, display: 'block', marginBottom: '0.6rem' }}>
-                DFV PERFUMES EXCLUSIVO
-              </span>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: '#fff', fontWeight: 400, letterSpacing: '1px', marginBottom: '0.6rem', lineHeight: 1.2 }}>
+            {/* Contenido centrado encima de la imagen completa */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: '1.5rem'
+            }}>
+              <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 'clamp(1.25rem, 3vw, 1.8rem)', color: '#fff', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: '0.5rem', lineHeight: 1.15 }}>
                 {banner.title || 'Título del Banner'}
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.85rem', marginBottom: '1.4rem', lineHeight: 1.4, fontWeight: 300 }}>
+              <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', fontSize: '0.75rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1.1rem', lineHeight: 1.4, fontWeight: 400, maxWidth: '420px' }}>
                 {banner.subtitle || 'Subtítulo descriptivo de la campaña o promoción.'}
               </p>
               <div style={{
                 display: 'inline-block',
-                backgroundColor: '#111',
+                backgroundColor: 'rgba(255,255,255,0.08)',
                 color: '#fff',
-                border: '1px solid #B99A5B',
-                padding: '0.65rem 1.6rem',
-                fontSize: '0.72rem',
-                letterSpacing: '2px',
+                border: '1px solid rgba(255,255,255,0.75)',
+                padding: '0.6rem 1.5rem',
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: '0.7rem',
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                fontWeight: 600,
-                borderRadius: '2px'
+                fontWeight: 500,
+                borderRadius: '999px'
               }}>
                 {banner.button_text || 'COMPRAR AHORA'}
               </div>
