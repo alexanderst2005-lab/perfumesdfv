@@ -10,13 +10,13 @@ const DEFAULT_COUNTERS = [
 
 const DEFAULT_ICONS = ['👥', '📦', '⭐', '🚚'];
 
-// Hook para animar números suavemente de 0 al valor final
-function useCountUp(targetValue, shouldStart, duration = 1600) {
-  const [count, setCount] = useState(shouldStart ? 0 : targetValue);
+// Hook para animar números suavemente de 0 al valor final cuando el usuario llega a la sección
+function useCountUp(targetValue, shouldStart, duration = 1800) {
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!shouldStart) {
-      setCount(targetValue);
+      setCount(0);
       return;
     }
     let startTime = null;
@@ -71,7 +71,10 @@ const SingleCounterCard = ({ counter, index, shouldAnimate }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        opacity: shouldAnimate ? 1 : 0,
+        transform: shouldAnimate ? 'translateY(0)' : 'translateY(24px)',
+        transition: `opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) ${index * 110}ms, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) ${index * 110}ms`
       }}
     >
       {/* ICONO / EMOJI ARRIBA */}
@@ -138,22 +141,36 @@ const CountersBar = () => {
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setShouldAnimate(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
+    let triggered = false;
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    const checkScrollReveal = () => {
+      if (triggered) return;
+      const el = sectionRef.current;
+      if (!el) return;
+      // No activar al abrir la página arriba del todo; solo a medida que el usuario va bajando
+      if (window.scrollY < 80) return;
+
+      const rect = el.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      if (rect.top <= viewportHeight * 0.82 && rect.bottom >= 60) {
+        triggered = true;
+        setShouldAnimate(true);
+        window.removeEventListener('scroll', checkScrollReveal);
+        window.removeEventListener('resize', checkScrollReveal);
+      }
+    };
+
+    window.addEventListener('scroll', checkScrollReveal, { passive: true });
+    window.addEventListener('resize', checkScrollReveal, { passive: true });
+    // Si la página se recarga ya scrolleada abajo donde están los contadores:
+    if (window.scrollY >= 80) {
+      checkScrollReveal();
     }
 
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener('scroll', checkScrollReveal);
+      window.removeEventListener('resize', checkScrollReveal);
+    };
   }, []);
 
   return (
