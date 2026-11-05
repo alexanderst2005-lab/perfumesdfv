@@ -23,7 +23,7 @@ const ProductCardV2 = ({ product, onAdd, priority = false }) => {
           aria-label={product.name}
         >
           <img
-            src={optimizeImg(product.image, 400)}
+            src={optimizeImg(product.image, 500)}
             alt={product.name}
             className="dfv-pc__img"
             loading={priority ? 'eager' : 'lazy'}
@@ -80,15 +80,19 @@ const ProductCardV2 = ({ product, onAdd, priority = false }) => {
         .dfv-pc__media {
           position: relative;
           width: 100%;
-          aspect-ratio: 4 / 5;
-          background: #ffffff;
+          aspect-ratio: 1 / 1;
+          background: #f4f4f4;
           border-radius: 8px;
           overflow: hidden;
         }
         .dfv-pc__link {
-          display: block;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           width: 100%;
           height: 100%;
+          padding: 12%;
+          box-sizing: border-box;
         }
         .dfv-pc__img {
           width: 100%;
@@ -201,4 +205,3 @@ const ProductCardV2 = ({ product, onAdd, priority = false }) => {
 };
 
 export default ProductCardV2;
-
