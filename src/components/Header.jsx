@@ -57,7 +57,7 @@ const Header = () => {
             position: 'relative', /* Importante para el centrado absoluto del logo */
           }}>
 
-            {/* LEFT / CENTER — Logo and Hamburger */}
+            {/* LEFT — Hamburger (Mobile) & Nav Links (Desktop) */}
             <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
               <button
                 className="mobile-only"
@@ -67,42 +67,46 @@ const Header = () => {
               >
                 <Menu size={24} strokeWidth={1.5} />
               </button>
-              
-              <Link to="/" className="header-logo" style={{
-                display: 'flex',
-                alignItems: 'center',
-                textDecoration: 'none',
-                zIndex: 10,
-              }}>
-                <svg
-                  viewBox="0 0 160 50"
-                  height="38"
-                  aria-label="DFV Perfumes"
-                  style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
-                >
-                  <text x="0" y="36" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill={solid ? '#111111' : '#ffffff'}>DFV</text>
-                  <text x="0" y="50" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill={solid ? '#111111' : '#ffffff'}>PERFUMES</text>
-                </svg>
-              </Link>
+
+              <nav className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '2.2rem' }}>
+                {navLinks.map(l => (
+                  <Link key={l.label} to={l.path} style={{
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    fontSize: '0.75rem',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    fontWeight: '500',
+                    opacity: 0.85,
+                    transition: 'opacity 0.2s'
+                  }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.85}>
+                    {l.label}
+                  </Link>
+                ))}
+              </nav>
             </div>
 
-            {/* CENTER — Desktop Nav */}
-            <nav className="desktop-only" style={{ display: 'flex', justifyContent: 'center', gap: '2.5rem', flex: 2 }}>
-              {navLinks.map(l => (
-                <Link key={l.label} to={l.path} style={{
-                  color: 'inherit',
-                  textDecoration: 'none',
-                  fontSize: '0.75rem',
-                  letterSpacing: '2px',
-                  textTransform: 'uppercase',
-                  fontWeight: '500',
-                  opacity: 0.8,
-                  transition: 'opacity 0.2s'
-                }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.8}>
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
+            {/* CENTER — Logo DFV PERFUMES 100% Centrado */}
+            <Link to="/" className="header-logo" style={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textDecoration: 'none',
+              zIndex: 10,
+            }}>
+              <svg
+                viewBox="0 0 160 54"
+                height="40"
+                aria-label="DFV Perfumes"
+                style={{ display: 'block', transition: 'all 0.3s ease', overflow: 'visible' }}
+              >
+                <text x="80" y="36" textAnchor="middle" fontFamily="Georgia, 'Times New Roman', serif" fontSize="46" fontWeight="400" letterSpacing="-1" fill={solid ? '#111111' : '#ffffff'}>DFV</text>
+                <text x="83" y="51" textAnchor="middle" fontFamily="'Helvetica Neue', Arial, sans-serif" fontSize="10" fontWeight="400" letterSpacing="6" fill={solid ? '#111111' : '#ffffff'}>PERFUMES</text>
+              </svg>
+            </Link>
 
             {/* RIGHT — Solo Carrito */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1.2rem', flex: 1 }}>
@@ -169,13 +173,12 @@ const Header = () => {
         .header-container { padding: 0 2.5rem; }
         .desktop-only { display: flex !important; }
         .mobile-only { display: none !important; }
-        .header-logo { justify-content: flex-start; }
+        .header-logo { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; justify-content: center !important; }
         
         @media (max-width: 768px) {
           .header-container { padding: 0 1.2rem !important; }
           .desktop-only { display: none !important; }
           .mobile-only { display: flex !important; }
-          .header-logo { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; justify-content: center !important; }
         }
       `}</style>
     </>
