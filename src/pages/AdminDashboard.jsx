@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers, Star } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers, Star, Gift } from 'lucide-react';
 const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
 const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
 const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
@@ -11,6 +11,7 @@ const CampaignsModule = lazy(() => import('../components/admin/CampaignsModule')
 const PromoBannerModule = lazy(() => import('../components/admin/PromoBannerModule'));
 const NoteCollectionsModule = lazy(() => import('../components/admin/NoteCollectionsModule'));
 const TrendingHousesModule = lazy(() => import('../components/admin/TrendingHousesModule'));
+const FragranceSetsModule = lazy(() => import('../components/admin/FragranceSetsModule'));
 const CountersModule = lazy(() => import('../components/admin/CountersModule'));
 const MostWantedModule = lazy(() => import('../components/admin/MostWantedModule'));
 
@@ -59,6 +60,7 @@ const AdminDashboard = () => {
     { id: 'promo-banner', label: 'Banner Promocional', icon: ImageIcon },
     { id: 'note-collections', label: 'Colecciones por Notas', icon: Layers },
     { id: 'trending-houses', label: 'Casas en Tendencia', icon: TrendingUp },
+    { id: 'fragrance-sets', label: 'Sets de Fragancias', icon: Gift },
     { id: 'counters', label: 'Cifras y Contadores', icon: BarChart2 },
   ];
 
@@ -383,6 +385,7 @@ const AdminDashboard = () => {
             {activeTab === 'promo-banner' && <PromoBannerModule />}
             {activeTab === 'note-collections' && <NoteCollectionsModule />}
             {activeTab === 'trending-houses' && <TrendingHousesModule />}
+            {activeTab === 'fragrance-sets' && <FragranceSetsModule />}
             {activeTab === 'counters' && <CountersModule />}
             {activeTab === 'most-wanted' && <MostWantedModule />}
           </Suspense>

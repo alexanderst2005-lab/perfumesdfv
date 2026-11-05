@@ -7,6 +7,7 @@ import MostWantedCarousel from '../components/MostWantedCarousel';
 import PromoBanner from '../components/PromoBanner';
 import NoteCollectionsSection from '../components/NoteCollectionsSection';
 import TrendingHousesSection from '../components/TrendingHousesSection';
+import FragranceSetsSection from '../components/FragranceSetsSection';
 import CountersBar from '../components/CountersBar';
 import LazyOnView from '../components/LazyOnView';
 import { optimizeImg, prefetchImg } from '../utils/img';
@@ -305,7 +306,10 @@ const Home = () => {
       {/* ════ 7. CASAS EN TENDENCIA (DESPUÉS DE FAVORITOS EN OFERTAS) ════ */}
       <TrendingHousesSection />
 
-      {/* ════ 8. COLECCIONES POR NOTAS (DESPUÉS DE CASAS EN TENDENCIA) ════ */}
+      {/* ════ 7B. SETS DE FRAGANCIAS EXCLUSIVAS (DEBAJO DE CASAS EN TENDENCIA) ════ */}
+      <FragranceSetsSection />
+
+      {/* ════ 8. COLECCIONES POR NOTAS (DESPUÉS DE SETS DE FRAGANCIAS) ════ */}
       <NoteCollectionsSection />
 
       {/* ════ 10. SEDES FÍSICAS (DISEÑO LIMPIO Y PROFESIONAL) ════ */}

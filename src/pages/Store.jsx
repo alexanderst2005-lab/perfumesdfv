@@ -11,16 +11,17 @@ const Store = () => {
 
   const { addToCart, toggleFavorite, isFavorite, products, brands, categories: dbCategories, isLoadingProducts } = useShop();
 
-  // Special external filter state (colecciones por notas, casas en tendencia)
+  // Special external filter state (colecciones por notas, casas en tendencia, sets)
   const [collectionProductIds, setCollectionProductIds] = useState(null);
   const [activeSpecialFilterName, setActiveSpecialFilterName] = useState('');
   const [isLoadingSpecialFilter, setIsLoadingSpecialFilter] = useState(
-    Boolean(params.get('coleccion') || params.get('casa'))
+    Boolean(params.get('coleccion') || params.get('casa') || params.get('sets'))
   );
 
   useEffect(() => {
     const colId = params.get('coleccion');
     const casaId = params.get('casa');
+    const setsParam = params.get('sets');
     const filtroParam = params.get('filtro');
 
     if (colId) {
@@ -49,6 +50,23 @@ const Store = () => {
           if (h) {
             setCollectionProductIds((h.product_ids || []).map(id => Number(id)));
             setActiveSpecialFilterName('Casa: ' + h.name);
+          } else {
+            setCollectionProductIds([]);
+          }
+        })
+        .catch(() => {
+          setCollectionProductIds([]);
+        })
+        .finally(() => setIsLoadingSpecialFilter(false));
+    } else if (setsParam) {
+      setIsLoadingSpecialFilter(true);
+      fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+          const b = data && data.setsBanner;
+          if (b && Array.isArray(b.product_ids)) {
+            setCollectionProductIds(b.product_ids.map(id => Number(id)));
+            setActiveSpecialFilterName(b.title || 'Sets de Fragancias Exclusivas');
           } else {
             setCollectionProductIds([]);
           }
@@ -178,7 +196,7 @@ const Store = () => {
                      (p.brand && p.brand.toLowerCase().includes(query.toLowerCase()));
       const filtroParam = params.get('filtro');
       const matchFiltro = !filtroParam || (filtroParam === 'deseados' && p.isMostWanted);
-      const hasSpecialFilterParam = Boolean(params.get('coleccion') || params.get('casa'));
+      const hasSpecialFilterParam = Boolean(params.get('coleccion') || params.get('casa') || params.get('sets'));
       const matchCollection = !hasSpecialFilterParam || (Array.isArray(collectionProductIds) && collectionProductIds.some(id => String(id) === String(p.id)));
       return matchCat && matchBrand && matchFamily && matchPrice && matchQ && matchFiltro && matchCollection;
     });

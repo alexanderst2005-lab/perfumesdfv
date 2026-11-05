@@ -18,6 +18,10 @@
       "destination": "/api/home-sections?type=trending-houses"
     },
     {
+      "source": "/api/fragrance-sets",
+      "destination": "/api/home-sections?type=fragrance-sets"
+    },
+    {
       "source": "/api/admin/reels",
       "destination": "/api/reels?admin=true"
     },

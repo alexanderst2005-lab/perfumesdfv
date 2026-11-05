@@ -22,6 +22,7 @@ export default async function handler(req, res) {
     (rawUrl.includes('promo-banner') ? 'promo-banner' :
      rawUrl.includes('note-collections') ? 'note-collections' :
      rawUrl.includes('trending-houses') ? 'trending-houses' :
+     rawUrl.includes('fragrance-sets') ? 'fragrance-sets' :
      rawUrl.includes('site-counters') ? 'site-counters' : '');
 
   // Helper para normalizar los campos de imagen en respuesta (image e image_url)
@@ -372,6 +373,103 @@ export default async function handler(req, res) {
       } catch (error) {
         console.error('Error deleting trending house:', error);
         return res.status(500).json({ success: false, error: error.message });
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 5. FRAGRANCE SETS (SETS DE FRAGANCIAS EXCLUSIVAS)
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (type === 'fragrance-sets') {
+    await sql`
+      CREATE TABLE IF NOT EXISTS fragrance_sets_banner (
+        id SERIAL PRIMARY KEY,
+        title TEXT DEFAULT 'SETS DE FRAGANCIAS EXCLUSIVAS',
+        subtitle TEXT DEFAULT 'Combinaciones cuidadosamente seleccionadas para elevar cada momento',
+        button_text TEXT DEFAULT 'VER SETS',
+        image TEXT,
+        images JSONB DEFAULT '[]',
+        product_ids JSONB DEFAULT '[]',
+        active BOOLEAN DEFAULT true,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `.catch(() => {});
+
+    if (req.method === 'GET') {
+      try {
+        const rows = await sql`SELECT * FROM fragrance_sets_banner ORDER BY id ASC LIMIT 1`;
+        if (rows.length === 0) {
+          return res.status(200).json({ success: true, setsBanner: null });
+        }
+        const row = rows[0];
+        const productIds = Array.isArray(row.product_ids) ? row.product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+        const imagesList = Array.isArray(row.images) ? row.images.filter(Boolean) : (row.image ? [row.image] : []);
+        return res.status(200).json({
+          success: true,
+          setsBanner: {
+            ...withDualImage(row),
+            images: imagesList,
+            product_ids: productIds
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching fragrance sets banner:', error);
+        return res.status(500).json({ success: false, error: 'Database error' });
+      }
+    }
+
+    if (req.method === 'PUT' || req.method === 'POST') {
+      try {
+        const { title, subtitle, button_text, image_url, image, images, product_ids, active } = body || {};
+        const mainImg = image_url !== undefined ? image_url : (image !== undefined ? image : (Array.isArray(images) && images[0] ? images[0] : null));
+        const cleanImages = Array.isArray(images) ? images.filter(Boolean) : (mainImg ? [mainImg] : []);
+        const cleanIds = Array.isArray(product_ids) ? product_ids.map(x => Number(x)).filter(x => !isNaN(x) && x > 0) : [];
+
+        const existing = await sql`SELECT id FROM fragrance_sets_banner ORDER BY id ASC LIMIT 1`;
+        let result;
+
+        if (existing.length === 0) {
+          result = await sql`
+            INSERT INTO fragrance_sets_banner (title, subtitle, button_text, image, images, product_ids, active, updated_at)
+            VALUES (
+              ${title || 'SETS DE FRAGANCIAS EXCLUSIVAS'},
+              ${subtitle !== undefined ? subtitle : 'Combinaciones cuidadosamente seleccionadas para elevar cada momento'},
+              ${button_text || 'VER SETS'},
+              ${mainImg || null},
+              ${JSON.stringify(cleanImages)}::jsonb,
+              ${JSON.stringify(cleanIds)}::jsonb,
+              ${active !== false},
+              NOW()
+            ) RETURNING *
+          `;
+        } else {
+          result = await sql`
+            UPDATE fragrance_sets_banner SET
+              title = ${title || 'SETS DE FRAGANCIAS EXCLUSIVAS'},
+              subtitle = ${subtitle !== undefined ? subtitle : 'Combinaciones cuidadosamente seleccionadas para elevar cada momento'},
+              button_text = ${button_text || 'VER SETS'},
+              image = ${mainImg || null},
+              images = ${JSON.stringify(cleanImages)}::jsonb,
+              product_ids = ${JSON.stringify(cleanIds)}::jsonb,
+              active = ${active !== false},
+              updated_at = NOW()
+            WHERE id = ${existing[0].id}
+            RETURNING *
+          `;
+        }
+
+        const saved = result[0];
+        return res.status(200).json({
+          success: true,
+          setsBanner: {
+            ...withDualImage(saved),
+            images: cleanImages,
+            product_ids: cleanIds
+          }
+        });
+      } catch (error) {
+        console.error('Error saving fragrance sets banner:', error);
+        return res.status(500).json({ success: false, error: error.message || 'Database error' });
       }
     }
   }

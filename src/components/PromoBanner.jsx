@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
@@ -13,6 +13,8 @@ const DEFAULT_BANNER = {
 
 const PromoBanner = () => {
   const [banner, setBanner] = useState(DEFAULT_BANNER);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     fetch(`/api/promo-banner?t=${Date.now()}`, { cache: 'no-store' })
@@ -25,6 +27,21 @@ const PromoBanner = () => {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [banner]);
+
   if (!banner || banner.active === false) {
     return null;
   }
@@ -34,11 +51,14 @@ const PromoBanner = () => {
   const bgImage = rawImg ? optimizeImg(rawImg, 1400) : '/hero_campaign_2.webp';
 
   return (
-    <section className="dfv-promo" style={{ backgroundColor: '#FFFFFF' }}>
+    <section ref={sectionRef} className="dfv-promo" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
       <div className="dfv-promo__wrap">
-        <div className="dfv-promo__card" style={{ backgroundImage: `url(${bgImage})` }}>
+        <div
+          className={`dfv-promo__card ${isVisible ? 'is-revealed' : ''}`}
+          style={{ backgroundImage: `url(${bgImage})` }}
+        >
           <div className="dfv-promo__overlay" />
-          <div className="dfv-promo__content">
+          <div className={`dfv-promo__content ${isVisible ? 'is-revealed' : ''}`}>
             <h2 className="dfv-promo__title">{banner.title}</h2>
             {banner.subtitle && <p className="dfv-promo__subtitle">{banner.subtitle}</p>}
             <Link to={banner.button_link || '/tienda'} className="dfv-promo__btn">
@@ -63,6 +83,18 @@ const PromoBanner = () => {
           background-position: center;
           background-repeat: no-repeat;
           background-color: #2a2a2a;
+          clip-path: inset(0 0 0 100%);
+          transform: translateX(48px) scale(1.03);
+          opacity: 0;
+          transition:
+            clip-path 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.6s ease;
+        }
+        .dfv-promo__card.is-revealed {
+          clip-path: inset(0 0 0 0);
+          transform: translateX(0) scale(1);
+          opacity: 1;
         }
         .dfv-promo__overlay {
           position: absolute;
@@ -79,6 +111,13 @@ const PromoBanner = () => {
           display: flex;
           flex-direction: column;
           align-items: center;
+          opacity: 0;
+          transform: translateX(30px);
+          transition: opacity 0.8s ease 0.3s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+        }
+        .dfv-promo__content.is-revealed {
+          opacity: 1;
+          transform: translateX(0);
         }
         .dfv-promo__title {
           font-family: 'Montserrat', sans-serif;
