@@ -190,6 +190,9 @@ const CountersBar = () => {
           </p>
         </div>
 
+        {/* RAYITA DIVISORIA DEBAJO DE CONTADORES */}
+        <div style={{ height: '1px', backgroundColor: '#e8e8e8', marginTop: '1.8rem' }} />
+
       </div>
 
       <style>{`

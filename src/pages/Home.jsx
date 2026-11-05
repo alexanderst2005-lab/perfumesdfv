@@ -313,20 +313,21 @@ const Home = () => {
       <NoteCollectionsSection />
 
       {/* ════ 10. SEDES FÍSICAS (DISEÑO LIMPIO Y PROFESIONAL) ════ */}
-      <section id="sedes" style={{ backgroundColor: '#ffffff', padding: '2.5rem 0 3rem' }}>
-        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
+      <section id="sedes" style={{ backgroundColor: '#ffffff', padding: '1.8rem 0 2.5rem' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
           
           {/* ENCABEZADO: NUESTRAS SEDES A LA IZQUIERDA + CONTROLES < 1/2 > A LA DERECHA */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}>
             <h2 style={{
-              fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
-              fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
               fontWeight: '600',
               color: '#1a1a1a',
               margin: 0,
               letterSpacing: '0.02em',
               textTransform: 'uppercase',
-              lineHeight: 1.2
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap'
             }}>
               NUESTRAS SEDES
             </h2>

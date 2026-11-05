@@ -70,19 +70,20 @@ const TrendingHousesSection = () => {
   }
 
   return (
-    <section className="dfv-trending-houses-section" style={{ backgroundColor: '#ffffff', padding: '2.5rem 0 2rem' }}>
-      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
+    <section className="dfv-trending-houses-section" style={{ backgroundColor: '#ffffff', padding: '1.8rem 0 0' }}>
+      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
         
-        {/* ENCABEZADO LIMPIO: TÍTULO A LA IZQUIERDA + CONTROLES A LA DERECHA */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.4rem', gap: '0.75rem' }}>
+        {/* ENCABEZADO LIMPIO EN UNA SOLA LÍNEA: TÍTULO A LA IZQUIERDA + CONTROLES A LA DERECHA */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}>
           <h2 style={{
-            fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
-            fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: 'clamp(1.05rem, 4.2vw, 1.55rem)',
             fontWeight: '600',
             color: '#1a1a1a',
             margin: 0,
-            letterSpacing: '-0.2px',
-            lineHeight: 1.2
+            letterSpacing: '-0.3px',
+            lineHeight: 1.2,
+            whiteSpace: 'nowrap'
           }}>
             Casas en tendencia
           </h2>

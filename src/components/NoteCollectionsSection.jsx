@@ -26,19 +26,20 @@ const NoteCollectionsSection = () => {
   }
 
   return (
-    <section className="dfv-note-collections-section" style={{ backgroundColor: '#FFFFFF', padding: '2.5rem 0 3rem' }}>
-      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem' }}>
+    <section className="dfv-note-collections-section" style={{ backgroundColor: '#FFFFFF', padding: '1.8rem 0 0' }}>
+      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
 
         {/* ENCABEZADO CENTRADO LIMPIO: SOLO TÍTULO */}
-        <div style={{ textAlign: 'center', marginBottom: '1.6rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.4rem' }}>
           <h2 style={{
-            fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
-            fontSize: 'clamp(1.25rem, 3vw, 1.7rem)',
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: 'clamp(1.05rem, 4.2vw, 1.5rem)',
             fontWeight: '600',
             color: '#1a1a1a',
             margin: 0,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase'
+            letterSpacing: '0.03em',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap'
           }}>
             COLECCIONES POR NOTAS
           </h2>
@@ -91,13 +92,13 @@ const NoteCollectionsSection = () => {
                 </div>
 
                 {/* SOLO EL NOMBRE DEBAJO EN MAYÚSCULAS Y CENTRADO */}
-                <div style={{ textAlign: 'center', marginTop: '14px' }}>
+                <div style={{ textAlign: 'center', marginTop: '12px' }}>
                   <h3
                     style={{
-                      fontFamily: 'var(--font-serif, "Montserrat", sans-serif)',
-                      fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
                       fontWeight: '600',
-                      letterSpacing: '0.06em',
+                      letterSpacing: '0.05em',
                       textTransform: 'uppercase',
                       color: '#1a1a1a',
                       margin: 0
@@ -111,6 +112,9 @@ const NoteCollectionsSection = () => {
             );
           })}
         </div>
+
+        {/* RAYITA DIVISORIA DEBAJO DE COLECCIONES POR NOTAS */}
+        <div style={{ height: '1px', backgroundColor: '#e8e8e8', marginTop: '1.8rem' }} />
 
       </div>
 
@@ -135,8 +139,8 @@ const NoteCollectionsSection = () => {
         @media (max-width: 640px) {
           .dfv-notes-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            row-gap: 24px;
+            gap: 14px;
+            row-gap: 22px;
           }
         }
       `}</style>

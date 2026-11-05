@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { ProductCard } from '../pages/Home';
 
 function shuffleArray(array) {
@@ -99,42 +98,32 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
   }
 
   return (
-    <section className="dfv-most-wanted-section" style={{ backgroundColor: '#ffffff', padding: '2.75rem 0 2.25rem' }}>
-      <div className="container" style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 1.15rem' }}>
+    <section className="dfv-most-wanted-section" style={{ backgroundColor: '#ffffff', padding: '2rem 0 0' }}>
+      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
         
-        {/* ENCABEZADO ESTILO IMAGEN 2: TÍTULO A LA IZQUIERDA + < 1/6 > A LA DERECHA */}
+        {/* ENCABEZADO EN UNA SOLA LÍNEA: Los más deseados del mes + < 1/6 > */}
         <div 
           className="dfv-mw-header"
           style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
-            marginBottom: '1.4rem',
-            position: 'relative',
+            marginBottom: '1.15rem',
             width: '100%',
-            gap: '0.75rem'
+            gap: '0.5rem',
+            flexWrap: 'nowrap'
           }}
         >
-          {/* Título a la izquierda */}
-          <h2 style={{ 
-            fontFamily: "'Montserrat', sans-serif", 
-            fontSize: 'clamp(1.25rem, 3.2vw, 1.7rem)', 
-            fontWeight: '600', 
-            color: '#1a1a1a', 
-            margin: 0, 
-            letterSpacing: '-0.2px',
-            lineHeight: 1.2
-          }}>
+          <h2 className="dfv-section-inline-title">
             Los más deseados del mes
           </h2>
 
-          {/* Flechas y Contador a la derecha: < 1/6 > */}
           <div 
             className="dfv-mw-controls"
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '0.45rem',
+              gap: '0.35rem',
               flexShrink: 0
             }}
           >
@@ -149,18 +138,18 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
                 justifyContent: 'center',
                 cursor: 'pointer',
                 color: '#1a1a1a',
-                padding: '4px'
+                padding: '2px'
               }}
             >
-              <ChevronLeft size={18} strokeWidth={1.75} />
+              <ChevronLeft size={17} strokeWidth={1.75} />
             </button>
 
             <span style={{ 
               fontFamily: "'Montserrat', sans-serif", 
-              fontSize: '0.82rem', 
+              fontSize: '0.8rem', 
               color: '#1a1a1a', 
               fontWeight: '500',
-              letterSpacing: '0.5px',
+              letterSpacing: '0.3px',
               whiteSpace: 'nowrap'
             }}>
               {currentPage}/{totalPages}
@@ -177,29 +166,27 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
                 justifyContent: 'center',
                 cursor: 'pointer',
                 color: '#1a1a1a',
-                padding: '4px'
+                padding: '2px'
               }}
             >
-              <ChevronRight size={18} strokeWidth={1.75} />
+              <ChevronRight size={17} strokeWidth={1.75} />
             </button>
           </div>
         </div>
 
-        {/* TRACK DE PRODUCTOS CON SCROLL-SNAP */}
+        {/* TRACK DE PRODUCTOS CON SCROLL-SNAP (2 TARJETAS + ASOMO DE LA 3RA EN MÓVIL, 4 EN PC) */}
         <div 
           ref={trackRef}
           className="dfv-mw-carousel-track"
           style={{
             display: 'flex',
-            gap: '1rem',
+            gap: '14px',
             overflowX: 'auto',
             scrollSnapType: 'x mandatory',
             scrollBehavior: 'smooth',
             WebkitOverflowScrolling: 'touch',
-            paddingBottom: '0.8rem',
-            scrollbarWidth: 'none',
-            margin: '0 -0.5rem',
-            padding: '0 0.5rem 0.8rem'
+            paddingBottom: '0.5rem',
+            scrollbarWidth: 'none'
           }}
         >
           {selectedProducts.map((p, idx) => (
@@ -207,7 +194,6 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
               key={p.id} 
               className="dfv-mw-card-wrapper"
               style={{
-                flex: '0 0 260px',
                 scrollSnapAlign: 'start',
                 boxSizing: 'border-box'
               }}
@@ -223,39 +209,8 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
           ))}
         </div>
 
-        {/* BOTÓN VER TODOS */}
-        <div style={{ textAlign: 'center', marginTop: '1.8rem' }}>
-          <Link
-            to="/tienda?filtro=deseados"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0.7rem 2.2rem',
-              border: '1px solid #111111',
-              backgroundColor: 'transparent',
-              color: '#111111',
-              fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
-              fontSize: '0.72rem',
-              fontWeight: '600',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              borderRadius: '2px',
-              transition: 'all 0.25s ease'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.backgroundColor = '#111111';
-              e.currentTarget.style.color = '#ffffff';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#111111';
-            }}
-          >
-            VER TODOS
-          </Link>
-        </div>
+        {/* RAYITA DIVISORIA DEBAJO DE LOS MÁS DESEADOS DEL MES (COMO EN IMAGEN 1) */}
+        <div style={{ height: '1px', backgroundColor: '#e8e8e8', marginTop: '1.6rem' }} />
 
       </div>
 
@@ -263,29 +218,41 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
         .dfv-mw-carousel-track::-webkit-scrollbar {
           display: none;
         }
+        .dfv-section-inline-title {
+          font-family: 'Montserrat', sans-serif;
+          font-size: clamp(1.02rem, 4.1vw, 1.55rem);
+          font-weight: 600;
+          color: #1a1a1a;
+          margin: 0;
+          letter-spacing: -0.3px;
+          line-height: 1.2;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .dfv-mw-card-wrapper {
+          flex: 0 0 calc((100% - 42px) / 4);
+        }
         @media (max-width: 1024px) {
           .dfv-mw-card-wrapper {
-            flex: 0 0 220px !important;
+            flex: 0 0 calc((100% - 28px) / 3);
           }
         }
         @media (max-width: 640px) {
           .dfv-most-wanted-section {
-            padding: 2.5rem 0 2rem !important;
-          }
-          .dfv-mw-header {
-            align-items: center !important;
-            margin-bottom: 1.2rem !important;
-          }
-          .dfv-mw-controls {
-            align-self: center !important;
-            margin-top: 0 !important;
+            padding: 1.6rem 0 0 !important;
           }
           .dfv-mw-card-wrapper {
-            flex: 0 0 calc((100% - 1rem) / 2.25) !important; /* 2 tarjetas completas + asomo de la 3ra */
-            min-width: 152px !important;
+            flex: 0 0 calc((100% - 12px) / 2.12) !important;
+            min-width: 145px !important;
           }
           .dfv-mw-carousel-track {
-            gap: 0.85rem !important;
+            gap: 12px !important;
+          }
+        }
+        @media (max-width: 375px) {
+          .dfv-section-inline-title {
+            font-size: 0.96rem !important;
           }
         }
       `}</style>

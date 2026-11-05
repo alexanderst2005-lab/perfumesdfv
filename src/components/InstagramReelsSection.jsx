@@ -294,10 +294,11 @@ const InstagramReelsSection = () => {
       className="section-padding"
       style={{
         backgroundColor: '#FFFFFF',
-        borderTop: '1px solid #F0ECE6',
-        borderBottom: '1px solid #F0ECE6',
+        borderTop: '1px solid #e8e8e8',
+        borderBottom: '1px solid #e8e8e8',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        padding: '2.25rem 0'
       }}
     >
       <div className="container">
