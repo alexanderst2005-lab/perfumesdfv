@@ -31,17 +31,21 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
       return;
     }
 
-    try {
-      const cachedIdsJson = sessionStorage.getItem(STORAGE_KEY);
-      if (cachedIdsJson) {
-        const cachedIds = JSON.parse(cachedIdsJson);
-        const matched = cachedIds
-          .map(id => candidateProducts.find(p => String(p.id) === String(id)))
-          .filter(Boolean);
+    // Firma de los productos marcados en el admin: si cambia (se agregan o quitan), se recalcula la selección
+    const signature = candidateProducts.map(p => String(p.id)).sort().join('|');
 
-        if (matched.length > 0) {
-          setSelectedProducts(matched);
-          return;
+    try {
+      const cachedJson = sessionStorage.getItem(STORAGE_KEY);
+      if (cachedJson) {
+        const cached = JSON.parse(cachedJson);
+        if (cached && cached.sig === signature && Array.isArray(cached.ids)) {
+          const matched = cached.ids
+            .map(id => candidateProducts.find(p => String(p.id) === String(id)))
+            .filter(Boolean);
+          if (matched.length > 0) {
+            setSelectedProducts(matched);
+            return;
+          }
         }
       }
     } catch { }
@@ -49,7 +53,7 @@ const MostWantedCarousel = ({ products = [], onFav, isFavorite, onAdd }) => {
     const shuffled = shuffleArray(candidateProducts).slice(0, 12);
     setSelectedProducts(shuffled);
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(shuffled.map(p => p.id)));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ sig: signature, ids: shuffled.map(p => p.id) }));
     } catch { }
   }, [candidateProducts]);
 
