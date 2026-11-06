@@ -56,12 +56,22 @@ const CartDrawer = () => {
             </div>
 
             {cart.length > 0 && (
-              <div style={{ padding: '2rem', borderTop: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-cream)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '1.2rem', fontWeight: '500' }}>
-                  <span>Subtotal</span>
-                  <span>${cartTotal}</span>
+              <div style={{ padding: '1.75rem', borderTop: '1px solid var(--color-gray-light)', backgroundColor: 'var(--color-cream)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', fontSize: '0.95rem', color: '#555' }}>
+                  <span>Subtotal productos</span>
+                  <span style={{ fontWeight: '600', color: '#111' }}>${cartTotal.toLocaleString()}</span>
                 </div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-gray)', marginBottom: '1.5rem' }}>Los impuestos y el envío se calculan en el checkout.</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', fontSize: '0.85rem', color: '#777' }}>
+                  <span>Costo del domicilio</span>
+                  <span style={{ color: '#111', fontWeight: '500' }}>Según zona en checkout</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.9rem', fontSize: '1.2rem', fontWeight: '600', borderTop: '1px solid #EAE8E4', paddingTop: '0.75rem', color: '#111' }}>
+                  <span>Total compra</span>
+                  <span>${cartTotal.toLocaleString()}</span>
+                </div>
+                <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.25rem', lineHeight: '1.4' }}>
+                  El valor del domicilio se calcula de forma automática según la ciudad de entrega que selecciones en el siguiente paso.
+                </p>
                 <Link to="/checkout" className="btn-primary" style={{ display: 'block', width: '100%', textAlign: 'center' }} onClick={() => setIsCartOpen(false)}>
                   CONTINUAR CON LA COMPRA
                 </Link>

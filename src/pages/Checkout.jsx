@@ -1,11 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
+const DEFAULT_SHIPPING_ZONES = [
+  {
+    id: 'palmira-urbano',
+    name: 'Palmira (Casco Urbano)',
+    price: 6000,
+    estimated_delivery: 'Mismo día o 24 horas',
+    active: true,
+    notes: 'Domicilio local en la ciudad de Palmira'
+  },
+  {
+    id: 'cali-am',
+    name: 'Cali, Yumbo y Jamundí',
+    price: 12000,
+    estimated_delivery: '24 a 48 horas hábiles',
+    active: true,
+    notes: 'Área metropolitana del Valle'
+  },
+  {
+    id: 'ciudades-principales',
+    name: 'Ciudades Principales (Bogotá, Medellín, Barranquilla, Eje Cafetero)',
+    price: 18000,
+    estimated_delivery: '2 a 4 días hábiles',
+    active: true,
+    notes: 'Envío asegurado con transportadora aliada'
+  },
+  {
+    id: 'resto-pais',
+    name: 'Resto del País (Otros municipios)',
+    price: 22000,
+    estimated_delivery: '3 a 5 días hábiles',
+    active: true,
+    notes: 'Cobertura nacional por transportadora'
+  }
+];
+
+let cachedShippingZones = null;
+
 const Checkout = () => {
   const { cart, cartTotal, clearCart } = useShop();
   const navigate = useNavigate();
+
+  // Zonas de cobertura y tarifas configuradas desde el panel administrativo
+  const [shippingZones, setShippingZones] = useState(() => {
+    if (cachedShippingZones) return cachedShippingZones;
+    try {
+      const stored = localStorage.getItem('dfv_shipping_zones');
+      return stored ? JSON.parse(stored) : DEFAULT_SHIPPING_ZONES;
+    } catch {
+      return DEFAULT_SHIPPING_ZONES;
+    }
+  });
+
+  const [selectedZoneId, setSelectedZoneId] = useState('');
   
   const [formData, setFormData] = useState({
     nombre: '',
@@ -21,6 +71,52 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('transferencia');
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  useEffect(() => {
+    fetch(`/api/shipping-zones?t=${Date.now()}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && Array.isArray(data.zones)) {
+          cachedShippingZones = data.zones;
+          setShippingZones(data.zones);
+          try {
+            localStorage.setItem('dfv_shipping_zones', JSON.stringify(data.zones));
+          } catch {}
+        }
+      })
+      .catch(err => console.error('Error fetching shipping zones in Checkout:', err));
+  }, []);
+
+  const activeZones = shippingZones.filter(z => z.active !== false);
+  const selectedZone = activeZones.find(z => z.id === selectedZoneId);
+  const isUnlistedZone = selectedZoneId === 'unlisted';
+
+  // Costo del domicilio: precio exacto si está en la zona, null si no está listada
+  const shippingCost = selectedZone ? Number(selectedZone.price) : (isUnlistedZone ? null : null);
+  const finalOrderTotal = selectedZone ? (cartTotal + shippingCost) : cartTotal;
+
+  const handleZoneChange = (e) => {
+    const val = e.target.value;
+    setSelectedZoneId(val);
+
+    const zone = activeZones.find(z => z.id === val);
+    if (zone) {
+      // Auto-ayuda para completar departamento y ciudad si están vacíos
+      if (zone.id.includes('palmira') || zone.name.toLowerCase().includes('palmira')) {
+        setFormData(prev => ({
+          ...prev,
+          departamento: prev.departamento || 'Valle del Cauca',
+          ciudad: prev.ciudad || 'Palmira'
+        }));
+      } else if (zone.id.includes('cali') || zone.name.toLowerCase().includes('cali')) {
+        setFormData(prev => ({
+          ...prev,
+          departamento: prev.departamento || 'Valle del Cauca',
+          ciudad: prev.ciudad || 'Cali'
+        }));
+      }
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -32,9 +128,14 @@ const Checkout = () => {
       alert("Tu carrito está vacío.");
       return;
     }
+
+    if (!selectedZoneId) {
+      alert("Por favor selecciona tu zona o ciudad de entrega para calcular el domicilio.");
+      return;
+    }
     
     if (!formData.nombre || !formData.email || !formData.cedula || !formData.departamento || !formData.ciudad || !formData.direccion || !formData.telefono) {
-      alert("Por favor completa los campos obligatorios.");
+      alert("Por favor completa todos los campos obligatorios marcados con *.");
       return;
     }
 
@@ -43,30 +144,48 @@ const Checkout = () => {
       return;
     }
 
+    const shippingZoneName = selectedZone
+      ? selectedZone.name
+      : (formData.ciudad ? `Otra ciudad / municipio (${formData.ciudad})` : 'Otra ciudad no listada');
+
     if (paymentMethod === 'wompi') {
-      const reference = `pedido_${Date.now()}`;
-      const amountInCents = cartTotal * 100;
-      alert(`Aquí se abrirá la pasarela de WOMPI por un valor de $${cartTotal.toLocaleString()}\nFalta configurar la llave pública.`);
+      alert(`Aquí se abrirá la pasarela de WOMPI por un valor total de $${finalOrderTotal.toLocaleString()}\nFalta configurar la llave pública.`);
       return;
     }
 
-    let message = "Hola, quiero realizar el siguiente pedido:\n\n";
+    // Mensaje para WhatsApp con el desglose exacto solicitado
+    let message = "Hola DFV Perfumes, quiero realizar el siguiente pedido:\n\n";
 
     cart.forEach(item => {
-      message += `Producto: ${item.name} ${item.selectedSize ? `(${item.selectedSize})` : ''}\n`;
-      message += `Marca: ${item.brand || 'DFV'}\n`;
-      message += `Cantidad: ${item.quantity}\n`;
-      message += `Precio: $${(item.price * item.quantity).toLocaleString()}\n\n`;
+      message += `• *${item.name}* ${item.selectedSize ? `(${item.selectedSize})` : ''}\n`;
+      message += `  Marca: ${item.brand || 'DFV'} | Cantidad: ${item.quantity}\n`;
+      message += `  Precio: $${(item.price * item.quantity).toLocaleString()}\n\n`;
     });
 
-    message += `*Total: $${cartTotal.toLocaleString()}*\n\n`;
+    message += `--------------------------------\n`;
+    message += `*Subtotal productos:* $${cartTotal.toLocaleString()}\n`;
+    message += `*Zona de entrega:* ${shippingZoneName}\n`;
+    message += `*Costo del domicilio:* ${selectedZone ? `$${shippingCost.toLocaleString()} COP` : 'Por confirmar con asesor (según transportadora)'}\n`;
+    message += `*TOTAL DE LA COMPRA:* $${finalOrderTotal.toLocaleString()} COP${!selectedZone ? ' (+ envío por confirmar)' : ''}\n`;
+    message += `--------------------------------\n\n`;
+
+    message += `*DATOS PARA EL DESPACHO:*\n`;
+    message += `• Nombre completo: ${formData.nombre}\n`;
+    message += `• Cédula: ${formData.cedula}\n`;
+    message += `• Teléfono / WhatsApp: ${formData.telefono}\n`;
+    message += `• Correo: ${formData.email}\n`;
+    message += `• Departamento: ${formData.departamento}\n`;
+    message += `• Ciudad / Municipio: ${formData.ciudad}\n`;
+    message += `• Dirección exacta: ${formData.direccion}\n`;
+    if (formData.notas) message += `• Notas adicionales: ${formData.notas}\n`;
     
     const metodos = {
       'contra_entrega': 'Pago Contra Entrega',
       'transferencia': 'Transferencia Bancaria',
     };
+    message += `• Método de Pago: ${metodos[paymentMethod]}\n`;
     
-    // 1. Guardar en BD
+    // 1. Guardar en BD con registro de subtotal, zona y costo de envío
     fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -80,23 +199,17 @@ const Checkout = () => {
         direccion: formData.direccion,
         notas: formData.notas,
         metodoPago: metodos[paymentMethod],
-        total: cartTotal,
+        subtotal: cartTotal,
+        costoEnvio: selectedZone ? shippingCost : 0,
+        zonaEnvio: shippingZoneName,
+        total: finalOrderTotal,
         cart: cart
       })
     }).then(res => res.json()).then(data => {
-      // 2. Redirigir a WhatsApp
-      if (data.success) {
+      // 2. Redirigir a WhatsApp con el pedido generado
+      if (data.success && data.orderId) {
         message = `*NUEVO PEDIDO #DFV-${String(data.orderId).padStart(4, '0')}*\n\n` + message;
       }
-      message += `Método de Pago: ${metodos[paymentMethod]}\n\n`;
-      message += `Email: ${formData.email}\n`;
-      message += `Nombre: ${formData.nombre}\n`;
-      message += `Cédula: ${formData.cedula}\n`;
-      message += `Departamento: ${formData.departamento}\n`;
-      message += `Ciudad: ${formData.ciudad}\n`;
-      message += `Dirección: ${formData.direccion}\n`;
-      message += `Teléfono: ${formData.telefono}\n`;
-      if (formData.notas) message += `Notas: ${formData.notas}\n`;
 
       const encodedMessage = encodeURIComponent(message);
       const whatsappNumber = "573027642208"; 
@@ -189,19 +302,68 @@ const Checkout = () => {
                 <input required name="cedula" value={formData.cedula} onChange={handleChange} type="text" placeholder="Ej. 1010123456" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
               </div>
 
+              {/* Selector Automático de Zona de Entrega / Domicilio */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={labelStyle}>Departamento *</label>
-                <input required name="departamento" value={formData.departamento} onChange={handleChange} type="text" placeholder="Ej. Antioquia" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                <label style={labelStyle}>Zona o Ciudad de Entrega *</label>
+                <select
+                  required
+                  value={selectedZoneId}
+                  onChange={handleZoneChange}
+                  style={{
+                    ...inputStyle,
+                    cursor: 'pointer',
+                    fontWeight: selectedZoneId ? '500' : 'normal',
+                    color: selectedZoneId ? '#111' : '#666',
+                    marginBottom: '0.5rem'
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#111'}
+                  onBlur={e => e.target.style.borderColor = '#EAE8E4'}
+                >
+                  <option value="">-- Selecciona tu ciudad o zona para calcular el envío --</option>
+                  {activeZones.map(zone => (
+                    <option key={zone.id} value={zone.id}>
+                      {zone.name} — ${(Number(zone.price) || 0).toLocaleString()} COP
+                    </option>
+                  ))}
+                  <option value="unlisted">
+                    📍 Otra ciudad o municipio no listado (Confirmar flete con asesor)
+                  </option>
+                </select>
+
+                {/* Badge informativa de la tarifa seleccionada */}
+                {selectedZone && (
+                  <div style={{ padding: '0.65rem 0.85rem', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '4px', fontSize: '0.78rem', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span>
+                      <strong>Domicilio liquidado:</strong> ${(Number(selectedZone.price) || 0).toLocaleString()} COP
+                      {selectedZone.estimated_delivery ? ` • Entrega estimada: ${selectedZone.estimated_delivery}` : ''}
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: '#047857' }}>{selectedZone.notes || ''}</span>
+                  </div>
+                )}
+
+                {/* Alerta de tarifa no listada: NUNCA gratis ni inventada */}
+                {isUnlistedZone && (
+                  <div style={{ padding: '0.75rem 0.9rem', backgroundColor: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '4px', fontSize: '0.78rem', color: '#92400e', lineHeight: '1.4' }}>
+                    ⚠️ <strong>Tarifa por confirmar:</strong> Tu ciudad o municipio no cuenta con tarifa fija automática en la plataforma. Al finalizar tu pedido por WhatsApp, nuestro asesor te confirmará el costo exacto del envío según la transportadora antes de realizar el despacho.
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group-split">
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={labelStyle}>Departamento *</label>
+                  <input required name="departamento" value={formData.departamento} onChange={handleChange} type="text" placeholder="Ej. Valle del Cauca" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                </div>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={labelStyle}>Ciudad / Municipio *</label>
+                  <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ej. Palmira, Cali, Bogotá..." style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                </div>
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={labelStyle}>Ciudad *</label>
-                <input required name="ciudad" value={formData.ciudad} onChange={handleChange} type="text" placeholder="Ej. Medellín" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
-              </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={labelStyle}>Dirección Exacta *</label>
-                <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Ej. Calle 123 # 45-67 Apto 8" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
+                <label style={labelStyle}>Dirección Exacta de Entrega *</label>
+                <input required name="direccion" value={formData.direccion} onChange={handleChange} type="text" placeholder="Ej. Calle 123 # 45-67 Barrio / Apto 8" style={inputStyle} onFocus={e => e.target.style.borderColor = '#111'} onBlur={e => e.target.style.borderColor = '#EAE8E4'} />
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
@@ -285,17 +447,46 @@ const Checkout = () => {
               </div>
 
               <div style={{ borderTop: '1px solid #EAE8E4', paddingTop: '1.2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', fontSize: '0.8rem' }}>
-                  <span style={{ color: '#666' }}>Subtotal</span>
-                  <span style={{ color: '#111' }}>${cartTotal.toLocaleString()}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', fontSize: '0.85rem' }}>
+                  <span style={{ color: '#666' }}>Subtotal de productos</span>
+                  <span style={{ color: '#111', fontWeight: '500' }}>${cartTotal.toLocaleString()}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '0.8rem' }}>
-                  <span style={{ color: '#666' }}>Envío</span>
-                  <span style={{ color: '#111' }}>Por calcular</span>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.2rem', fontSize: '0.85rem', alignItems: 'flex-start' }}>
+                  <div>
+                    <span style={{ color: '#666', display: 'block' }}>Costo del domicilio</span>
+                    {selectedZone && (
+                      <span style={{ fontSize: '0.72rem', color: '#059669', display: 'block', marginTop: '0.1rem' }}>
+                        {selectedZone.name}
+                      </span>
+                    )}
+                    {isUnlistedZone && (
+                      <span style={{ fontSize: '0.72rem', color: '#b45309', display: 'block', marginTop: '0.1rem' }}>
+                        Zona especial (por cotizar)
+                      </span>
+                    )}
+                  </div>
+                  <span style={{
+                    color: selectedZone ? '#111' : (isUnlistedZone ? '#b45309' : '#888'),
+                    fontWeight: selectedZone ? '600' : '500',
+                    textAlign: 'right'
+                  }}>
+                    {selectedZone
+                      ? `$${shippingCost.toLocaleString()}`
+                      : (isUnlistedZone ? 'Por confirmar con asesor' : 'Por seleccionar zona')}
+                  </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: '400', fontFamily: 'var(--font-serif)', borderTop: '1px solid #EAE8E4', paddingTop: '1rem', color: '#111' }}>
-                  <span>Total</span>
-                  <span>${cartTotal.toLocaleString()}</span>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.15rem', fontWeight: '600', fontFamily: 'var(--font-serif)', borderTop: '1px solid #EAE8E4', paddingTop: '1rem', color: '#111' }}>
+                  <span>Total de la compra</span>
+                  <div style={{ textAlign: 'right' }}>
+                    <span>${finalOrderTotal.toLocaleString()}</span>
+                    {(!selectedZone || isUnlistedZone) && (
+                      <span style={{ display: 'block', fontSize: '0.7rem', color: '#b45309', fontWeight: 'normal', fontFamily: 'var(--font-sans)', marginTop: '0.15rem' }}>
+                        (+ costo de flete por confirmar)
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               

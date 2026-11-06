@@ -37,6 +37,10 @@ async function sendOrderEmail(type, order) {
         <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #000000;">
           <p style="margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #888888;">Método de Pago</p>
           <p style="margin: 0; font-size: 18px; font-weight: bold; color: #000000;">${order.payment_method}</p>
+          ${order.shipping_zone ? `
+          <p style="margin: 15px 0 5px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #888888;">Zona de Entrega y Domicilio</p>
+          <p style="margin: 0; font-size: 16px; color: #000000;">${order.shipping_zone}: ${Number(order.shipping_cost) > 0 ? `$${Number(order.shipping_cost).toLocaleString()}` : 'Por acordar con asesor'}</p>
+          ` : ''}
           <p style="margin: 20px 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #888888;">Total a Pagar</p>
           <p style="margin: 0; font-size: 24px; font-weight: bold; color: #000000;">$${order.total.toLocaleString()}</p>
         </div>
@@ -205,8 +209,15 @@ export default async function handler(req, res) {
         notas,
         metodoPago,
         total,
-        cart
+        cart,
+        shipping_cost,
+        shipping_zone,
+        costoEnvio,
+        zonaEnvio
       } = body || {};
+
+      const deliveryCost = typeof costoEnvio === 'number' ? costoEnvio : (typeof shipping_cost === 'number' ? shipping_cost : 0);
+      const deliveryZone = zonaEnvio || shipping_zone || null;
 
       // Validación de seguridad de precios en servidor (Requisito 8: Integración con Carrito y Pedidos)
       let verifiedCart = cart;
@@ -230,7 +241,11 @@ export default async function handler(req, res) {
           calculatedTotal = verifiedCart.reduce((acc, it) => acc + (it.price * (it.quantity || 1)), 0);
         }
       }
-      const finalTotal = calculatedTotal > 0 ? calculatedTotal : total;
+      const finalTotal = calculatedTotal > 0 ? (calculatedTotal + deliveryCost) : (total || calculatedTotal);
+
+      // Asegurar columnas de envío en base de datos si aún no existen
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_cost NUMERIC DEFAULT 0`.catch(() => {});
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_zone TEXT`.catch(() => {});
 
       const result = await sql`
         INSERT INTO orders (
@@ -244,6 +259,8 @@ export default async function handler(req, res) {
           customer_notes,
           payment_method,
           total,
+          shipping_cost,
+          shipping_zone,
           items,
           status
         ) VALUES (
@@ -257,6 +274,8 @@ export default async function handler(req, res) {
           ${notas || null},
           ${metodoPago},
           ${finalTotal},
+          ${deliveryCost},
+          ${deliveryZone},
           ${JSON.stringify(verifiedCart)},
           'NUEVO'
         )

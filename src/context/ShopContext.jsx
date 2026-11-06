@@ -29,7 +29,7 @@ export const ShopProvider = ({ children }) => {
       const next = idx >= 0
         ? prev.map((item, i) => (i === idx ? { ...item, ...prod } : item))
         : [prod, ...prev];
-      try { localStorage.setItem('perfume_products_cache', JSON.stringify(next)); } catch {}
+      try { localStorage.setItem('perfume_products_cache', JSON.stringify(next)); } catch { }
       setBrands([...new Set(next.map(p => p.brand).filter(Boolean))]);
       return next;
     });
@@ -38,7 +38,7 @@ export const ShopProvider = ({ children }) => {
   const removeProductLocal = useCallback((id) => {
     setProducts(prev => {
       const next = prev.filter(item => String(item.id) !== String(id));
-      try { localStorage.setItem('perfume_products_cache', JSON.stringify(next)); } catch {}
+      try { localStorage.setItem('perfume_products_cache', JSON.stringify(next)); } catch { }
       setBrands([...new Set(next.map(p => p.brand).filter(Boolean))]);
       return next;
     });

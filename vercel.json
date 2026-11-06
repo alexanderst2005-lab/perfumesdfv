@@ -26,6 +26,14 @@
       "destination": "/api/home-sections?type=hero-sedes"
     },
     {
+      "source": "/api/shipping-zones",
+      "destination": "/api/home-sections?type=shipping-zones"
+    },
+    {
+      "source": "/api/shipping-settings",
+      "destination": "/api/home-sections?type=shipping-zones"
+    },
+    {
       "source": "/api/admin/reels",
       "destination": "/api/reels?admin=true"
     },

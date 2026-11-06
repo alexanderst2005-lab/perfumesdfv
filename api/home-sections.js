@@ -24,7 +24,9 @@ export default async function handler(req, res) {
      rawUrl.includes('trending-houses') ? 'trending-houses' :
      rawUrl.includes('fragrance-sets') ? 'fragrance-sets' :
      rawUrl.includes('hero-sedes') ? 'hero-sedes' :
-     rawUrl.includes('site-counters') ? 'site-counters' : '');
+     rawUrl.includes('site-counters') ? 'site-counters' :
+     rawUrl.includes('shipping-zones') ? 'shipping-zones' :
+     rawUrl.includes('shipping-settings') ? 'shipping-zones' : '');
 
   // Helper para normalizar los campos de imagen en respuesta (image e image_url)
   const withDualImage = (row) => {
@@ -621,6 +623,110 @@ export default async function handler(req, res) {
         });
       } catch (error) {
         console.error('Error saving hero-sedes:', error);
+        return res.status(500).json({ success: false, error: error.message || 'Database error' });
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 7. CONFIGURACIÓN DE ENVÍOS (ZONAS Y TARIFAS DE DOMICILIO)
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (type === 'shipping-zones' || type === 'shipping-settings') {
+    const DEFAULT_SHIPPING_ZONES = [
+      {
+        id: 'palmira-urbano',
+        name: 'Palmira (Casco Urbano)',
+        price: 6000,
+        estimated_delivery: 'Mismo día o 24 horas',
+        active: true,
+        notes: 'Domicilio local en la ciudad de Palmira'
+      },
+      {
+        id: 'cali-am',
+        name: 'Cali, Yumbo y Jamundí',
+        price: 12000,
+        estimated_delivery: '24 a 48 horas hábiles',
+        active: true,
+        notes: 'Área metropolitana del Valle'
+      },
+      {
+        id: 'ciudades-principales',
+        name: 'Ciudades Principales (Bogotá, Medellín, Barranquilla, Eje Cafetero)',
+        price: 18000,
+        estimated_delivery: '2 a 4 días hábiles',
+        active: true,
+        notes: 'Envío asegurado con transportadora aliada'
+      },
+      {
+        id: 'resto-pais',
+        name: 'Resto del País (Otros municipios)',
+        price: 22000,
+        estimated_delivery: '3 a 5 días hábiles',
+        active: true,
+        notes: 'Cobertura nacional por transportadora'
+      }
+    ];
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS site_shipping_settings (
+        id SERIAL PRIMARY KEY,
+        zones JSONB DEFAULT '[]',
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `.catch(() => {});
+
+    if (req.method === 'GET') {
+      try {
+        const rows = await sql`SELECT * FROM site_shipping_settings ORDER BY id ASC LIMIT 1`;
+        if (rows.length === 0) {
+          return res.status(200).json({
+            success: true,
+            zones: DEFAULT_SHIPPING_ZONES
+          });
+        }
+        const row = rows[0];
+        const zones = Array.isArray(row.zones) && row.zones.length > 0 ? row.zones : DEFAULT_SHIPPING_ZONES;
+        return res.status(200).json({
+          success: true,
+          zones
+        });
+      } catch (error) {
+        console.error('Error fetching shipping zones:', error);
+        return res.status(200).json({
+          success: true,
+          zones: DEFAULT_SHIPPING_ZONES
+        });
+      }
+    }
+
+    if (req.method === 'PUT' || req.method === 'POST') {
+      try {
+        const { zones } = body || {};
+        const cleanZones = Array.isArray(zones) ? zones : DEFAULT_SHIPPING_ZONES;
+
+        const existing = await sql`SELECT id FROM site_shipping_settings ORDER BY id ASC LIMIT 1`;
+        let result;
+        if (existing.length === 0) {
+          result = await sql`
+            INSERT INTO site_shipping_settings (zones, updated_at)
+            VALUES (${JSON.stringify(cleanZones)}::jsonb, NOW())
+            RETURNING *
+          `;
+        } else {
+          result = await sql`
+            UPDATE site_shipping_settings SET
+              zones = ${JSON.stringify(cleanZones)}::jsonb,
+              updated_at = NOW()
+            WHERE id = ${existing[0].id}
+            RETURNING *
+          `;
+        }
+        return res.status(200).json({
+          success: true,
+          zones: result[0].zones
+        });
+      } catch (error) {
+        console.error('Error saving shipping settings:', error);
         return res.status(500).json({ success: false, error: error.message || 'Database error' });
       }
     }

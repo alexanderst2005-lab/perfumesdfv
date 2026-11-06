@@ -236,6 +236,11 @@ const OrdersModule = () => {
                   <p style={{ fontSize: '0.7rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', fontWeight: '600' }}>Detalles de Envío y Pago</p>
                   <p style={{ fontWeight: '500', fontSize: '0.9rem', color: '#111', margin: '0 0 0.25rem 0' }}>{selectedOrder.customer_departamento}, {selectedOrder.customer_city}</p>
                   <p style={{ fontSize: '0.85rem', color: '#4b5563', margin: '0.2rem 0' }}>{selectedOrder.customer_address}</p>
+                  {selectedOrder.shipping_zone && (
+                    <p style={{ fontSize: '0.8rem', color: '#1d4ed8', margin: '0.4rem 0 0.2rem 0', fontWeight: 500 }}>
+                      📍 Zona: {selectedOrder.shipping_zone} • Domicilio: {Number(selectedOrder.shipping_cost) > 0 ? `$${Number(selectedOrder.shipping_cost).toLocaleString()} COP` : 'Por acordar con asesor'}
+                    </p>
+                  )}
                   <div style={{ marginTop: '0.75rem', display: 'inline-block', padding: '0.25rem 0.5rem', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '4px' }}>
                     <p style={{ fontSize: '0.75rem', color: '#065f46', margin: 0, fontWeight: '600' }}>{selectedOrder.payment_method}</p>
                   </div>
