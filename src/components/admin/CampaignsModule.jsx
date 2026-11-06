@@ -12,7 +12,7 @@ import { optimizeImg } from '../../utils/img';
 
 const fmt = (n) => `$${Number(n || 0).toLocaleString('es-CO')}`;
 
-const compressImage = async (src, maxSize = 1200, quality = 0.82) => {
+const compressImage = async (src, maxSize = 2000, quality = 0.92) => {
   try {
     const blob = await (await fetch(src)).blob();
     const probe = await createImageBitmap(blob);
@@ -747,7 +747,7 @@ function CampaignForm({ initialData, allProducts, onSave, onCancel, onActivate, 
       });
 
       // Comprimir antes de enviar
-      const compressed = await compressImage(base64Data, 1200, 0.82);
+      const compressed = await compressImage(base64Data, 2000, 0.92);
 
       // Subir a Cloudinary vía /api/admin/upload
       const res = await fetch('/api/admin/upload', {

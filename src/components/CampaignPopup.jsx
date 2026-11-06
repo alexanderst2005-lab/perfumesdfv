@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Sparkles } from 'lucide-react';
+import { X, Sparkles, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // ─── Lógica de frecuencia (localStorage / sessionStorage) ────────────────────
@@ -177,14 +177,13 @@ const CampaignPopup = ({ campaigns }) => {
         @media (max-width: 640px) {
           .dfv-modal-box {
             width: 94% !important;
-            max-height: 90vh !important;
-            overflow-y: auto !important;
+            max-height: 94vh !important;
           }
-          .dfv-modal-img {
-            max-height: 240px !important;
+          .dfv-modal-img img:last-child {
+            max-height: 62vh !important;
           }
           .dfv-modal-body {
-            padding: 1.5rem 1.25rem 2rem !important;
+            padding: 1.1rem 1.1rem 1.5rem !important;
           }
         }
       `}</style>
@@ -212,9 +211,11 @@ const CampaignPopup = ({ campaigns }) => {
           transform: 'translate(-50%, -50%)',
           zIndex: 9001,
           width: '92%',
-          maxWidth: '560px',
+          maxWidth: '500px',
+          maxHeight: '94vh',
+          overflowY: 'auto',
           backgroundColor: '#0a0a0a',
-          borderRadius: '20px',
+          borderRadius: '22px',
           border: '1px solid rgba(185, 154, 91, 0.3)',
           boxShadow: '0 30px 100px rgba(0, 0, 0, 0.85), 0 0 50px rgba(185, 154, 91, 0.15)',
           overflow: 'hidden',
@@ -230,42 +231,54 @@ const CampaignPopup = ({ campaigns }) => {
           <X size={17} />
         </button>
 
-        {/* ── SECCIÓN SUPERIOR: FOTO COMPLETA (Si existe) ── */}
+        {/* ── FOTO GRANDE: fondo difuminado con la misma imagen + imagen nítida completa al centro ── */}
         {hasImage ? (
           <div
             className="dfv-modal-img"
             style={{
               position: 'relative',
               width: '100%',
-              height: '320px',
-              backgroundColor: '#121212',
-              overflow: 'hidden'
+              backgroundColor: '#0a0a0a',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
+            {/* Fondo borroso (se adapta a los colores de cada imagen) */}
+            <img
+              src={image}
+              alt=""
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: '-30px',
+                width: 'calc(100% + 60px)',
+                height: 'calc(100% + 60px)',
+                objectFit: 'cover',
+                filter: 'blur(28px) brightness(0.55) saturate(1.25)',
+                transform: 'scale(1.1)',
+                pointerEvents: 'none'
+              }}
+            />
+            {/* Imagen principal nítida y completa */}
             <img
               src={image}
               alt={title}
               onError={() => setImgError(true)}
               style={{
+                position: 'relative',
+                zIndex: 2,
                 width: '100%',
-                height: '100%',
+                height: 'auto',
+                maxHeight: '68vh',
                 objectFit: 'contain',
-                backgroundColor: '#111',
                 display: 'block'
-              }}
-            />
-            {/* Sombra de degradado para fusionar imagen con el cuerpo */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 40%, rgba(10,10,10,0.95) 100%)',
-                pointerEvents: 'none'
               }}
             />
           </div>
         ) : (
-          /* Encabezado alternativo con corona/emblema dorado si no hay foto */
+          /* Encabezado alternativo con emblema dorado si no hay foto */
           <div style={{ paddingTop: '2.5rem', textAlign: 'center' }}>
             <div
               style={{
@@ -285,12 +298,11 @@ const CampaignPopup = ({ campaigns }) => {
             </div>
           </div>
         )}
-
         {/* ── CUERPO: INFORMACIÓN DE LA CAMPAÑA ── */}
         <div
           className="dfv-modal-body"
           style={{
-            padding: hasImage ? '1.5rem 2rem 2.25rem' : '1rem 2rem 2.5rem',
+            padding: hasImage ? '1.1rem 1.5rem 1.6rem' : '1rem 2rem 2.5rem',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
@@ -359,7 +371,28 @@ const CampaignPopup = ({ campaigns }) => {
 
           {/* Botón Principal de Acción (CTA) */}
           <button onClick={handleVerOfertas} className="dfv-promo-btn">
-            Ver ofertas exclusivas
+            <ShoppingBag size={17} />
+            <span>{currentCampaign.button_text || 'Ver ofertas exclusivas'}</span>
+            <ArrowRight size={17} />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleClose}
+            style={{
+              marginTop: '0.95rem',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'rgba(255,255,255,0.45)',
+              fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
+              fontSize: '0.68rem',
+              fontWeight: 600,
+              letterSpacing: '1.8px',
+              textTransform: 'uppercase'
+            }}
+          >
+            Continuar navegando
           </button>
 
 
