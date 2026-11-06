@@ -86,25 +86,55 @@ const Home = () => {
   const { addToCart, toggleFavorite, isFavorite, products } = useShop();
 
   const [openFaq, setOpenFaq] = useState(null);
-  const [heroSlides, setHeroSlides] = useState(() => cachedHeroSlides || HERO_SLIDES);
-  const [sedesList, setSedesList] = useState(() => cachedSedes || DEFAULT_SEDES);
+  // Se parte de la última versión guardada del navegador (o vacío) para no mostrar
+  // primero las imágenes por defecto y luego cambiarlas (efecto "doble" al recargar).
+  const readStoredHeroSedes = () => {
+    try {
+      const raw = localStorage.getItem('dfv_hero_sedes_v2');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  };
+  const [heroSlides, setHeroSlides] = useState(() => {
+    if (cachedHeroSlides) return cachedHeroSlides;
+    const stored = readStoredHeroSedes();
+    return Array.isArray(stored?.hero_slides) && stored.hero_slides.length > 0 ? stored.hero_slides : [];
+  });
+  const [sedesList, setSedesList] = useState(() => {
+    if (cachedSedes) return cachedSedes;
+    const stored = readStoredHeroSedes();
+    return Array.isArray(stored?.sedes) && stored.sedes.length > 0 ? stored.sedes : [];
+  });
 
   useEffect(() => {
-    fetch(`/api/hero-sedes?t=${Date.now()}`, { cache: 'no-store' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
-          if (Array.isArray(data.data.hero_slides) && data.data.hero_slides.length > 0) {
-            cachedHeroSlides = data.data.hero_slides;
-            setHeroSlides(data.data.hero_slides);
-          }
-          if (Array.isArray(data.data.sedes) && data.data.sedes.length > 0) {
-            cachedSedes = data.data.sedes;
-            setSedesList(data.data.sedes);
-          }
-        }
-      })
-      .catch(err => console.error('Error loading hero & sedes:', err));
+    let cancelled = false;
+    const loadHeroSedes = () => {
+      fetch(`/api/hero-sedes?t=${Date.now()}`, { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          if (cancelled || !data || !data.success) return;
+          // La API responde { hero_slides, sedes } (también se acepta { data: {...} })
+          const payload = data.data || data;
+          const slides = Array.isArray(payload.hero_slides) && payload.hero_slides.length > 0 ? payload.hero_slides : HERO_SLIDES;
+          const sedes = Array.isArray(payload.sedes) && payload.sedes.length > 0 ? payload.sedes : DEFAULT_SEDES;
+          cachedHeroSlides = slides;
+          cachedSedes = sedes;
+          setHeroSlides(prev => (JSON.stringify(prev) === JSON.stringify(slides) ? prev : slides));
+          setSedesList(prev => (JSON.stringify(prev) === JSON.stringify(sedes) ? prev : sedes));
+          try { localStorage.setItem('dfv_hero_sedes_v2', JSON.stringify({ hero_slides: slides, sedes })); } catch {}
+        })
+        .catch(err => {
+          console.error('Error loading hero & sedes:', err);
+          if (cancelled) return;
+          setHeroSlides(prev => (prev.length ? prev : HERO_SLIDES));
+          setSedesList(prev => (prev.length ? prev : DEFAULT_SEDES));
+        });
+    };
+    loadHeroSedes();
+    window.addEventListener('focus', loadHeroSedes);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', loadHeroSedes);
+    };
   }, []);
 
   // --- HERO LOGIC ---

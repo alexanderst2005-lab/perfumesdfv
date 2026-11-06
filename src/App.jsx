@@ -22,6 +22,26 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Contacto = lazy(() => import('./pages/Contacto'));
 const CampaignPage = lazy(() => import('./pages/CampaignPage'));
 
+// Al recargar (F5 / actualizar) la página siempre debe empezar desde el principio, sin posiciones guardadas ni #hash
+const isPageReload = (() => {
+  try {
+    const nav = performance.getEntriesByType('navigation')[0];
+    return !!nav && nav.type === 'reload';
+  } catch { return false; }
+})();
+if (isPageReload && typeof window !== 'undefined') {
+  try {
+    Object.keys(sessionStorage)
+      .filter(k => k.startsWith('dfv_scroll_') || k === 'perfume_store_page')
+      .forEach(k => sessionStorage.removeItem(k));
+  } catch {}
+  if (window.location.hash) {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+}
+
 function AppInner() {
   const { pathname, search, hash, key } = useLocation();
   const navType = useNavigationType();
