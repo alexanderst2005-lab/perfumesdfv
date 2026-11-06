@@ -10,6 +10,7 @@ import TrendingHousesSection from '../components/TrendingHousesSection';
 import FragranceSetsSection from '../components/FragranceSetsSection';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
 import CountersBar from '../components/CountersBar';
+import SedeGalleryModal from '../components/SedeGalleryModal';
 import LazyOnView from '../components/LazyOnView';
 import { optimizeImg, prefetchImg } from '../utils/img';
 
@@ -144,6 +145,7 @@ const Home = () => {
   // --- SEDES SLIDER (MOBILE & TABLET) ---
   const [activeSedeIndex, setActiveSedeIndex] = useState(0);
   const [sedeTouchStart, setSedeTouchStart] = useState(0);
+  const [selectedSedeForGallery, setSelectedSedeForGallery] = useState(null);
 
   const handleSedeTouchStart = (e) => {
     setSedeTouchStart(e.targetTouches[0].clientX);
@@ -484,11 +486,13 @@ const Home = () => {
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    {/* FOTOGRAFÍA GRANDE Y LIMPIA */}
-                    <a
-                      href={s.maps}
-                      target="_blank"
-                      rel="noreferrer"
+                    {/* FOTOGRAFÍA GRANDE Y LIMPIA (Al tocar abre la galería de la sede) */}
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedSedeForGallery(s)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedSedeForGallery(s); } }}
+                      aria-label={`Ver galería de ${s.name}`}
                       style={{
                         display: 'block',
                         width: '100%',
@@ -496,7 +500,8 @@ const Home = () => {
                         borderRadius: '10px',
                         overflow: 'hidden',
                         backgroundColor: '#f4f4f4',
-                        textDecoration: 'none'
+                        textDecoration: 'none',
+                        cursor: 'pointer'
                       }}
                     >
                       <img
@@ -513,7 +518,7 @@ const Home = () => {
                           transition: 'transform 0.4s ease'
                         }}
                       />
-                    </a>
+                    </div>
 
                     {/* NOMBRE DE LA SEDE + ENLACE SUBRAYADO ¿CÓMO LLEGAR? */}
                     <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
@@ -590,6 +595,11 @@ const Home = () => {
           `}</style>
         </div>
       </section>
+
+      <SedeGalleryModal
+        sede={selectedSedeForGallery}
+        onClose={() => setSelectedSedeForGallery(null)}
+      />
 
       {/* ════ 10. PREGUNTAS FRECUENTES ════ */}
       <section id="faq" style={{ backgroundColor: '#FFFFFF', padding: '4rem 0 3rem', borderTop: '1px solid #F0ECE6' }}>

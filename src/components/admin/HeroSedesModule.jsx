@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2 } from 'lucide-react';
-import { optimizeImg, uploadAdminImage } from '../../utils/img';
+import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2, Film, Star, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { optimizeImg, uploadAdminImage, uploadAdminVideo, getVideoThumbnailUrl, normalizeSedeGallery } from '../../utils/img';
+import SedeGalleryModal from '../SedeGalleryModal';
 
 let cachedAdminHeroSedes = null;
 
@@ -68,10 +69,12 @@ const DEFAULT_SEDES = [
 
 const HeroSedesModule = () => {
   const [heroSlides, setHeroSlides] = useState(() => cachedAdminHeroSedes?.hero_slides || DEFAULT_HERO_SLIDES);
-  const [sedes, setSedes] = useState(() => cachedAdminHeroSedes?.sedes || DEFAULT_SEDES);
+  const [sedes, setSedes] = useState(() => (cachedAdminHeroSedes?.sedes || DEFAULT_SEDES).map(s => ({ ...s, gallery: normalizeSedeGallery(s) })));
   const [isLoading, setIsLoading] = useState(!cachedAdminHeroSedes);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingKey, setUploadingKey] = useState(null);
+  const [galleryUploading, setGalleryUploading] = useState({});
+  const [previewSedeGallery, setPreviewSedeGallery] = useState(null);
   const [toast, setToast] = useState(null);
   const uploadsRef = useRef(new Map());
 
@@ -81,7 +84,8 @@ const HeroSedesModule = () => {
       .then(data => {
         if (data && data.success) {
           const nextSlides = Array.isArray(data.hero_slides) && data.hero_slides.length > 0 ? data.hero_slides : DEFAULT_HERO_SLIDES;
-          const nextSedes = Array.isArray(data.sedes) && data.sedes.length > 0 ? data.sedes : DEFAULT_SEDES;
+          const rawSedes = Array.isArray(data.sedes) && data.sedes.length > 0 ? data.sedes : DEFAULT_SEDES;
+          const nextSedes = rawSedes.map(s => ({ ...s, gallery: normalizeSedeGallery(s) }));
           cachedAdminHeroSedes = { hero_slides: nextSlides, sedes: nextSedes };
           setHeroSlides(nextSlides);
           setSedes(nextSedes);
@@ -162,7 +166,7 @@ const HeroSedesModule = () => {
     setHeroSlides(prev => prev.filter((_, i) => i !== idx));
   };
 
-  // Reemplazar imagen de una Sede con vista previa instantánea (0ms)
+  // Reemplazar imagen principal de una Sede con vista previa instantánea (0ms) y sincronizar con su galería
   const handleSedeImageUpload = async (idx, e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -170,17 +174,34 @@ const HeroSedesModule = () => {
 
     const previewUrl = URL.createObjectURL(file);
     const keyLabel = `sede-${idx}`;
+    const newItemId = `sede-main-${idx}-${Date.now()}`;
     setUploadingKey(keyLabel);
 
-    setSedes(prev => prev.map((s, i) => (i === idx ? { ...s, img: previewUrl } : s)));
+    setSedes(prev => prev.map((s, i) => {
+      if (i !== idx) return s;
+      const curGallery = normalizeSedeGallery(s).map(g => ({ ...g, isMain: false }));
+      const nextGallery = [
+        { id: newItemId, type: 'image', url: previewUrl, thumbnailUrl: previewUrl, isMain: true },
+        ...curGallery
+      ];
+      return { ...s, img: previewUrl, gallery: nextGallery };
+    }));
 
     const uploadPromise = uploadAdminImage(file, 2000, 0.92);
     uploadsRef.current.set(previewUrl, uploadPromise);
 
     try {
       const url = await uploadPromise;
-      setSedes(prev => prev.map((s, i) => (i === idx ? { ...s, img: url } : s)));
-      showToast('Fotografía de la sede cargada exitosamente');
+      setSedes(prev => prev.map((s, i) => {
+        if (i !== idx) return s;
+        const nextGallery = normalizeSedeGallery(s).map(g =>
+          g.id === newItemId || g.url === previewUrl
+            ? { ...g, url, thumbnailUrl: url, isMain: true }
+            : g
+        );
+        return { ...s, img: url, gallery: nextGallery };
+      }));
+      showToast('Fotografía principal de la sede cargada exitosamente');
     } catch (err) {
       console.error(err);
       showToast('Error subiendo imagen: ' + (err.message || ''), 'error');
@@ -188,6 +209,199 @@ const HeroSedesModule = () => {
       uploadsRef.current.delete(previewUrl);
       setUploadingKey(null);
     }
+  };
+
+  // Subir una o varias fotografías a la galería de una sede
+  const handleSedeGalleryPhotosUpload = async (sedeIdx, e) => {
+    const files = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
+    e.target.value = '';
+    if (files.length === 0) return;
+
+    setGalleryUploading(prev => ({
+      ...prev,
+      [sedeIdx]: `Subiendo ${files.length} fotografía${files.length > 1 ? 's' : ''}...`
+    }));
+
+    let successCount = 0;
+    for (let fIdx = 0; fIdx < files.length; fIdx++) {
+      const file = files[fIdx];
+      const tempId = `img-${sedeIdx}-${Date.now()}-${fIdx}`;
+      const previewUrl = URL.createObjectURL(file);
+
+      // Vista previa inmediata
+      setSedes(prev => prev.map((s, i) => {
+        if (i !== sedeIdx) return s;
+        const curGallery = normalizeSedeGallery(s);
+        const hasMain = curGallery.some(item => item.type === 'image' && item.isMain);
+        const newItem = {
+          id: tempId,
+          type: 'image',
+          url: previewUrl,
+          thumbnailUrl: previewUrl,
+          isMain: !hasMain
+        };
+        return {
+          ...s,
+          img: !hasMain ? previewUrl : s.img,
+          gallery: [...curGallery, newItem]
+        };
+      }));
+
+      const uploadPromise = uploadAdminImage(file, 2000, 0.92);
+      uploadsRef.current.set(previewUrl, uploadPromise);
+
+      try {
+        const uploadedUrl = await uploadPromise;
+        successCount++;
+        setSedes(prev => prev.map((s, i) => {
+          if (i !== sedeIdx) return s;
+          const nextGallery = normalizeSedeGallery(s).map(item =>
+            item.id === tempId || item.url === previewUrl
+              ? { ...item, url: uploadedUrl, thumbnailUrl: uploadedUrl }
+              : item
+          );
+          const mainItem = nextGallery.find(item => item.type === 'image' && item.isMain);
+          return {
+            ...s,
+            img: mainItem ? mainItem.url : (s.img === previewUrl ? uploadedUrl : s.img),
+            gallery: nextGallery
+          };
+        }));
+      } catch (err) {
+        console.error('Error subiendo foto de galería:', err);
+        // Quitar solo el archivo fallido sin perder la información de la sede
+        setSedes(prev => prev.map((s, i) => {
+          if (i !== sedeIdx) return s;
+          const nextGallery = normalizeSedeGallery(s).filter(item => item.id !== tempId && item.url !== previewUrl);
+          return { ...s, gallery: nextGallery };
+        }));
+        showToast(`Error al subir "${file.name}": ${err.message || 'Intenta de nuevo'}`, 'error');
+      } finally {
+        uploadsRef.current.delete(previewUrl);
+      }
+    }
+
+    setGalleryUploading(prev => ({ ...prev, [sedeIdx]: null }));
+    if (successCount > 0) {
+      showToast(`${successCount} fotografía${successCount > 1 ? 's agregadas' : ' agregada'} a la galería. Recuerda pulsar Guardar Cambios.`);
+    }
+  };
+
+  // Subir uno o varios videos (MP4, MOV, WebM) a la galería de una sede
+  const handleSedeGalleryVideosUpload = async (sedeIdx, e) => {
+    const files = Array.from(e.target.files || []).filter(f => f.type.startsWith('video/') || /\.(mp4|mov|webm)$/i.test(f.name));
+    e.target.value = '';
+    if (files.length === 0) {
+      showToast('Selecciona archivos de video válidos (.mp4, .mov, .webm)', 'error');
+      return;
+    }
+
+    let successCount = 0;
+    for (let fIdx = 0; fIdx < files.length; fIdx++) {
+      const file = files[fIdx];
+      setGalleryUploading(prev => ({
+        ...prev,
+        [sedeIdx]: `Subiendo video ${fIdx + 1} de ${files.length} (${file.name})...`
+      }));
+
+      try {
+        const { url, thumbnailUrl } = await uploadAdminVideo(file, 'dfv_sedes');
+        successCount++;
+        const videoItem = {
+          id: `vid-${sedeIdx}-${Date.now()}-${fIdx}`,
+          type: 'video',
+          url,
+          thumbnailUrl: thumbnailUrl || getVideoThumbnailUrl(url, 800),
+          isMain: false
+        };
+        setSedes(prev => prev.map((s, i) => {
+          if (i !== sedeIdx) return s;
+          const curGallery = normalizeSedeGallery(s);
+          return {
+            ...s,
+            gallery: [...curGallery, videoItem]
+          };
+        }));
+      } catch (err) {
+        console.error('Error subiendo video de sede:', err);
+        showToast(`Error al subir el video "${file.name}": ${err.message || 'Intenta nuevamente'}`, 'error');
+      }
+    }
+
+    setGalleryUploading(prev => ({ ...prev, [sedeIdx]: null }));
+    if (successCount > 0) {
+      showToast(`${successCount} video${successCount > 1 ? 's agregados' : ' agregado'} a la galería. Recuerda pulsar Guardar Cambios.`);
+    }
+  };
+
+  // Seleccionar cuál fotografía de la galería será la imagen principal de la sede
+  const handleSetMainSedeImage = (sedeIdx, itemId) => {
+    setSedes(prev => prev.map((s, i) => {
+      if (i !== sedeIdx) return s;
+      const curGallery = normalizeSedeGallery(s);
+      const target = curGallery.find(item => item.id === itemId && item.type === 'image');
+      if (!target) return s;
+      const nextGallery = curGallery.map(item => ({
+        ...item,
+        isMain: item.type === 'image' && item.id === itemId
+      }));
+      return {
+        ...s,
+        img: target.url,
+        gallery: nextGallery
+      };
+    }));
+    showToast('Imagen principal de la sede seleccionada');
+  };
+
+  // Cambiar el orden de los archivos en la galería de una sede
+  const handleMoveGalleryItem = (sedeIdx, itemIdx, direction) => {
+    setSedes(prev => prev.map((s, i) => {
+      if (i !== sedeIdx) return s;
+      const list = [...normalizeSedeGallery(s)];
+      const targetIdx = itemIdx + direction;
+      if (targetIdx < 0 || targetIdx >= list.length) return s;
+      const temp = list[itemIdx];
+      list[itemIdx] = list[targetIdx];
+      list[targetIdx] = temp;
+      return { ...s, gallery: list };
+    }));
+  };
+
+  // Eliminar una fotografía o video de la galería de una sede
+  const handleRemoveGalleryItem = (sedeIdx, itemId) => {
+    setSedes(prev => prev.map((s, i) => {
+      if (i !== sedeIdx) return s;
+      const curGallery = normalizeSedeGallery(s);
+      const target = curGallery.find(item => item.id === itemId);
+      if (!target) return s;
+
+      const remainingImages = curGallery.filter(item => item.id !== itemId && item.type === 'image');
+      if (target.type === 'image' && remainingImages.length === 0) {
+        showToast('La sede debe conservar al menos una fotografía principal', 'error');
+        return s;
+      }
+
+      let nextGallery = curGallery.filter(item => item.id !== itemId);
+      let nextMainImg = s.img;
+
+      if (target.isMain || target.url === s.img) {
+        const firstImgIdx = nextGallery.findIndex(item => item.type === 'image');
+        if (firstImgIdx !== -1) {
+          nextGallery = nextGallery.map((item, idx) => ({
+            ...item,
+            isMain: idx === firstImgIdx
+          }));
+          nextMainImg = nextGallery[firstImgIdx].url;
+        }
+      }
+
+      return {
+        ...s,
+        img: nextMainImg,
+        gallery: nextGallery
+      };
+    }));
   };
 
   const handleSedeFieldChange = (idx, field, val) => {
@@ -205,6 +419,10 @@ const HeroSedesModule = () => {
   };
 
   const handleSave = async () => {
+    if (Object.values(galleryUploading).some(Boolean)) {
+      showToast('Espera unos segundos a que terminen de subir los archivos en curso', 'error');
+      return;
+    }
     setIsSaving(true);
     try {
       const resolvedSlides = await Promise.all(
@@ -215,10 +433,35 @@ const HeroSedesModule = () => {
         }))
       );
       const resolvedSedes = await Promise.all(
-        sedes.map(async (s) => ({
-          ...s,
-          img: await resolveUrl(s.img)
-        }))
+        sedes.map(async (s) => {
+          const resolvedGallery = await Promise.all(
+            normalizeSedeGallery(s).map(async (item) => {
+              if (item.type === 'video') {
+                return {
+                  ...item,
+                  thumbnailUrl: item.thumbnailUrl || getVideoThumbnailUrl(item.url, 800),
+                  isMain: false
+                };
+              }
+              const cleanUrl = await resolveUrl(item.url);
+              return {
+                ...item,
+                url: cleanUrl,
+                thumbnailUrl: cleanUrl,
+                isMain: Boolean(item.isMain)
+              };
+            })
+          );
+          const mainItem = resolvedGallery.find(item => item.type === 'image' && item.isMain)
+            || resolvedGallery.find(item => item.type === 'image');
+          const resolvedMainImg = mainItem ? mainItem.url : await resolveUrl(s.img);
+
+          return {
+            ...s,
+            img: resolvedMainImg,
+            gallery: resolvedGallery
+          };
+        })
       );
 
       const res = await fetch('/api/hero-sedes', {
@@ -234,7 +477,13 @@ const HeroSedesModule = () => {
         cachedAdminHeroSedes = { hero_slides: resolvedSlides, sedes: resolvedSedes };
         setHeroSlides(resolvedSlides);
         setSedes(resolvedSedes);
-        showToast('Hero Principal y Sedes actualizadas en la tienda');
+        try {
+          localStorage.setItem('dfv_hero_sedes_v2', JSON.stringify({
+            hero_slides: resolvedSlides,
+            sedes: resolvedSedes
+          }));
+        } catch {}
+        showToast('Hero Principal, Sedes y sus galerías actualizadas en la tienda');
       } else {
         throw new Error(data.error || 'No se pudo guardar');
       }
@@ -563,6 +812,9 @@ const HeroSedesModule = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
           {sedes.map((sede, idx) => {
             const isUploadingSede = uploadingKey === `sede-${idx}`;
+            const galleryItems = normalizeSedeGallery(sede);
+            const uploadingStatus = galleryUploading[idx];
+
             return (
               <div
                 key={sede.id || idx}
@@ -579,7 +831,7 @@ const HeroSedesModule = () => {
                 {/* Vista previa actual de la Sede */}
                 <div style={{ position: 'relative', height: '240px', backgroundColor: '#f4f4f4', overflow: 'hidden' }}>
                   <img
-                    src={optimizeImg(sede.img, 300)}
+                    src={optimizeImg(sede.img, 400)}
                     alt={sede.name}
                     decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -595,11 +847,30 @@ const HeroSedesModule = () => {
                     padding: '4px 10px',
                     borderRadius: '999px'
                   }}>
-                    Sede 0{idx + 1}
+                    Sede 0{idx + 1} · Imagen Principal
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewSedeGallery(sede)}
+                    style={{
+                      position: 'absolute',
+                      bottom: '10px',
+                      right: '10px',
+                      backgroundColor: 'rgba(17,17,17,0.85)',
+                      color: '#fff',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      borderRadius: '6px',
+                      padding: '5px 10px',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Ver galería ({galleryItems.length})
+                  </button>
                 </div>
 
-                {/* Controles para reemplazar foto y editar nombre/enlace */}
+                {/* Controles para reemplazar foto, editar nombre/enlace y gestionar Galería de la sede */}
                 <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                   <label style={{
                     display: 'inline-flex',
@@ -615,7 +886,7 @@ const HeroSedesModule = () => {
                     cursor: isUploadingSede ? 'not-allowed' : 'pointer'
                   }}>
                     {isUploadingSede ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
-                    <span>{isUploadingSede ? 'Subiendo fotografía...' : 'Reemplazar Foto de la Sede'}</span>
+                    <span>{isUploadingSede ? 'Subiendo fotografía...' : 'Reemplazar Foto Principal de la Sede'}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -650,12 +921,327 @@ const HeroSedesModule = () => {
                       style={{ width: '100%', padding: '0.6rem 0.8rem', border: '1px solid #EAE8E4', borderRadius: '6px', fontSize: '0.84rem', boxSizing: 'border-box' }}
                     />
                   </div>
+
+                  {/* ── SECCIÓN: GALERÍA DE LA SEDE ── */}
+                  <div style={{
+                    marginTop: '0.4rem',
+                    paddingTop: '1rem',
+                    borderTop: '1px solid #EAE8E4'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <div>
+                        <span style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Galería de la sede ({galleryItems.length} {galleryItems.length === 1 ? 'archivo' : 'archivos'})
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#777' }}>
+                          Sube fotos y videos MP4, ordénalos y elige cuál foto será la principal.
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Botones para subir varias fotografías y varios videos */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.55rem', marginBottom: '0.85rem' }}>
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        padding: '0.6rem 0.75rem',
+                        backgroundColor: '#FAF8F5',
+                        color: '#111',
+                        border: '1px solid #D5CFC4',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        cursor: uploadingStatus ? 'not-allowed' : 'pointer',
+                        textAlign: 'center'
+                      }}>
+                        <ImageIcon size={14} color="#B99A5B" />
+                        <span>+ Subir Fotografías</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          disabled={Boolean(uploadingStatus)}
+                          onChange={(e) => handleSedeGalleryPhotosUpload(idx, e)}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        padding: '0.6rem 0.75rem',
+                        backgroundColor: '#FAF8F5',
+                        color: '#111',
+                        border: '1px solid #D5CFC4',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        cursor: uploadingStatus ? 'not-allowed' : 'pointer',
+                        textAlign: 'center'
+                      }}>
+                        <Film size={14} color="#B99A5B" />
+                        <span>+ Subir Videos (MP4)</span>
+                        <input
+                          type="file"
+                          accept="video/mp4,video/quicktime,video/webm,video/*"
+                          multiple
+                          disabled={Boolean(uploadingStatus)}
+                          onChange={(e) => handleSedeGalleryVideosUpload(idx, e)}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Indicador de carga mientras se suben archivos */}
+                    {uploadingStatus && (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.55rem 0.8rem',
+                        marginBottom: '0.75rem',
+                        backgroundColor: '#FFFBEB',
+                        border: '1px solid #FDE68A',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        color: '#92400E',
+                        fontWeight: 500
+                      }}>
+                        <Loader2 size={14} className="animate-spin" />
+                        <span>{uploadingStatus}</span>
+                      </div>
+                    )}
+
+                    {/* Grilla de miniaturas de la galería de esta sede */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(115px, 1fr))',
+                      gap: '0.65rem'
+                    }}>
+                      {galleryItems.map((item, itemIdx) => {
+                        const isVideo = item.type === 'video';
+                        const isMain = !isVideo && (item.isMain || item.url === sede.img);
+                        const thumbUrl = isVideo
+                          ? (item.thumbnailUrl || getVideoThumbnailUrl(item.url, 300))
+                          : optimizeImg(item.url, 240);
+
+                        return (
+                          <div
+                            key={item.id || itemIdx}
+                            style={{
+                              border: isMain ? '2px solid #B99A5B' : '1px solid #E5E7EB',
+                              borderRadius: '8px',
+                              overflow: 'hidden',
+                              backgroundColor: '#FAFAFA',
+                              display: 'flex',
+                              flexDirection: 'column'
+                            }}
+                          >
+                            {/* Miniatura */}
+                            <div
+                              onClick={() => setPreviewSedeGallery(sede)}
+                              title="Clic para abrir vista previa de la galería"
+                              style={{
+                                position: 'relative',
+                                width: '100%',
+                                aspectRatio: '1/1',
+                                backgroundColor: '#111',
+                                cursor: 'pointer',
+                                overflow: 'hidden'
+                              }}
+                            >
+                              {thumbUrl ? (
+                                <img
+                                  src={thumbUrl}
+                                  alt=""
+                                  loading="lazy"
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                />
+                              ) : (
+                                <video
+                                  src={`${item.url}#t=0.5`}
+                                  preload="metadata"
+                                  muted
+                                  playsInline
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
+                                />
+                              )}
+
+                              {/* Etiqueta de orden */}
+                              <span style={{
+                                position: 'absolute',
+                                top: '5px',
+                                left: '5px',
+                                backgroundColor: 'rgba(0,0,0,0.72)',
+                                color: '#fff',
+                                fontSize: '0.62rem',
+                                fontWeight: 700,
+                                padding: '2px 6px',
+                                borderRadius: '4px'
+                              }}>
+                                #{itemIdx + 1}
+                              </span>
+
+                              {/* Indicador de Video */}
+                              {isVideo && (
+                                <div style={{
+                                  position: 'absolute',
+                                  inset: 0,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  backgroundColor: 'rgba(0,0,0,0.28)'
+                                }}>
+                                  <div style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'rgba(185,154,91,0.95)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}>
+                                    <Play size={13} color="#0a0a0a" fill="#0a0a0a" style={{ marginLeft: '1px' }} />
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Botón Eliminar */}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleRemoveGalleryItem(idx, item.id); }}
+                                title="Eliminar archivo"
+                                style={{
+                                  position: 'absolute',
+                                  top: '5px',
+                                  right: '5px',
+                                  width: '24px',
+                                  height: '24px',
+                                  borderRadius: '5px',
+                                  border: 'none',
+                                  backgroundColor: 'rgba(220, 38, 38, 0.9)',
+                                  color: '#fff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+
+                            {/* Controles inferiores de cada archivo: Principal + Ordenar */}
+                            <div style={{
+                              padding: '0.35rem',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.3rem',
+                              backgroundColor: '#fff'
+                            }}>
+                              {!isVideo ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetMainSedeImage(idx, item.id)}
+                                  style={{
+                                    width: '100%',
+                                    padding: '0.28rem 0.35rem',
+                                    borderRadius: '4px',
+                                    border: isMain ? '1px solid #B99A5B' : '1px solid #E5E7EB',
+                                    backgroundColor: isMain ? '#FAF5E8' : '#F9FAFB',
+                                    color: isMain ? '#8A6D2F' : '#555',
+                                    fontSize: '0.62rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '3px'
+                                  }}
+                                >
+                                  <Star size={10} fill={isMain ? '#B99A5B' : 'none'} color={isMain ? '#B99A5B' : '#777'} />
+                                  <span>{isMain ? 'Principal' : 'Hacer principal'}</span>
+                                </button>
+                              ) : (
+                                <div style={{
+                                  width: '100%',
+                                  padding: '0.28rem 0.35rem',
+                                  borderRadius: '4px',
+                                  backgroundColor: '#F3F4F6',
+                                  color: '#4B5563',
+                                  fontSize: '0.62rem',
+                                  fontWeight: 700,
+                                  textAlign: 'center',
+                                  boxSizing: 'border-box'
+                                }}>
+                                  VIDEO MP4
+                                </div>
+                              )}
+
+                              {/* Botones para cambiar el orden */}
+                              <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                <button
+                                  type="button"
+                                  disabled={itemIdx === 0}
+                                  onClick={() => handleMoveGalleryItem(idx, itemIdx, -1)}
+                                  title="Mover antes"
+                                  style={{
+                                    flex: 1,
+                                    padding: '2px 0',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '4px',
+                                    backgroundColor: '#fff',
+                                    color: itemIdx === 0 ? '#D1D5DB' : '#374151',
+                                    cursor: itemIdx === 0 ? 'default' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}
+                                >
+                                  <ChevronLeft size={13} />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={itemIdx === galleryItems.length - 1}
+                                  onClick={() => handleMoveGalleryItem(idx, itemIdx, 1)}
+                                  title="Mover después"
+                                  style={{
+                                    flex: 1,
+                                    padding: '2px 0',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '4px',
+                                    backgroundColor: '#fff',
+                                    color: itemIdx === galleryItems.length - 1 ? '#D1D5DB' : '#374151',
+                                    cursor: itemIdx === galleryItems.length - 1 ? 'default' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}
+                                >
+                                  <ChevronRight size={13} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      <SedeGalleryModal
+        sede={previewSedeGallery}
+        onClose={() => setPreviewSedeGallery(null)}
+      />
 
       {/* Botón Guardar Inferior */}
       <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>

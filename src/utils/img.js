@@ -126,3 +126,105 @@ export const uploadAdminImage = async (fileOrUrl, maxSize = 2000, quality = 0.92
   }
   return data.url;
 };
+
+/**
+ * Obtiene la URL de miniatura (póster JPG) a partir de un video alojado en Cloudinary.
+ */
+export const getVideoThumbnailUrl = (videoUrl, width = 800) => {
+  if (!videoUrl || typeof videoUrl !== 'string') return '';
+  if (videoUrl.includes('/video/upload/')) {
+    return videoUrl
+      .replace('/video/upload/', `/video/upload/so_1,w_${width},c_limit,q_auto,f_jpg/`)
+      .replace(/\.[^/.?#]+(\?.*)?$/, '.jpg');
+  }
+  return '';
+};
+
+/**
+ * Sube un archivo de video (MP4, MOV, WebM) directamente a Cloudinary usando firma segura
+ * para soportar videos sin límite de 4.5MB de Vercel.
+ */
+export const uploadAdminVideo = async (file, folder = 'dfv_sedes') => {
+  if (!file) throw new Error('Archivo de video requerido');
+
+  const signRes = await fetch(`/api/admin/cloudinary-sign?folder=${encodeURIComponent(folder)}`);
+  if (!signRes.ok) {
+    throw new Error('No se pudo obtener autorización para subir el video');
+  }
+  const signData = await signRes.json();
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('api_key', signData.apiKey);
+  formData.append('timestamp', signData.timestamp);
+  formData.append('signature', signData.signature);
+  formData.append('folder', signData.folder);
+
+  const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${signData.cloudName}/video/upload`, {
+    method: 'POST',
+    body: formData
+  });
+
+  let cloudData = {};
+  try {
+    cloudData = await cloudRes.json();
+  } catch {
+    throw new Error('Error de red al subir el video');
+  }
+
+  if (!cloudRes.ok || !cloudData.secure_url) {
+    throw new Error(cloudData.error?.message || 'Error al subir el video a Cloudinary');
+  }
+
+  const videoUrl = cloudData.secure_url;
+  const thumbnailUrl = getVideoThumbnailUrl(videoUrl, 800);
+
+  return {
+    url: videoUrl,
+    thumbnailUrl
+  };
+};
+
+/**
+ * Normaliza la galería multimedia de una sede conservando su imagen principal actual.
+ */
+export const normalizeSedeGallery = (sede) => {
+  if (!sede || typeof sede !== 'object') return [];
+  const rawGallery = Array.isArray(sede.gallery) ? sede.gallery : [];
+  const cleaned = rawGallery
+    .filter(item => item && typeof item.url === 'string' && item.url.trim() !== '')
+    .map((item, idx) => {
+      const type = item.type === 'video' ? 'video' : 'image';
+      return {
+        id: item.id || `media-${sede.id || 0}-${idx}-${Date.now()}`,
+        type,
+        url: item.url,
+        thumbnailUrl: type === 'video' ? (item.thumbnailUrl || getVideoThumbnailUrl(item.url, 800)) : item.url,
+        isMain: type === 'image' && Boolean(item.isMain)
+      };
+    });
+
+  // Si la imagen principal actual (sede.img) no está aún en la galería, la incluimos al inicio
+  if (sede.img && typeof sede.img === 'string' && sede.img.trim() !== '') {
+    const existsIdx = cleaned.findIndex(item => item.type === 'image' && item.url === sede.img);
+    if (existsIdx === -1) {
+      cleaned.unshift({
+        id: `main-${sede.id || 0}`,
+        type: 'image',
+        url: sede.img,
+        thumbnailUrl: sede.img,
+        isMain: true
+      });
+    } else if (!cleaned.some(item => item.type === 'image' && item.isMain)) {
+      cleaned[existsIdx].isMain = true;
+    }
+  }
+
+  // Asegurar que exista exactamente una imagen marcada como principal si hay imágenes
+  const firstImgIdx = cleaned.findIndex(item => item.type === 'image');
+  if (firstImgIdx !== -1 && !cleaned.some(item => item.type === 'image' && item.isMain)) {
+    cleaned[firstImgIdx].isMain = true;
+  }
+
+  return cleaned;
+};
