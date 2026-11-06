@@ -110,12 +110,20 @@ export const ShopProvider = ({ children }) => {
     } catch { return []; }
   });
 
-  const refreshCampaigns = useCallback(async () => {
+  const refreshCampaigns = useCallback(async (earlyCampPromise = null) => {
     try {
-      const res = await fetch('/api/promo-campaigns', { cache: 'no-store' });
+      const earlyRes = earlyCampPromise ? await earlyCampPromise : null;
+      const res = earlyRes || await fetch(`/api/promo-campaigns?t=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) return;
       const data = await res.json();
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
+        // Pre-cargar en memoria la imagen de la campaña activa para que el popup abra con foto e info al instante
+        data.data.forEach(c => {
+          if (c && c.image) {
+            const img = new Image();
+            img.src = c.image;
+          }
+        });
         setActiveCampaigns(data.data);
         try { localStorage.setItem('dfv_active_campaigns', JSON.stringify(data.data)); } catch { }
         return data.data;
@@ -141,6 +149,8 @@ export const ShopProvider = ({ children }) => {
         // Reuse the request started in index.html (if any); otherwise fetch normally.
         const early = window.__early;
         window.__early = null;
+        // Cargar campañas activas en paralelo desde el primer milisegundo
+        refreshCampaigns(early?.campaigns);
         const [earlyP, earlyC] = early ? await Promise.all([early.products, early.categories]) : [null, null];
         const [resP, resC] = await Promise.all([
           earlyP || fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' }),
@@ -176,8 +186,6 @@ export const ShopProvider = ({ children }) => {
         // If we reach here successfully
         setIsLoadingProducts(false);
         setIsFresh(true);
-        // Cargar campañas activas en paralelo
-        refreshCampaigns();
       } catch (err) {
         console.error("Failed to fetch data", err);
         if (retries > 0) {

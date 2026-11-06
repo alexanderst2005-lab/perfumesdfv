@@ -235,11 +235,11 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                 {/* Popup de lujo DFV vertical */}
                 <div style={{
                   width: '100%',
-                  maxWidth: '560px',
+                  maxWidth: '400px',
                   backgroundColor: '#0a0a0a',
-                  borderRadius: '20px',
+                  borderRadius: '18px',
                   border: '1px solid rgba(185, 154, 91, 0.35)',
-                  boxShadow: '0 30px 100px rgba(0,0,0,0.85), 0 0 50px rgba(185,154,91,0.15)',
+                  boxShadow: '0 25px 80px rgba(0,0,0,0.85), 0 0 40px rgba(185,154,91,0.14)',
                   overflow: 'hidden',
                   position: 'relative',
                   display: 'flex',
@@ -247,53 +247,49 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                 }}>
                   {/* Botón cerrar flotante simulado */}
                   <div style={{
-                    position: 'absolute', top: '14px', right: '14px', zIndex: 30,
-                    width: '36px', height: '36px', borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.18)',
-                    backgroundColor: 'rgba(10,10,10,0.65)',
+                    position: 'absolute', top: '10px', right: '10px', zIndex: 30,
+                    width: '32px', height: '32px', borderRadius: '50%',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    backgroundColor: 'rgba(10,10,10,0.72)',
                     backdropFilter: 'blur(8px)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'rgba(255,255,255,0.75)', fontSize: '0.85rem', cursor: 'default'
+                    color: 'rgba(255,255,255,0.85)', fontSize: '0.8rem', cursor: 'default'
                   }}>
                     ✕
                   </div>
 
-                  {/* FOTO COMPLETA EN LA PARTE SUPERIOR */}
+                  {/* FOTO COMPLETA Y NÍTIDA EN LA PARTE SUPERIOR */}
                   {hasImage ? (
                     <div style={{
                       position: 'relative',
                       width: '100%',
-                      height: '320px',
-                      backgroundColor: '#121212',
-                      overflow: 'hidden'
+                      backgroundColor: '#0a0a0a',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}>
                       <img
                         src={form.image}
                         alt="Imagen de campaña"
                         style={{
                           width: '100%',
-                          height: '100%',
+                          height: 'auto',
+                          maxHeight: '290px',
                           objectFit: 'contain',
-                          backgroundColor: '#111',
+                          backgroundColor: '#0a0a0a',
                           display: 'block'
                         }}
                       />
-                      {/* Sombra de degradado para fusionar con el fondo */}
-                      <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 40%, rgba(10,10,10,0.95) 100%)',
-                        pointerEvents: 'none'
-                      }} />
                     </div>
                   ) : (
-                    <div style={{ paddingTop: '2.5rem', textAlign: 'center' }}>
+                    <div style={{ paddingTop: '1.75rem', textAlign: 'center' }}>
                       <div style={{
-                        width: '54px', height: '54px', margin: '0 auto', borderRadius: '50%',
+                        width: '46px', height: '46px', margin: '0 auto', borderRadius: '50%',
                         backgroundColor: 'rgba(185, 154, 91, 0.12)',
                         border: '1px solid rgba(185, 154, 91, 0.35)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#B99A5B', fontSize: '1.2rem'
+                        color: '#B99A5B', fontSize: '1.1rem'
                       }}>
                         ✦
                       </div>
@@ -302,31 +298,32 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
 
                   {/* CUERPO CENTRADO ELEGANTE */}
                   <div style={{
-                    padding: hasImage ? '1.5rem 2rem 2.25rem' : '1rem 2rem 2.5rem',
+                    padding: hasImage ? '1rem 1.35rem 1.25rem' : '1rem 1.5rem 1.6rem',
                     textAlign: 'center',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     position: 'relative',
-                    zIndex: 10
+                    zIndex: 10,
+                    borderTop: hasImage ? '1px solid rgba(255,255,255,0.06)' : 'none'
                   }}>
                     {/* Badge dorado metalizado */}
                     {form.badge && (
-                      <div style={{ marginBottom: '1.1rem' }}>
+                      <div style={{ marginBottom: '0.65rem' }}>
                         <span style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '0.4rem',
-                          padding: '0.45rem 1.4rem',
+                          gap: '0.35rem',
+                          padding: '0.32rem 1rem',
                           borderRadius: '999px',
                           background: 'linear-gradient(135deg, #B99A5B 0%, #E6D39E 50%, #B99A5B 100%)',
                           color: '#0a0a0a',
                           fontFamily: 'var(--font-sans)',
-                          fontSize: '0.72rem',
+                          fontSize: '0.64rem',
                           fontWeight: '800',
-                          letterSpacing: '2.5px',
+                          letterSpacing: '2px',
                           textTransform: 'uppercase',
-                          boxShadow: '0 4px 18px rgba(185, 154, 91, 0.45)'
+                          boxShadow: '0 3px 14px rgba(185, 154, 91, 0.4)'
                         }}>
                           ✦ {form.badge} ✦
                         </span>
@@ -336,13 +333,13 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                     {/* Título de la campaña en Playfair Display */}
                     <h2 style={{
                       fontFamily: 'var(--font-serif)',
-                      fontSize: form.title ? 'clamp(1.5rem, 4vw, 2.15rem)' : '1.3rem',
+                      fontSize: form.title ? 'clamp(1.2rem, 3vw, 1.48rem)' : '1.15rem',
                       fontWeight: '500',
                       color: form.title ? '#ffffff' : '#6b7280',
                       lineHeight: 1.22,
-                      margin: '0 0 0.85rem',
-                      letterSpacing: '0.3px',
-                      maxWidth: '480px',
+                      margin: '0 0 0.5rem',
+                      letterSpacing: '0.2px',
+                      maxWidth: '360px',
                       fontStyle: form.title ? 'normal' : 'italic'
                     }}>
                       {form.title || '(Aquí aparecerá el título del anuncio)'}
@@ -352,11 +349,11 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                     {(form.description || !form.title) && (
                       <p style={{
                         fontFamily: 'var(--font-sans)',
-                        fontSize: '0.92rem',
-                        color: form.description ? '#a1a1aa' : '#4b5563',
-                        lineHeight: 1.6,
-                        margin: '0 0 1.85rem',
-                        maxWidth: '440px',
+                        fontSize: '0.82rem',
+                        color: form.description ? '#b4b4bc' : '#4b5563',
+                        lineHeight: 1.45,
+                        margin: '0 0 1rem',
+                        maxWidth: '350px',
                         fontWeight: '400',
                         fontStyle: form.description ? 'normal' : 'italic'
                       }}>
@@ -367,19 +364,18 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                     {/* Botón de acción principal de lujo */}
                     <div style={{
                       width: '100%',
-                      maxWidth: '440px',
-                      padding: '1.05rem 2rem',
+                      padding: '0.82rem 1.25rem',
                       background: 'linear-gradient(135deg, #B99A5B 0%, #E2CE93 50%, #B99A5B 100%)',
                       color: '#0a0a0a',
-                      borderRadius: '12px',
+                      borderRadius: '10px',
                       fontFamily: 'var(--font-sans)',
-                      fontSize: '0.82rem',
+                      fontSize: '0.75rem',
                       fontWeight: '700',
-                      letterSpacing: '2px',
+                      letterSpacing: '1.5px',
                       textTransform: 'uppercase',
                       textAlign: 'center',
                       cursor: 'default',
-                      boxShadow: '0 10px 30px rgba(185, 154, 91, 0.35)'
+                      boxShadow: '0 8px 24px rgba(185, 154, 91, 0.32)'
                     }}>
                       Ver ofertas exclusivas
                     </div>

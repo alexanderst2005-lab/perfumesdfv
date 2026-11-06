@@ -38,7 +38,38 @@ function markCampaignSeen(campaign) {
   }
 }
 
-// ─── Componente Popup de Campaña (Estilo Alta Perfumería) ─────────────────────
+// Pre-carga una imagen en memoria antes de abrir el popup para que foto y textos aparezcan al mismo tiempo
+function preloadCampaignImage(url) {
+  return new Promise((resolve) => {
+    if (!url) {
+      resolve(true);
+      return;
+    }
+    const img = new Image();
+    let settled = false;
+    const done = (ok) => {
+      if (settled) return;
+      settled = true;
+      resolve(ok);
+    };
+    const timeoutId = setTimeout(() => done(true), 2500);
+    img.onload = () => {
+      clearTimeout(timeoutId);
+      if (typeof img.decode === 'function') {
+        img.decode().then(() => done(true)).catch(() => done(true));
+      } else {
+        done(true);
+      }
+    };
+    img.onerror = () => {
+      clearTimeout(timeoutId);
+      done(false);
+    };
+    img.src = url;
+  });
+}
+
+// ─── Componente Popup de Campaña (Compacto, Completo y 100% Adaptable) ─────────
 
 const CampaignPopup = ({ campaigns }) => {
   const navigate = useNavigate();
@@ -51,14 +82,25 @@ const CampaignPopup = ({ campaigns }) => {
     if (!campaigns || campaigns.length === 0) return;
     const toShow = campaigns.find(c => shouldShowCampaign(c));
     if (!toShow) return;
-    const timer = setTimeout(() => {
+
+    let cancelled = false;
+
+    // Pre-cargar imagen primero para que al abrir el modal ya esté todo listo de una vez
+    Promise.all([
+      preloadCampaignImage(toShow.image),
+      new Promise(r => setTimeout(r, 300))
+    ]).then(([imgLoaded]) => {
+      if (cancelled) return;
       setCurrentCampaign(toShow);
-      setImgError(false);
+      setImgError(!imgLoaded && Boolean(toShow.image));
       setVisible(true);
       setMounted(true);
       markCampaignSeen(toShow);
-    }, 1500);
-    return () => clearTimeout(timer);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [campaigns]);
 
   const handleClose = useCallback(() => {
@@ -66,13 +108,13 @@ const CampaignPopup = ({ campaigns }) => {
     setTimeout(() => {
       setVisible(false);
       setCurrentCampaign(null);
-    }, 380);
+    }, 320);
   }, []);
 
   const handleVerOfertas = useCallback(() => {
     if (!currentCampaign) return;
     handleClose();
-    setTimeout(() => navigate(`/campana/${currentCampaign.id}`), 250);
+    setTimeout(() => navigate(`/campana/${currentCampaign.id}`), 220);
   }, [currentCampaign, navigate, handleClose]);
 
   if (!currentCampaign || !visible) return null;
@@ -94,7 +136,7 @@ const CampaignPopup = ({ campaigns }) => {
         @keyframes dfv-card-enter {
           0% {
             opacity: 0;
-            transform: translate(-50%, -46%) scale(0.92);
+            transform: translate(-50%, -47%) scale(0.94);
           }
           100% {
             opacity: 1;
@@ -108,13 +150,8 @@ const CampaignPopup = ({ campaigns }) => {
           }
           100% {
             opacity: 0;
-            transform: translate(-50%, -52%) scale(0.94);
+            transform: translate(-50%, -52%) scale(0.95);
           }
-        }
-        @keyframes dfv-gold-shimmer {
-          0%   { background-position: 0% 50%; }
-          50%  { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
         }
 
         .dfv-promo-btn {
@@ -122,27 +159,26 @@ const CampaignPopup = ({ campaigns }) => {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.65rem;
+          gap: 0.55rem;
           width: 100%;
-          max-width: 440px;
-          padding: 1.05rem 2rem;
+          padding: 0.82rem 1.25rem;
           background: linear-gradient(135deg, #B99A5B 0%, #E2CE93 50%, #B99A5B 100%);
           background-size: 200% 200%;
           color: #0a0a0a;
           border: none;
-          border-radius: 12px;
+          border-radius: 10px;
           font-family: var(--font-sans, 'Montserrat', sans-serif);
-          font-size: 0.82rem;
+          font-size: 0.75rem;
           font-weight: 700;
-          letter-spacing: 2px;
+          letter-spacing: 1.5px;
           text-transform: uppercase;
           cursor: pointer;
-          box-shadow: 0 10px 30px rgba(185, 154, 91, 0.35);
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 8px 24px rgba(185, 154, 91, 0.32);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .dfv-promo-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 16px 40px rgba(185, 154, 91, 0.55);
+          box-shadow: 0 12px 32px rgba(185, 154, 91, 0.5);
           background-position: 100% 50%;
         }
         .dfv-promo-btn:active {
@@ -151,16 +187,16 @@ const CampaignPopup = ({ campaigns }) => {
 
         .dfv-close-btn {
           position: absolute;
-          top: 14px;
-          right: 14px;
+          top: 10px;
+          right: 10px;
           z-index: 30;
-          width: 36px;
-          height: 36px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
-          background: rgba(10, 10, 10, 0.65);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          color: rgba(255, 255, 255, 0.75);
+          background: rgba(10, 10, 10, 0.72);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          color: rgba(255, 255, 255, 0.85);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -168,7 +204,7 @@ const CampaignPopup = ({ campaigns }) => {
           transition: all 0.25s ease;
         }
         .dfv-close-btn:hover {
-          background: rgba(185, 154, 91, 0.3);
+          background: rgba(185, 154, 91, 0.35);
           border-color: #B99A5B;
           color: #ffffff;
           transform: rotate(90deg);
@@ -176,14 +212,29 @@ const CampaignPopup = ({ campaigns }) => {
 
         @media (max-width: 640px) {
           .dfv-modal-box {
-            width: 94% !important;
-            max-height: 94vh !important;
+            width: 88vw !important;
+            max-width: 350px !important;
+            max-height: 90dvh !important;
+            border-radius: 16px !important;
           }
-          .dfv-modal-img img:last-child {
-            max-height: 62vh !important;
+          .dfv-modal-img-el {
+            max-height: 34dvh !important;
           }
           .dfv-modal-body {
-            padding: 1.1rem 1.1rem 1.5rem !important;
+            padding: 0.85rem 1.05rem 1.05rem !important;
+          }
+          .dfv-modal-title {
+            font-size: 1.15rem !important;
+            margin-bottom: 0.4rem !important;
+          }
+          .dfv-modal-desc {
+            font-size: 0.78rem !important;
+            margin-bottom: 0.85rem !important;
+            line-height: 1.4 !important;
+          }
+          .dfv-promo-btn {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.7rem !important;
           }
         }
       `}</style>
@@ -197,11 +248,11 @@ const CampaignPopup = ({ campaigns }) => {
           zIndex: 9000,
           backgroundColor: 'rgba(5, 5, 5, 0.82)',
           backdropFilter: 'blur(6px)',
-          animation: `${mounted ? 'dfv-overlay-fadein' : 'dfv-overlay-fadeout'} 0.35s ease forwards`
+          animation: `${mounted ? 'dfv-overlay-fadein' : 'dfv-overlay-fadeout'} 0.3s ease forwards`
         }}
       />
 
-      {/* Tarjeta del Popup */}
+      {/* Tarjeta del Popup (Compacta para verse 100% completa en cualquier pantalla) */}
       <div
         className="dfv-modal-box"
         style={{
@@ -210,16 +261,17 @@ const CampaignPopup = ({ campaigns }) => {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 9001,
-          width: '92%',
-          maxWidth: '500px',
-          maxHeight: '94vh',
-          overflowY: 'auto',
+          width: '90%',
+          maxWidth: '400px',
+          maxHeight: '92dvh',
+          display: 'flex',
+          flexDirection: 'column',
           backgroundColor: '#0a0a0a',
-          borderRadius: '22px',
-          border: '1px solid rgba(185, 154, 91, 0.3)',
-          boxShadow: '0 30px 100px rgba(0, 0, 0, 0.85), 0 0 50px rgba(185, 154, 91, 0.15)',
+          borderRadius: '18px',
+          border: '1px solid rgba(185, 154, 91, 0.32)',
+          boxShadow: '0 25px 80px rgba(0, 0, 0, 0.88), 0 0 40px rgba(185, 154, 91, 0.14)',
           overflow: 'hidden',
-          animation: `${mounted ? 'dfv-card-enter' : 'dfv-card-exit'} 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards`
+          animation: `${mounted ? 'dfv-card-enter' : 'dfv-card-exit'} 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards`
         }}
       >
         {/* Botón flotante para cerrar (✕) */}
@@ -228,10 +280,10 @@ const CampaignPopup = ({ campaigns }) => {
           className="dfv-close-btn"
           aria-label="Cerrar anuncio"
         >
-          <X size={17} />
+          <X size={15} />
         </button>
 
-        {/* ── FOTO GRANDE: fondo difuminado con la misma imagen + imagen nítida completa al centro ── */}
+        {/* ── IMAGEN COMPLETA Y NÍTIDA (Sin bordes borrosos) ── */}
         {hasImage ? (
           <div
             className="dfv-modal-img"
@@ -239,51 +291,38 @@ const CampaignPopup = ({ campaigns }) => {
               position: 'relative',
               width: '100%',
               backgroundColor: '#0a0a0a',
-              overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexShrink: 1,
+              minHeight: 0,
+              overflow: 'hidden'
             }}
           >
-            {/* Fondo borroso (se adapta a los colores de cada imagen) */}
-            <img
-              src={image}
-              alt=""
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                inset: '-30px',
-                width: 'calc(100% + 60px)',
-                height: 'calc(100% + 60px)',
-                objectFit: 'cover',
-                filter: 'blur(28px) brightness(0.55) saturate(1.25)',
-                transform: 'scale(1.1)',
-                pointerEvents: 'none'
-              }}
-            />
-            {/* Imagen principal nítida y completa */}
             <img
               src={image}
               alt={title}
+              className="dfv-modal-img-el"
+              decoding="sync"
+              fetchPriority="high"
               onError={() => setImgError(true)}
               style={{
-                position: 'relative',
-                zIndex: 2,
                 width: '100%',
                 height: 'auto',
-                maxHeight: '68vh',
+                maxHeight: '38dvh',
                 objectFit: 'contain',
+                backgroundColor: '#0a0a0a',
                 display: 'block'
               }}
             />
           </div>
         ) : (
           /* Encabezado alternativo con emblema dorado si no hay foto */
-          <div style={{ paddingTop: '2.5rem', textAlign: 'center' }}>
+          <div style={{ paddingTop: '1.75rem', textAlign: 'center', flexShrink: 0 }}>
             <div
               style={{
-                width: '54px',
-                height: '54px',
+                width: '46px',
+                height: '46px',
                 margin: '0 auto',
                 borderRadius: '50%',
                 backgroundColor: 'rgba(185, 154, 91, 0.12)',
@@ -294,41 +333,45 @@ const CampaignPopup = ({ campaigns }) => {
                 color: '#B99A5B'
               }}
             >
-              <Sparkles size={24} />
+              <Sparkles size={20} />
             </div>
           </div>
         )}
-        {/* ── CUERPO: INFORMACIÓN DE LA CAMPAÑA ── */}
+
+        {/* ── CUERPO: TODA LA INFORMACIÓN VISIBLE SIN CORTES ── */}
         <div
           className="dfv-modal-body"
           style={{
-            padding: hasImage ? '1.1rem 1.5rem 1.6rem' : '1rem 2rem 2.5rem',
+            padding: hasImage ? '1rem 1.35rem 1.25rem' : '1rem 1.5rem 1.6rem',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             position: 'relative',
-            zIndex: 10
+            zIndex: 10,
+            flexShrink: 0,
+            backgroundColor: '#0a0a0a',
+            borderTop: hasImage ? '1px solid rgba(255,255,255,0.06)' : 'none'
           }}
         >
           {/* Badge dorado metalizado */}
           {badge && (
-            <div style={{ marginBottom: '1.1rem' }}>
+            <div style={{ marginBottom: '0.65rem' }}>
               <span
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.45rem 1.4rem',
+                  gap: '0.35rem',
+                  padding: '0.32rem 1rem',
                   borderRadius: '999px',
                   background: 'linear-gradient(135deg, #B99A5B 0%, #E6D39E 50%, #B99A5B 100%)',
                   color: '#0a0a0a',
                   fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
-                  fontSize: '0.72rem',
+                  fontSize: '0.64rem',
                   fontWeight: '800',
-                  letterSpacing: '2.5px',
+                  letterSpacing: '2px',
                   textTransform: 'uppercase',
-                  boxShadow: '0 4px 18px rgba(185, 154, 91, 0.45)'
+                  boxShadow: '0 3px 14px rgba(185, 154, 91, 0.4)'
                 }}
               >
                 ✦ {badge} ✦
@@ -336,17 +379,18 @@ const CampaignPopup = ({ campaigns }) => {
             </div>
           )}
 
-          {/* Título de Campaña en Playfair Display */}
+          {/* Título de Campaña */}
           <h2
+            className="dfv-modal-title"
             style={{
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(1.5rem, 4vw, 2.15rem)',
+              fontSize: 'clamp(1.2rem, 3.2vw, 1.48rem)',
               fontWeight: '500',
               color: '#ffffff',
               lineHeight: 1.22,
-              margin: '0 0 0.85rem',
-              letterSpacing: '0.3px',
-              maxWidth: '480px'
+              margin: '0 0 0.5rem',
+              letterSpacing: '0.2px',
+              maxWidth: '360px'
             }}
           >
             {title}
@@ -355,13 +399,14 @@ const CampaignPopup = ({ campaigns }) => {
           {/* Mensaje o Descripción */}
           {description && (
             <p
+              className="dfv-modal-desc"
               style={{
                 fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
-                fontSize: '0.92rem',
-                color: '#a1a1aa',
-                lineHeight: 1.6,
-                margin: '0 0 1.85rem',
-                maxWidth: '440px',
+                fontSize: '0.82rem',
+                color: '#b4b4bc',
+                lineHeight: 1.45,
+                margin: '0 0 1rem',
+                maxWidth: '350px',
                 fontWeight: '400'
               }}
             >
@@ -371,31 +416,29 @@ const CampaignPopup = ({ campaigns }) => {
 
           {/* Botón Principal de Acción (CTA) */}
           <button onClick={handleVerOfertas} className="dfv-promo-btn">
-            <ShoppingBag size={17} />
+            <ShoppingBag size={15} />
             <span>{currentCampaign.button_text || 'Ver ofertas exclusivas'}</span>
-            <ArrowRight size={17} />
+            <ArrowRight size={15} />
           </button>
 
           <button
             type="button"
             onClick={handleClose}
             style={{
-              marginTop: '0.95rem',
+              marginTop: '0.7rem',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: 'rgba(255,255,255,0.45)',
+              color: 'rgba(255,255,255,0.48)',
               fontFamily: 'var(--font-sans, Montserrat, sans-serif)',
-              fontSize: '0.68rem',
+              fontSize: '0.64rem',
               fontWeight: 600,
-              letterSpacing: '1.8px',
+              letterSpacing: '1.5px',
               textTransform: 'uppercase'
             }}
           >
             Continuar navegando
           </button>
-
-
         </div>
       </div>
     </>

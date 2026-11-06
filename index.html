@@ -22,7 +22,8 @@
           window.__early = {
             products: fetch('/api/products?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
             categories: fetch('/api/categories?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
-            reels: fetch('/api/reels?t=' + t, { cache: 'no-store' }).catch(function () { return null; })
+            reels: fetch('/api/reels?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
+            campaigns: fetch('/api/promo-campaigns?t=' + t, { cache: 'no-store' }).catch(function () { return null; })
           };
         } catch (e) {}
       })();
