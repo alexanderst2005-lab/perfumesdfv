@@ -406,6 +406,19 @@ const Footer = () => {
               </React.Fragment>
             ))}
           </div>
+
+          {/* Crédito de diseño */}
+          <a
+            href="https://wa.me/573027642208?text=Hola%20MA%20Digital%2C%20vi%20la%20p%C3%A1gina%20de%20DFV%20Perfumes%20y%20me%20gustar%C3%ADa%20cotizar%20una%20p%C3%A1gina%20web%20para%20mi%20negocio."
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Diseñado por MA Digital - escribir por WhatsApp"
+            className="ma-digital-credit"
+          >
+            <span className="ma-digital-label">Diseñado por</span>
+            <span className="ma-digital-badge">MA</span>
+            <span className="ma-digital-name">DIGITAL</span>
+          </a>
         </div>
       </div>
 
@@ -557,6 +570,45 @@ const Footer = () => {
       )}
 
       <style>{`
+        .ma-digital-credit {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 1.4rem;
+          text-decoration: none;
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.4);
+          transition: color 0.25s;
+        }
+        .ma-digital-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #D8B873, #B99A5B);
+          color: #0a0a0a;
+          font-weight: 700;
+          font-size: 0.62rem;
+          letter-spacing: 0;
+          box-shadow: 0 0 0 3px rgba(185,154,91,0.18), 0 0 14px rgba(185,154,91,0.45);
+          transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .ma-digital-name {
+          font-weight: 600;
+          color: rgba(255,255,255,0.75);
+          transition: color 0.25s;
+        }
+        .ma-digital-credit:hover { color: rgba(255,255,255,0.7); }
+        .ma-digital-credit:hover .ma-digital-name { color: #D8B873; }
+        .ma-digital-credit:hover .ma-digital-badge {
+          transform: scale(1.1);
+          box-shadow: 0 0 0 4px rgba(185,154,91,0.28), 0 0 20px rgba(185,154,91,0.7);
+        }
         .footer-grid {
           display: grid;
           grid-template-columns: 2fr 1fr 1fr 1.5fr;
