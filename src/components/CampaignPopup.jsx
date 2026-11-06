@@ -42,7 +42,7 @@ function markCampaignSeen(campaign) {
 function preloadCampaignImage(url) {
   return new Promise((resolve) => {
     if (!url) {
-      resolve(true);
+      resolve({ ok: true, aspect: null });
       return;
     }
     const img = new Image();
@@ -50,7 +50,8 @@ function preloadCampaignImage(url) {
     const done = (ok) => {
       if (settled) return;
       settled = true;
-      resolve(ok);
+      const aspect = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : null;
+      resolve({ ok, aspect });
     };
     const timeoutId = setTimeout(() => done(true), 2500);
     img.onload = () => {
@@ -77,6 +78,7 @@ const CampaignPopup = ({ campaigns }) => {
   const [currentCampaign, setCurrentCampaign] = useState(null);
   const [imgError, setImgError] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [aspect, setAspect] = useState(null);
 
   useEffect(() => {
     if (!campaigns || campaigns.length === 0) return;
@@ -89,10 +91,11 @@ const CampaignPopup = ({ campaigns }) => {
     Promise.all([
       preloadCampaignImage(toShow.image),
       new Promise(r => setTimeout(r, 300))
-    ]).then(([imgLoaded]) => {
+    ]).then(([imgInfo]) => {
       if (cancelled) return;
       setCurrentCampaign(toShow);
-      setImgError(!imgLoaded && Boolean(toShow.image));
+      setAspect(imgInfo.aspect);
+      setImgError(!imgInfo.ok && Boolean(toShow.image));
       setVisible(true);
       setMounted(true);
       markCampaignSeen(toShow);
@@ -212,20 +215,20 @@ const CampaignPopup = ({ campaigns }) => {
 
         @media (max-width: 640px) {
           .dfv-modal-box {
-            width: 88vw !important;
-            max-width: 350px !important;
-            max-height: 90dvh !important;
-            border-radius: 16px !important;
+            width: 90vw !important;
+            max-width: 420px !important;
+            max-height: 92dvh !important;
+            border-radius: 18px !important;
           }
           .dfv-modal-img-el {
-            max-height: 34dvh !important;
+            max-height: 52dvh !important;
           }
           .dfv-modal-body {
-            padding: 0.85rem 1.05rem 1.05rem !important;
+            padding: 0.9rem 1.15rem 1.15rem !important;
           }
           .dfv-modal-title {
             font-size: 1.15rem !important;
-            margin-bottom: 0.4rem !important;
+            margin-bottom: 0.35rem !important;
           }
           .dfv-modal-desc {
             font-size: 0.78rem !important;
@@ -233,8 +236,8 @@ const CampaignPopup = ({ campaigns }) => {
             line-height: 1.4 !important;
           }
           .dfv-promo-btn {
-            padding: 0.75rem 1rem !important;
-            font-size: 0.7rem !important;
+            padding: 0.78rem 1rem !important;
+            font-size: 0.72rem !important;
           }
         }
       `}</style>
@@ -262,12 +265,12 @@ const CampaignPopup = ({ campaigns }) => {
           transform: 'translate(-50%, -50%)',
           zIndex: 9001,
           width: '90%',
-          maxWidth: '400px',
+          maxWidth: '460px',
           maxHeight: '92dvh',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: '#0a0a0a',
-          borderRadius: '18px',
+          borderRadius: '20px',
           border: '1px solid rgba(185, 154, 91, 0.32)',
           boxShadow: '0 25px 80px rgba(0, 0, 0, 0.88), 0 0 40px rgba(185, 154, 91, 0.14)',
           overflow: 'hidden',
@@ -283,7 +286,7 @@ const CampaignPopup = ({ campaigns }) => {
           <X size={15} />
         </button>
 
-        {/* ── IMAGEN COMPLETA Y NÍTIDA (Sin bordes borrosos) ── */}
+        {/* ── IMAGEN COMPLETA, NÍTIDA Y DE ANCHO TOTAL (Sin bordes negros a los lados) ── */}
         {hasImage ? (
           <div
             className="dfv-modal-img"
@@ -309,9 +312,8 @@ const CampaignPopup = ({ campaigns }) => {
               style={{
                 width: '100%',
                 height: 'auto',
-                maxHeight: '38dvh',
+                maxHeight: '56dvh',
                 objectFit: 'contain',
-                backgroundColor: '#0a0a0a',
                 display: 'block'
               }}
             />

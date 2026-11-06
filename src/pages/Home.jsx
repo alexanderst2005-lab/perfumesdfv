@@ -121,7 +121,7 @@ const Home = () => {
           cachedSedes = sedes;
           setHeroSlides(prev => (JSON.stringify(prev) === JSON.stringify(slides) ? prev : slides));
           setSedesList(prev => (JSON.stringify(prev) === JSON.stringify(sedes) ? prev : sedes));
-          try { localStorage.setItem('dfv_hero_sedes_v2', JSON.stringify({ hero_slides: slides, sedes })); } catch {}
+          try { localStorage.setItem('dfv_hero_sedes_v2', JSON.stringify({ hero_slides: slides, sedes })); } catch { }
         })
         .catch(err => {
           console.error('Error loading hero & sedes:', err);
@@ -227,9 +227,9 @@ const Home = () => {
             >
               <picture style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', overflow: 'hidden', zIndex: -2 }}>
                 <source media="(max-width: 768px)" srcSet={optimizeImg(slide.imageMobile || slide.imageDesktop, 1400)} />
-                <img 
-                  src={optimizeImg(slide.imageDesktop, 2400)} 
-                  alt={slide.title} 
+                <img
+                  src={optimizeImg(slide.imageDesktop, 2400)}
+                  alt={slide.title}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
                   style={{
@@ -245,16 +245,16 @@ const Home = () => {
                   }}
                 />
               </picture>
-            
+
               {/* Overlay sutil adaptado a la alineación */}
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: slide.alignment === 'center' 
+                background: slide.alignment === 'center'
                   ? 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%)'
                   : slide.alignment === 'left'
-                  ? 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)'
-                  : 'linear-gradient(to left, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)',
+                    ? 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)'
+                    : 'linear-gradient(to left, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)',
                 zIndex: -1
               }} />
 
@@ -306,7 +306,7 @@ const Home = () => {
         })}
 
         {/* Flechas Desktop */}
-        <button 
+        <button
           onClick={prevSlide}
           className="hero-arrow hero-arrow-left"
           style={{ position: 'absolute', left: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
@@ -315,7 +315,7 @@ const Home = () => {
         >
           <ChevronLeft size={40} strokeWidth={1} />
         </button>
-        <button 
+        <button
           onClick={nextSlide}
           className="hero-arrow hero-arrow-right"
           style={{ position: 'absolute', right: '2rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 10, opacity: 0.6, transition: 'opacity 0.3s' }}
@@ -355,11 +355,11 @@ const Home = () => {
       </section>
 
       {/* ════ 2. LOS MÁS DESEADOS DEL MES ════ */}
-      <MostWantedCarousel 
-        products={products} 
-        onFav={toggleFavorite} 
-        isFavorite={isFavorite} 
-        onAdd={addToCart} 
+      <MostWantedCarousel
+        products={products}
+        onFav={toggleFavorite}
+        isFavorite={isFavorite}
+        onAdd={addToCart}
       />
 
       {/* ════ 3. BANNER PROMOCIONAL ════ */}
@@ -389,7 +389,7 @@ const Home = () => {
       {/* ════ 10. SEDES FÍSICAS (DISEÑO LIMPIO Y PROFESIONAL) ════ */}
       <section id="sedes" style={{ backgroundColor: '#ffffff', padding: '1.8rem 0 2.5rem' }}>
         <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.15rem' }}>
-          
+
           {/* ENCABEZADO: NUESTRAS SEDES CENTRADO EN PC / CON CONTROLES EN MÓVIL */}
           <div className="sedes-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', gap: '0.5rem', flexWrap: 'nowrap' }}>
             <h2 className="sedes-main-title" style={{
@@ -455,7 +455,7 @@ const Home = () => {
           </div>
 
           {/* CARRUSEL / GRID DE SEDES */}
-          <div 
+          <div
             className="sedes-slider-wrapper"
             onTouchStart={handleSedeTouchStart}
             onTouchEnd={handleSedeTouchEnd}
@@ -465,7 +465,7 @@ const Home = () => {
               position: 'relative'
             }}
           >
-            <div 
+            <div
               className="sedes-slider-track"
               style={{
                 display: 'flex',
@@ -475,7 +475,7 @@ const Home = () => {
               }}
             >
               {sedesList.map((s, idx) => (
-                <div 
+                <div
                   key={s.id || s.name || idx}
                   className="sede-slide-item"
                   style={{
@@ -683,9 +683,9 @@ const Home = () => {
 
           <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.6rem', letterSpacing: '1px' }}>¿TIENES OTRA PREGUNTA?</p>
-            <a 
-              href="https://wa.me/573027642208" 
-              target="_blank" 
+            <a
+              href="https://wa.me/573027642208"
+              target="_blank"
               rel="noreferrer"
               style={{
                 display: 'inline-block', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
@@ -702,7 +702,7 @@ const Home = () => {
       {/* ════ 11. MEDIOS DE PAGO Y ALIADOS ════ */}
       <section style={{ padding: '3.5rem 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #F0ECE6' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          
+
           {/* Opciones de Pago */}
           <div style={{ marginBottom: '3rem' }}>
             <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: '0.8rem' }}>
@@ -743,25 +743,25 @@ const Home = () => {
 
 /* ── Shared Product Card Component (Microinteracciones & Responsive) ── */
 export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) => (
-  <div 
-    className="product-card" 
-    style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      height: '100%', 
-      textAlign: 'center', 
+  <div
+    className="product-card"
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      textAlign: 'center',
       backgroundColor: 'transparent',
       transition: 'transform 0.25s ease, box-shadow 0.25s ease',
       borderRadius: '8px'
     }}
   >
-    <div 
-      className="product-card__image-wrap" 
-      style={{ 
-        position: 'relative', 
-        aspectRatio: '4/5', 
-        overflow: 'hidden', 
-        backgroundColor: '#FFFFFF', 
+    <div
+      className="product-card__image-wrap"
+      style={{
+        position: 'relative',
+        aspectRatio: '4/5',
+        overflow: 'hidden',
+        backgroundColor: '#FFFFFF',
         borderRadius: '8px',
         marginBottom: '0.75rem'
       }}
@@ -772,34 +772,34 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         onTouchStart={() => prefetchImg(product.image)}
         style={{ display: 'block', width: '100%', height: '100%' }}
       >
-        <img 
-          src={optimizeImg(product.image, 1200)} 
-          alt={product.name} 
+        <img
+          src={optimizeImg(product.image, 1200)}
+          alt={product.name}
           className="product-img"
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
-          style={{ 
-            width: '100%', 
-            height: '100%', 
+          style={{
+            width: '100%',
+            height: '100%',
             objectFit: 'contain',
             transition: 'transform 0.5s ease'
-          }} 
+          }}
         />
       </Link>
-      
+
       {/* Etiqueta de Descuento Destacada en Rojo */}
       {Boolean(product.discount && String(product.discount).trim()) && (
-        <span style={{ 
-          position: 'absolute', 
-          top: '10px', 
-          left: '10px', 
-          backgroundColor: '#DC2626', 
-          color: '#FFFFFF', 
-          padding: '4px 9px', 
-          fontSize: '0.72rem', 
-          letterSpacing: '0.6px', 
-          fontWeight: '800', 
+        <span style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          backgroundColor: '#DC2626',
+          color: '#FFFFFF',
+          padding: '4px 9px',
+          fontSize: '0.72rem',
+          letterSpacing: '0.6px',
+          fontWeight: '800',
           textTransform: 'uppercase',
           borderRadius: '4px',
           boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
@@ -847,20 +847,20 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         <button
           onClick={(e) => { e.preventDefault(); onAdd(); }}
           className="add-to-cart-btn-desktop"
-          style={{ 
-            position: 'absolute', 
-            bottom: '10px', 
+          style={{
+            position: 'absolute',
+            bottom: '10px',
             left: '50%',
             transform: 'translateX(-50%)',
             padding: '0.55rem 1.1rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(4px)',
             border: '1px solid #111',
             borderRadius: '3px',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            cursor: 'pointer', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
             color: '#111',
             fontFamily: 'var(--font-sans)',
             fontSize: '0.62rem',
@@ -876,15 +876,15 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         </button>
       )}
     </div>
-    
+
     <div className="product-card__info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', flexGrow: 1, padding: '0 0.25rem' }}>
       <Link to={`/producto/${product.id}`} style={{ textDecoration: 'none', width: '100%' }}>
-        <h3 style={{ 
-          fontFamily: 'var(--font-name)', 
-          fontSize: 'clamp(0.9rem, 1.4vw, 1rem)', 
-          fontWeight: '500', 
-          color: '#1A1A1A', 
-          lineHeight: '1.3', 
+        <h3 style={{
+          fontFamily: 'var(--font-name)',
+          fontSize: 'clamp(0.9rem, 1.4vw, 1rem)',
+          fontWeight: '500',
+          color: '#1A1A1A',
+          lineHeight: '1.3',
           marginBottom: '0.3rem',
           minHeight: '2.6em',
           overflow: 'hidden',
@@ -897,32 +897,32 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         </h3>
       </Link>
 
-      <p style={{ 
-        fontFamily: 'var(--font-sans)', 
-        fontSize: '0.62rem', 
-        fontWeight: '600', 
+      <p style={{
+        fontFamily: 'var(--font-sans)',
+        fontSize: '0.62rem',
+        fontWeight: '600',
         letterSpacing: '1.5px',
-        textTransform: 'uppercase', 
-        color: '#8A857D', 
+        textTransform: 'uppercase',
+        color: '#8A857D',
         margin: '0 0 0.2rem 0',
         textAlign: 'center'
       }}>
         {product.brand}
       </p>
 
-      <p style={{ 
-        fontFamily: 'var(--font-sans)', 
-        fontSize: '0.58rem', 
-        fontWeight: '400', 
+      <p style={{
+        fontFamily: 'var(--font-sans)',
+        fontSize: '0.58rem',
+        fontWeight: '400',
         letterSpacing: '1px',
-        textTransform: 'uppercase', 
-        color: '#B0AAA0', 
+        textTransform: 'uppercase',
+        color: '#B0AAA0',
         margin: '0 0 0.5rem 0',
         textAlign: 'center'
       }}>
         {product.category}
       </p>
-      
+
       <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'baseline', justifyContent: 'center', width: '100%', marginBottom: '0.5rem' }}>
         <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: '#0A0A0A', fontWeight: '600', letterSpacing: '-0.2px' }}>
           ${product.price.toLocaleString()}

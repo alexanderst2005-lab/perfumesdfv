@@ -235,9 +235,9 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                 {/* Popup de lujo DFV vertical */}
                 <div style={{
                   width: '100%',
-                  maxWidth: '400px',
+                  maxWidth: '460px',
                   backgroundColor: '#0a0a0a',
-                  borderRadius: '18px',
+                  borderRadius: '20px',
                   border: '1px solid rgba(185, 154, 91, 0.35)',
                   boxShadow: '0 25px 80px rgba(0,0,0,0.85), 0 0 40px rgba(185,154,91,0.14)',
                   overflow: 'hidden',
@@ -275,9 +275,8 @@ function CampaignPreviewModal({ form, selectedProducts, onClose }) {
                         style={{
                           width: '100%',
                           height: 'auto',
-                          maxHeight: '290px',
+                          maxHeight: '420px',
                           objectFit: 'contain',
-                          backgroundColor: '#0a0a0a',
                           display: 'block'
                         }}
                       />

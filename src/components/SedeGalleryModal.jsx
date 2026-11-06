@@ -526,3 +526,4 @@ const SedeGalleryModal = ({ sede, onClose }) => {
 };
 
 export default SedeGalleryModal;
+
