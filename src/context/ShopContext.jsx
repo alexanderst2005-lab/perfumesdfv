@@ -199,8 +199,12 @@ export const ShopProvider = ({ children }) => {
     };
     fetchData();
 
-    // Auto-refresh fresh data when window regains focus (e.g. switching back from admin panel)
+    // Auto-refresh fresh data when window regains focus (e.g. switching back from admin panel),
+    // con un intervalo de al menos 60s para no provocar re-renders ni saltos de scroll al tomar capturas de pantalla.
+    let lastFocusRefresh = Date.now();
     const handleFocus = () => {
+      if (Date.now() - lastFocusRefresh < 60000) return;
+      lastFocusRefresh = Date.now();
       refreshProducts().catch(() => { });
       refreshCategories().catch(() => { });
     };

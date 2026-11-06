@@ -31,13 +31,10 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 html,
 body {
   overflow-x: clip;
+  overflow-anchor: none;
   width: 100%;
   margin: 0;
   padding: 0;

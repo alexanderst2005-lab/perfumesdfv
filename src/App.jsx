@@ -58,6 +58,38 @@ function AppInner() {
   const activeKeyRef = useRef(key);
   const activePathRef = useRef(fullPath);
   const isRestoringRef = useRef(false);
+  const isInitialMount = useRef(true);
+
+  // Evitar saltos involuntarios al pie de página provocados por la tecla 'End' (que en muchas laptops
+  // comparte tecla física con 'PrtSc' / PrintScreen) o por la captura de pantalla del sistema.
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const target = e.target;
+      const isEditable = target && (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'SELECT' ||
+        target.isContentEditable
+      );
+      if (isEditable) return;
+
+      if (e.key === 'End' || e.code === 'End') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+
+      if (e.key === 'PrintScreen' || e.code === 'PrintScreen' || e.key === 'Snapshot') {
+        const currentY = window.scrollY;
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: currentY, behavior: 'instant' });
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, []);
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
@@ -78,7 +110,7 @@ function AppInner() {
   }, []);
 
   // Cuando cambia la ruta:
-  // - Si es navegación nueva (PUSH / REPLACE): subir al inicio (0,0)
+  // - En la carga inicial de la aplicación o navegación nueva (PUSH / REPLACE): siempre arriba limpio (0,0)
   // - Si el usuario le dio ATRÁS en el celular (POP): restaurar exactamente donde estaba
   useEffect(() => {
     isRestoringRef.current = true;
@@ -105,7 +137,8 @@ function AppInner() {
           isRestoringRef.current = false;
         }, 400)
       );
-    } else if (navType !== 'POP') {
+    } else if (isInitialMount.current || navType !== 'POP') {
+      isInitialMount.current = false;
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       const t = setTimeout(() => {
         isRestoringRef.current = false;
