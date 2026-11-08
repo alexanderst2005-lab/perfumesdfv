@@ -110,6 +110,66 @@ export const ShopProvider = ({ children }) => {
     } catch { return []; }
   });
 
+  const DEFAULT_CHANNELS = {
+    instagram: 'https://www.instagram.com/perfumesdfv',
+    facebook: 'https://www.facebook.com/perfumesdfv',
+    tiktok: 'https://www.tiktok.com/@perfumesdfv',
+    sede1_name: 'Sede Calle 31 · Centro',
+    sede1_phone: '573206970036',
+    sede2_name: 'Sede C.C. Llanogrande',
+    sede2_phone: '573208627036',
+    floating_mode: 'random',
+    floating_phone: '573027642208'
+  };
+
+  const [channels, setChannels] = useState(() => {
+    try {
+      const cached = localStorage.getItem('dfv_channels_cache');
+      return cached ? JSON.parse(cached) : DEFAULT_CHANNELS;
+    } catch {
+      return DEFAULT_CHANNELS;
+    }
+  });
+
+  const refreshChannels = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/contact-channels?t=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) return DEFAULT_CHANNELS;
+      const data = await res.json();
+      if (data && data.success && data.channels) {
+        const next = { ...DEFAULT_CHANNELS, ...data.channels };
+        setChannels(next);
+        try { localStorage.setItem('dfv_channels_cache', JSON.stringify(next)); } catch {}
+        return next;
+      }
+    } catch (e) {
+      console.error('Error cargando canales de contacto:', e);
+    }
+    return DEFAULT_CHANNELS;
+  }, []);
+
+  useEffect(() => {
+    refreshChannels();
+  }, [refreshChannels]);
+
+  const getRandomWhatsApp = useCallback((config = channels) => {
+    const ch = config || channels || DEFAULT_CHANNELS;
+    const phone1 = (ch.sede1_phone || '').replace(/[^0-9]/g, '');
+    const phone2 = (ch.sede2_phone || '').replace(/[^0-9]/g, '');
+    const list = [phone1, phone2].filter(Boolean);
+    if (list.length === 0) return '573027642208';
+    if (list.length === 1) return list[0];
+    return list[Math.floor(Math.random() * list.length)];
+  }, [channels]);
+
+  const getFloatingWhatsApp = useCallback((config = channels) => {
+    const ch = config || channels || DEFAULT_CHANNELS;
+    if (ch.floating_mode === 'sede1' && ch.sede1_phone) return ch.sede1_phone.replace(/[^0-9]/g, '');
+    if (ch.floating_mode === 'sede2' && ch.sede2_phone) return ch.sede2_phone.replace(/[^0-9]/g, '');
+    if (ch.floating_mode === 'custom' && ch.floating_phone) return ch.floating_phone.replace(/[^0-9]/g, '');
+    return getRandomWhatsApp(ch);
+  }, [channels, getRandomWhatsApp]);
+
   const refreshCampaigns = useCallback(async (earlyCampPromise = null) => {
     try {
       const earlyRes = earlyCampPromise ? await earlyCampPromise : null;
@@ -301,6 +361,7 @@ export const ShopProvider = ({ children }) => {
     <ShopContext.Provider value={{
       products, allProducts, setProducts, upsertProductLocal, removeProductLocal, refreshProducts, brands, categories, refreshCategories, isLoadingProducts, isFresh,
       activeCampaigns, refreshCampaigns,
+      channels, setChannels, refreshChannels, getRandomWhatsApp, getFloatingWhatsApp,
       cart, favorites, isCartOpen, setIsCartOpen,
       addToCart, removeFromCart, updateQuantity, toggleFavorite, isFavorite, clearCart,
       cartTotal, cartCount

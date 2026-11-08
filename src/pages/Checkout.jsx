@@ -41,7 +41,7 @@ const DEFAULT_SHIPPING_ZONES = [
 let cachedShippingZones = null;
 
 const Checkout = () => {
-  const { cart, cartTotal, clearCart } = useShop();
+  const { cart, cartTotal, clearCart, getRandomWhatsApp, channels } = useShop();
   const navigate = useNavigate();
 
   // Zonas de cobertura y tarifas configuradas desde el panel administrativo
@@ -212,7 +212,7 @@ const Checkout = () => {
       }
 
       const encodedMessage = encodeURIComponent(message);
-      const whatsappNumber = "573027642208"; 
+      const whatsappNumber = getRandomWhatsApp ? getRandomWhatsApp(channels) : "573027642208"; 
       window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
       
       clearCart();

@@ -1,12 +1,23 @@
 import React from 'react';
+import { useShop } from '../context/ShopContext';
 
 const WhatsAppButton = () => {
+  const { getFloatingWhatsApp } = useShop();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const phone = getFloatingWhatsApp ? getFloatingWhatsApp() : '573027642208';
+    window.open(`https://wa.me/${phone}`, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <a 
-      href="https://wa.me/573027642208" 
+      href={`https://wa.me/${getFloatingWhatsApp ? getFloatingWhatsApp() : '573027642208'}`}
+      onClick={handleClick}
       target="_blank" 
       rel="noopener noreferrer"
       className="whatsapp-floating-btn"
+      aria-label="Contactar por WhatsApp"
       style={{
         position: 'fixed',
         bottom: '2rem',

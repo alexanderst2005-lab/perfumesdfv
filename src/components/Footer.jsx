@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
+import { useShop } from '../context/ShopContext';
 
 const InstagramIcon = ({ size = 18, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -138,6 +139,7 @@ const POLICY_MODALS = {
 };
 
 const Footer = () => {
+  const { channels } = useShop();
   const [activeModalKey, setActiveModalKey] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -182,13 +184,13 @@ const Footer = () => {
               Tu esencia, tu identidad.<br />Fragancias que cuentan tu historia.
             </p>
             <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
-              <a href="https://www.instagram.com/perfumesdfv" target="_blank" rel="noreferrer" aria-label="Instagram DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+              <a href={channels?.instagram || "https://www.instagram.com/perfumesdfv"} target="_blank" rel="noreferrer" aria-label="Instagram DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
                 <InstagramIcon />
               </a>
-              <a href="https://www.facebook.com/perfumesdfv" target="_blank" rel="noreferrer" aria-label="Facebook DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+              <a href={channels?.facebook || "https://www.facebook.com/perfumesdfv"} target="_blank" rel="noreferrer" aria-label="Facebook DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
                 <FacebookIcon />
               </a>
-              <a href="https://www.tiktok.com/@perfumesdfv" target="_blank" rel="noreferrer" aria-label="TikTok DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+              <a href={channels?.tiktok || "https://www.tiktok.com/@perfumesdfv"} target="_blank" rel="noreferrer" aria-label="TikTok DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
                 <TikTokIcon />
               </a>
             </div>
@@ -298,14 +300,14 @@ const Footer = () => {
                   </a>
                   {' · '}
                   <a
-                    href="https://wa.me/573206970036?text=Hola%20DFV%20Perfumes%20(Sede%20Calle%2031%20Centro)%2C%20quisiera%20recibir%20asesor%C3%ADa."
+                    href={`https://wa.me/${(channels?.sede1_phone || '573206970036').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hola DFV Perfumes (${channels?.sede1_name || 'Sede Calle 31 Centro'}), quisiera recibir asesoría.`)}`}
                     target="_blank"
                     rel="noreferrer"
                     style={{ color: 'inherit', textDecoration: 'none' }}
                     onMouseEnter={e => e.currentTarget.style.color = '#fff'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
                   >
-                    WA: +57 320 697 0036
+                    WA: +{channels?.sede1_phone || '57 320 697 0036'}
                   </a>
                 </p>
               </div>
@@ -318,7 +320,7 @@ const Footer = () => {
                   onMouseEnter={e => e.currentTarget.style.color = '#B99A5B'}
                   onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.9)'}
                 >
-                  Sede C.C. Llanogrande
+                  {channels?.sede2_name || 'Sede C.C. Llanogrande'}
                 </a>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', marginTop: '0.1rem' }}>
                   <a
@@ -333,14 +335,14 @@ const Footer = () => {
                   </a>
                   {' · '}
                   <a
-                    href="https://wa.me/573208627036?text=Hola%20DFV%20Perfumes%20(Sede%20C.C.%20Llanogrande)%2C%20quisiera%20recibir%20asesor%C3%ADa."
+                    href={`https://wa.me/${(channels?.sede2_phone || '573208627036').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hola DFV Perfumes (${channels?.sede2_name || 'Sede C.C. Llanogrande'}), quisiera recibir asesoría.`)}`}
                     target="_blank"
                     rel="noreferrer"
                     style={{ color: 'inherit', textDecoration: 'none' }}
                     onMouseEnter={e => e.currentTarget.style.color = '#fff'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
                   >
-                    WA: +57 320 862 7036
+                    WA: +{channels?.sede2_phone || '57 320 862 7036'}
                   </a>
                 </p>
               </div>

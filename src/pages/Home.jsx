@@ -85,7 +85,7 @@ let cachedSedes = null;
 const TOTAL_HEADER = 106; // announcement(36) + header(70)
 
 const Home = () => {
-  const { addToCart, toggleFavorite, isFavorite, products } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, channels } = useShop();
 
   const [openFaq, setOpenFaq] = useState(null);
   // Se parte de la última versión guardada del navegador (o vacío) para no mostrar
@@ -681,19 +681,64 @@ const Home = () => {
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.6rem', letterSpacing: '1px' }}>¿TIENES OTRA PREGUNTA?</p>
-            <a
-              href="https://wa.me/573027642208"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: 'inline-block', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-black)', borderBottom: '1px solid var(--color-black)', paddingBottom: '3px', fontWeight: '500', textDecoration: 'none', transition: 'opacity 0.3s'
-              }}
-              onMouseEnter={e => e.target.style.opacity = 0.6}
-              onMouseLeave={e => e.target.style.opacity = 1}
-            >
-              CONSULTAR POR WHATSAPP →
-            </a>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.75rem', color: '#888', marginBottom: '0.9rem', letterSpacing: '1px' }}>¿TIENES OTRA PREGUNTA?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <a
+                href={`https://wa.me/${(channels?.sede1_phone || '573206970036').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hola DFV Perfumes (${channels?.sede1_name || 'Sede Calle 31'}), tengo una consulta.`)}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.72rem',
+                  letterSpacing: '1.2px',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-black)',
+                  border: '1px solid var(--color-black)',
+                  backgroundColor: '#FFFFFF',
+                  padding: '0.55rem 1rem',
+                  borderRadius: '2px',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#111'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.color = 'var(--color-black)'; }}
+              >
+                <span>{channels?.sede1_name || 'Sede Calle 31'}</span>
+                <span style={{ fontSize: '0.8rem' }}>→</span>
+              </a>
+
+              <a
+                href={`https://wa.me/${(channels?.sede2_phone || '573208627036').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hola DFV Perfumes (${channels?.sede2_name || 'Sede Llanogrande'}), tengo una consulta.`)}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.72rem',
+                  letterSpacing: '1.2px',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-black)',
+                  border: '1px solid var(--color-black)',
+                  backgroundColor: '#FFFFFF',
+                  padding: '0.55rem 1rem',
+                  borderRadius: '2px',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#111'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.color = 'var(--color-black)'; }}
+              >
+                <span>{channels?.sede2_name || 'Sede Llanogrande'}</span>
+                <span style={{ fontSize: '0.8rem' }}>→</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>

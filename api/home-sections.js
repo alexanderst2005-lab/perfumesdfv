@@ -26,7 +26,9 @@ export default async function handler(req, res) {
      rawUrl.includes('hero-sedes') ? 'hero-sedes' :
      rawUrl.includes('site-counters') ? 'site-counters' :
      rawUrl.includes('shipping-zones') ? 'shipping-zones' :
-     rawUrl.includes('shipping-settings') ? 'shipping-zones' : '');
+     rawUrl.includes('shipping-settings') ? 'shipping-zones' :
+     rawUrl.includes('contact-channels') ? 'contact-channels' :
+     rawUrl.includes('channels') ? 'contact-channels' : '');
 
   // Helper para normalizar los campos de imagen en respuesta (image e image_url)
   const withDualImage = (row) => {
@@ -727,6 +729,96 @@ export default async function handler(req, res) {
         });
       } catch (error) {
         console.error('Error saving shipping settings:', error);
+        return res.status(500).json({ success: false, error: error.message || 'Database error' });
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 8. CANALES DE CONTACTO, WHATSAPP Y REDES SOCIALES
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (type === 'contact-channels' || type === 'channels') {
+    const DEFAULT_CHANNELS = {
+      instagram: 'https://www.instagram.com/perfumesdfv',
+      facebook: 'https://www.facebook.com/perfumesdfv',
+      tiktok: 'https://www.tiktok.com/@perfumesdfv',
+      sede1_name: 'Sede Calle 31 · Centro',
+      sede1_phone: '573206970036',
+      sede2_name: 'Sede C.C. Llanogrande',
+      sede2_phone: '573208627036',
+      floating_mode: 'random', // 'random', 'sede1', 'sede2', 'custom'
+      floating_phone: '573027642208'
+    };
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS site_contact_channels (
+        id SERIAL PRIMARY KEY,
+        settings JSONB DEFAULT '{}',
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `.catch(() => {});
+
+    if (req.method === 'GET') {
+      try {
+        const rows = await sql`SELECT * FROM site_contact_channels ORDER BY id ASC LIMIT 1`;
+        if (rows.length === 0) {
+          return res.status(200).json({
+            success: true,
+            channels: DEFAULT_CHANNELS
+          });
+        }
+        const saved = rows[0].settings && typeof rows[0].settings === 'object' ? rows[0].settings : {};
+        return res.status(200).json({
+          success: true,
+          channels: { ...DEFAULT_CHANNELS, ...saved }
+        });
+      } catch (error) {
+        console.error('Error fetching contact channels:', error);
+        return res.status(200).json({
+          success: true,
+          channels: DEFAULT_CHANNELS
+        });
+      }
+    }
+
+    if (req.method === 'PUT' || req.method === 'POST') {
+      try {
+        const incoming = body?.channels || body || {};
+        const cleanSettings = {
+          instagram: (incoming.instagram || DEFAULT_CHANNELS.instagram).trim(),
+          facebook: (incoming.facebook || DEFAULT_CHANNELS.facebook).trim(),
+          tiktok: (incoming.tiktok || DEFAULT_CHANNELS.tiktok).trim(),
+          sede1_name: (incoming.sede1_name || DEFAULT_CHANNELS.sede1_name).trim(),
+          sede1_phone: (incoming.sede1_phone || DEFAULT_CHANNELS.sede1_phone).replace(/[^0-9]/g, ''),
+          sede2_name: (incoming.sede2_name || DEFAULT_CHANNELS.sede2_name).trim(),
+          sede2_phone: (incoming.sede2_phone || DEFAULT_CHANNELS.sede2_phone).replace(/[^0-9]/g, ''),
+          floating_mode: incoming.floating_mode || DEFAULT_CHANNELS.floating_mode,
+          floating_phone: (incoming.floating_phone || DEFAULT_CHANNELS.floating_phone).replace(/[^0-9]/g, '')
+        };
+
+        const existing = await sql`SELECT id FROM site_contact_channels ORDER BY id ASC LIMIT 1`;
+        let result;
+        if (existing.length === 0) {
+          result = await sql`
+            INSERT INTO site_contact_channels (settings, updated_at)
+            VALUES (${JSON.stringify(cleanSettings)}::jsonb, NOW())
+            RETURNING *
+          `;
+        } else {
+          result = await sql`
+            UPDATE site_contact_channels SET
+              settings = ${JSON.stringify(cleanSettings)}::jsonb,
+              updated_at = NOW()
+            WHERE id = ${existing[0].id}
+            RETURNING *
+          `;
+        }
+        return res.status(200).json({
+          success: true,
+          channels: result[0].settings
+        });
+      } catch (error) {
+        console.error('Error saving contact channels:', error);
         return res.status(500).json({ success: false, error: error.message || 'Database error' });
       }
     }

@@ -34,6 +34,14 @@
       "destination": "/api/home-sections?type=shipping-zones"
     },
     {
+      "source": "/api/contact-channels",
+      "destination": "/api/home-sections?type=contact-channels"
+    },
+    {
+      "source": "/api/channels",
+      "destination": "/api/home-sections?type=contact-channels"
+    },
+    {
       "source": "/api/admin/reels",
       "destination": "/api/reels?admin=true"
     },

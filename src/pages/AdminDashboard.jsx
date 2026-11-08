@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck, MessageCircle } from 'lucide-react';
 const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
 const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
 const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
@@ -15,6 +15,7 @@ const CountersModule = lazy(() => import('../components/admin/CountersModule'));
 const MostWantedModule = lazy(() => import('../components/admin/MostWantedModule'));
 const HeroSedesModule = lazy(() => import('../components/admin/HeroSedesModule'));
 const ShippingModule = lazy(() => import('../components/admin/ShippingModule'));
+const ChannelsModule = lazy(() => import('../components/admin/ChannelsModule'));
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -71,6 +72,7 @@ const AdminDashboard = () => {
       import('../components/admin/CampaignsModule');
       import('../components/admin/CountersModule');
       import('../components/admin/ShippingModule');
+      import('../components/admin/ChannelsModule');
     }, 80);
     return () => clearTimeout(timer);
   }, [isLoggedIn]);
@@ -82,6 +84,7 @@ const AdminDashboard = () => {
     { id: 'most-wanted', label: 'Los Más Deseados', icon: Star },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart },
     { id: 'shipping', label: 'Configuración de envíos', icon: Truck },
+    { id: 'channels', label: 'WhatsApp y Redes Sociales', icon: MessageCircle },
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'reels', label: 'Reels / Videos', icon: Video },
     { id: 'customers', label: 'Clientes', icon: Users },
@@ -408,6 +411,7 @@ const AdminDashboard = () => {
             {activeTab === 'inventory' && <InventoryModule />}
             {activeTab === 'orders' && <OrdersModule />}
             {activeTab === 'shipping' && <ShippingModule />}
+            {activeTab === 'channels' && <ChannelsModule />}
             {activeTab === 'categories' && <CategoriesModule />}
             {activeTab === 'reels' && <ReelsModule />}
             {activeTab === 'customers' && <CustomersModule />}

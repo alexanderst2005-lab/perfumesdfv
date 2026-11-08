@@ -136,7 +136,7 @@ const GalleryPreloader = ({ images }) => {
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts, isFresh } = useShop();
+  const { addToCart, toggleFavorite, isFavorite, products, isLoadingProducts, isFresh, getRandomWhatsApp, channels } = useShop();
   const product = products.find(p => p.id === id);
 
   const [size, setSize] = useState(() => (Array.isArray(product?.sizes) ? product.sizes.find(s => s && String(s).trim()) : '') || '');
@@ -560,7 +560,8 @@ const ProductDetail = () => {
                   const currentUrl = typeof window !== 'undefined' ? window.location.href : `https://perfumesdfv.com/producto/${product.id}`;
                   const formattedPrice = `$${Number(product.price || 0).toLocaleString()}`;
                   const message = `Hola, me interesa el perfume ${product.name} (${formattedPrice}). Quiero asesoría para comprarlo. ${currentUrl}`;
-                  const waUrl = `https://wa.me/573027642208?text=${encodeURIComponent(message)}`;
+                  const targetPhone = getRandomWhatsApp ? getRandomWhatsApp(channels) : '573027642208';
+                  const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`;
                   window.open(waUrl, '_blank', 'noopener,noreferrer');
                 }}
                 style={{
