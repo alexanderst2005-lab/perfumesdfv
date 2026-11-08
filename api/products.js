@@ -20,6 +20,7 @@ export default async function handler(req, res) {
   // Admin writes routed here or normal GET
   if (req.method === 'GET') {
     try {
+      await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS tag TEXT DEFAULT ''`.catch(() => {});
       const rows = await sql`
         SELECT 
           p.*,
@@ -52,7 +53,8 @@ export default async function handler(req, res) {
         active: row.active !== false,
         isNew: row.is_new,
         isBestSeller: row.is_best_seller,
-        isMostWanted: row.is_most_wanted === true
+        isMostWanted: row.is_most_wanted === true,
+        tag: row.tag || null
       }));
 
       return res.status(200).json(products);

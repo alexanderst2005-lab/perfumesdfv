@@ -12,6 +12,7 @@ import CustomerReviewsSection from '../components/CustomerReviewsSection';
 import CountersBar from '../components/CountersBar';
 import SedeGalleryModal from '../components/SedeGalleryModal';
 import LazyOnView from '../components/LazyOnView';
+import ProductTagBadge from '../components/ProductTagBadge';
 import { optimizeImg, prefetchImg } from '../utils/img';
 
 const InstagramReelsSection = lazy(() => import('../components/InstagramReelsSection'));
@@ -786,29 +787,42 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
         />
       </Link>
 
-      {/* Etiqueta de Descuento Destacada en Rojo */}
-      {Boolean(product.discount && String(product.discount).trim()) && (
-        <span style={{
+      {/* Contenedor Superior Izquierdo: Etiqueta y Descuento independientes */}
+      <div
+        style={{
           position: 'absolute',
           top: '10px',
           left: '10px',
-          backgroundColor: '#DC2626',
-          color: '#FFFFFF',
-          padding: '4px 9px',
-          fontSize: '0.72rem',
-          letterSpacing: '0.6px',
-          fontWeight: '800',
-          textTransform: 'uppercase',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: '5px',
           zIndex: 6,
-          lineHeight: 1,
-          display: 'inline-flex',
-          alignItems: 'center'
-        }}>
-          -{String(product.discount).replace(/[^0-9]/g, '')}% OFF
-        </span>
-      )}
+          pointerEvents: 'none'
+        }}
+      >
+        {Boolean(product.tag) && (
+          <ProductTagBadge tag={product.tag} />
+        )}
+        {Boolean(product.discount && String(product.discount).trim()) && (
+          <span style={{
+            backgroundColor: '#DC2626',
+            color: '#FFFFFF',
+            padding: '3px 8px',
+            fontSize: '0.68rem',
+            letterSpacing: '0.6px',
+            fontWeight: '800',
+            textTransform: 'uppercase',
+            borderRadius: '999px',
+            boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+            lineHeight: 1,
+            display: 'inline-flex',
+            alignItems: 'center'
+          }}>
+            -{String(product.discount).replace(/[^0-9]/g, '')}% OFF
+          </span>
+        )}
+      </div>
 
       {/* Overlay AGOTADO */}
       {!product.inStock && (

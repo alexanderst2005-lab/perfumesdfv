@@ -35,15 +35,18 @@ export default async function handler(req, res) {
         }
       }
 
+      await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS tag TEXT DEFAULT ''`.catch(() => {});
+      const cleanTag = p.tag && p.tag !== 'Ninguna' && p.tag !== 'ninguna' ? p.tag.trim() : null;
+
       const result = await sql`
         INSERT INTO products (
           id, name, brand, category, category_id, family, price, old_price, discount, sizes,
-          image, images, description, occasion, notes, concentration, in_stock, stock_count, is_new, is_best_seller, is_most_wanted, active
+          image, images, description, occasion, notes, concentration, in_stock, stock_count, is_new, is_best_seller, is_most_wanted, active, tag
         ) VALUES (
           ${p.id}, ${p.name}, ${p.brand}, ${categoryName}, ${categoryId}, ${p.family}, ${p.price},
           ${p.oldPrice || null}, ${p.discount || null}, ${JSON.stringify(p.sizes || [])},
           ${p.image}, ${JSON.stringify(p.images || [])}, ${p.description}, ${p.occasion || null}, ${JSON.stringify(p.notes || {})}, ${p.concentration},
-          ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.isMostWanted === true}, ${p.active}
+          ${p.inStock}, ${p.stockCount || 0}, ${p.isNew}, ${p.isBestSeller}, ${p.isMostWanted === true}, ${p.active}, ${cleanTag}
         ) RETURNING *
       `;
 
@@ -80,6 +83,9 @@ export default async function handler(req, res) {
         }
       }
 
+      await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS tag TEXT DEFAULT ''`.catch(() => {});
+      const cleanTag = p.tag && p.tag !== 'Ninguna' && p.tag !== 'ninguna' ? p.tag.trim() : null;
+
       const result = await sql`
         UPDATE products SET 
           name = ${p.name},
@@ -102,7 +108,8 @@ export default async function handler(req, res) {
           is_new = ${p.isNew},
           is_best_seller = ${p.isBestSeller},
           is_most_wanted = ${p.isMostWanted === true},
-          active = ${p.active}
+          active = ${p.active},
+          tag = ${cleanTag}
         WHERE id = ${p.id}
         RETURNING *
       `;

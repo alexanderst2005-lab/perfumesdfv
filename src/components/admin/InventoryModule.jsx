@@ -1,7 +1,8 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { useShop } from '../../context/ShopContext';
-import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon, CheckCircle, XCircle, Upload, Save, X, Search, Tag as TagIcon } from 'lucide-react';
 import { optimizeImg, uploadAdminImage } from '../../utils/img';
+import ProductTagBadge from '../ProductTagBadge';
 
 const InventoryModule = () => {
   const { allProducts: products, upsertProductLocal, removeProductLocal, refreshProducts, categories, isLoadingProducts } = useShop();
@@ -15,7 +16,8 @@ const InventoryModule = () => {
     id: '', name: '', brand: '', category: '', categoryId: null, family: '',
     price: '', oldPrice: '', discount: '', sizesText: '',
     description: '', occasion: '', concentration: '',
-    stockCount: 10, inStock: true, active: true, image: '', images: []
+    stockCount: 10, inStock: true, active: true, image: '', images: [],
+    tag: ''
   });
 
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -34,7 +36,8 @@ const InventoryModule = () => {
       price: '', oldPrice: '', discount: '', sizesText: '',
       description: '', occasion: '', concentration: '',
       stockCount: 10, inStock: true, active: true, image: '', images: [],
-      isMostWanted: false
+      isMostWanted: false,
+      tag: ''
     });
     setImagePreviews([]);
     setIsModalOpen(true);
@@ -87,7 +90,8 @@ const InventoryModule = () => {
       concentration: p.concentration || '', stockCount: p.stockCount || 10,
       inStock: p.inStock, active: p.active !== false, image: p.image || '', images: p.images || [],
       notes: p.notes || {}, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller,
-      isMostWanted: !!p.isMostWanted
+      isMostWanted: !!p.isMostWanted,
+      tag: p.tag || ''
     });
     const rawExisting = [];
     if (p.image && typeof p.image === 'string' && p.image.trim()) {
@@ -245,6 +249,7 @@ const InventoryModule = () => {
         isNew: !!formData.isNew,
         isBestSeller: !!formData.isBestSeller,
         isMostWanted: !!formData.isMostWanted,
+        tag: formData.tag && formData.tag !== 'Ninguna' ? formData.tag.trim() : null,
         sizes: parsedSizes,
         image: finalImageUrl,
         images: secondaryImages
@@ -362,6 +367,9 @@ const InventoryModule = () => {
                   <div>
                     <p style={{ fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                       {p.name}
+                      {p.tag && (
+                        <ProductTagBadge tag={p.tag} style={{ fontSize: '0.58rem', padding: '2px 6px' }} />
+                      )}
                       {p.isMostWanted && (
                         <span style={{ fontSize: '0.65rem', backgroundColor: '#fef3c7', color: '#92400e', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
                           ★ MÁS DESEADO
@@ -560,6 +568,27 @@ const InventoryModule = () => {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              {/* Etiqueta del Producto */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
+                  Etiqueta del Producto
+                </label>
+                <select
+                  value={formData.tag || ''}
+                  onChange={e => setFormData({ ...formData, tag: e.target.value })}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', width: '100%', fontSize: '0.85rem', backgroundColor: '#fff', outline: 'none' }}
+                >
+                  <option value="">Ninguna</option>
+                  <option value="Nuevo">Nuevo</option>
+                  <option value="Más vendido">Más vendido</option>
+                  <option value="Últimas unidades">Últimas unidades</option>
+                  <option value="Edición limitada">Edición limitada</option>
+                </select>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '0.2rem', display: 'block' }}>
+                  Píldora distintiva que se mostrará sobre la fotografía del perfume en tarjetas y en su página individual (funciona de forma independiente del descuento).
+                </span>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>

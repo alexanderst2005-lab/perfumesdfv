@@ -4,6 +4,7 @@ import { Minus, Plus, ShoppingBag, ChevronLeft, ChevronRight, ArrowLeft } from '
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
 import { optimizeImg } from '../utils/img';
+import ProductTagBadge from '../components/ProductTagBadge';
 
 const TOTAL_HEADER = 106;
 
@@ -388,6 +389,45 @@ const ProductDetail = () => {
                   </button>
                 </>
               )}
+
+              {/* Contenedor Superior Izquierdo: Etiqueta y Descuento independientes */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '6px',
+                  zIndex: 4,
+                  pointerEvents: 'none'
+                }}
+              >
+                {Boolean(product.tag) && (
+                  <ProductTagBadge tag={product.tag} style={{ fontSize: '0.68rem', padding: '4px 10px' }} />
+                )}
+                {Boolean(product.discount && String(product.discount).trim()) && (
+                  <span
+                    style={{
+                      backgroundColor: '#DC2626',
+                      color: '#FFFFFF',
+                      padding: '4px 9px',
+                      fontSize: '0.72rem',
+                      fontWeight: '800',
+                      borderRadius: '999px',
+                      letterSpacing: '0.6px',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 2px 8px rgba(220, 38, 38, 0.35)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      lineHeight: 1
+                    }}
+                  >
+                    -{String(product.discount).replace(/[^0-9]/g, '')}% OFF
+                  </span>
+                )}
+              </div>
 
               {/* Counter Badge */}
               {images.length > 1 && (
