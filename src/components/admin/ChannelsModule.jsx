@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useShop } from '../../context/ShopContext';
-import { Save, CheckCircle, Share2, MessageCircle, Shuffle, Smartphone, Globe, AlertCircle, HelpCircle } from 'lucide-react';
+import { Save, CheckCircle, Share2, MessageCircle, Shuffle, Smartphone, Globe, AlertCircle, HelpCircle, Mail } from 'lucide-react';
 
 const InstagramIcon = ({ size = 20, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -23,9 +23,10 @@ const TikTokIcon = ({ size = 20, color = 'currentColor' }) => (
 );
 
 const ChannelsModule = () => {
-  const { channels: contextChannels, refreshChannels } = useShop();
+  const { channels: contextChannels, setChannels, refreshChannels } = useShop();
 
   const [formData, setFormData] = useState({
+    email: 'info@dfvperfumes.com',
     instagram: 'https://www.instagram.com/perfumesdfv',
     facebook: 'https://www.facebook.com/perfumesdfv',
     tiktok: 'https://www.tiktok.com/@perfumesdfv',
@@ -47,6 +48,18 @@ const ChannelsModule = () => {
     }
   }, [contextChannels]);
 
+  useEffect(() => {
+    fetch(`/api/contact-channels?t=${Date.now()}`, { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && data.channels) {
+          setFormData(prev => ({ ...prev, ...data.channels }));
+          if (setChannels) setChannels(data.channels);
+        }
+      })
+      .catch(err => console.error('Error cargando canales en admin:', err));
+  }, []);
+
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3500);
@@ -56,18 +69,37 @@ const ChannelsModule = () => {
     setFormData(prev => ({ ...prev, [field]: val }));
   };
 
+  const formatExternalUrl = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    const clean = url.trim();
+    if (!clean) return '';
+    if (/^https?:\/\//i.test(clean)) return clean;
+    return `https://${clean}`;
+  };
+
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     setIsSaving(true);
+
+    const payload = {
+      ...formData,
+      email: (formData.email || '').trim().toLowerCase(),
+      instagram: formatExternalUrl(formData.instagram),
+      facebook: formatExternalUrl(formData.facebook),
+      tiktok: formatExternalUrl(formData.tiktok)
+    };
+
     try {
       const res = await fetch('/api/contact-channels', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channels: formData })
+        body: JSON.stringify({ channels: payload })
       });
       const data = await res.json();
       if (data && data.success) {
-        showToast('Canales de WhatsApp y Redes Sociales actualizados correctamente');
+        showToast('Canales de WhatsApp, Correo y Redes Sociales actualizados correctamente');
+        setFormData(prev => ({ ...prev, ...data.channels }));
+        if (setChannels) setChannels(data.channels);
         if (refreshChannels) await refreshChannels();
       } else {
         throw new Error(data.error || 'Error al guardar');
@@ -438,7 +470,7 @@ const ChannelsModule = () => {
           )}
         </div>
 
-        {/* ════ BLOQUE 3: REDES SOCIALES (FOOTER) ════ */}
+        {/* ════ BLOQUE 3: CORREO Y REDES SOCIALES (FOOTER Y CONTACTO) ════ */}
         <div style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '12px',
@@ -448,13 +480,52 @@ const ChannelsModule = () => {
         }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Share2 size={18} color="#111827" />
-            Redes Sociales (Enlaces del Footer)
+            Correo Electrónico y Redes Sociales
           </h3>
           <p style={{ fontSize: '0.75rem', color: '#6B7280', margin: '0.2rem 0 1.25rem 0' }}>
-            Personaliza los enlaces a los que dirigen los iconos de Instagram, Facebook y TikTok en el pie de página.
+            Personaliza el correo electrónico oficial y los enlaces de Instagram, Facebook y TikTok para el pie de página y la sección de contacto.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {/* Correo Electrónico Oficial */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.85rem',
+              backgroundColor: '#FAF8F5',
+              borderRadius: '8px',
+              border: '1px solid #ECE7DE'
+            }}>
+              <div style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '8px',
+                backgroundColor: '#FEF3C7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Mail size={22} color="#D97706" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>
+                    Correo Electrónico Oficial (Email)
+                  </label>
+                  <span style={{ fontSize: '0.65rem', color: '#B99A5B', fontWeight: 600 }}>Visible en Footer y Contacto</span>
+                </div>
+                <input
+                  type="email"
+                  value={formData.email || ''}
+                  onChange={e => handleChange('email', e.target.value)}
+                  placeholder="info@dfvperfumes.com"
+                  style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid #D1D5DB', borderRadius: '6px', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
             {/* Instagram */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{

@@ -11,7 +11,7 @@ const ANNOUNCE_H = 36;
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cartCount, favorites, setIsCartOpen, categories } = useShop();
+  const { cartCount, favorites, setIsCartOpen, categories, channels } = useShop();
   const location = useLocation();
   const isHome = location.pathname === '/';
 
@@ -147,7 +147,9 @@ const Header = () => {
 
               <div style={{ textAlign: 'center', paddingBottom: '2rem' }}>
                 <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: '#666', marginBottom: '0.8rem' }}>SÍGUENOS EN REDES</p>
-                <a href="https://www.instagram.com/perfumesdfv" target="_blank" rel="noreferrer" style={{ fontSize: '0.95rem', color: 'var(--color-black)', textDecoration: 'none', fontWeight: '600', letterSpacing: '1px' }}>@perfumesdfv</a>
+                <a href={channels?.instagram || "https://www.instagram.com/perfumesdfv"} target="_blank" rel="noreferrer" style={{ fontSize: '0.95rem', color: 'var(--color-black)', textDecoration: 'none', fontWeight: '600', letterSpacing: '1px' }}>
+                  {channels?.instagram ? channels.instagram.replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, '@') : '@perfumesdfv'}
+                </a>
               </div>
             </motion.div>
           </>

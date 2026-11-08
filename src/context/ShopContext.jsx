@@ -111,6 +111,7 @@ export const ShopProvider = ({ children }) => {
   });
 
   const DEFAULT_CHANNELS = {
+    email: 'info@dfvperfumes.com',
     instagram: 'https://www.instagram.com/perfumesdfv',
     facebook: 'https://www.facebook.com/perfumesdfv',
     tiktok: 'https://www.tiktok.com/@perfumesdfv',

@@ -3,6 +3,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 
+const ensureAbsoluteUrl = (url, fallback) => {
+  if (!url || !String(url).trim()) return fallback || '#';
+  const trimmed = String(url).trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+};
+
 const InstagramIcon = ({ size = 18, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -184,13 +191,13 @@ const Footer = () => {
               Tu esencia, tu identidad.<br />Fragancias que cuentan tu historia.
             </p>
             <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
-              <a href={channels?.instagram || "https://www.instagram.com/perfumesdfv"} target="_blank" rel="noreferrer" aria-label="Instagram DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+              <a href={ensureAbsoluteUrl(channels?.instagram, "https://www.instagram.com/perfumesdfv")} target="_blank" rel="noreferrer" aria-label="Instagram DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
                 <InstagramIcon />
               </a>
-              <a href={channels?.facebook || "https://www.facebook.com/perfumesdfv"} target="_blank" rel="noreferrer" aria-label="Facebook DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+              <a href={ensureAbsoluteUrl(channels?.facebook, "https://www.facebook.com/perfumesdfv")} target="_blank" rel="noreferrer" aria-label="Facebook DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
                 <FacebookIcon />
               </a>
-              <a href={channels?.tiktok || "https://www.tiktok.com/@perfumesdfv"} target="_blank" rel="noreferrer" aria-label="TikTok DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+              <a href={ensureAbsoluteUrl(channels?.tiktok, "https://www.tiktok.com/@perfumesdfv")} target="_blank" rel="noreferrer" aria-label="TikTok DFV Perfumes" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
                 <TikTokIcon />
               </a>
             </div>
@@ -343,6 +350,20 @@ const Footer = () => {
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
                   >
                     WA: +{channels?.sede2_phone || '57 320 862 7036'}
+                  </a>
+                </p>
+              </div>
+
+              <div style={{ paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', margin: 0 }}>
+                  Email:{' '}
+                  <a
+                    href={`mailto:${channels?.email || 'info@dfvperfumes.com'}`}
+                    style={{ color: '#B99A5B', textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#B99A5B'}
+                  >
+                    {channels?.email || 'info@dfvperfumes.com'}
                   </a>
                 </p>
               </div>

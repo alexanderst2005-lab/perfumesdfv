@@ -1,7 +1,9 @@
 import React from 'react';
 import { MapPin, Mail, AtSign, MessageCircle } from 'lucide-react';
+import { useShop } from '../context/ShopContext';
 
 const Contacto = () => {
+  const { channels } = useShop();
   return (
     <div style={{ minHeight: '100vh', paddingTop: '140px', paddingBottom: '6rem', backgroundColor: 'var(--color-white)' }}>
       <div className="container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -34,10 +36,10 @@ const Contacto = () => {
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
                     Nuestras Sedes (Palmira, Valle)
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>📍 <strong>Sede Calle 31 · Centro:</strong> Calle 31 #27-44</p>
-                  <p style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.2rem' }}>WA: +57 320 697 0036</p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.6rem' }}>📍 <strong>Sede C.C. Llanogrande:</strong> Local Palmira</p>
-                  <p style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.2rem' }}>WA: +57 320 862 7036</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>📍 <strong>{channels?.sede1_name || 'Sede Calle 31 · Centro'}:</strong> Calle 31 #27-44</p>
+                  <p style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.2rem' }}>WA: +{channels?.sede1_phone || '57 320 697 0036'}</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginTop: '0.6rem' }}>📍 <strong>{channels?.sede2_name || 'Sede C.C. Llanogrande'}:</strong> Local Palmira</p>
+                  <p style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.2rem' }}>WA: +{channels?.sede2_phone || '57 320 862 7036'}</p>
                   <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.6rem' }}>Envíos 100% seguros a todo el país.</p>
                 </div>
               </div>
@@ -49,7 +51,9 @@ const Contacto = () => {
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
                     Email
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>info@dfvperfumes.com</p>
+                  <a href={`mailto:${channels?.email || 'info@dfvperfumes.com'}`} style={{ fontSize: '0.9rem', color: 'var(--color-gray)', textDecoration: 'none' }}>
+                    {channels?.email || 'info@dfvperfumes.com'}
+                  </a>
                 </div>
               </div>
 
@@ -60,7 +64,9 @@ const Contacto = () => {
                   <h4 style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--color-black)' }}>
                     Instagram
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)' }}>@perfumesdfv</p>
+                  <a href={channels?.instagram || 'https://www.instagram.com/perfumesdfv'} target="_blank" rel="noreferrer" style={{ fontSize: '0.9rem', color: 'var(--color-gray)', textDecoration: 'none' }}>
+                    {channels?.instagram ? channels.instagram.replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, '@') : '@perfumesdfv'}
+                  </a>
                 </div>
               </div>
             </div>

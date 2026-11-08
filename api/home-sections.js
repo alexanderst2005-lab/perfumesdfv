@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   // Detectar la sección solicitada (soporta ?type=... o ?section=... o ruta directa)
   const rawUrl = req.url || '';
-  const type = req.query.type || req.query.section ||
+  const type = (req.query && (req.query.type || req.query.section)) ||
     (rawUrl.includes('promo-banner') ? 'promo-banner' :
      rawUrl.includes('note-collections') ? 'note-collections' :
      rawUrl.includes('trending-houses') ? 'trending-houses' :
@@ -735,10 +735,11 @@ export default async function handler(req, res) {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 8. CANALES DE CONTACTO, WHATSAPP Y REDES SOCIALES
+  // 8. CANALES DE CONTACTO, WHATSAPP, CORREO Y REDES SOCIALES
   // ═══════════════════════════════════════════════════════════════════════════
   if (type === 'contact-channels' || type === 'channels') {
     const DEFAULT_CHANNELS = {
+      email: 'info@dfvperfumes.com',
       instagram: 'https://www.instagram.com/perfumesdfv',
       facebook: 'https://www.facebook.com/perfumesdfv',
       tiktok: 'https://www.tiktok.com/@perfumesdfv',
@@ -748,6 +749,13 @@ export default async function handler(req, res) {
       sede2_phone: '573208627036',
       floating_mode: 'random', // 'random', 'sede1', 'sede2', 'custom'
       floating_phone: '573027642208'
+    };
+
+    const ensureUrl = (u, fallback) => {
+      if (!u || !String(u).trim()) return fallback || '';
+      const trimmed = String(u).trim();
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return `https://${trimmed}`;
     };
 
     await sql`
@@ -785,9 +793,10 @@ export default async function handler(req, res) {
       try {
         const incoming = body?.channels || body || {};
         const cleanSettings = {
-          instagram: (incoming.instagram || DEFAULT_CHANNELS.instagram).trim(),
-          facebook: (incoming.facebook || DEFAULT_CHANNELS.facebook).trim(),
-          tiktok: (incoming.tiktok || DEFAULT_CHANNELS.tiktok).trim(),
+          email: (incoming.email || DEFAULT_CHANNELS.email).trim().toLowerCase(),
+          instagram: ensureUrl(incoming.instagram, DEFAULT_CHANNELS.instagram),
+          facebook: ensureUrl(incoming.facebook, DEFAULT_CHANNELS.facebook),
+          tiktok: ensureUrl(incoming.tiktok, DEFAULT_CHANNELS.tiktok),
           sede1_name: (incoming.sede1_name || DEFAULT_CHANNELS.sede1_name).trim(),
           sede1_phone: (incoming.sede1_phone || DEFAULT_CHANNELS.sede1_phone).replace(/[^0-9]/g, ''),
           sede2_name: (incoming.sede2_name || DEFAULT_CHANNELS.sede2_name).trim(),
