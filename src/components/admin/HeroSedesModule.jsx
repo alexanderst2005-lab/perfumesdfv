@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2, Film, Star, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2, Film, Star, ChevronLeft, ChevronRight, Play, X, Monitor, Smartphone } from 'lucide-react';
 import { optimizeImg, uploadAdminImage, uploadAdminVideo, getVideoThumbnailUrl, normalizeSedeGallery } from '../../utils/img';
 import SedeGalleryModal from '../SedeGalleryModal';
 
@@ -164,6 +164,16 @@ const HeroSedesModule = () => {
       return;
     }
     setHeroSlides(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleRemoveHeroMobileImage = (idx) => {
+    setHeroSlides(prev => prev.map((s, i) => (i === idx ? { ...s, imageMobile: '' } : s)));
+    showToast('Foto para celular eliminada con éxito. En celulares se usará la foto principal.');
+  };
+
+  const handleRemoveHeroDesktopImage = (idx) => {
+    setHeroSlides(prev => prev.map((s, i) => (i === idx ? { ...s, imageDesktop: '' } : s)));
+    showToast('Foto de computador retirada.');
   };
 
   // Reemplazar imagen principal de una Sede con vista previa instantánea (0ms) y sincronizar con su galería
@@ -426,11 +436,15 @@ const HeroSedesModule = () => {
     setIsSaving(true);
     try {
       const resolvedSlides = await Promise.all(
-        heroSlides.map(async (s) => ({
-          ...s,
-          imageDesktop: await resolveUrl(s.imageDesktop),
-          imageMobile: await resolveUrl(s.imageMobile || s.imageDesktop)
-        }))
+        heroSlides.map(async (s) => {
+          const dImg = (await resolveUrl(s.imageDesktop)) || '';
+          const mImg = s.imageMobile ? (await resolveUrl(s.imageMobile)) : '';
+          return {
+            ...s,
+            imageDesktop: dImg || mImg || '',
+            imageMobile: mImg || dImg || ''
+          };
+        })
       );
       const resolvedSedes = await Promise.all(
         sedes.map(async (s) => {
@@ -589,7 +603,7 @@ const HeroSedesModule = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
           {heroSlides.map((slide, idx) => {
-            const isUploadingBoth = uploadingKey === `hero-${idx}-both`;
+            const isUploadingDesktop = uploadingKey === `hero-${idx}-imageDesktop` || uploadingKey === `hero-${idx}-both`;
             const isUploadingMobile = uploadingKey === `hero-${idx}-imageMobile`;
 
             return (
@@ -671,7 +685,8 @@ const HeroSedesModule = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        zIndex: 2
                       }}
                     >
                       <Trash2 size={14} />
@@ -679,59 +694,215 @@ const HeroSedesModule = () => {
                   )}
                 </div>
 
-                {/* Controles para reemplazar imagen y editar textos */}
-                <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <label style={{
-                      flex: 1,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.45rem',
-                      padding: '0.65rem 0.9rem',
-                      backgroundColor: '#111',
-                      color: '#fff',
-                      borderRadius: '6px',
-                      fontSize: '0.76rem',
-                      fontWeight: 600,
-                      cursor: isUploadingBoth ? 'not-allowed' : 'pointer'
-                    }}>
-                      {isUploadingBoth ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
-                      <span>{isUploadingBoth ? 'Subiendo...' : 'Reemplazar Fotografía'}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        disabled={isUploadingBoth}
-                        onChange={(e) => handleHeroImageUpload(idx, 'both', e)}
-                        style={{ display: 'none' }}
-                      />
-                    </label>
-
-                    <label style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.35rem',
-                      padding: '0.65rem 0.8rem',
-                      backgroundColor: '#FAF8F5',
-                      color: '#333',
-                      border: '1px solid #D5D0C6',
-                      borderRadius: '6px',
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      cursor: isUploadingMobile ? 'not-allowed' : 'pointer'
-                    }} title="Opcional: subir una versión vertical solo para celular">
-                      {isUploadingMobile ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} color="#B99A5B" />}
-                      <span>Foto Móvil (Opcional)</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        disabled={isUploadingMobile}
-                        onChange={(e) => handleHeroImageUpload(idx, 'imageMobile', e)}
-                        style={{ display: 'none' }}
-                      />
-                    </label>
+                {/* GESTIÓN VISUAL Y MANEJABLE DE FOTOGRAFÍAS */}
+                <div style={{
+                  padding: '1rem 1.25rem',
+                  backgroundColor: '#FAF8F5',
+                  borderBottom: '1px solid #EAE8E4',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <ImageIcon size={13} color="#B99A5B" />
+                      Fotografías del Slide
+                    </span>
+                    <span style={{ fontSize: '0.66rem', color: '#777' }}>Previsualiza y edita</span>
                   </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    {/* 1. Fotografía Computador (Principal) */}
+                    <div style={{
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E5E0D8',
+                      borderRadius: '8px',
+                      padding: '0.6rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.45rem'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#111', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <Monitor size={12} color="#111" />
+                          Foto PC
+                        </span>
+                        {slide.imageDesktop && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveHeroDesktopImage(idx)}
+                            title="Quitar foto de PC"
+                            style={{
+                              background: '#F3F4F6',
+                              border: 'none',
+                              color: '#6B7280',
+                              cursor: 'pointer',
+                              padding: '2px 4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FEE2E2'; e.currentTarget.style.color = '#DC2626'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#F3F4F6'; e.currentTarget.style.color = '#6B7280'; }}
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Miniatura Foto PC */}
+                      {slide.imageDesktop ? (
+                        <div style={{ position: 'relative', width: '100%', height: '70px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#111' }}>
+                          <img
+                            src={optimizeImg(slide.imageDesktop, 250)}
+                            alt="Foto PC"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          {isUploadingDesktop && (
+                            <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                              <Loader2 size={16} className="animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div style={{ width: '100%', height: '70px', borderRadius: '6px', border: '1px dashed #D5D0C6', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9F8F6', color: '#999', fontSize: '0.65rem', textAlign: 'center', padding: '0.25rem' }}>
+                          Sin foto
+                        </div>
+                      )}
+
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.3rem',
+                        padding: '0.45rem',
+                        backgroundColor: '#111',
+                        color: '#fff',
+                        borderRadius: '4px',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        cursor: isUploadingDesktop ? 'not-allowed' : 'pointer',
+                        textAlign: 'center'
+                      }}>
+                        {isUploadingDesktop ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                        <span>{slide.imageDesktop ? 'Cambiar PC' : 'Subir PC'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={isUploadingDesktop}
+                          onChange={(e) => handleHeroImageUpload(idx, 'imageDesktop', e)}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* 2. Fotografía Celular (Móvil / Opcional con botón X) */}
+                    <div style={{
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E5E0D8',
+                      borderRadius: '8px',
+                      padding: '0.6rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.45rem'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#B99A5B', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <Smartphone size={12} color="#B99A5B" />
+                          Foto Móvil
+                        </span>
+                        {slide.imageMobile && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveHeroMobileImage(idx)}
+                            title="Eliminar foto móvil con la X"
+                            style={{
+                              backgroundColor: '#FEE2E2',
+                              border: '1px solid #FCA5A5',
+                              color: '#DC2626',
+                              cursor: 'pointer',
+                              padding: '2px 5px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              borderRadius: '4px',
+                              fontSize: '0.65rem',
+                              fontWeight: 700,
+                              gap: '2px'
+                            }}
+                          >
+                            <X size={12} strokeWidth={2.5} />
+                            <span>Quitar</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Miniatura Foto Móvil */}
+                      {slide.imageMobile ? (
+                        <div style={{ position: 'relative', width: '100%', height: '70px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#111' }}>
+                          <img
+                            src={optimizeImg(slide.imageMobile, 250)}
+                            alt="Foto Celular"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          {isUploadingMobile && (
+                            <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                              <Loader2 size={16} className="animate-spin" />
+                            </div>
+                          )}
+                          <span style={{
+                            position: 'absolute',
+                            bottom: '3px',
+                            left: '3px',
+                            backgroundColor: 'rgba(0,0,0,0.75)',
+                            color: '#fff',
+                            fontSize: '0.55rem',
+                            fontWeight: 600,
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            letterSpacing: '0.5px'
+                          }}>
+                            Móvil
+                          </span>
+                        </div>
+                      ) : (
+                        <div style={{ width: '100%', height: '70px', borderRadius: '6px', border: '1px dashed #D5D0C6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9F8F6', color: '#888', fontSize: '0.64rem', textAlign: 'center', padding: '0.25rem' }}>
+                          <span>Usa foto PC</span>
+                          <span style={{ fontSize: '0.56rem', color: '#AAA' }}>(automático)</span>
+                        </div>
+                      )}
+
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.3rem',
+                        padding: '0.45rem',
+                        backgroundColor: '#FAF8F5',
+                        color: '#333',
+                        border: '1px solid #D5D0C6',
+                        borderRadius: '4px',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        cursor: isUploadingMobile ? 'not-allowed' : 'pointer',
+                        textAlign: 'center'
+                      }}>
+                        {isUploadingMobile ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} color="#B99A5B" />}
+                        <span>{slide.imageMobile ? 'Cambiar Móvil' : '+ Foto Móvil'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={isUploadingMobile}
+                          onChange={(e) => handleHeroImageUpload(idx, 'imageMobile', e)}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Controles para editar textos */}
+                <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 600, color: '#555', textTransform: 'uppercase', marginBottom: '3px' }}>
