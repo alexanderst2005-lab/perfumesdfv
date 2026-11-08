@@ -1,11 +1,10 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useShop } from '../context/ShopContext';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, MessageSquareQuote, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck } from 'lucide-react';
 const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
 const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
 const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
 const ReelsModule = lazy(() => import('../components/admin/ReelsModule'));
-const ReviewsModule = lazy(() => import('../components/admin/ReviewsModule'));
 const CustomersModule = lazy(() => import('../components/admin/CustomersModule'));
 const CampaignsModule = lazy(() => import('../components/admin/CampaignsModule'));
 const PromoBannerModule = lazy(() => import('../components/admin/PromoBannerModule'));
@@ -29,7 +28,7 @@ const AdminDashboard = () => {
   // Persist active tab in localStorage so it survives window.location.reload()
   const [activeTab, setActiveTab] = useState(() => {
     const saved = localStorage.getItem('adminActiveTab');
-    if (saved === 'settings' || saved === 'sales') return 'dashboard';
+    if (saved === 'settings' || saved === 'sales' || saved === 'reviews') return 'dashboard';
     return saved || 'dashboard';
   });
 
@@ -68,7 +67,6 @@ const AdminDashboard = () => {
       import('../components/admin/OrdersModule');
       import('../components/admin/CategoriesModule');
       import('../components/admin/ReelsModule');
-      import('../components/admin/ReviewsModule');
       import('../components/admin/CustomersModule');
       import('../components/admin/CampaignsModule');
       import('../components/admin/CountersModule');
@@ -86,7 +84,6 @@ const AdminDashboard = () => {
     { id: 'shipping', label: 'Configuración de envíos', icon: Truck },
     { id: 'categories', label: 'Categorías', icon: Tags },
     { id: 'reels', label: 'Reels / Videos', icon: Video },
-    { id: 'reviews', label: 'Reseñas', icon: MessageSquareQuote },
     { id: 'customers', label: 'Clientes', icon: Users },
     { id: 'campaigns', label: 'Campañas promocionales', icon: Megaphone },
     { id: 'promo-banner', label: 'Banner Promocional', icon: ImageIcon },
@@ -413,7 +410,6 @@ const AdminDashboard = () => {
             {activeTab === 'shipping' && <ShippingModule />}
             {activeTab === 'categories' && <CategoriesModule />}
             {activeTab === 'reels' && <ReelsModule />}
-            {activeTab === 'reviews' && <ReviewsModule />}
             {activeTab === 'customers' && <CustomersModule />}
             {activeTab === 'campaigns' && <CampaignsModule />}
             {activeTab === 'promo-banner' && <PromoBannerModule />}
