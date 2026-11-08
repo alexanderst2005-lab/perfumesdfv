@@ -130,7 +130,12 @@ const Checkout = () => {
     }
 
     if (!selectedZoneId) {
-      alert("Por favor selecciona tu zona o ciudad de entrega para calcular el domicilio.");
+      const selectEl = document.querySelector('select[name="zonaEntrega"]');
+      if (selectEl) {
+        selectEl.focus();
+        selectEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      alert("Por favor selecciona tu ciudad o zona de entrega para calcular el domicilio.");
       return;
     }
     
@@ -307,19 +312,22 @@ const Checkout = () => {
                 <label style={labelStyle}>Zona o Ciudad de Entrega *</label>
                 <select
                   required
+                  name="zonaEntrega"
                   value={selectedZoneId}
                   onChange={handleZoneChange}
                   style={{
                     ...inputStyle,
                     cursor: 'pointer',
                     fontWeight: selectedZoneId ? '500' : 'normal',
-                    color: selectedZoneId ? '#111' : '#666',
-                    marginBottom: '0.5rem'
+                    color: selectedZoneId ? '#111' : '#777',
+                    marginBottom: '0.5rem',
+                    backgroundColor: '#FFFFFF',
+                    appearance: 'auto'
                   }}
                   onFocus={e => e.target.style.borderColor = '#111'}
                   onBlur={e => e.target.style.borderColor = '#EAE8E4'}
                 >
-                  <option value="">-- Selecciona tu ciudad o zona para calcular el envío --</option>
+                  <option value="" disabled>Selecciona tu ciudad o zona para calcular el envío</option>
                   {activeZones.map(zone => (
                     <option key={zone.id} value={zone.id}>
                       {zone.name} — ${(Number(zone.price) || 0).toLocaleString()} COP
