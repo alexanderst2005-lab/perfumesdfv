@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
 import { prefetchImg } from '../utils/img';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck, MessageCircle, Eye, EyeOff } from 'lucide-react';
 import InventoryModule from '../components/admin/InventoryModule';
 import OrdersModule from '../components/admin/OrdersModule';
 import CategoriesModule from '../components/admin/CategoriesModule';
@@ -23,6 +23,7 @@ const AdminDashboard = () => {
     return sessionStorage.getItem('adminAuth') === 'true';
   });
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
 
   const { allProducts, products, isLoadingProducts } = useShop();
@@ -123,6 +124,9 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('adminAuth');
+    setLoginForm({ username: '', password: '' });
+    setShowPassword(false);
+    setLoginError('');
     setIsLoggedIn(false);
   };
 
@@ -135,28 +139,52 @@ const AdminDashboard = () => {
             <p style={{ fontSize: '0.7rem', letterSpacing: '4px', color: '#6b7280' }}>ADMINISTRACIÓN</p>
           </div>
           
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} autoComplete="off">
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Usuario o Correo</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Correo</label>
               <input 
                 type="text" 
+                name="dfv_admin_email"
+                autoComplete="off"
                 value={loginForm.username}
                 onChange={e => setLoginForm({...loginForm, username: e.target.value})}
-                placeholder="talentohumanodfv@gmail.com"
-                style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }}
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', outline: 'none' }}
                 required
               />
             </div>
             
             <div style={{ marginBottom: '2rem' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Contraseña</label>
-              <input 
-                type="password" 
-                value={loginForm.password}
-                onChange={e => setLoginForm({...loginForm, password: e.target.value})}
-                style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }}
-                required
-              />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  name="dfv_admin_password"
+                  autoComplete="new-password"
+                  value={loginForm.password}
+                  onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                  style={{ width: '100%', padding: '0.75rem 2.75rem 0.75rem 0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', outline: 'none' }}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    background: 'transparent',
+                    border: 'none',
+                    padding: '4px',
+                    cursor: 'pointer',
+                    color: '#6b7280',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {loginError && <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '1rem', textAlign: 'center' }}>{loginError}</p>}
