@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { optimizeImg } from '../utils/img';
+import { optimizeImg, prefetchImg, notifyStoreSync } from '../utils/img';
 
 const ShopContext = createContext();
 
@@ -24,6 +24,18 @@ export const ShopProvider = ({ children }) => {
 
   const upsertProductLocal = useCallback((prod) => {
     if (!prod || !prod.id) return;
+    if (prod.image) {
+      prefetchImg(prod.image, 200);
+      prefetchImg(prod.image, 800);
+    }
+    if (Array.isArray(prod.images)) {
+      prod.images.forEach(img => {
+        if (img) {
+          prefetchImg(img, 200);
+          prefetchImg(img, 800);
+        }
+      });
+    }
     setProducts(prev => {
       const idx = prev.findIndex(item => String(item.id) === String(prod.id));
       const next = idx >= 0
@@ -33,6 +45,7 @@ export const ShopProvider = ({ children }) => {
       setBrands([...new Set(next.map(p => p.brand).filter(Boolean))]);
       return next;
     });
+    notifyStoreSync('products', prod);
   }, []);
 
   const removeProductLocal = useCallback((id) => {
@@ -42,15 +55,18 @@ export const ShopProvider = ({ children }) => {
       setBrands([...new Set(next.map(p => p.brand).filter(Boolean))]);
       return next;
     });
+    notifyStoreSync('products', { id, deleted: true });
   }, []);
 
   const refreshProducts = async () => {
     const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('No se pudo recargar los productos');
     const data = await res.json();
-    setProducts(data);
-    setBrands([...new Set(data.map(p => p.brand))]);
-    try { localStorage.setItem('perfume_products_cache', JSON.stringify(data)); } catch (e) { }
+    if (Array.isArray(data)) {
+      setProducts(prev => (JSON.stringify(prev) === JSON.stringify(data) ? prev : data));
+      setBrands([...new Set(data.map(p => p.brand).filter(Boolean))]);
+      try { localStorage.setItem('perfume_products_cache', JSON.stringify(data)); } catch (e) { }
+    }
     return data;
   };
 
@@ -260,41 +276,81 @@ export const ShopProvider = ({ children }) => {
     };
     fetchData();
 
-    // Auto-refresh fresh data when window regains focus (e.g. switching back from admin panel),
-    // con un intervalo de al menos 60s para no provocar re-renders ni saltos de scroll al tomar capturas de pantalla.
+    // Sincronización instantánea entre pestañas (/admin -> tienda) vía BroadcastChannel, storage y foco
+    const syncFromCacheOrNetwork = (msg) => {
+      try {
+        const cached = localStorage.getItem('perfume_products_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            setProducts(prev => (JSON.stringify(prev) === JSON.stringify(parsed) ? prev : parsed));
+            setBrands([...new Set(parsed.map(p => p.brand).filter(Boolean))]);
+          }
+        }
+      } catch {}
+      if (msg?.payload?.image) {
+        prefetchImg(msg.payload.image, 800);
+      }
+      refreshProducts().catch(() => {});
+      refreshCategories().catch(() => {});
+      refreshChannels().catch(() => {});
+    };
+
+    let bc = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        bc = new BroadcastChannel('dfv_sync');
+        bc.onmessage = (ev) => syncFromCacheOrNetwork(ev.data);
+      }
+    } catch {}
+
+    const handleStorage = (e) => {
+      if (!e.key || e.key === 'perfume_products_cache' || e.key === 'dfv_last_sync') {
+        syncFromCacheOrNetwork();
+      }
+    };
+
     let lastFocusRefresh = Date.now();
     const handleFocus = () => {
-      if (Date.now() - lastFocusRefresh < 60000) return;
+      if (Date.now() - lastFocusRefresh < 2500) return;
       lastFocusRefresh = Date.now();
       refreshProducts().catch(() => { });
       refreshCategories().catch(() => { });
     };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') handleFocus();
+    };
+
+    window.addEventListener('storage', handleStorage);
     window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      if (bc) { try { bc.close(); } catch {} }
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
-  // Precarga en segundo plano las primeras fotos del catálogo solo en la tienda (no en /admin)
+  // Precarga en segundo plano las fotos clave del catálogo (Más deseados, Ofertas y primeros productos)
   useEffect(() => {
     if (!allProducts.length) return;
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) return;
-    const urls = allProducts
-      .filter(p => p.active !== false && typeof p.image === 'string' && p.image.includes('/image/upload/'))
-      .slice(0, 12)
-      .map(p => optimizeImg(p.image, 800));
+    const activeList = allProducts.filter(p => p.active !== false && typeof p.image === 'string' && p.image.includes('/image/upload/'));
+    const priorityProducts = [
+      ...activeList.filter(p => p.isMostWanted),
+      ...activeList.filter(p => p.discount && Number(p.discount) > 0),
+      ...activeList.slice(0, 16)
+    ];
+    const uniqueUrls = [...new Set(priorityProducts.map(p => p.image))].slice(0, 24);
     let cancelled = false;
-    const keep = [];
     let i = 0;
     const next = () => {
-      if (cancelled || i >= urls.length) return;
-      urls.slice(i, i + 4).forEach(u => {
-        const im = new Image();
-        im.decoding = 'async';
-        im.src = u;
-        keep.push(im);
-      });
-      i += 4;
-      if (i < urls.length) {
-        setTimeout(next, 120);
+      if (cancelled || i >= uniqueUrls.length) return;
+      uniqueUrls.slice(i, i + 6).forEach(u => prefetchImg(u, 800));
+      i += 6;
+      if (i < uniqueUrls.length) {
+        setTimeout(next, 60);
       }
     };
     next();

@@ -15,25 +15,28 @@ const OffersSection = () => {
   // 1. Productos con descuento del inventario normal
   const inventoryOffers = products.filter(p => p.discount && p.discount > 0);
 
-  // 2. Productos de campañas activas que no estén ya en inventoryOffers
-  const shownIds = new Set(inventoryOffers.map(p => p.id));
+  // 2. Productos de campañas activas que no estén ya en inventoryOffers (sincronizados con las fotos actuales del inventario)
+  const shownIds = new Set(inventoryOffers.map(p => String(p.id)));
   const campaignProducts = [];
   (activeCampaigns || []).forEach(campaign => {
     (campaign.products || []).forEach(cp => {
-      if (!shownIds.has(cp.product_id) && cp.name) {
+      const pid = String(cp.product_id);
+      if (!shownIds.has(pid) && cp.name) {
+        const liveProd = products.find(p => String(p.id) === pid);
         campaignProducts.push({
+          ...(liveProd || {}),
           id: cp.product_id,
-          name: cp.name,
-          brand: cp.brand,
-          image: cp.image,
-          images: cp.images || [],
+          name: liveProd?.name || cp.name,
+          brand: liveProd?.brand || cp.brand,
+          image: liveProd?.image || cp.image,
+          images: liveProd?.images || cp.images || [],
           price: cp.promo_price,
           oldPrice: cp.ref_price,
           discount: cp.discount_pct,
-          inStock: true,
+          inStock: liveProd ? liveProd.inStock : true,
           active: true
         });
-        shownIds.add(cp.product_id);
+        shownIds.add(pid);
       }
     });
   });

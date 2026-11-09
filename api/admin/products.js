@@ -6,7 +6,7 @@ function warmProductImages(images) {
   for (const raw of images) {
     if (!raw || typeof raw !== 'string' || !raw.includes('/image/upload/')) continue;
     const uThumb = raw.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_200,c_limit/');
-    const uStore = raw.replace('/image/upload/', '/image/upload/f_auto,q_100,w_1200,c_limit/');
+    const uStore = raw.replace('/image/upload/', '/image/upload/f_auto,q_auto:good,w_800,c_limit/');
     fetch(uThumb).catch(() => {});
     fetch(uStore).catch(() => {});
   }

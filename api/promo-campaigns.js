@@ -134,15 +134,17 @@ async function checkConflicts(sql, productIds, excludeCampaignId = null) {
 
 export default async function handler(req, res) {
   const sql = sql_conn();
+  const { method, query } = req;
 
-  try {
-    await ensureTables(sql);
-  } catch (e) {
-    console.error('ensureTables error:', e);
-    return res.status(500).json({ error: 'DB init error', details: e.message });
+  if (method !== 'GET') {
+    try {
+      await ensureTables(sql);
+    } catch (e) {
+      console.error('ensureTables error:', e);
+      return res.status(500).json({ error: 'DB init error', details: e.message });
+    }
   }
 
-  const { method, query } = req;
   const isAdmin = query && (query.admin === 'true' || query.admin === '1');
 
   // ── GET ──────────────────────────────────────────────────────────────────

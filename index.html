@@ -24,7 +24,10 @@
             categories: fetch('/api/categories?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
             reels: fetch('/api/reels?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
             campaigns: fetch('/api/promo-campaigns?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
-            heroSedes: fetch('/api/hero-sedes?t=' + t, { cache: 'no-store' }).catch(function () { return null; })
+            heroSedes: fetch('/api/hero-sedes?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
+            trendingHouses: fetch('/api/trending-houses?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
+            noteCollections: fetch('/api/note-collections?t=' + t, { cache: 'no-store' }).catch(function () { return null; }),
+            promoBanner: fetch('/api/promo-banner?t=' + t, { cache: 'no-store' }).catch(function () { return null; })
           };
         } catch (e) {}
       })();

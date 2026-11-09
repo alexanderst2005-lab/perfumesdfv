@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
@@ -13,9 +13,8 @@ import CountersBar from '../components/CountersBar';
 import SedeGalleryModal from '../components/SedeGalleryModal';
 import LazyOnView from '../components/LazyOnView';
 import ProductTagBadge from '../components/ProductTagBadge';
+import InstagramReelsSection from '../components/InstagramReelsSection';
 import { optimizeImg, prefetchImg } from '../utils/img';
-
-const InstagramReelsSection = lazy(() => import('../components/InstagramReelsSection'));
 
 const HERO_SLIDES = [
   {
@@ -132,8 +131,26 @@ const Home = () => {
       }
     };
     loadHeroSedes();
+    const onSync = () => {
+      const stored = readStoredHeroSedes();
+      if (stored) {
+        if (Array.isArray(stored.hero_slides) && stored.hero_slides.length > 0) {
+          cachedHeroSlides = stored.hero_slides;
+          setHeroSlides(stored.hero_slides);
+        }
+        if (Array.isArray(stored.sedes) && stored.sedes.length > 0) {
+          cachedSedes = stored.sedes;
+          setSedesList(stored.sedes);
+        }
+      }
+      loadHeroSedes();
+    };
+    window.addEventListener('dfv-sync', onSync);
+    window.addEventListener('storage', onSync);
     return () => {
       cancelled = true;
+      window.removeEventListener('dfv-sync', onSync);
+      window.removeEventListener('storage', onSync);
     };
   }, []);
 
@@ -160,11 +177,11 @@ const Home = () => {
     }
   };
 
-  // Pre-cargar todos los slides del hero en memoria
+  // Pre-cargar todos los slides del hero en memoria con su tamaño optimizado exacto
   useEffect(() => {
     heroSlides.forEach(s => {
-      if (s.imageDesktop) { const d = new Image(); d.src = s.imageDesktop; }
-      if (s.imageMobile) { const m = new Image(); m.src = s.imageMobile; }
+      if (s.imageDesktop) prefetchImg(s.imageDesktop, 2000);
+      if (s.imageMobile) prefetchImg(s.imageMobile, 1400);
     });
   }, [heroSlides]);
 
@@ -365,7 +382,7 @@ const Home = () => {
       <PromoBanner />
 
       {/* ════ 4. VIDEOS: MOMENTOS QUE SE QUEDAN EN LA PIEL ════ */}
-      <Suspense fallback={null}><InstagramReelsSection /></Suspense>
+      <InstagramReelsSection />
 
       {/* ════ 5. BARRA DE CONTADORES ════ */}
       <CountersBar />
@@ -504,7 +521,8 @@ const Home = () => {
                       }}
                     >
                       <img
-                        src={s.img}
+                        key={s.img}
+                        src={optimizeImg(s.img, 800)}
                         alt={`DFV Perfumes - Sede ${idx + 1}`}
                         loading="lazy"
                         decoding="async"
@@ -812,12 +830,13 @@ export const ProductCard = ({ product, onFav, fav, onAdd, priority = false }) =>
     >
       <Link
         to={`/producto/${product.id}`}
-        onMouseEnter={() => prefetchImg(product.image)}
-        onTouchStart={() => prefetchImg(product.image)}
+        onMouseEnter={() => prefetchImg(product.image, 800)}
+        onTouchStart={() => prefetchImg(product.image, 800)}
         style={{ display: 'block', width: '100%', height: '100%' }}
       >
         <img
-          src={optimizeImg(product.image, 1200)}
+          key={product.image}
+          src={optimizeImg(product.image, 800)}
           alt={product.name}
           className="product-img"
           loading={priority ? "eager" : "lazy"}

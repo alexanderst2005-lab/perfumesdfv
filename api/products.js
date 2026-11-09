@@ -20,7 +20,6 @@ export default async function handler(req, res) {
   // Admin writes routed here or normal GET
   if (req.method === 'GET') {
     try {
-      await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS tag TEXT DEFAULT ''`.catch(() => {});
       const rows = await sql`
         SELECT 
           p.*,

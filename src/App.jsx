@@ -14,7 +14,7 @@ const MAINTENANCE_MODE = false;
 
 import Home from './pages/Home';
 import Store from './pages/Store';
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+import ProductDetail from './pages/ProductDetail';
 const Favorites = lazy(() => import('./pages/Favorites'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Account = lazy(() => import('./pages/Account'));
@@ -188,7 +188,6 @@ function AppInner() {
   useEffect(() => {
     const idle = window.requestIdleCallback || (cb => setTimeout(cb, 800));
     idle(() => {
-      import('./pages/ProductDetail');
       import('./pages/Favorites');
       import('./pages/Checkout');
       import('./pages/Contacto');

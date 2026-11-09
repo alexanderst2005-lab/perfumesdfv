@@ -2,26 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
-let cachedNoteCollections = null;
+let cachedNoteCollections = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_note_collections_cache');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+})();
 
 const NoteCollectionsSection = () => {
   const [collections, setCollections] = useState(cachedNoteCollections || []);
   const [loaded, setLoaded] = useState(Boolean(cachedNoteCollections));
 
   useEffect(() => {
-    fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => {
+    const loadCols = async () => {
+      try {
+        const earlyPromise = window.__early?.noteCollections;
+        if (window.__early) window.__early.noteCollections = null;
+        const res = earlyPromise ? await earlyPromise : await fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res || !res.ok) return;
+        const data = await res.json();
         if (data.success && Array.isArray(data.collections)) {
-          const activeCols = data.collections.filter(
-            c => c.active !== false
-          );
+          try { localStorage.setItem('dfv_note_collections_all', JSON.stringify(data.collections)); } catch {}
+          const activeCols = data.collections.filter(c => c.active !== false);
           cachedNoteCollections = activeCols;
           setCollections(activeCols);
+          try { localStorage.setItem('dfv_note_collections_cache', JSON.stringify(activeCols)); } catch {}
         }
-      })
-      .catch(() => { })
-      .finally(() => setLoaded(true));
+      } catch {}
+      finally { setLoaded(true); }
+    };
+    loadCols();
+    window.addEventListener('dfv-sync', loadCols);
+    window.addEventListener('storage', loadCols);
+    return () => {
+      window.removeEventListener('dfv-sync', loadCols);
+      window.removeEventListener('storage', loadCols);
+    };
   }, []);
 
   if (!loaded || collections.length === 0) {

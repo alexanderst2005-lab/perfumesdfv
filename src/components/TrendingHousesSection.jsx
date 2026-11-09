@@ -3,7 +3,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
-let cachedTrendingHouses = null;
+let cachedTrendingHouses = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_trending_houses_cache');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+})();
 
 const TrendingHousesSection = () => {
   const [houses, setHouses] = useState(cachedTrendingHouses || []);
@@ -15,19 +20,30 @@ const TrendingHousesSection = () => {
   const trackRef = useRef(null);
 
   useEffect(() => {
-    fetch(`/api/trending-houses?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => {
+    const loadHouses = async () => {
+      try {
+        const earlyPromise = window.__early?.trendingHouses;
+        if (window.__early) window.__early.trendingHouses = null;
+        const res = earlyPromise ? await earlyPromise : await fetch(`/api/trending-houses?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res || !res.ok) return;
+        const data = await res.json();
         if (data.success && Array.isArray(data.houses)) {
-          const activeHouses = data.houses.filter(
-            h => h.active !== false
-          );
+          try { localStorage.setItem('dfv_trending_houses_all', JSON.stringify(data.houses)); } catch {}
+          const activeHouses = data.houses.filter(h => h.active !== false);
           cachedTrendingHouses = activeHouses;
           setHouses(activeHouses);
+          try { localStorage.setItem('dfv_trending_houses_cache', JSON.stringify(activeHouses)); } catch {}
         }
-      })
-      .catch(() => { })
-      .finally(() => setLoaded(true));
+      } catch {}
+      finally { setLoaded(true); }
+    };
+    loadHouses();
+    window.addEventListener('dfv-sync', loadHouses);
+    window.addEventListener('storage', loadHouses);
+    return () => {
+      window.removeEventListener('dfv-sync', loadHouses);
+      window.removeEventListener('storage', loadHouses);
+    };
   }, []);
 
   const updatePagination = () => {

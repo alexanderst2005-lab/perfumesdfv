@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Save, Upload, CheckCircle, Loader2, Search, Trash2, Sparkles } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
-import { optimizeImg, uploadAdminImage } from '../../utils/img';
+import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
 
 let cachedAdminSets = null;
 
@@ -149,6 +149,8 @@ const FragranceSetsModule = () => {
       if (data && data.success) {
         cachedAdminSets = payload;
         setFormData(payload);
+        try { localStorage.setItem('dfv_fragrance_sets_cache', JSON.stringify(payload)); } catch {}
+        notifyStoreSync('fragrance-sets');
         showToast('¡Apartado de Sets guardado con éxito!');
       } else {
         throw new Error(data.error || 'Error al guardar');

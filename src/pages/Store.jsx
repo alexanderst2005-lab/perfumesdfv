@@ -16,9 +16,7 @@ const Store = () => {
   // Special external filter state (colecciones por notas, casas en tendencia, sets)
   const [collectionProductIds, setCollectionProductIds] = useState(null);
   const [activeSpecialFilterName, setActiveSpecialFilterName] = useState('');
-  const [isLoadingSpecialFilter, setIsLoadingSpecialFilter] = useState(
-    Boolean(params.get('coleccion') || params.get('casa') || params.get('sets'))
-  );
+  const [isLoadingSpecialFilter, setIsLoadingSpecialFilter] = useState(false);
 
   useEffect(() => {
     const colId = params.get('coleccion');
@@ -27,7 +25,21 @@ const Store = () => {
     const filtroParam = params.get('filtro');
 
     if (colId) {
-      setIsLoadingSpecialFilter(true);
+      let foundInCache = false;
+      try {
+        const raw = localStorage.getItem('dfv_note_collections_all') || localStorage.getItem('dfv_note_collections_cache');
+        if (raw) {
+          const list = JSON.parse(raw);
+          const col = Array.isArray(list) && list.find(c => String(c.id) === String(colId));
+          if (col) {
+            setCollectionProductIds((col.product_ids || []).map(id => String(id)));
+            setActiveSpecialFilterName('Colección: ' + col.name);
+            setIsLoadingSpecialFilter(false);
+            foundInCache = true;
+          }
+        }
+      } catch {}
+      if (!foundInCache) setIsLoadingSpecialFilter(true);
       fetch(`/api/note-collections?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
@@ -35,16 +47,30 @@ const Store = () => {
           if (col) {
             setCollectionProductIds((col.product_ids || []).map(id => String(id)));
             setActiveSpecialFilterName('Colección: ' + col.name);
-          } else {
+          } else if (!foundInCache) {
             setCollectionProductIds([]);
           }
         })
         .catch(() => {
-          setCollectionProductIds([]);
+          if (!foundInCache) setCollectionProductIds([]);
         })
         .finally(() => setIsLoadingSpecialFilter(false));
     } else if (casaId) {
-      setIsLoadingSpecialFilter(true);
+      let foundInCache = false;
+      try {
+        const raw = localStorage.getItem('dfv_trending_houses_all') || localStorage.getItem('dfv_trending_houses_cache');
+        if (raw) {
+          const list = JSON.parse(raw);
+          const h = Array.isArray(list) && list.find(x => String(x.id) === String(casaId));
+          if (h) {
+            setCollectionProductIds((h.product_ids || []).map(id => String(id)));
+            setActiveSpecialFilterName('Casa: ' + h.name);
+            setIsLoadingSpecialFilter(false);
+            foundInCache = true;
+          }
+        }
+      } catch {}
+      if (!foundInCache) setIsLoadingSpecialFilter(true);
       fetch(`/api/trending-houses?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
@@ -52,16 +78,29 @@ const Store = () => {
           if (h) {
             setCollectionProductIds((h.product_ids || []).map(id => String(id)));
             setActiveSpecialFilterName('Casa: ' + h.name);
-          } else {
+          } else if (!foundInCache) {
             setCollectionProductIds([]);
           }
         })
         .catch(() => {
-          setCollectionProductIds([]);
+          if (!foundInCache) setCollectionProductIds([]);
         })
         .finally(() => setIsLoadingSpecialFilter(false));
     } else if (setsParam) {
-      setIsLoadingSpecialFilter(true);
+      let foundInCache = false;
+      try {
+        const raw = localStorage.getItem('dfv_fragrance_sets_cache');
+        if (raw) {
+          const b = JSON.parse(raw);
+          if (b && Array.isArray(b.product_ids)) {
+            setCollectionProductIds(b.product_ids.map(id => String(id)));
+            setActiveSpecialFilterName(b.title || 'Sets de Fragancias Exclusivas');
+            setIsLoadingSpecialFilter(false);
+            foundInCache = true;
+          }
+        }
+      } catch {}
+      if (!foundInCache) setIsLoadingSpecialFilter(true);
       fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
@@ -69,12 +108,12 @@ const Store = () => {
           if (b && Array.isArray(b.product_ids)) {
             setCollectionProductIds(b.product_ids.map(id => String(id)));
             setActiveSpecialFilterName(b.title || 'Sets de Fragancias Exclusivas');
-          } else {
+          } else if (!foundInCache) {
             setCollectionProductIds([]);
           }
         })
         .catch(() => {
-          setCollectionProductIds([]);
+          if (!foundInCache) setCollectionProductIds([]);
         })
         .finally(() => setIsLoadingSpecialFilter(false));
     } else if (filtroParam === 'deseados') {

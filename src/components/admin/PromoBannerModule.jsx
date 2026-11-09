@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Save, Upload, CheckCircle, Eye, EyeOff, Sparkles, Loader2 } from 'lucide-react';
-import { optimizeImg, uploadAdminImage } from '../../utils/img';
+import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
 
 let cachedAdminPromoBanner = null;
 
@@ -88,6 +88,8 @@ const PromoBannerModule = () => {
       if (data && data.success) {
         cachedAdminPromoBanner = finalBanner;
         setBanner(finalBanner);
+        try { localStorage.setItem('dfv_promo_banner_cache', JSON.stringify(finalBanner)); } catch {}
+        notifyStoreSync('promo-banner');
         showToast('Banner promocional actualizado correctamente');
       } else {
         throw new Error(data.error || 'No se pudo guardar');

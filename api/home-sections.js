@@ -142,19 +142,21 @@ export default async function handler(req, res) {
   // 3. NOTE COLLECTIONS
   // ═══════════════════════════════════════════════════════════════════════════
   if (type === 'note-collections') {
-    await sql`
-      CREATE TABLE IF NOT EXISTS note_collection_products (
-        collection_id INTEGER NOT NULL,
-        product_id TEXT NOT NULL,
-        PRIMARY KEY (collection_id, product_id)
-      )
-    `.catch(() => {});
-    await sql`
-      ALTER TABLE note_collection_products DROP CONSTRAINT IF EXISTS note_collection_products_product_id_fkey
-    `.catch(() => {});
-    await sql`
-      ALTER TABLE note_collection_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
-    `.catch(() => {});
+    if (req.method !== 'GET') {
+      await sql`
+        CREATE TABLE IF NOT EXISTS note_collection_products (
+          collection_id INTEGER NOT NULL,
+          product_id TEXT NOT NULL,
+          PRIMARY KEY (collection_id, product_id)
+        )
+      `.catch(() => {});
+      await sql`
+        ALTER TABLE note_collection_products DROP CONSTRAINT IF EXISTS note_collection_products_product_id_fkey
+      `.catch(() => {});
+      await sql`
+        ALTER TABLE note_collection_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
+      `.catch(() => {});
+    }
 
     if (req.method === 'GET') {
       try {
@@ -270,19 +272,21 @@ export default async function handler(req, res) {
   // 4. TRENDING HOUSES
   // ═══════════════════════════════════════════════════════════════════════════
   if (type === 'trending-houses') {
-    await sql`
-      CREATE TABLE IF NOT EXISTS trending_house_products (
-        house_id INTEGER NOT NULL,
-        product_id TEXT NOT NULL,
-        PRIMARY KEY (house_id, product_id)
-      )
-    `.catch(() => {});
-    await sql`
-      ALTER TABLE trending_house_products DROP CONSTRAINT IF EXISTS trending_house_products_product_id_fkey
-    `.catch(() => {});
-    await sql`
-      ALTER TABLE trending_house_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
-    `.catch(() => {});
+    if (req.method !== 'GET') {
+      await sql`
+        CREATE TABLE IF NOT EXISTS trending_house_products (
+          house_id INTEGER NOT NULL,
+          product_id TEXT NOT NULL,
+          PRIMARY KEY (house_id, product_id)
+        )
+      `.catch(() => {});
+      await sql`
+        ALTER TABLE trending_house_products DROP CONSTRAINT IF EXISTS trending_house_products_product_id_fkey
+      `.catch(() => {});
+      await sql`
+        ALTER TABLE trending_house_products ALTER COLUMN product_id TYPE TEXT USING product_id::TEXT
+      `.catch(() => {});
+    }
 
     if (req.method === 'GET') {
       try {
@@ -398,19 +402,21 @@ export default async function handler(req, res) {
   // 5. FRAGRANCE SETS (SETS DE FRAGANCIAS EXCLUSIVAS)
   // ═══════════════════════════════════════════════════════════════════════════
   if (type === 'fragrance-sets') {
-    await sql`
-      CREATE TABLE IF NOT EXISTS fragrance_sets_banner (
-        id SERIAL PRIMARY KEY,
-        title TEXT DEFAULT 'SETS DE FRAGANCIAS EXCLUSIVAS',
-        subtitle TEXT DEFAULT 'Combinaciones cuidadosamente seleccionadas para elevar cada momento',
-        button_text TEXT DEFAULT 'VER SETS',
-        image TEXT,
-        images JSONB DEFAULT '[]',
-        product_ids JSONB DEFAULT '[]',
-        active BOOLEAN DEFAULT true,
-        updated_at TIMESTAMP DEFAULT NOW()
-      )
-    `.catch(() => {});
+    if (req.method !== 'GET') {
+      await sql`
+        CREATE TABLE IF NOT EXISTS fragrance_sets_banner (
+          id SERIAL PRIMARY KEY,
+          title TEXT DEFAULT 'SETS DE FRAGANCIAS EXCLUSIVAS',
+          subtitle TEXT DEFAULT 'Combinaciones cuidadosamente seleccionadas para elevar cada momento',
+          button_text TEXT DEFAULT 'VER SETS',
+          image TEXT,
+          images JSONB DEFAULT '[]',
+          product_ids JSONB DEFAULT '[]',
+          active BOOLEAN DEFAULT true,
+          updated_at TIMESTAMP DEFAULT NOW()
+        )
+      `.catch(() => {});
+    }
 
     if (req.method === 'GET') {
       try {
@@ -557,14 +563,16 @@ export default async function handler(req, res) {
       }
     ];
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS site_hero_sedes (
-        id SERIAL PRIMARY KEY,
-        hero_slides JSONB DEFAULT '[]',
-        sedes JSONB DEFAULT '[]',
-        updated_at TIMESTAMP DEFAULT NOW()
-      )
-    `.catch(() => {});
+    if (req.method !== 'GET') {
+      await sql`
+        CREATE TABLE IF NOT EXISTS site_hero_sedes (
+          id SERIAL PRIMARY KEY,
+          hero_slides JSONB DEFAULT '[]',
+          sedes JSONB DEFAULT '[]',
+          updated_at TIMESTAMP DEFAULT NOW()
+        )
+      `.catch(() => {});
+    }
 
     if (req.method === 'GET') {
       try {
@@ -669,13 +677,15 @@ export default async function handler(req, res) {
       }
     ];
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS site_shipping_settings (
-        id SERIAL PRIMARY KEY,
-        zones JSONB DEFAULT '[]',
-        updated_at TIMESTAMP DEFAULT NOW()
-      )
-    `.catch(() => {});
+    if (req.method !== 'GET') {
+      await sql`
+        CREATE TABLE IF NOT EXISTS site_shipping_settings (
+          id SERIAL PRIMARY KEY,
+          zones JSONB DEFAULT '[]',
+          updated_at TIMESTAMP DEFAULT NOW()
+        )
+      `.catch(() => {});
+    }
 
     if (req.method === 'GET') {
       try {
@@ -758,13 +768,15 @@ export default async function handler(req, res) {
       return `https://${trimmed}`;
     };
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS site_contact_channels (
-        id SERIAL PRIMARY KEY,
-        settings JSONB DEFAULT '{}',
-        updated_at TIMESTAMP DEFAULT NOW()
-      )
-    `.catch(() => {});
+    if (req.method !== 'GET') {
+      await sql`
+        CREATE TABLE IF NOT EXISTS site_contact_channels (
+          id SERIAL PRIMARY KEY,
+          settings JSONB DEFAULT '{}',
+          updated_at TIMESTAMP DEFAULT NOW()
+        )
+      `.catch(() => {});
+    }
 
     if (req.method === 'GET') {
       try {

@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
 
-let cachedSetsBanner = null;
+let cachedSetsBanner = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_fragrance_sets_cache');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+})();
 
 const FragranceSetsSection = () => {
   const [setsBanner, setSetsBanner] = useState(cachedSetsBanner);
@@ -13,16 +18,26 @@ const FragranceSetsSection = () => {
   const imageWrapRef = useRef(null);
 
   useEffect(() => {
-    fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => {
-        if (data && data.success && data.setsBanner) {
-          cachedSetsBanner = data.setsBanner;
-          setSetsBanner(data.setsBanner);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoaded(true));
+    const loadSets = () => {
+      fetch(`/api/fragrance-sets?t=${Date.now()}`, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.success && data.setsBanner) {
+            cachedSetsBanner = data.setsBanner;
+            setSetsBanner(data.setsBanner);
+            try { localStorage.setItem('dfv_fragrance_sets_cache', JSON.stringify(data.setsBanner)); } catch {}
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoaded(true));
+    };
+    loadSets();
+    window.addEventListener('dfv-sync', loadSets);
+    window.addEventListener('storage', loadSets);
+    return () => {
+      window.removeEventListener('dfv-sync', loadSets);
+      window.removeEventListener('storage', loadSets);
+    };
   }, []);
 
   const imagesList = setsBanner

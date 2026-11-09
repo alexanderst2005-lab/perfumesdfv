@@ -24,7 +24,12 @@ function shuffleArray(array) {
 }
 
 const RANDOM_STORAGE_KEY = 'dfv_promo_random_products_v1';
-let cachedPromoBanner = null;
+let cachedPromoBanner = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_promo_banner_cache');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+})();
 
 const PromoBanner = () => {
   const { products = [], addToCart, toggleFavorite, isFavorite } = useShop();
@@ -74,15 +79,27 @@ const PromoBanner = () => {
   }, [activeCatalogProducts]);
 
   useEffect(() => {
-    fetch(`/api/promo-banner?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => {
+    const loadPromo = async () => {
+      try {
+        const earlyPromise = window.__early?.promoBanner;
+        if (window.__early) window.__early.promoBanner = null;
+        const res = earlyPromise ? await earlyPromise : await fetch(`/api/promo-banner?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res || !res.ok) return;
+        const data = await res.json();
         if (data.success && data.banner) {
           cachedPromoBanner = data.banner;
           setBanner(data.banner);
+          try { localStorage.setItem('dfv_promo_banner_cache', JSON.stringify(data.banner)); } catch {}
         }
-      })
-      .catch(() => {});
+      } catch {}
+    };
+    loadPromo();
+    window.addEventListener('dfv-sync', loadPromo);
+    window.addEventListener('storage', loadPromo);
+    return () => {
+      window.removeEventListener('dfv-sync', loadPromo);
+      window.removeEventListener('storage', loadPromo);
+    };
   }, []);
 
   useEffect(() => {

@@ -29,9 +29,11 @@ export default async function handler(req, res) {
     // Pre-calentamiento y registro en DB en segundo plano (sin frenar la respuesta al panel admin)
     if (result.resource_type === 'image' && result.secure_url.includes('/image/upload/')) {
       const thumbUrl = result.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_200,c_limit/');
-      const fastUrl = result.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_100,w_1200,c_limit/');
+      const storeUrl = result.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto:good,w_800,c_limit/');
+      const bannerUrl = result.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto:good,w_1400,c_limit/');
       fetch(thumbUrl).catch(() => {});
-      fetch(fastUrl).catch(() => {});
+      fetch(storeUrl).catch(() => {});
+      fetch(bannerUrl).catch(() => {});
     }
 
     if (process.env.DATABASE_URL) {

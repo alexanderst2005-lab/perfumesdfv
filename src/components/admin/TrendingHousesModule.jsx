@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, Upload, CheckCircle, TrendingUp, Loader2, X } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
-import { optimizeImg, uploadAdminImage } from '../../utils/img';
+import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
 
 let cachedAdminHouses = null;
 
@@ -142,6 +142,7 @@ const TrendingHousesModule = () => {
         showToast(editId ? 'Casa actualizada' : 'Casa agregada con éxito');
         setIsModalOpen(false);
         fetchHouses(true);
+        notifyStoreSync('trending-houses');
       } else {
         throw new Error(data.error || 'Error al guardar');
       }

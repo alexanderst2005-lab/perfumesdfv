@@ -8,9 +8,10 @@ import ProductTagBadge from '../components/ProductTagBadge';
 
 const TOTAL_HEADER = 106;
 
-// Renders the main product image with a clean neutral skeleton while loading.
+// Renders the main product image with instant cache detection (0ms if already in browser memory).
 // Completely unmounts on product change so an old product image NEVER lingers.
 const ProductMainImg = ({ src, alt }) => {
+  const optimizedSrc = optimizeImg(src, 800);
   const [loaded, setLoaded] = useState(false);
   const layer = {
     position: 'absolute',
@@ -46,15 +47,21 @@ const ProductMainImg = ({ src, alt }) => {
         </div>
       )}
       <img
-        src={optimizeImg(src, 900)}
+        ref={(el) => {
+          if (el && el.complete && el.naturalWidth > 0 && !loaded) {
+            setLoaded(true);
+          }
+        }}
+        src={optimizedSrc}
         alt={alt}
         fetchPriority="high"
         decoding="async"
         onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
         style={{
           ...layer,
           opacity: loaded ? 1 : 0,
-          transition: 'opacity 0.2s ease',
+          transition: 'opacity 0.12s ease',
           zIndex: 2
         }}
       />
@@ -63,7 +70,7 @@ const ProductMainImg = ({ src, alt }) => {
 };
 
 // Renders an individual thumbnail with isolated loaded state and unique key per product/img.
-// Uses fast 180px thumbnails (~4KB) so all boxes load instantly without keeping the previous product's image.
+// Uses fast 200px thumbnails (~4KB) so all boxes load instantly without keeping the previous product's image.
 const GalleryThumb = ({ src, alt, isActive, onClick }) => {
   const [loaded, setLoaded] = useState(false);
 
@@ -101,17 +108,23 @@ const GalleryThumb = ({ src, alt, isActive, onClick }) => {
         }} />
       )}
       <img
-        src={optimizeImg(src, 180)}
+        ref={(el) => {
+          if (el && el.complete && el.naturalWidth > 0 && !loaded) {
+            setLoaded(true);
+          }
+        }}
+        src={optimizeImg(src, 200)}
         loading="eager"
         decoding="async"
         alt={alt}
         onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
         style={{
           width: '100%',
           height: '100%',
           objectFit: 'contain',
           opacity: loaded ? 1 : 0,
-          transition: 'opacity 0.15s ease'
+          transition: 'opacity 0.12s ease'
         }}
       />
     </button>
@@ -123,9 +136,9 @@ const GalleryPreloader = ({ images }) => {
   React.useEffect(() => {
     const loaders = images.map(src => {
       const big = new Image();
-      big.src = optimizeImg(src, 900);
+      big.src = optimizeImg(src, 800);
       const thumb = new Image();
-      thumb.src = optimizeImg(src, 180);
+      thumb.src = optimizeImg(src, 200);
       return [big, thumb];
     });
     return () => { loaders.length = 0; };

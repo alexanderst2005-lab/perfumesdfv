@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2, Film, Star, ChevronLeft, ChevronRight, Play, X, Monitor, Smartphone } from 'lucide-react';
-import { optimizeImg, uploadAdminImage, uploadAdminVideo, getVideoThumbnailUrl, normalizeSedeGallery } from '../../utils/img';
+import { optimizeImg, uploadAdminImage, uploadAdminVideo, getVideoThumbnailUrl, normalizeSedeGallery, notifyStoreSync } from '../../utils/img';
 import SedeGalleryModal from '../SedeGalleryModal';
 
 let cachedAdminHeroSedes = null;
@@ -497,6 +497,7 @@ const HeroSedesModule = () => {
             sedes: resolvedSedes
           }));
         } catch {}
+        notifyStoreSync('hero-sedes');
         showToast('Hero Principal, Sedes y sus galerías actualizadas en la tienda');
       } else {
         throw new Error(data.error || 'No se pudo guardar');

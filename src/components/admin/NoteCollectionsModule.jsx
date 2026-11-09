@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, Upload, CheckCircle, Eye, EyeOff, Layers, Loader2, X, ArrowUpDown } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
-import { optimizeImg, uploadAdminImage } from '../../utils/img';
+import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
 
 let cachedAdminCollections = null;
 
@@ -142,6 +142,7 @@ const NoteCollectionsModule = () => {
         showToast(editId ? 'Colección actualizada' : 'Colección creada con éxito');
         setIsModalOpen(false);
         fetchCollections(true);
+        notifyStoreSync('note-collections');
       } else {
         throw new Error(data.error || 'Error al guardar');
       }
