@@ -146,13 +146,13 @@ const HeroSedesModule = () => {
       ...prev,
       {
         id: Date.now(),
-        campaign: 'NUEVA CAMPAÑA',
-        title: 'NUEVO TÍTULO',
-        subtitle: 'Descripción breve del banner principal.',
-        buttonText: 'EXPLORAR',
+        campaign: '',
+        title: '',
+        subtitle: '',
+        buttonText: 'DESCUBRIR',
         buttonLink: '/tienda',
-        imageDesktop: '/hero_campaign_1.webp',
-        imageMobile: '/hero_campaign_1_m.webp',
+        imageDesktop: '',
+        imageMobile: '',
         alignment: 'center'
       }
     ]);
@@ -620,17 +620,41 @@ const HeroSedesModule = () => {
                 }}
               >
                 {/* Vista previa actual del Slide */}
-                <div style={{ position: 'relative', height: '210px', backgroundColor: '#121212', overflow: 'hidden' }}>
-                  <img
-                    src={optimizeImg(slide.imageDesktop || slide.imageMobile, 300)}
-                    alt={slide.title}
-                    decoding="async"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.78 }}
-                  />
+                <div style={{ position: 'relative', height: '210px', backgroundColor: '#181818', overflow: 'hidden' }}>
+                  {slide.imageDesktop || slide.imageMobile ? (
+                    <img
+                      src={optimizeImg(slide.imageDesktop || slide.imageMobile, 300)}
+                      alt={slide.title || 'Slide'}
+                      decoding="async"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.78 }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: '#1C1A17',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'rgba(255,255,255,0.4)',
+                      gap: '0.4rem',
+                      padding: '1rem'
+                    }}>
+                      <ImageIcon size={26} color="#B99A5B" />
+                      <span style={{ fontSize: '0.68rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#B99A5B', fontWeight: 600 }}>
+                        Sin fotografía asignada
+                      </span>
+                      <span style={{ fontSize: '0.62rem', color: '#888' }}>
+                        Sube una foto PC abajo para previsualizar
+                      </span>
+                    </div>
+                  )}
+
                   <div style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6))',
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.65))',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -639,15 +663,25 @@ const HeroSedesModule = () => {
                     textAlign: 'center',
                     color: '#fff'
                   }}>
-                    <span style={{ fontSize: '0.62rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.9 }}>
-                      {slide.campaign}
-                    </span>
-                    <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', margin: '0.3rem 0', fontWeight: 400 }}>
-                      {slide.title}
-                    </h4>
-                    <p style={{ fontSize: '0.75rem', opacity: 0.9, margin: '0 0 0.6rem 0' }}>
-                      {slide.subtitle}
-                    </p>
+                    {slide.campaign ? (
+                      <span style={{ fontSize: '0.62rem', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.9 }}>
+                        {slide.campaign}
+                      </span>
+                    ) : null}
+                    {slide.title ? (
+                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', margin: '0.3rem 0', fontWeight: 400 }}>
+                        {slide.title}
+                      </h4>
+                    ) : (
+                      <span style={{ fontSize: '0.85rem', opacity: 0.6, fontStyle: 'italic', margin: '0.2rem 0' }}>
+                        (Título del slide)
+                      </span>
+                    )}
+                    {slide.subtitle ? (
+                      <p style={{ fontSize: '0.75rem', opacity: 0.9, margin: '0 0 0.6rem 0' }}>
+                        {slide.subtitle}
+                      </p>
+                    ) : null}
                     <span style={{ border: '1px solid rgba(255,255,255,0.8)', padding: '4px 14px', fontSize: '0.65rem', letterSpacing: '1.5px' }}>
                       {slide.buttonText || 'DESCUBRIR'}
                     </span>
