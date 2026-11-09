@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 let cachedNoteCollections = (() => {
   try {
     const raw = localStorage.getItem('dfv_note_collections_cache');
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  const snap = initialSnapshot?.noteCollections;
+  return Array.isArray(snap) ? snap.filter(c => c.active !== false) : null;
 })();
 
 const NoteCollectionsSection = () => {

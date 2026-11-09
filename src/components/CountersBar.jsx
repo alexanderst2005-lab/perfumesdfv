@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 // Contadores por defecto oficiales de DFV Perfumes
-const DEFAULT_COUNTERS = [
-  { id: 'c1', value: 5000, suffix: '+', label: 'CLIENTES FELICES', icon: '👥' },
-  { id: 'c2', value: 12000, suffix: '+', label: 'PEDIDOS ENTREGADOS', icon: '📦' },
-  { id: 'c3', value: 30, suffix: '+', label: 'AÑOS DE TRAYECTORIA', icon: '⭐' },
-  { id: 'c4', value: 100, suffix: '%', label: 'ENVÍOS A TODO EL PAÍS', icon: '🚚' }
-];
+const DEFAULT_COUNTERS = (Array.isArray(initialSnapshot?.counters) && initialSnapshot.counters.length > 0)
+  ? initialSnapshot.counters.filter(c => c.active !== false && c.value > 0)
+  : [
+    { id: 'c1', value: 5000, suffix: '+', label: 'CLIENTES FELICES', icon: '👥' },
+    { id: 'c2', value: 12000, suffix: '+', label: 'PEDIDOS ENTREGADOS', icon: '📦' },
+    { id: 'c3', value: 30, suffix: '+', label: 'AÑOS DE TRAYECTORIA', icon: '⭐' },
+    { id: 'c4', value: 100, suffix: '%', label: 'ENVÍOS A TODO EL PAÍS', icon: '🚚' }
+  ];
 
 const DEFAULT_ICONS = ['👥', '📦', '⭐', '🚚'];
 

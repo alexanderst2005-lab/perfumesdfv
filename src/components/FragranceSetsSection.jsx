@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 let cachedSetsBanner = (() => {
   try {
     const raw = localStorage.getItem('dfv_fragrance_sets_cache');
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  return initialSnapshot?.fragranceSets || null;
 })();
 
 const FragranceSetsSection = () => {

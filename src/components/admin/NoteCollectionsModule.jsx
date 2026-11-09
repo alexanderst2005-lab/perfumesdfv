@@ -2,8 +2,15 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, Upload, CheckCircle, Eye, EyeOff, Layers, Loader2, X, ArrowUpDown } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
+import initialSnapshot from '../../data/initialSnapshot.json';
 
-let cachedAdminCollections = null;
+let cachedAdminCollections = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_note_collections_all') || localStorage.getItem('dfv_note_collections_cache');
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  return Array.isArray(initialSnapshot?.noteCollections) ? initialSnapshot.noteCollections : null;
+})();
 
 const NoteCollectionsModule = () => {
   const { products } = useShop();

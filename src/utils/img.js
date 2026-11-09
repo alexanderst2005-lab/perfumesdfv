@@ -21,8 +21,9 @@ export const optimizeImg = (url, width = 800) => {
 };
 
 const prefetchedSet = new Set();
+const retainedImages = [];
 
-/** Descarga y decodifica la imagen en memoria en segundo plano para visualización instantánea (0ms). */
+/** Descarga y decodifica la imagen en memoria RAM en segundo plano para visualización instantánea (0ms). */
 export const prefetchImg = (url, width = 800) => {
   if (!url || typeof window === 'undefined') return;
   const finalUrl = optimizeImg(url, width);
@@ -31,6 +32,12 @@ export const prefetchImg = (url, width = 800) => {
   const img = new Image();
   img.decoding = 'async';
   img.src = finalUrl;
+  if (typeof img.decode === 'function') {
+    img.decode().catch(() => {});
+  }
+  if (retainedImages.length < 250) {
+    retainedImages.push(img);
+  }
 };
 
 /** Notifica a todas las pestañas abiertas y componentes que hubo un cambio en el panel admin. */

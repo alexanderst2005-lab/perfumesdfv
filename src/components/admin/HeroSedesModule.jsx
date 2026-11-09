@@ -2,8 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Save, Upload, CheckCircle, Plus, Trash2, MapPin, Image as ImageIcon, Loader2, Film, Star, ChevronLeft, ChevronRight, Play, X, Monitor, Smartphone } from 'lucide-react';
 import { optimizeImg, uploadAdminImage, uploadAdminVideo, getVideoThumbnailUrl, normalizeSedeGallery, notifyStoreSync } from '../../utils/img';
 import SedeGalleryModal from '../SedeGalleryModal';
+import initialSnapshot from '../../data/initialSnapshot.json';
 
-let cachedAdminHeroSedes = null;
+let cachedAdminHeroSedes = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_hero_sedes_v2');
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  return initialSnapshot?.heroSedes || null;
+})();
 
 const DEFAULT_HERO_SLIDES = [
   {

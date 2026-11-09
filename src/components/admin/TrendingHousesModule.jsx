@@ -2,8 +2,15 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, Upload, CheckCircle, TrendingUp, Loader2, X } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
+import initialSnapshot from '../../data/initialSnapshot.json';
 
-let cachedAdminHouses = null;
+let cachedAdminHouses = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_trending_houses_all') || localStorage.getItem('dfv_trending_houses_cache');
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  return Array.isArray(initialSnapshot?.trendingHouses) ? initialSnapshot.trendingHouses : null;
+})();
 
 const TrendingHousesModule = () => {
   const { products } = useShop();

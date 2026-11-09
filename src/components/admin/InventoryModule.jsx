@@ -255,27 +255,35 @@ const InventoryModule = () => {
         images: secondaryImages
       };
 
-      const res = await fetch('/api/admin/products', {
+      // Actualización optimista inmediata (0ms): cierra el modal y actualiza la tienda al instante
+      upsertProductLocal(payload);
+      setIsModalOpen(false);
+      setIsSaving(false);
+
+      fetch('/api/admin/products', {
         method: editingProduct ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      });
-
-      let data = {};
-      try { data = await res.json(); } catch (e) { /* non-JSON response */ }
-      if (res.ok && data.success) {
-        // Actualización instantánea en memoria sin esperar recarga de red
-        upsertProductLocal(payload);
-        setIsModalOpen(false);
-        refreshProducts().catch(() => { });
-      } else {
-        alert('Error: ' + (data.details || data.error || `HTTP ${res.status}`));
-      }
+      })
+        .then(async (res) => {
+          let data = {};
+          try { data = await res.json(); } catch (e) { }
+          if (res.ok && data.success) {
+            refreshProducts().catch(() => { });
+          } else {
+            alert('Error al guardar en servidor: ' + (data.details || data.error || `HTTP ${res.status}`));
+            refreshProducts().catch(() => { });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert('Error de red al guardar el producto');
+          refreshProducts().catch(() => { });
+        });
 
     } catch (error) {
       console.error(error);
       alert('Error al guardar el producto: ' + error.message);
-    } finally {
       setIsSaving(false);
     }
   };
@@ -360,10 +368,10 @@ const InventoryModule = () => {
           <tbody>
             {isLoadingProducts && products.length === 0 ? (
               <tr><td colSpan="5" style={{ padding: '2rem', textAlign: 'center' }}>Cargando inventario...</td></tr>
-            ) : filteredProducts.map(p => (
+            ) : filteredProducts.map((p, idx) => (
               <tr key={p.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <img src={optimizeImg(p.image, 120)} alt={p.name} loading="lazy" decoding="async" width="40" height="40" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#f9fafb' }} />
+                  <img src={optimizeImg(p.image, 200)} alt={p.name} loading={idx < 30 ? 'eager' : 'lazy'} decoding="async" width="40" height="40" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#f9fafb' }} />
                   <div>
                     <p style={{ fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                       {p.name}

@@ -2,8 +2,29 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Save, Upload, CheckCircle, Loader2, Search, Trash2, Sparkles } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
+import initialSnapshot from '../../data/initialSnapshot.json';
 
-let cachedAdminSets = null;
+let cachedAdminSets = (() => {
+  let b = null;
+  try {
+    const raw = localStorage.getItem('dfv_fragrance_sets_cache');
+    if (raw) b = JSON.parse(raw);
+  } catch { }
+  if (!b && initialSnapshot?.fragranceSets) b = initialSnapshot.fragranceSets;
+  if (!b) return null;
+  const imgs = Array.isArray(b.images) && b.images.length > 0
+    ? b.images
+    : (b.image_url || b.image ? [b.image_url || b.image] : []);
+  return {
+    title: b.title || 'SETS DE FRAGANCIAS EXCLUSIVAS',
+    subtitle: b.subtitle !== undefined ? b.subtitle : 'Combinaciones cuidadosamente seleccionadas para elevar cada momento',
+    button_text: b.button_text || 'VER SETS',
+    image_url: imgs[0] || '',
+    images: imgs,
+    product_ids: Array.isArray(b.product_ids) ? [...new Set(b.product_ids.map(x => String(x)).filter(Boolean))] : [],
+    active: b.active !== false
+  };
+})();
 
 const FragranceSetsModule = () => {
   const { products } = useShop();

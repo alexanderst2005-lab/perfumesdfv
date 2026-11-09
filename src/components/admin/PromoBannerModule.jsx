@@ -1,8 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Save, Upload, CheckCircle, Eye, EyeOff, Sparkles, Loader2 } from 'lucide-react';
 import { optimizeImg, uploadAdminImage, notifyStoreSync } from '../../utils/img';
+import initialSnapshot from '../../data/initialSnapshot.json';
 
-let cachedAdminPromoBanner = null;
+let cachedAdminPromoBanner = (() => {
+  try {
+    const raw = localStorage.getItem('dfv_promo_banner_cache');
+    if (raw) {
+      const b = JSON.parse(raw);
+      return { ...b, image_url: b.image_url || b.image || '' };
+    }
+  } catch { }
+  if (initialSnapshot?.promoBanner) {
+    const b = initialSnapshot.promoBanner;
+    return { ...b, image_url: b.image_url || b.image || '' };
+  }
+  return null;
+})();
 
 const PromoBannerModule = () => {
   const [banner, setBanner] = useState(() => cachedAdminPromoBanner || {

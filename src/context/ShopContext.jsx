@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { optimizeImg, prefetchImg, notifyStoreSync } from '../utils/img';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 const ShopContext = createContext();
 
@@ -13,10 +14,12 @@ export const ShopProvider = ({ children }) => {
   const [allProducts, setProducts] = useState(() => {
     try {
       const cached = localStorage.getItem('perfume_products_cache');
-      return cached ? JSON.parse(cached) : [];
-    } catch (e) {
-      return [];
-    }
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) { }
+    return Array.isArray(initialSnapshot?.products) ? initialSnapshot.products : [];
   });
 
   // Storefront only shows active products; admin uses allProducts
@@ -91,30 +94,32 @@ export const ShopProvider = ({ children }) => {
       const cached = localStorage.getItem('perfume_products_cache');
       if (cached) {
         const parsed = JSON.parse(cached);
-        return [...new Set(parsed.map(p => p.brand))];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return [...new Set(parsed.map(p => p.brand).filter(Boolean))];
+        }
       }
-      return [];
-    } catch (e) {
-      return [];
-    }
+    } catch (e) { }
+    const snap = Array.isArray(initialSnapshot?.products) ? initialSnapshot.products : [];
+    return [...new Set(snap.map(p => p.brand).filter(Boolean))];
   });
 
   const [categories, setCategories] = useState(() => {
     try {
       const cached = localStorage.getItem('perfume_categories_cache');
-      return cached ? JSON.parse(cached) : [];
-    } catch (e) {
-      return [];
-    }
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) { }
+    return Array.isArray(initialSnapshot?.categories) ? initialSnapshot.categories : [];
   });
 
   const [isLoadingProducts, setIsLoadingProducts] = useState(() => {
     try {
       const cached = localStorage.getItem('perfume_products_cache');
-      return !cached;
-    } catch (e) {
-      return true;
-    }
+      if (cached) return false;
+    } catch (e) { }
+    return !(Array.isArray(initialSnapshot?.products) && initialSnapshot.products.length > 0);
   });
   const [isFresh, setIsFresh] = useState(false);
 
@@ -136,7 +141,8 @@ export const ShopProvider = ({ children }) => {
     sede2_name: 'Sede C.C. Llanogrande',
     sede2_phone: '573208627036',
     floating_mode: 'random',
-    floating_phone: '573027642208'
+    floating_phone: '573027642208',
+    ...(initialSnapshot?.channels || {})
   };
 
   const [channels, setChannels] = useState(() => {
@@ -332,7 +338,7 @@ export const ShopProvider = ({ children }) => {
     };
   }, []);
 
-  // Precarga en segundo plano las fotos clave del catálogo (Más deseados, Ofertas y primeros productos)
+  // Precarga en segundo plano TODAS las fotos del catálogo en bloques rápidos para que paginar en /tienda sea instantáneo (0ms)
   useEffect(() => {
     if (!allProducts.length) return;
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) return;
@@ -340,17 +346,17 @@ export const ShopProvider = ({ children }) => {
     const priorityProducts = [
       ...activeList.filter(p => p.isMostWanted),
       ...activeList.filter(p => p.discount && Number(p.discount) > 0),
-      ...activeList.slice(0, 16)
+      ...activeList
     ];
-    const uniqueUrls = [...new Set(priorityProducts.map(p => p.image))].slice(0, 24);
+    const uniqueUrls = [...new Set(priorityProducts.map(p => p.image))];
     let cancelled = false;
     let i = 0;
     const next = () => {
       if (cancelled || i >= uniqueUrls.length) return;
-      uniqueUrls.slice(i, i + 6).forEach(u => prefetchImg(u, 800));
-      i += 6;
+      uniqueUrls.slice(i, i + 12).forEach(u => prefetchImg(u, 800));
+      i += 12;
       if (i < uniqueUrls.length) {
-        setTimeout(next, 60);
+        setTimeout(next, 35);
       }
     };
     next();

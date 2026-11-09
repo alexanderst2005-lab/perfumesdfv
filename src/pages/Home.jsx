@@ -15,6 +15,7 @@ import LazyOnView from '../components/LazyOnView';
 import ProductTagBadge from '../components/ProductTagBadge';
 import InstagramReelsSection from '../components/InstagramReelsSection';
 import { optimizeImg, prefetchImg } from '../utils/img';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 const HERO_SLIDES = [
   {
@@ -99,12 +100,14 @@ const Home = () => {
     if (cachedHeroSlides && cachedHeroSlides.length > 0) return cachedHeroSlides;
     const stored = readStoredHeroSedes();
     if (Array.isArray(stored?.hero_slides) && stored.hero_slides.length > 0) return stored.hero_slides;
+    if (Array.isArray(initialSnapshot?.heroSedes?.hero_slides) && initialSnapshot.heroSedes.hero_slides.length > 0) return initialSnapshot.heroSedes.hero_slides;
     return HERO_SLIDES;
   });
   const [sedesList, setSedesList] = useState(() => {
     if (cachedSedes && cachedSedes.length > 0) return cachedSedes;
     const stored = readStoredHeroSedes();
     if (Array.isArray(stored?.sedes) && stored.sedes.length > 0) return stored.sedes;
+    if (Array.isArray(initialSnapshot?.heroSedes?.sedes) && initialSnapshot.heroSedes.sedes.length > 0) return initialSnapshot.heroSedes.sedes;
     return DEFAULT_SEDES;
   });
 

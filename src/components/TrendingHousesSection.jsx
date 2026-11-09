@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { optimizeImg } from '../utils/img';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 let cachedTrendingHouses = (() => {
   try {
     const raw = localStorage.getItem('dfv_trending_houses_cache');
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  const snap = initialSnapshot?.trendingHouses;
+  return Array.isArray(snap) ? snap.filter(h => h.active !== false) : null;
 })();
 
 const TrendingHousesSection = () => {

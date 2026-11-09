@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { optimizeImg } from '../utils/img';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from '../pages/Home';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 const DEFAULT_BANNER = {
   title: 'ELEGANCIA QUE PERDURA',
@@ -27,8 +28,8 @@ const RANDOM_STORAGE_KEY = 'dfv_promo_random_products_v1';
 let cachedPromoBanner = (() => {
   try {
     const raw = localStorage.getItem('dfv_promo_banner_cache');
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+    return raw ? JSON.parse(raw) : (initialSnapshot?.promoBanner || null);
+  } catch { return initialSnapshot?.promoBanner || null; }
 })();
 
 const PromoBanner = () => {
@@ -164,27 +165,6 @@ const PromoBanner = () => {
       window.removeEventListener('resize', updatePagination);
     };
   }, [randomProducts]);
-
-  // Movimiento automático continuo en móvil ("que se mantengan cambiando solos")
-  useEffect(() => {
-    if (randomProducts.length <= 2) return;
-    const timer = setInterval(() => {
-      if (isPausedRef.current) return;
-      if (typeof window !== 'undefined' && window.innerWidth >= 769) return;
-      const el = trackRef.current;
-      if (!el) return;
-      const maxScroll = el.scrollWidth - el.clientWidth;
-      if (maxScroll <= 10) return;
-
-      if (el.scrollLeft >= maxScroll - 16) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: el.clientWidth * 0.85, behavior: 'smooth' });
-      }
-    }, 3400);
-
-    return () => clearInterval(timer);
-  }, [randomProducts.length]);
 
   const scrollPrev = () => {
     const el = trackRef.current;

@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { SlidersHorizontal, ChevronDown, X, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { ProductCard } from './Home';
+import { prefetchImg } from '../utils/img';
+import initialSnapshot from '../data/initialSnapshot.json';
 
 const Store = () => {
   const { search } = useLocation();
@@ -28,15 +30,13 @@ const Store = () => {
       let foundInCache = false;
       try {
         const raw = localStorage.getItem('dfv_note_collections_all') || localStorage.getItem('dfv_note_collections_cache');
-        if (raw) {
-          const list = JSON.parse(raw);
-          const col = Array.isArray(list) && list.find(c => String(c.id) === String(colId));
-          if (col) {
-            setCollectionProductIds((col.product_ids || []).map(id => String(id)));
-            setActiveSpecialFilterName('Colección: ' + col.name);
-            setIsLoadingSpecialFilter(false);
-            foundInCache = true;
-          }
+        const list = raw ? JSON.parse(raw) : (initialSnapshot?.noteCollections || []);
+        const col = Array.isArray(list) && list.find(c => String(c.id) === String(colId));
+        if (col) {
+          setCollectionProductIds((col.product_ids || []).map(id => String(id)));
+          setActiveSpecialFilterName('Colección: ' + col.name);
+          setIsLoadingSpecialFilter(false);
+          foundInCache = true;
         }
       } catch {}
       if (!foundInCache) setIsLoadingSpecialFilter(true);
@@ -59,15 +59,13 @@ const Store = () => {
       let foundInCache = false;
       try {
         const raw = localStorage.getItem('dfv_trending_houses_all') || localStorage.getItem('dfv_trending_houses_cache');
-        if (raw) {
-          const list = JSON.parse(raw);
-          const h = Array.isArray(list) && list.find(x => String(x.id) === String(casaId));
-          if (h) {
-            setCollectionProductIds((h.product_ids || []).map(id => String(id)));
-            setActiveSpecialFilterName('Casa: ' + h.name);
-            setIsLoadingSpecialFilter(false);
-            foundInCache = true;
-          }
+        const list = raw ? JSON.parse(raw) : (initialSnapshot?.trendingHouses || []);
+        const h = Array.isArray(list) && list.find(x => String(x.id) === String(casaId));
+        if (h) {
+          setCollectionProductIds((h.product_ids || []).map(id => String(id)));
+          setActiveSpecialFilterName('Casa: ' + h.name);
+          setIsLoadingSpecialFilter(false);
+          foundInCache = true;
         }
       } catch {}
       if (!foundInCache) setIsLoadingSpecialFilter(true);
@@ -90,14 +88,12 @@ const Store = () => {
       let foundInCache = false;
       try {
         const raw = localStorage.getItem('dfv_fragrance_sets_cache');
-        if (raw) {
-          const b = JSON.parse(raw);
-          if (b && Array.isArray(b.product_ids)) {
-            setCollectionProductIds(b.product_ids.map(id => String(id)));
-            setActiveSpecialFilterName(b.title || 'Sets de Fragancias Exclusivas');
-            setIsLoadingSpecialFilter(false);
-            foundInCache = true;
-          }
+        const b = raw ? JSON.parse(raw) : initialSnapshot?.fragranceSets;
+        if (b && Array.isArray(b.product_ids)) {
+          setCollectionProductIds(b.product_ids.map(id => String(id)));
+          setActiveSpecialFilterName(b.title || 'Sets de Fragancias Exclusivas');
+          setIsLoadingSpecialFilter(false);
+          foundInCache = true;
         }
       } catch {}
       if (!foundInCache) setIsLoadingSpecialFilter(true);
@@ -156,19 +152,17 @@ const Store = () => {
   const isFilterMounted = useRef(false);
   const prevSearchRef = useRef(search);
 
-  // Cambia de página y deja la vista al inicio del catálogo (nunca en el footer)
+  // Cambia de página y deja la vista al inicio del catálogo al instante (sin lag)
   const goToPage = (page) => {
     setCurrentPage(page);
     try {
       sessionStorage.setItem('perfume_store_page', String(page));
     } catch {}
-    requestAnimationFrame(() => {
-      const el = gridTopRef.current;
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - 130;
-        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-      }
-    });
+    const el = gridTopRef.current;
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 130;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+    }
   };
 
   // Sync state when URL params change (e.g. user clicked /tienda?category=Mujer or /tienda?offers=true)
@@ -312,6 +306,16 @@ const Store = () => {
 
   const totalPagesCount = Math.max(1, Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPagesCount);
+
+  // Pre-decodificar en memoria la página actual, las 2 siguientes y la anterior para pasar de página en 0ms
+  useEffect(() => {
+    if (!filteredAndSorted.length) return;
+    const startIdx = Math.max(0, (safeCurrentPage - 2) * PRODUCTS_PER_PAGE);
+    const endIdx = Math.min(filteredAndSorted.length, (safeCurrentPage + 2) * PRODUCTS_PER_PAGE);
+    filteredAndSorted.slice(startIdx, endIdx).forEach(p => {
+      if (p?.image) prefetchImg(p.image, 800);
+    });
+  }, [safeCurrentPage, filteredAndSorted]);
 
   useEffect(() => {
     if (currentPage > totalPagesCount && filteredAndSorted.length > 0) {
@@ -460,14 +464,14 @@ const Store = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', minHeight: '70vh', alignContent: 'start' }} className="store-grid">
               {filteredAndSorted
                 .slice((safeCurrentPage - 1) * PRODUCTS_PER_PAGE, safeCurrentPage * PRODUCTS_PER_PAGE)
-                .map((p, pIdx) => (
+                .map((p) => (
                   <ProductCard
                     key={p.id}
                     product={p}
                     onFav={() => toggleFavorite(p)}
                     fav={isFavorite(p.id)}
                     onAdd={() => addToCart(p, 1, p.sizes?.[0])}
-                    priority={pIdx < 8}
+                    priority={true}
                   />
                 ))}
             </div>

@@ -1,21 +1,22 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
+import { prefetchImg } from '../utils/img';
 import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck, MessageCircle } from 'lucide-react';
-const InventoryModule = lazy(() => import('../components/admin/InventoryModule'));
-const OrdersModule = lazy(() => import('../components/admin/OrdersModule'));
-const CategoriesModule = lazy(() => import('../components/admin/CategoriesModule'));
-const ReelsModule = lazy(() => import('../components/admin/ReelsModule'));
-const CustomersModule = lazy(() => import('../components/admin/CustomersModule'));
-const CampaignsModule = lazy(() => import('../components/admin/CampaignsModule'));
-const PromoBannerModule = lazy(() => import('../components/admin/PromoBannerModule'));
-const NoteCollectionsModule = lazy(() => import('../components/admin/NoteCollectionsModule'));
-const TrendingHousesModule = lazy(() => import('../components/admin/TrendingHousesModule'));
-const FragranceSetsModule = lazy(() => import('../components/admin/FragranceSetsModule'));
-const CountersModule = lazy(() => import('../components/admin/CountersModule'));
-const MostWantedModule = lazy(() => import('../components/admin/MostWantedModule'));
-const HeroSedesModule = lazy(() => import('../components/admin/HeroSedesModule'));
-const ShippingModule = lazy(() => import('../components/admin/ShippingModule'));
-const ChannelsModule = lazy(() => import('../components/admin/ChannelsModule'));
+import InventoryModule from '../components/admin/InventoryModule';
+import OrdersModule from '../components/admin/OrdersModule';
+import CategoriesModule from '../components/admin/CategoriesModule';
+import ReelsModule from '../components/admin/ReelsModule';
+import CustomersModule from '../components/admin/CustomersModule';
+import CampaignsModule from '../components/admin/CampaignsModule';
+import PromoBannerModule from '../components/admin/PromoBannerModule';
+import NoteCollectionsModule from '../components/admin/NoteCollectionsModule';
+import TrendingHousesModule from '../components/admin/TrendingHousesModule';
+import FragranceSetsModule from '../components/admin/FragranceSetsModule';
+import CountersModule from '../components/admin/CountersModule';
+import MostWantedModule from '../components/admin/MostWantedModule';
+import HeroSedesModule from '../components/admin/HeroSedesModule';
+import ShippingModule from '../components/admin/ShippingModule';
+import ChannelsModule from '../components/admin/ChannelsModule';
 
 const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -24,7 +25,7 @@ const AdminDashboard = () => {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
-  const { products, isLoadingProducts } = useShop();
+  const { allProducts, products, isLoadingProducts } = useShop();
   
   // Persist active tab in localStorage so it survives window.location.reload()
   const [activeTab, setActiveTab] = useState(() => {
@@ -56,26 +57,18 @@ const AdminDashboard = () => {
       })
       .catch(() => {});
 
-    // Precargar en segundo plano todos los módulos del panel para cambiar de pestaña en 0ms
-    const timer = setTimeout(() => {
-      import('../components/admin/InventoryModule');
-      import('../components/admin/HeroSedesModule');
-      import('../components/admin/MostWantedModule');
-      import('../components/admin/PromoBannerModule');
-      import('../components/admin/FragranceSetsModule');
-      import('../components/admin/TrendingHousesModule');
-      import('../components/admin/NoteCollectionsModule');
-      import('../components/admin/OrdersModule');
-      import('../components/admin/CategoriesModule');
-      import('../components/admin/ReelsModule');
-      import('../components/admin/CustomersModule');
-      import('../components/admin/CampaignsModule');
-      import('../components/admin/CountersModule');
-      import('../components/admin/ShippingModule');
-      import('../components/admin/ChannelsModule');
-    }, 80);
-    return () => clearTimeout(timer);
-  }, [isLoggedIn]);
+    // Pre-decodificar miniaturas del inventario en RAM para que todas las pestañas carguen en 0ms
+    const list = allProducts || products || [];
+    let i = 0;
+    const warmThumbs = () => {
+      list.slice(i, i + 16).forEach(p => {
+        if (p?.image) prefetchImg(p.image, 200);
+      });
+      i += 16;
+      if (i < list.length) setTimeout(warmThumbs, 25);
+    };
+    warmThumbs();
+  }, [isLoggedIn, allProducts]);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -410,23 +403,21 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          <Suspense fallback={<p style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Cargando…</p>}>
-            {activeTab === 'hero-sedes' && <HeroSedesModule />}
-            {activeTab === 'inventory' && <InventoryModule />}
-            {activeTab === 'orders' && <OrdersModule />}
-            {activeTab === 'shipping' && <ShippingModule />}
-            {activeTab === 'channels' && <ChannelsModule />}
-            {activeTab === 'categories' && <CategoriesModule />}
-            {activeTab === 'reels' && <ReelsModule />}
-            {activeTab === 'customers' && <CustomersModule />}
-            {activeTab === 'campaigns' && <CampaignsModule />}
-            {activeTab === 'promo-banner' && <PromoBannerModule />}
-            {activeTab === 'note-collections' && <NoteCollectionsModule />}
-            {activeTab === 'trending-houses' && <TrendingHousesModule />}
-            {activeTab === 'fragrance-sets' && <FragranceSetsModule />}
-            {activeTab === 'counters' && <CountersModule />}
-            {activeTab === 'most-wanted' && <MostWantedModule />}
-          </Suspense>
+          {activeTab === 'hero-sedes' && <HeroSedesModule />}
+          {activeTab === 'inventory' && <InventoryModule />}
+          {activeTab === 'orders' && <OrdersModule />}
+          {activeTab === 'shipping' && <ShippingModule />}
+          {activeTab === 'channels' && <ChannelsModule />}
+          {activeTab === 'categories' && <CategoriesModule />}
+          {activeTab === 'reels' && <ReelsModule />}
+          {activeTab === 'customers' && <CustomersModule />}
+          {activeTab === 'campaigns' && <CampaignsModule />}
+          {activeTab === 'promo-banner' && <PromoBannerModule />}
+          {activeTab === 'note-collections' && <NoteCollectionsModule />}
+          {activeTab === 'trending-houses' && <TrendingHousesModule />}
+          {activeTab === 'fragrance-sets' && <FragranceSetsModule />}
+          {activeTab === 'counters' && <CountersModule />}
+          {activeTab === 'most-wanted' && <MostWantedModule />}
         </main>
       </div>
     </div>
