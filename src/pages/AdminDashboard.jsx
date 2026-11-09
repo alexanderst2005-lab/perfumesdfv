@@ -116,7 +116,10 @@ const AdminDashboard = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (loginForm.username === 'admin' && loginForm.password === 'dfv2024') {
+    const u = (loginForm.username || '').trim().toLowerCase();
+    const p = (loginForm.password || '').trim();
+
+    if ((u === 'talentohumanodfv@gmail.com' && p === 'perfumesdfv') || (u === 'admin' && p === 'dfv2024')) {
       sessionStorage.setItem('adminAuth', 'true');
       setIsLoggedIn(true);
       setLoginError('');
@@ -141,11 +144,12 @@ const AdminDashboard = () => {
           
           <form onSubmit={handleLogin}>
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Usuario</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Usuario o Correo</label>
               <input 
                 type="text" 
                 value={loginForm.username}
                 onChange={e => setLoginForm({...loginForm, username: e.target.value})}
+                placeholder="talentohumanodfv@gmail.com"
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }}
                 required
               />
