@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
 import { prefetchImg } from '../utils/img';
-import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck, MessageCircle, Eye, EyeOff } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Tags, FileText, Settings, DollarSign, TrendingUp, Calendar, BarChart2, LogOut, ChevronRight, Video, Megaphone, Image as ImageIcon, Layers, Star, Gift, MapPin, Truck, MessageCircle, Eye, EyeOff, X } from 'lucide-react';
 import InventoryModule from '../components/admin/InventoryModule';
 import OrdersModule from '../components/admin/OrdersModule';
 import CategoriesModule from '../components/admin/CategoriesModule';
@@ -28,16 +28,18 @@ const AdminDashboard = () => {
 
   const { allProducts, products, isLoadingProducts } = useShop();
   
-  // Persist active tab in localStorage so it survives window.location.reload()
+  // Al entrar al panel siempre iniciar en 'dashboard' y arriba del todo
   const [activeTab, setActiveTab] = useState(() => {
-    const saved = localStorage.getItem('adminActiveTab');
-    if (saved === 'settings' || saved === 'sales' || saved === 'reviews') return 'dashboard';
-    return saved || 'dashboard';
+    try {
+      localStorage.removeItem('adminActiveTab');
+      sessionStorage.removeItem('adminActiveTab');
+    } catch {}
+    return 'dashboard';
   });
 
   useEffect(() => {
-    localStorage.setItem('adminActiveTab', activeTab);
-  }, [activeTab]);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeTab, isLoggedIn]);
 
   const [orders, setOrders] = useState(() => {
     try {
@@ -108,6 +110,18 @@ const AdminDashboard = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // En móvil, bloquear el scroll del fondo cuando el menú hamburguesa está abierto para que deslice suave de arriba a abajo
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isSidebarOpen]);
+
   const handleLogin = (e) => {
     e.preventDefault();
     const u = (loginForm.username || '').trim().toLowerCase();
@@ -115,8 +129,12 @@ const AdminDashboard = () => {
 
     if ((u === 'talentohumanodfv@gmail.com' && p === 'perfumesdfv') || (u === 'admin' && p === 'dfv2024')) {
       sessionStorage.setItem('adminAuth', 'true');
+      sessionStorage.setItem('adminActiveTab', 'dashboard');
+      try { localStorage.removeItem('adminActiveTab'); } catch {}
+      setActiveTab('dashboard');
       setIsLoggedIn(true);
       setLoginError('');
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     } else {
       setLoginError('Usuario o contraseña incorrectos');
     }
@@ -124,10 +142,14 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('adminAuth');
+    sessionStorage.removeItem('adminActiveTab');
+    try { localStorage.removeItem('adminActiveTab'); } catch {}
+    setActiveTab('dashboard');
     setLoginForm({ username: '', password: '' });
     setShowPassword(false);
     setLoginError('');
     setIsLoggedIn(false);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   if (!isLoggedIn) {
@@ -202,19 +224,45 @@ const AdminDashboard = () => {
     <div className="admin-layout" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#fafafa', position: 'relative' }}>
       <style>{`
         .admin-sidebar {
-          width: 250px;
+          width: 260px;
           background-color: #ffffff;
           border-right: 1px solid #e5e7eb;
           display: flex;
           flex-direction: column;
-          transition: transform 0.3s ease;
-          z-index: 50;
+          transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 100;
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          height: 100dvh;
+          max-height: 100dvh;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+        .admin-sidebar-nav {
+          flex: 1;
+          min-height: 0;
+          padding: 0.5rem 0 1rem;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
+        .admin-sidebar-nav::-webkit-scrollbar {
+          width: 5px;
+        }
+        .admin-sidebar-nav::-webkit-scrollbar-thumb {
+          background-color: #d1d5db;
+          border-radius: 4px;
         }
         .admin-main {
           flex: 1;
           display: flex;
           flex-direction: column;
           width: 100%;
+          min-width: 0;
           overflow-x: hidden;
         }
         .admin-hamburger {
@@ -223,12 +271,14 @@ const AdminDashboard = () => {
           border: none;
           cursor: pointer;
           color: #111827;
+          padding: 0.4rem;
+          border-radius: 6px;
         }
         .admin-overlay {
           display: none;
         }
         .admin-content {
-          padding: 3rem;
+          padding: 2.5rem;
           overflow-x: auto;
         }
         @media (max-width: 1024px) {
@@ -236,24 +286,30 @@ const AdminDashboard = () => {
             position: fixed;
             top: 0;
             left: 0;
+            bottom: 0;
+            width: 82vw;
+            max-width: 290px;
             height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
             transform: translateX(-100%);
+            box-shadow: 4px 0 24px rgba(0,0,0,0.15);
           }
           .admin-sidebar.open {
             transform: translateX(0);
           }
           .admin-hamburger {
-            display: block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
           }
           .admin-overlay.open {
             display: block;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            inset: 0;
             background: rgba(0,0,0,0.5);
-            z-index: 40;
+            z-index: 90;
+            backdrop-filter: blur(1px);
           }
           .admin-content {
             padding: 1rem;
@@ -262,7 +318,7 @@ const AdminDashboard = () => {
             grid-template-columns: 1fr !important;
           }
           .admin-content table {
-            min-width: 800px !important;
+            min-width: 720px !important;
           }
           .admin-content th, .admin-content td {
             white-space: nowrap;
@@ -286,44 +342,47 @@ const AdminDashboard = () => {
 
       {/* SIDEBAR */}
       <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div style={{ padding: '2.5rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ color: 'var(--color-black)', fontFamily: 'var(--font-serif)', fontWeight: '400', fontSize: '2.2rem', letterSpacing: '-0.5px', lineHeight: '0.9', textAlign: 'center', width: '100%' }}>
-            DFV<br/><span style={{ fontSize: '0.6rem', letterSpacing: '4px', textTransform: 'uppercase', display: 'block', textAlign: 'center', fontWeight: '300', marginTop: '4px' }}>PERFUMES</span>
+        <div style={{ padding: '1.5rem 1.25rem 1.1rem', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
+          <div style={{ color: 'var(--color-black)', fontFamily: 'var(--font-serif)', fontWeight: '400', fontSize: '1.9rem', letterSpacing: '-0.5px', lineHeight: '0.9', textAlign: 'center', width: '100%' }}>
+            DFV<br/><span style={{ fontSize: '0.58rem', letterSpacing: '4px', textTransform: 'uppercase', display: 'block', textAlign: 'center', fontWeight: '300', marginTop: '4px' }}>PERFUMES</span>
           </div>
-          <button className="admin-hamburger" onClick={() => setIsSidebarOpen(false)} style={{ position: 'absolute', right: '1rem', top: '1rem' }}>
-            <LogOut size={24} style={{ transform: 'rotate(180deg)' }} />
+          <button className="admin-hamburger" onClick={() => setIsSidebarOpen(false)} aria-label="Cerrar menú" style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}>
+            <X size={22} />
           </button>
         </div>
         
-        <nav style={{ flex: 1, padding: '1rem 0', display: 'flex', flexDirection: 'column' }}>
+        <nav className="admin-sidebar-nav">
           {menuItems.map(item => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setIsSidebarOpen(false);
+                }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '1rem', width: '100%',
-                  padding: '1rem 2rem', border: 'none',
-                  backgroundColor: isActive ? '#f9fafb' : 'transparent',
-                  color: isActive ? '#111827' : '#6b7280',
-                  fontSize: '0.9rem', fontWeight: isActive ? '600' : '500', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '0.85rem', width: '100%',
+                  padding: '0.85rem 1.5rem', border: 'none', flexShrink: 0,
+                  backgroundColor: isActive ? '#f3f4f6' : 'transparent',
+                  color: isActive ? '#111827' : '#4b5563',
+                  fontSize: '0.88rem', fontWeight: isActive ? '600' : '500', cursor: 'pointer',
                   borderLeft: isActive ? '4px solid #111827' : '4px solid transparent',
-                  transition: 'all 0.2s', textAlign: 'left'
+                  transition: 'all 0.15s', textAlign: 'left'
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
-                <Icon size={18} />
-                {item.label}
+                <Icon size={18} style={{ flexShrink: 0 }} />
+                <span style={{ lineHeight: 1.25 }}>{item.label}</span>
               </button>
             )
           })}
         </nav>
 
-        <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #e5e7eb' }}>
-          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', padding: '0.75rem', backgroundColor: 'transparent', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', cursor: 'pointer', justifyContent: 'center' }}>
+        <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid #e5e7eb', flexShrink: 0, backgroundColor: '#ffffff' }}>
+          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%', padding: '0.7rem', backgroundColor: 'transparent', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#6b7280', fontSize: '0.85rem', fontWeight: '500', cursor: 'pointer', justifyContent: 'center' }}>
             <LogOut size={16} />
             Cerrar Sesión
           </button>
@@ -334,16 +393,16 @@ const AdminDashboard = () => {
       <div className="admin-main">
         
         {/* HEADER */}
-        <header style={{ height: '70px', backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="admin-hamburger" onClick={() => setIsSidebarOpen(true)}>
+        <header style={{ height: '64px', backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.25rem', position: 'sticky', top: 0, zIndex: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+            <button className="admin-hamburger" onClick={() => setIsSidebarOpen(true)} aria-label="Abrir menú">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+            <h1 style={{ fontSize: '1.15rem', fontWeight: '600', color: '#111827', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {menuItems.find(m => m.id === activeTab)?.label || 'Dashboard'}
             </h1>
           </div>
-          <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>Administrador</div>
+          <div style={{ fontSize: '0.82rem', color: '#4b5563', flexShrink: 0 }}>Administrador</div>
         </header>
 
         <main className="admin-content" onClick={() => { if(isSidebarOpen) setIsSidebarOpen(false) }}>
@@ -401,16 +460,16 @@ const AdminDashboard = () => {
               {/* PEDIDOS POR ESTADO */}
               <div style={{ backgroundColor: 'white', padding: '1.5rem 2rem', borderRadius: '12px', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', marginBottom: '1.5rem' }}>
                 <p style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1.5rem' }}>PEDIDOS POR ESTADO</p>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <div style={{ flex: 1, backgroundColor: '#e0f2fe', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 160px', backgroundColor: '#e0f2fe', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#0284c7' }}>{statusEnCamino}</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#0284c7', textTransform: 'uppercase', letterSpacing: '1px' }}>EN CAMINO</span>
                   </div>
-                  <div style={{ flex: 1, backgroundColor: '#fef9c3', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ flex: '1 1 160px', backgroundColor: '#fef9c3', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#ca8a04' }}>{statusPendiente}</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#ca8a04', textTransform: 'uppercase', letterSpacing: '1px' }}>PENDIENTE</span>
                   </div>
-                  <div style={{ flex: 1, backgroundColor: '#fee2e2', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ flex: '1 1 160px', backgroundColor: '#fee2e2', borderRadius: '6px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#dc2626' }}>{statusCancelado}</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '1px' }}>CANCELADO</span>
                   </div>
