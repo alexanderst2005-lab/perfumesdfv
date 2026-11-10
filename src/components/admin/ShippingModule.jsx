@@ -259,14 +259,6 @@ const ShippingModule = () => {
         </div>
       </div>
 
-      {/* Regla de negocio destacada */}
-      <div style={{ marginBottom: '2rem', padding: '1rem 1.25rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-        <CheckCircle size={20} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
-        <div style={{ fontSize: '0.85rem', color: '#166534', lineHeight: 1.5 }}>
-          <strong>Protección activa contra cobros erróneos:</strong> Si un comprador elige <em>"Otra ciudad o municipio no listado"</em> o su destino no cuenta con tarifa activa, la tienda <strong>nunca mostrará envío gratis ni inventará un precio</strong>; en su lugar le notificará que el costo exacto del flete se confirmará con un asesor por WhatsApp antes del despacho.
-        </div>
-      </div>
-
       {/* Listado de Zonas de Cobertura */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
         {zones.map((zone, idx) => {

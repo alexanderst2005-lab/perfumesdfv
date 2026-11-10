@@ -333,9 +333,6 @@ const Checkout = () => {
                       {zone.name} — ${(Number(zone.price) || 0).toLocaleString()} COP
                     </option>
                   ))}
-                  <option value="unlisted">
-                    📍 Otra ciudad o municipio no listado (Confirmar flete con asesor)
-                  </option>
                 </select>
 
                 {/* Badge informativa de la tarifa seleccionada */}
