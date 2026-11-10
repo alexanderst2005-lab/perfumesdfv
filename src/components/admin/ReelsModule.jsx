@@ -560,24 +560,6 @@ const ReelsModule = () => {
                 />
               </div>
 
-              {/* Portada personalizada Opcional */}
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
-                  Foto de Portada / Miniatura (Opcional)
-                </label>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleThumbnailFileChange}
-                  style={{ fontSize: '0.85rem' }}
-                />
-                {formData.thumbnailPreview && (
-                  <div style={{ marginTop: '0.5rem', width: '80px', height: '110px', borderRadius: '6px', overflow: 'hidden' }}>
-                    <img src={formData.thumbnailPreview} alt="thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-              </div>
-
               {/* Estado visible */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input 
