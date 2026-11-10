@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useShop } from '../../context/ShopContext';
-import { Save, CheckCircle, Share2, MessageCircle, Shuffle, Smartphone, Globe, AlertCircle, HelpCircle, Mail } from 'lucide-react';
+import { Save, CheckCircle, Share2, MessageCircle, Shuffle, Smartphone, AlertCircle, Mail } from 'lucide-react';
+import { notifyStoreSync } from '../../utils/img';
 
 const InstagramIcon = ({ size = 20, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -86,8 +87,19 @@ const ChannelsModule = () => {
       email: (formData.email || '').trim().toLowerCase(),
       instagram: formatExternalUrl(formData.instagram),
       facebook: formatExternalUrl(formData.facebook),
-      tiktok: formatExternalUrl(formData.tiktok)
+      tiktok: formatExternalUrl(formData.tiktok),
+      sede1_name: (formData.sede1_name || '').trim(),
+      sede1_phone: (formData.sede1_phone || '').replace(/[^0-9]/g, ''),
+      sede2_name: (formData.sede2_name || '').trim(),
+      sede2_phone: (formData.sede2_phone || '').replace(/[^0-9]/g, ''),
+      floating_phone: (formData.floating_phone || '').replace(/[^0-9]/g, '')
     };
+
+    // Actualización optimista inmediata en contexto y localStorage
+    setFormData(payload);
+    if (setChannels) setChannels(payload);
+    try { localStorage.setItem('dfv_channels_cache', JSON.stringify(payload)); } catch {}
+    notifyStoreSync('channels', payload);
 
     try {
       const res = await fetch('/api/contact-channels', {
@@ -98,9 +110,12 @@ const ChannelsModule = () => {
       const data = await res.json();
       if (data && data.success) {
         showToast('Canales de WhatsApp, Correo y Redes Sociales actualizados correctamente');
-        setFormData(prev => ({ ...prev, ...data.channels }));
-        if (setChannels) setChannels(data.channels);
-        if (refreshChannels) await refreshChannels();
+        if (data.channels) {
+          setFormData(prev => ({ ...prev, ...data.channels }));
+          if (setChannels) setChannels(data.channels);
+          try { localStorage.setItem('dfv_channels_cache', JSON.stringify(data.channels)); } catch {}
+          notifyStoreSync('channels', data.channels);
+        }
       } else {
         throw new Error(data.error || 'Error al guardar');
       }
@@ -517,7 +532,7 @@ const ChannelsModule = () => {
                   <span style={{ fontSize: '0.65rem', color: '#B99A5B', fontWeight: 600 }}>Visible en Footer y Contacto</span>
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   value={formData.email || ''}
                   onChange={e => handleChange('email', e.target.value)}
                   placeholder="info@dfvperfumes.com"
@@ -545,7 +560,7 @@ const ChannelsModule = () => {
                   Enlace Instagram
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.instagram}
                   onChange={e => handleChange('instagram', e.target.value)}
                   placeholder="https://www.instagram.com/perfumesdfv"
@@ -573,7 +588,7 @@ const ChannelsModule = () => {
                   Enlace Facebook
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.facebook}
                   onChange={e => handleChange('facebook', e.target.value)}
                   placeholder="https://www.facebook.com/perfumesdfv"
@@ -601,7 +616,7 @@ const ChannelsModule = () => {
                   Enlace TikTok
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.tiktok}
                   onChange={e => handleChange('tiktok', e.target.value)}
                   placeholder="https://www.tiktok.com/@perfumesdfv"
@@ -610,96 +625,6 @@ const ChannelsModule = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* ════ BLOQUE 4: PREVISUALIZACIÓN DE PREGUNTAS FRECUENTES (HOME) ════ */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '12px',
-          border: '1px solid #E5E7EB',
-          padding: '1.5rem',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-        }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <HelpCircle size={18} color="#D97706" />
-            Vista Previa: Botones bajo Preguntas Frecuentes
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: '#6B7280', margin: '0.2rem 0 1.25rem 0' }}>
-            Así es como los clientes verán los 2 botones de contacto al final de las preguntas frecuentes en la tienda pública:
-          </p>
-
-          <div style={{
-            padding: '1.5rem',
-            backgroundColor: '#FAF8F5',
-            borderRadius: '8px',
-            textAlign: 'center',
-            border: '1px dashed #D5D0C6'
-          }}>
-            <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              ¿TIENES OTRA PREGUNTA?
-            </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.75rem',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                color: '#111',
-                border: '1.5px solid #25D366',
-                backgroundColor: '#FFFFFF',
-                padding: '0.55rem 1.1rem',
-                borderRadius: '4px',
-                fontWeight: 600
-              }}>
-                <MessageCircle size={15} color="#25D366" />
-                <span>{formData.sede1_name || 'Sede 1'}</span>
-              </div>
-
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.75rem',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                color: '#111',
-                border: '1.5px solid #25D366',
-                backgroundColor: '#FFFFFF',
-                padding: '0.55rem 1.1rem',
-                borderRadius: '4px',
-                fontWeight: 600
-              }}>
-                <MessageCircle size={15} color="#25D366" />
-                <span>{formData.sede2_name || 'Sede 2'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Botón inferior Guardar */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '0.5rem' }}>
-          <button
-            type="submit"
-            disabled={isSaving}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.85rem 2rem',
-              backgroundColor: '#111827',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '0.88rem',
-              fontWeight: 600,
-              cursor: isSaving ? 'not-allowed' : 'pointer'
-            }}
-          >
-            <Save size={18} />
-            <span>{isSaving ? 'Guardando...' : 'Guardar Todo'}</span>
-          </button>
         </div>
 
       </form>
