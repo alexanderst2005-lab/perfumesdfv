@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Video, Plus, Trash2, Eye, EyeOff, Upload, CheckCircle2, AlertCircle, X, Play } from 'lucide-react';
+import { notifyStoreSync } from '../../utils/img';
+
+const getInstagramEmbedUrl = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const match = url.match(/(?:instagram\.com|instagr\.am)\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/i);
+  if (match && match[1]) {
+    return `https://www.instagram.com/reel/${match[1]}/embed/`;
+  }
+  return null;
+};
 
 const ReelsModule = () => {
   const [reels, setReels] = useState([]);
@@ -170,7 +180,11 @@ const ReelsModule = () => {
           .replace(/\.[^/.]+$/, '.jpg');
       }
 
-      setUploadProgressText('Guardando en la base de datos...');
+      if ( getInstagramEmbedUrl(finalVideoUrl) ) {
+        setUploadProgressText('Importando video desde Instagram (esto toma unos segundos)...');
+      } else {
+        setUploadProgressText('Guardando en la base de datos...');
+      }
 
       const saveRes = await fetch('/api/admin/reels', {
         method: 'POST',
@@ -188,6 +202,7 @@ const ReelsModule = () => {
         throw new Error(err.error || 'Error al guardar el reel');
       }
 
+      notifyStoreSync('reels');
       setIsModalOpen(false);
       fetchReels();
     } catch (err) {
@@ -208,6 +223,7 @@ const ReelsModule = () => {
       });
       if (res.ok) {
         setReels(prev => prev.map(r => r.id === reel.id ? { ...r, active: !r.active } : r));
+        notifyStoreSync('reels');
       }
     } catch (e) {
       console.error(e);
@@ -225,6 +241,7 @@ const ReelsModule = () => {
       });
       if (res.ok) {
         setReels(prev => prev.filter(r => r.id !== id));
+        notifyStoreSync('reels');
       } else {
         alert('Error al eliminar');
       }
@@ -329,7 +346,14 @@ const ReelsModule = () => {
                 }}
                 onClick={() => setPreviewVideoModal(r)}
               >
-                {r.video_url.endsWith('.mp4') || r.video_url.includes('/video/upload/') ? (
+                {getInstagramEmbedUrl(r.video_url) ? (
+                  <iframe
+                    src={getInstagramEmbedUrl(r.video_url)}
+                    title={r.title || 'Instagram Reel'}
+                    style={{ width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
+                    scrolling="no"
+                  />
+                ) : r.video_url ? (
                   <video 
                     src={r.video_url} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -546,14 +570,14 @@ const ReelsModule = () => {
                 </div>
               </div>
 
-              {/* O ingresar URL directa opcional */}
+              {/* O ingresar URL de Instagram o enlace directo */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '500', color: '#374151', marginBottom: '0.3rem' }}>
-                  O ingresar enlace de video directo (MP4 URL de Cloudinary u otro servidor)
+                  O pega el enlace de un video de Instagram (Reel) o URL directa MP4
                 </label>
                 <input 
-                  type="url"
-                  placeholder="https://res.cloudinary.com/.../video.mp4"
+                  type="text"
+                  placeholder="Ej: https://www.instagram.com/reel/... o enlace .mp4"
                   value={formData.videoUrlInput}
                   onChange={e => setFormData({ ...formData, videoUrlInput: e.target.value })}
                   style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '0.85rem' }}
@@ -668,13 +692,23 @@ const ReelsModule = () => {
             >
               <X size={18} />
             </button>
-            <video 
-              src={previewVideoModal.video_url} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              controls
-              autoPlay
-              playsInline
-            />
+            {getInstagramEmbedUrl(previewVideoModal.video_url) ? (
+              <iframe
+                src={getInstagramEmbedUrl(previewVideoModal.video_url)}
+                title={previewVideoModal.title || 'Instagram Reel'}
+                style={{ width: '100%', height: '100%', border: 'none', backgroundColor: '#fff' }}
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            ) : (
+              <video 
+                src={previewVideoModal.video_url} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                controls
+                autoPlay
+                playsInline
+              />
+            )}
           </div>
         </div>
       )}

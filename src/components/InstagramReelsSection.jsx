@@ -11,10 +11,10 @@ const InstagramIcon = ({ size = 18, color = 'currentColor' }) => (
 );
 
 const getEmbedUrl = (url) => {
-  if (!url) return null;
-  const match = url.match(/\/reel\/([A-Za-z0-9_-]+)/);
+  if (!url || typeof url !== 'string') return null;
+  const match = url.match(/(?:instagram\.com|instagr\.am)\/(?:p|reel|reels|tv)\/([A-Za-z0-9_-]+)/i);
   if (match && match[1]) {
-    return `https://www.instagram.com/reel/${match[1]}/embed/captioned/`;
+    return `https://www.instagram.com/reel/${match[1]}/embed/`;
   }
   return null;
 };
@@ -25,10 +25,12 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
 
+  const igEmbedUrl = getEmbedUrl(reel.videoUrl || reel.reelUrl);
+
   // Versión liviana de video para móvil y web (comprimido y tamaño justo)
-  const fastVideoUrl = reel.videoUrl && reel.videoUrl.includes('/video/upload/') && !reel.videoUrl.includes('w_')
+  const fastVideoUrl = !igEmbedUrl && reel.videoUrl && reel.videoUrl.includes('/video/upload/') && !reel.videoUrl.includes('w_')
     ? reel.videoUrl.replace('/video/upload/', '/video/upload/q_auto:eco,vc_auto,w_540/')
-    : reel.videoUrl;
+    : (!igEmbedUrl ? reel.videoUrl : null);
 
   // Auto-generación de póster/thumbnail si es video de Cloudinary
   let thumb = reel.thumbnailUrl;
@@ -120,8 +122,24 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
         <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#262626', zIndex: 1 }} />
       )}
 
-      {/* 2. Video reproduciéndose en bucle optimizado por afuerita */}
-      {fastVideoUrl && (
+      {/* 2. Video reproduciéndose en bucle optimizado por afuerita o Embed de Instagram */}
+      {igEmbedUrl ? (
+        <iframe
+          src={igEmbedUrl}
+          title={reel.title}
+          scrolling="no"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            zIndex: 2,
+            backgroundColor: '#000'
+          }}
+        />
+      ) : fastVideoUrl && (
         <video
           ref={videoRef}
           src={fastVideoUrl}
@@ -151,16 +169,18 @@ const ReelFeedCard = ({ reel, onOpenModal }) => {
       )}
 
       {/* Sutil viñeta en la base y arriba para contraste */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 40%, rgba(0,0,0,0.25) 100%)',
-        pointerEvents: 'none',
-        zIndex: 2
-      }} />
+      {!igEmbedUrl && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 40%, rgba(0,0,0,0.25) 100%)',
+          pointerEvents: 'none',
+          zIndex: 2
+        }} />
+      )}
 
       {/* Botón flotante de audio en la esquina superior derecha */}
-      {reel.videoUrl && (
+      {!igEmbedUrl && reel.videoUrl && (
         <button
           type="button"
           onClick={toggleSound}
@@ -225,28 +245,41 @@ const InstagramReelsSection = () => {
   const [activeModalReel, setActiveModalReel] = useState(null);
 
   useEffect(() => {
-    const early = window.__early?.reels;
-    if (window.__early) window.__early.reels = null;
-    const fetchPromise = early ? Promise.resolve(early) : fetch('/api/reels');
+    const loadReels = () => {
+      const early = window.__early?.reels;
+      if (window.__early) window.__early.reels = null;
+      const fetchPromise = early ? Promise.resolve(early) : fetch(`/api/reels?t=${Date.now()}`, { cache: 'no-store' });
 
-    fetchPromise
-      .then(res => (res && res.ok ? res.json() : ( Array.isArray(res) ? res : [] )))
-      .then(data => {
-        if (Array.isArray(data)) {
-          const mapped = data.map(r => ({
-            id: r.id,
-            title: r.title || 'Experiencia DFV Perfumes',
-            thumbnailUrl: r.thumbnail_url || '',
-            videoUrl: r.video_url,
-            isUploadedVideo: true,
-            active: r.active
-          }));
-          cachedReelsList = mapped;
-          setDbReels(mapped);
-        }
-      })
-      .catch(e => console.error('Error fetching reels:', e))
-      .finally(() => setIsLoading(false));
+      fetchPromise
+        .then(res => (res && res.ok ? res.json() : (Array.isArray(res) ? res : [])))
+        .then(data => {
+          if (Array.isArray(data)) {
+            const mapped = data.map(r => {
+              const igEmbed = getEmbedUrl(r.video_url);
+              return {
+                id: r.id,
+                title: r.title || 'Experiencia DFV Perfumes',
+                thumbnailUrl: r.thumbnail_url || '',
+                videoUrl: r.video_url,
+                reelUrl: igEmbed ? r.video_url : null,
+                isUploadedVideo: !igEmbed,
+                active: r.active
+              };
+            });
+            cachedReelsList = mapped;
+            setDbReels(mapped);
+          }
+        })
+        .catch(e => console.error('Error fetching reels:', e))
+        .finally(() => setIsLoading(false));
+    };
+    loadReels();
+    window.addEventListener('dfv-sync', loadReels);
+    window.addEventListener('storage', loadReels);
+    return () => {
+      window.removeEventListener('dfv-sync', loadReels);
+      window.removeEventListener('storage', loadReels);
+    };
   }, []);
 
   // Mostramos los reels activos subidos desde el panel
@@ -444,7 +477,18 @@ const InstagramReelsSection = () => {
 
             {/* Reproductor Real en Pantalla GRANDE */}
             <div style={{ flex: 1, width: '100%', backgroundColor: '#000', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {activeModalReel.isUploadedVideo || activeModalReel.videoUrl?.endsWith('.mp4') || activeModalReel.videoUrl?.includes('/video/upload/') ? (
+              {getEmbedUrl(activeModalReel.videoUrl || activeModalReel.reelUrl) ? (
+                <iframe
+                  src={getEmbedUrl(activeModalReel.videoUrl || activeModalReel.reelUrl)}
+                  title={activeModalReel.title}
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  scrolling="no"
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  style={{ border: 'none', width: '100%', height: '100%', backgroundColor: '#fff' }}
+                />
+              ) : (
                 <video
                   src={activeModalReel.videoUrl}
                   controls
@@ -456,18 +500,6 @@ const InstagramReelsSection = () => {
                     objectFit: 'contain',
                     backgroundColor: '#000'
                   }}
-                />
-              ) : (
-                <iframe
-                  src={getEmbedUrl(activeModalReel.reelUrl)}
-                  title={activeModalReel.title}
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  scrolling="no"
-                  allowTransparency="true"
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  style={{ border: 'none', width: '100%', height: '100%' }}
                 />
               )}
             </div>
